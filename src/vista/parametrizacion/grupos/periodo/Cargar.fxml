@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label layoutX="21.0" layoutY="11.0" text="Cargar Grupos de Cuentas Contables" textFill="#676a6c">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <Hyperlink fx:id="lnkInicio" onAction="#lnkInicioAction" text="Inicio" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkParametrizacion" onAction="#lnkParametrizacionAction" text="Parametrización" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkGrupos" onAction="#lnkGruposAction" text="Grupos" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkAsociacion" onAction="#lnkAsociacionAction" text="Asociación" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkCargar" onAction="#lnkCargarAction" text="Cargar" textFill="#676a6c">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
+         <columns>
+            <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" styleClass="left" text="NOMBRE" />
+         </columns>
+      </TableView>
+      <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="124.0" />
+      <TextField fx:id="txtRuta" disable="true" layoutX="91.0" layoutY="120.0" prefHeight="25.0" prefWidth="511.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="120.0" />
+      <JFXButton fx:id="btnCargarRuta" layoutX="534.0" layoutY="95.0" onAction="#btnCargarRutaAction" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="FOLDER_OPEN" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="small" />
+         </styleClass>
+      </JFXButton>
+      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
+      <JFXButton fx:id="btnCancelar" layoutX="260.0" layoutY="466.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="CLOSE" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnSubir" layoutX="365.0" layoutY="466.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="UPLOAD" />
+         </graphic>
+      </JFXButton>
+      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="130.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />
+      <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
+      <Spinner fx:id="spAnho" layoutX="286.0" layoutY="130.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
+         <valueFactory>
+            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+         </valueFactory>
+      </Spinner>
+   </children>
+</AnchorPane>

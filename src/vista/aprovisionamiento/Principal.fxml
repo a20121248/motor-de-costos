@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label layoutX="21.0" layoutY="11.0" text="Aprovisionamiento" textFill="#676a6c">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <Hyperlink fx:id="lnkInicio" onAction="#lnkInicioAction" text="Inicio" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkAprovisionamiento" onAction="#lnkAprovisionamientoAction" text="Aprovisionamiento" textFill="#676a6c">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+      <TitledPane animated="false" collapsible="false" layoutX="100.0" layoutY="280.0" prefHeight="90.0" text="PLAN DE CUENTAS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <content>
+            <SplitPane maxHeight="80.0" prefHeight="80.0" prefWidth="498.0">
+               <items>
+                  <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
+                     <children>
+                        <TextArea editable="false" layoutX="103.0" layoutY="6.0" prefHeight="58.0" text="- Esta sección permite la carga de los saldos de las Cuentas Contables para un periodo específico." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
+                        <JFXButton fx:id="btnBalancete" layoutX="14.0" layoutY="19.0" onAction="#btnBalanceteAction" text="Balancete" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CUBES" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="large" />
+                           </styleClass>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </items>
+            </SplitPane>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <TitledPane fx:id="tpDriversCentros" animated="false" collapsible="false" layoutX="100.0" layoutY="250.0" prefHeight="90.0" text="DRIVERS - CENTROS DE COSTOS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="220.0">
+         <content>
+            <SplitPane maxHeight="80.0" prefHeight="80.0" prefWidth="498.0">
+               <items>
+                  <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
+                     <children>
+                        <TextArea editable="false" layoutX="160.0" layoutY="7.0" prefHeight="58.0" text="- Esta sección permite la creación y edición de un driver.&#10;- Es necesario indicar las entidades de destino y porcentaje de distribución para cada una de ellas." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
+                        <JFXButton fx:id="btnDrivers" layoutX="54.0" layoutY="22.0" onAction="#btnDriversAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CUBES" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="large" />
+                           </styleClass>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </items>
+            </SplitPane>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <TitledPane fx:id="tpDriversObjetos" animated="false" collapsible="false" layoutX="100.0" layoutY="326.0" prefHeight="90.0" prefWidth="500.0" text="DRIVERS - OBJETOS DE COSTOS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="320.0">
+         <content>
+            <SplitPane maxHeight="80.0" prefHeight="80.0" prefWidth="498.0">
+               <items>
+                  <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
+                     <children>
+                        <TextArea editable="false" layoutX="160.0" layoutY="7.0" prefHeight="58.0" text="- Esta sección permite la creación y edición de un driver.&#10;- Es necesario indicar las entidades de destino y porcentaje de distribución para cada una de ellas." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
+                        <JFXButton fx:id="btnDriversObjeto" layoutX="54.0" layoutY="22.0" onAction="#btnDriversObjetoAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CUBES" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="large" />
+                           </styleClass>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </items>
+            </SplitPane>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+   </children>
+</AnchorPane>

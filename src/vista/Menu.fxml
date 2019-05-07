@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane id="sidebar" fx:id="apSidebar" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="btnInicio" alignment="BASELINE_LEFT" layoutY="182.0" onAction="#btnInicioAction" prefHeight="60.0" prefWidth="300.0" styleClass="sidebar-button" text="INICIO">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+               <graphic>
+                  <FontAwesomeIconView glyphName="HOME" size="20" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnAprovisionamiento" alignment="BASELINE_LEFT" layoutY="242.0" onAction="#btnAprovisionamientoAction" prefHeight="60.0" prefWidth="300.0" styleClass="sidebar-button" text="APROVISIONAMIENTO">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <FontAwesomeIconView glyphName="UPLOAD" size="20" />
+               </graphic>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </JFXButton>
+            <JFXButton fx:id="btnParametrizacion" alignment="BASELINE_LEFT" layoutY="302.0" onAction="#btnParametrizacionAction" prefHeight="60.0" prefWidth="300.0" styleClass="sidebar-button" text="PARAMETRIZACIÓN">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <FontAwesomeIconView glyphName="SERVER" size="20" />
+               </graphic>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </JFXButton>
+            <JFXButton fx:id="btnReporting" alignment="BASELINE_LEFT" layoutY="422.0" onAction="#btnReportingAction" prefHeight="60.0" prefWidth="300.0" styleClass="sidebar-button" text="REPORTING">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <FontAwesomeIconView glyphName="FILE_TEXT" size="20" />
+               </graphic>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </JFXButton>
+            <JFXButton fx:id="btnProcesos" alignment="BASELINE_LEFT" layoutY="362.0" onAction="#btnProcesosAction" prefHeight="60.0" prefWidth="300.0" styleClass="sidebar-button" text="PROCESOS">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <FontAwesomeIconView glyphName="GEARS" size="20" />
+               </graphic>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </JFXButton>
+            <ImageView fx:id="imgLogo" fitHeight="150.0" fitWidth="200.0" layoutX="50.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </AnchorPane>
+      <AnchorPane id="header" fx:id="apHeader" layoutX="300.0" prefHeight="60.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <FontAwesomeIconView fill="#a7b1c2" glyphName="NAVICON" layoutX="33.0" layoutY="38.0" size="25" AnchorPane.leftAnchor="33.0" />
+            <Label fx:id="lblTitulo" layoutX="80.0" layoutY="34.0" styleClass="title" text="GASTOS ADMINISTRATIVOS Y OPERATIVOS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="10.0" />
+         </children>
+      </AnchorPane>
+      <StackPane id="content" fx:id="spnContenido" layoutX="300.0" layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
+   </children>
+</AnchorPane>

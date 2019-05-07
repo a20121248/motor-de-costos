@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="245.0" prefWidth="384.0" style="-fx-background-color: #f3f3f4;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar layoutX="39.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem fx:id="itmConfigurarBD" mnemonicParsing="false" onAction="#itmConfigurarBDAction" text="Configurar base de datos">
+                     <graphic>
+                        <FontAwesomeIconView fill="#676a6c" glyphName="DATABASE" />
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem fx:id="itmConfigurarHerramienta" mnemonicParsing="false" onAction="#itmConfigurarHerramientaAction" text="Configurar herramienta">
+                     <graphic>
+                        <FontAwesomeIconView fill="#676a6c" glyphName="GEARS" />
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem fx:id="itmSalir" mnemonicParsing="false" onAction="#itmSalirAction" text="Salir">
+                     <graphic>
+                        <FontAwesomeIconView fill="#676a6c" glyphName="CLOSE" />
+                     </graphic>
+                  </MenuItem>
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem fx:id="itmAcerca" mnemonicParsing="false" onAction="#itmAcercaAction" text="Acerca">
+                     <graphic>
+                        <FontAwesomeIconView fill="#676a6c" glyphName="INFO_CIRCLE" />
+                     </graphic>
+                  </MenuItem>
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <Label fx:id="lblTitulo" layoutX="125.0" layoutY="41.0" text="Iniciar sesión" textFill="#676a6c">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblUsuario" layoutX="91.0" layoutY="98.0" text="Usuario:" />
+      <JFXTextField fx:id="txtUsuario" focusColor="#676a6c" layoutX="158.0" layoutY="94.0" prefHeight="25.0" prefWidth="156.0" />
+      <Label fx:id="lblContrasenha" layoutX="71.0" layoutY="154.0" text="Contraseña:" />
+      <JFXPasswordField fx:id="txtContrasenha" focusColor="#676a6c" layoutX="158.0" layoutY="150.0" prefHeight="25.0" prefWidth="156.0" />
+      <JFXButton fx:id="btnLogin" defaultButton="true" layoutX="157.0" layoutY="198.0" onAction="#btnLoginAction" prefHeight="27.0" prefWidth="70.0" ripplerFill="#676a6c" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" text="Login">
+         <graphic>
+            <FontAwesomeIconView glyphName="KEY" />
+         </graphic></JFXButton>
+   </children>
+</AnchorPane>

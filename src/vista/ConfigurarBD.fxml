@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="290.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField fx:id="txtServidor" layoutX="120.0" layoutY="69.0" AnchorPane.topAnchor="70.0" />
+      <Label fx:id="lblTitulo" layoutX="129.0" layoutY="14.0" text="Datos de conexión" textFill="#676a6c">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="48.0" layoutY="74.0" text="Servidor:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="74.0" />
+      <Label layoutX="300.0" layoutY="74.0" text="Puerto:" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="74.0" />
+      <TextField fx:id="txtPuerto" layoutX="369.0" layoutY="69.0" prefHeight="25.0" prefWidth="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="70.0" />
+      <TextField fx:id="txtSID" layoutX="120.0" layoutY="105.0" AnchorPane.topAnchor="110.0" />
+      <Label layoutX="50.0" layoutY="114.0" text="SID:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="114.0" />
+      <Label layoutX="39.0" layoutY="154.0" text="Usuario:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="154.0" />
+      <TextField fx:id="txtUsuario" layoutX="120.0" layoutY="160.0" AnchorPane.topAnchor="150.0" />
+      <Label layoutX="62.0" layoutY="204.0" text="Contraseña:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="194.0" />
+      <PasswordField fx:id="txtContrasenha" layoutX="120.0" layoutY="200.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="190.0" />
+      <Button fx:id="btnProbar" layoutX="188.0" layoutY="240.0" mnemonicParsing="false" onAction="#btnProbarAction" prefWidth="75.0" text="Probar">
+         <graphic>
+            <FontAwesomeIconView fill="#676a6c" glyphName="PLUG" />
+         </graphic></Button>
+      <Label layoutX="284.0" layoutY="244.0" text="Estado:" />
+      <Label fx:id="lblResultadoEstado" layoutX="329.0" layoutY="244.0" text="?" textFill="#676a6c">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

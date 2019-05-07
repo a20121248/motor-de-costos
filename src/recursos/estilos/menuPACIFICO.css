@@ -1,0 +1,146 @@
+/*
+#0075b0 verde oscuro
+#ff6319 verde claro
+*/
+
+.root {
+    -fx-focus-color: #ff6319;
+    -fx-faint-focus-color: #ff631922;
+}
+
+#content .table-view .left.column-header .label {
+    -fx-alignment:CENTER_LEFT
+}
+#content .table-view .left.table-column {
+    -fx-padding:0 15 0 15;
+    -fx-alignment:CENTER_LEFT;
+}
+#content .table-view .right.table-column {
+    -fx-padding:0 15 0 15;
+    -fx-alignment:CENTER_RIGHT;
+}
+#content .table-view .center.table-column {
+    -fx-alignment:CENTER;
+}
+
+#header {
+    -fx-background-color: #0075b0;
+}
+#header.ingresos {
+    -fx-background-color: #da3f0b;
+}
+#header .title {
+    -fx-text-fill: white;
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+}
+#header.ingresos .title {
+    -fx-text-fill: white;
+}
+#header .glyph-icon {
+    -fx-fill: white;
+}
+#header.ingresos .glyph-icon {
+    -fx-fill: white;
+}
+
+#content {
+    -fx-background-color: white;
+}
+
+#content .seccion-titulo {
+    -fx-background-color: #0075b0;
+}
+
+#content .seccion-titulo Label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
+
+#content .page-heading {
+    -fx-background-color: white;
+}
+
+#content .btn {
+    -fx-background-color: #0075b0;
+    -fx-text-fill: white;
+    -fx-pref-height: 25;
+    -fx-pref-width: 75;
+}
+
+#content .btn .glyph-icon {
+    -fx-fill: white;
+}
+
+#content .btn:hover {
+    -fx-background-color: #ff6319;
+    -fx-text-fill: white;
+}
+
+#content .btn:hover .glyph-icon {
+    -fx-fill: white;
+}
+
+#content .btn.x-large {
+    -fx-pref-width: 145;
+}
+
+#content .btn.large {
+    -fx-pref-width: 110;
+}
+
+#content .btn.small {
+    -fx-pref-width: 25;
+}
+
+#sidebar {
+    -fx-background-color: #009bd0;
+}
+
+#sidebar .sidebar-button {
+    -fx-background-color: #009bd0;
+    -fx-focus-color: transparent;
+    -fx-text-fill: white;
+    -jfx-disable-visual-focus: true;
+    -fx-background-radius: 0;
+}
+
+#sidebar .sidebar-button:hover {
+    -fx-background-color: #ff6319;
+    -fx-text-fill: white;
+}
+
+#sidebar.ingresos .sidebar-button:hover {
+    -fx-background-color: #da3f0b;
+    -fx-text-fill: white;
+}
+
+#sidebar .sidebar-button:hover .glyph-icon {
+    -fx-fill: white;
+}
+
+#sidebar.ingresos .sidebar-button:hover .glyph-icon {
+    -fx-fill: white;
+}
+
+#sidebar .sidebar-button .glyph-icon {
+    -fx-fill: white;
+}
+
+#sidebar .sidebar-button.selected {
+    -fx-background-color: #ff6319;
+    -fx-text-fill: white;
+}
+
+#sidebar.ingresos .sidebar-button.selected {
+    -fx-background-color: #da3f0b;
+    -fx-text-fill: white;
+}
+
+#sidebar .sidebar-button.selected .glyph-icon {
+    -fx-fill: white;
+}
+#sidebar.ingresos .sidebar-button.selected .glyph-icon {
+    -fx-fill: white;
+}

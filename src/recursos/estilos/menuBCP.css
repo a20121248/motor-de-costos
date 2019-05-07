@@ -1,0 +1,94 @@
+/*
+#ff7800 naranja
+#004193 azul
+*/
+
+.root {
+    -fx-focus-color: #ff7800;
+    -fx-faint-focus-color: #ff780022;
+}
+
+#header {
+    -fx-background-color: #ff7800;
+}
+
+#header .glyph-icon {
+    -fx-fill: #ffffff;
+}
+
+#content {
+    -fx-background-color: white;
+}
+
+#content .page-heading {
+    -fx-background-color: white;
+}
+
+#content .btn {
+    -fx-background-color: #ff7800;
+    -fx-text-fill: #ffffff;
+    -fx-pref-height: 25;
+    -fx-pref-width: 75;
+    -fx-font-family: "Istok Web";
+}
+
+#content .btn .glyph-icon {
+    -fx-fill: white;
+}
+
+#content .btn:hover {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #ff7800;
+    -fx-border-color: #ff7800;
+    -fx-border-radius: 3;
+}
+
+#content .btn:hover .glyph-icon {
+    -fx-fill: #ff7800;
+}
+
+#content .btn.x-large {
+    -fx-pref-width: 200;
+}
+
+#content .btn.large {
+    -fx-pref-width: 110;
+}
+
+#content .btn.small {
+    -fx-pref-width: 25;
+}
+
+#sidebar {
+    -fx-background-color: #004193;
+}
+
+#sidebar .sidebar-button {
+    -fx-background-color: #004193;
+    -fx-focus-color: transparent;
+    -fx-text-fill: #ffffff;
+    -jfx-disable-visual-focus: true;
+    -fx-background-radius: 0;
+}
+
+#sidebar .sidebar-button:hover {
+    -fx-background-color: #ff7800;
+    -fx-text-fill: #ffffff;
+}
+
+#sidebar .sidebar-button:hover .glyph-icon {
+    -fx-fill: #ffffff;
+}
+
+#sidebar .sidebar-button .glyph-icon {
+    -fx-fill: #ffffff;
+}
+
+#sidebar .sidebar-button.selected {
+    -fx-background-color: #ff7800;
+    -fx-text-fill: #ffffff;
+}
+
+#sidebar .sidebar-button.selected .glyph-icon {
+    -fx-fill: #ffffff;
+}
