@@ -94,6 +94,11 @@
     -fx-pref-width: 25;
 }
 
+#content .btn.important {
+    -fx-background-color: #02375b;
+    -fx-pref-width: 110;
+}
+
 #sidebar {
     -fx-background-color: #009bd0;
 }

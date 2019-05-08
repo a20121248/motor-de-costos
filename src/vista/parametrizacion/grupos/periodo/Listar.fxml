@@ -48,16 +48,6 @@
                   </Label>
                   <Hyperlink fx:id="lnkGrupos" onAction="#lnkGruposAction" text="Grupos" textFill="#676a6c">
                      <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Hyperlink>
-                  <Label text="/" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Hyperlink fx:id="lnkAsignacion" onAction="#lnkAsignacionAction" text="Asociación" textFill="#676a6c">
-                     <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Hyperlink>
@@ -111,6 +101,15 @@
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnCatalogo" onAction="#btnCatalogoAction" text="Catálogo">
+               <graphic>
+                  <FontAwesomeIconView glyphName="CUBES" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="important" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>

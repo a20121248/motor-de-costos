@@ -120,7 +120,7 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
         LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Grupos.",menuControlador.usuario.getUsername()));
     }
     
@@ -173,8 +173,8 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Grupos.",menuControlador.usuario.getUsername()));
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
+        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Asociación.",menuControlador.usuario.getUsername()));
     }
     
     @FXML void btnBuscarAction(ActionEvent event) {
