@@ -53,6 +53,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAgregar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnCatalogo;
     
     @FXML private TextField txtBuscar;
     @FXML private TableView<EntidadDistribucion> tabListar;
@@ -142,10 +143,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
-    }
-    
-    @FXML void lnkAsignacionAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
@@ -198,6 +195,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO_CARGAR);
     }
     
+    @FXML void btnCatalogoAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
+    }
+    
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
         buscarPeriodo(periodoSeleccionado, true);
     }
@@ -215,7 +216,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
         
     @Override

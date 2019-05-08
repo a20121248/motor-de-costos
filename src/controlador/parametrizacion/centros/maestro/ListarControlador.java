@@ -137,7 +137,7 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -183,6 +183,6 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
 }

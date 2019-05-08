@@ -82,7 +82,7 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
 
     @FXML void btnOficinasAction(ActionEvent event) {
