@@ -44,7 +44,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Hyperlink lnkInicio;
     @FXML private Hyperlink lnkParametrizacion;
     @FXML private Hyperlink lnkPlanDeCuentas;
-    @FXML private Hyperlink lnkAsignacion;
     
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
@@ -53,6 +52,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAgregar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnCatalogo;
     
     @FXML private Label lblTipoGasto;
     @FXML private ComboBox<String> cmbTipoGasto;
@@ -148,10 +148,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
-    }
-    
-    @FXML void lnkAsignacionAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
@@ -202,6 +198,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR);
     }
+    
+    @FXML void btnCatalogoAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
+    }
        
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
         buscarPeriodo(periodoSeleccionado, true);
@@ -221,7 +221,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
     
     @Override

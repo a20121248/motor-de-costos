@@ -69,7 +69,7 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void btnGruposAction(ActionEvent event) {

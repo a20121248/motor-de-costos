@@ -140,7 +140,7 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -187,7 +187,7 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void btnBuscarAction(ActionEvent event) {
