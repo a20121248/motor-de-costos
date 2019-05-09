@@ -37,13 +37,7 @@ import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
 import modelo.Grupo;
 import modelo.Tipo;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import java.io.FileOutputStream;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
@@ -81,6 +75,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getControlador());
+    
+    private List<Grupo> vista;
+    private DescargaServicio descargaFile;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -128,7 +125,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        
+        vista = grupoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -215,11 +214,11 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Grupo> lista = grupoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
+        vista = grupoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        if (vista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de Grupos", "No existen Grupos para el periodo seleccionado.");
         txtBuscar.setText("");
-        filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
@@ -227,30 +226,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
-        Workbook workbook = new HSSFWorkbook();
-        Sheet spreadsheet = workbook.createSheet("grupos");
-        Row punteroFila = spreadsheet.createRow(0);
-        
-        for (int j = 0; j < tabListar.getColumns().size(); j++) {
-            punteroFila.createCell(j).setCellValue(tabListar.getColumns().get(j).getText());
-        }
-        
-        for (int i = 0; i < tabListar.getItems().size(); i++) {
-            punteroFila = spreadsheet.createRow(i + 1);
-            for (int j = 0; j < tabListar.getColumns().size(); j++) {
-                if(tabListar.getColumns().get(j).getCellData(i) != null) { 
-                    punteroFila.createCell(j).setCellValue(tabListar.getColumns().get(j).getCellData(i).toString()); 
-                }
-                else {
-                    punteroFila.createCell(j).setCellValue("");
-                }   
-            }
-        }
-        
-        FileOutputStream fileOut = new FileOutputStream("grupos.xls");
-        workbook.write(fileOut);
-        fileOut.close();
-
+        descargaFile = new DescargaServicio("grupos", vista);
+        descargaFile.DescargarTabla( "Grupos.xlsx");
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
