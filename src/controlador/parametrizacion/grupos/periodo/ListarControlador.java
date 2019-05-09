@@ -38,6 +38,13 @@ import modelo.EntidadDistribucion;
 import modelo.Grupo;
 import modelo.Tipo;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+import java.io.FileOutputStream;
+
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
     @FXML private Hyperlink lnkInicio;
@@ -217,6 +224,33 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
         tablaEstaActualizada = true;
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        Workbook workbook = new HSSFWorkbook();
+        Sheet spreadsheet = workbook.createSheet("grupos");
+        Row punteroFila = spreadsheet.createRow(0);
+        
+        for (int j = 0; j < tabListar.getColumns().size(); j++) {
+            punteroFila.createCell(j).setCellValue(tabListar.getColumns().get(j).getText());
+        }
+        
+        for (int i = 0; i < tabListar.getItems().size(); i++) {
+            punteroFila = spreadsheet.createRow(i + 1);
+            for (int j = 0; j < tabListar.getColumns().size(); j++) {
+                if(tabListar.getColumns().get(j).getCellData(i) != null) { 
+                    punteroFila.createCell(j).setCellValue(tabListar.getColumns().get(j).getCellData(i).toString()); 
+                }
+                else {
+                    punteroFila.createCell(j).setCellValue("");
+                }   
+            }
+        }
+        
+        FileOutputStream fileOut = new FileOutputStream("grupos.xls");
+        workbook.write(fileOut);
+        fileOut.close();
+
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
