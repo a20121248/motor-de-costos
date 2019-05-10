@@ -227,7 +227,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
         descargaFile = new DescargaServicio("grupos", tabListar);
-        descargaFile.DescargarTabla("Grupos.xlsx");
+        descargaFile.DescargarTabla("Grupos.xlsx",1,Integer.toString(periodoSeleccionado));
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
