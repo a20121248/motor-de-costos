@@ -104,10 +104,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
-    }
-    
-    @FXML void lnkAsociacionAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
