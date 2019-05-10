@@ -211,21 +211,27 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<Centro> lista = tabListar.getItems();
-        for (Centro item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear el %s porque el código %s ya existe.",titulo2,item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó el %s con código %s.",titulo2,item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
-        logServicio.agregarSeparadorArchivo('=', 100);
-        logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        logServicio.agregarSeparadorArchivo('=', 100);
-        centroDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " subidos correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %s.",menuControlador.usuario.getUsername(),titulo1));
+        else{
+            for (Centro item: lista) {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logServicio.agregarLineaArchivo(String.format("No se pudo crear el %s porque el código %s ya existe.",titulo2,item.getCodigo()));
+                    item.setFlagCargar(false);
+                } else {
+                    logServicio.agregarLineaArchivo(String.format("Se creó el %s con código %s.",titulo2,item.getCodigo()));
+                    item.setFlagCargar(true);
+                }
+            }
+            logServicio.agregarSeparadorArchivo('=', 100);
+            logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+            logServicio.agregarSeparadorArchivo('=', 100);
+            centroDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " subidos correctamente.");
+            btnDescargarLog.setVisible(true);
+            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %s.",menuControlador.usuario.getUsername(),titulo1));
+        }
     }
 }

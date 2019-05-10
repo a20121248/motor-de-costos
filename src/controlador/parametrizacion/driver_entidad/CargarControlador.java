@@ -232,8 +232,15 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<CargarEntidadDriver> lista = tabAsignaciones.getItems();
-        asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, periodoSeleccionado, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Cargar asignaciones de driver a entidades", "Las asignaciones se guardaron correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }
+        else{
+            asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, periodoSeleccionado, menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Cargar asignaciones de driver a entidades", "Las asignaciones se guardaron correctamente.");
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        }
+        
     }
 }

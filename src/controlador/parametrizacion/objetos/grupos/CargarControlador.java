@@ -205,17 +205,23 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<Grupo> lista = tabListar.getItems();
-        for (Grupo item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó el grupo con código %s.",item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
-        objetoGrupoDAO.insertarListaObjeto(lista);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos subidos correctamente.");
-        btnDescargarLog.setVisible(true);
+        else{
+            for (Grupo item: lista) {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
+                    item.setFlagCargar(false);
+                } else {
+                    logServicio.agregarLineaArchivo(String.format("Se creó el grupo con código %s.",item.getCodigo()));
+                    item.setFlagCargar(true);
+                }
+            }
+            objetoGrupoDAO.insertarListaObjeto(lista);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos subidos correctamente.");
+            btnDescargarLog.setVisible(true);
+        }
     }
 }

@@ -191,9 +191,15 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
-        centroDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " asignados correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }
+        else{
+            centroDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " asignados correctamente.");
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
+        }
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {

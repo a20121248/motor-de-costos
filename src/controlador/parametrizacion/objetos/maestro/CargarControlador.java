@@ -219,18 +219,25 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<EntidadDistribucion> lista = tabListar.getItems();
-        for (EntidadDistribucion item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear %s porque el código %s ya existe.",objetoNombre2,item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó %s con código %s.",objetoNombre2,item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
-        objetoDAO.insertarListaObjeto(lista);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre1 + "s subidos correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %ss.",menuControlador.usuario.getUsername(),objetoNombre1));
+        else{
+            for (EntidadDistribucion item: lista) {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logServicio.agregarLineaArchivo(String.format("No se pudo crear %s porque el código %s ya existe.",objetoNombre2,item.getCodigo()));
+                    item.setFlagCargar(false);
+                } else {
+                    logServicio.agregarLineaArchivo(String.format("Se creó %s con código %s.",objetoNombre2,item.getCodigo()));
+                    item.setFlagCargar(true);
+                }
+            }
+            objetoDAO.insertarListaObjeto(lista);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre1 + "s subidos correctamente.");
+            btnDescargarLog.setVisible(true);
+            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %ss.",menuControlador.usuario.getUsername(),objetoNombre1));
+        }
+        
     }
 }

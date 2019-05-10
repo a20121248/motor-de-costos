@@ -185,21 +185,28 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<Grupo> lista = tabListar.getItems();
-        for (Grupo item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó el Grupo con código %s.",item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
-        logServicio.agregarSeparadorArchivo('=', 100);
-        logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        logServicio.agregarSeparadorArchivo('=', 100);
-        grupoDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos de Cuentas Contables subidos correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Grupos de Cuentas Contables.",menuControlador.usuario.getUsername()));
+        else{
+            for (Grupo item: lista) {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
+                    item.setFlagCargar(false);
+                } else {
+                    logServicio.agregarLineaArchivo(String.format("Se creó el Grupo con código %s.",item.getCodigo()));
+                    item.setFlagCargar(true);
+                }
+            }
+            logServicio.agregarSeparadorArchivo('=', 100);
+            logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+            logServicio.agregarSeparadorArchivo('=', 100);
+            grupoDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos de Cuentas Contables subidos correctamente.");
+            btnDescargarLog.setVisible(true);
+            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Grupos de Cuentas Contables.",menuControlador.usuario.getUsername()));
+        }
+        
     }
 }

@@ -192,10 +192,17 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         List<CargarGrupoCuentaLinea> lista = tabListar.getItems();
-        planDeCuentaDAO.insertarCuentasGrupo(periodoSeleccionado,lista,menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Asignaciones subidas correctamente.");
-        menuControlador.objeto = "Todos";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }
+        else{
+            planDeCuentaDAO.insertarCuentasGrupo(periodoSeleccionado,lista,menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Asignaciones subidas correctamente.");
+            menuControlador.objeto = "Todos";
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+        }
+        
         /*for (CargarCentroLinea cargarCentroLinea : lista) {
             //planDeCuentaDAO.insertarSaldo(cargarBalanceteLinea);
             menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Centros de Costos subidos correctamente.");

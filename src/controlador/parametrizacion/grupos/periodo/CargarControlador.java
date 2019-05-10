@@ -182,9 +182,15 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
-        grupoDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupo de Cuentas Contables asociados correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }
+        else{
+            grupoDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupo de Cuentas Contables asociados correctamente.");
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
+        }
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {
