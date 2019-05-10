@@ -3,11 +3,12 @@ package servicios;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import javafx.scene.control.TableView;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import modelo.Grupo;
+import modelo.EntidadDistribucion;
 /**
  *
  * @author briggette.olenka.ro1
@@ -15,31 +16,36 @@ import modelo.Grupo;
 public class DescargaServicio {
     private String servicio;
     private String FILE_PATH = "vistas/";
-    private List<Grupo> tabla;
+    private TableView<EntidadDistribucion> tabla;
 
     
-    public DescargaServicio(String serv, List<Grupo> tabla){
+    public DescargaServicio(String serv, TableView<EntidadDistribucion> tabla){
         this.servicio = serv;
         this.tabla = tabla;
         
     }
     
-    public  void DescargarTabla(String nameFileXLS) throws IOException{
+    public void DescargarTabla(String nameFileXLS) throws IOException{
         Workbook workbook = new XSSFWorkbook();    
-        Sheet hoja = workbook.createSheet(servicio);
-        Row row = hoja.createRow(0);
+        Sheet sheet = workbook.createSheet(servicio);
+        Row row = sheet.createRow(0);
         
-        int rowIndex = 0;
-        int columnIndex = 0;
-        row.createCell(columnIndex++).setCellValue("Codigo");
-        row.createCell(columnIndex++).setCellValue("Nombre");
-        for(Grupo item:tabla){
-            row = hoja.createRow(++rowIndex);
-            columnIndex = 0;
-            row.createCell(columnIndex++).setCellValue(item.getCodigo());
-            row.createCell(columnIndex++).setCellValue(item.getNombre());
+         for (int j = 0; j < tabla.getColumns().size(); j++) {
+            row.createCell(j).setCellValue(tabla.getColumns().get(j).getText());
         }
-        
+
+        for (int i = 0; i < tabla.getItems().size(); i++) {
+            row = sheet.createRow(i + 1);
+            
+            for (int j = 0; j < tabla.getColumns().size(); j++) {
+                if(tabla.getColumns().get(j).getCellData(i) != null) { 
+                    row.createCell(j).setCellValue(tabla.getColumns().get(j).getCellData(i).toString()); 
+                }
+                else {
+                    row.createCell(j).setCellValue("");
+                }   
+            }
+        }
         try{
             FileOutputStream fileOut = new FileOutputStream(FILE_PATH+nameFileXLS);
             workbook.write(fileOut);
@@ -47,6 +53,6 @@ public class DescargaServicio {
         }
         catch(IOException e){
         }
-        
+
     }
-}
+ }
