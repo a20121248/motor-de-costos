@@ -54,7 +54,7 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {

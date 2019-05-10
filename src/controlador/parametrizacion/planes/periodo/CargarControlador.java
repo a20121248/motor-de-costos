@@ -104,10 +104,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
-    }
-    
-    @FXML void lnkAsignacionAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
@@ -186,9 +182,14 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
-        planDeCuentaDAO.insertarListaObjetoCuentaPeriodo(lista,menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables asignadas correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
+        if(lista.isEmpty()){
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }else {
+            planDeCuentaDAO.insertarListaObjetoCuentaPeriodo(lista,menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables asignadas correctamente.");
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
+        }
+        
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {
