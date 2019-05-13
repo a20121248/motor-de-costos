@@ -18,29 +18,33 @@ import modelo.EntidadDistribucion;
 public class DescargaServicio {
     private final String servicio;
     private String FILE_PATH;
-    private final TableView<EntidadDistribucion> tabla;
+    private final TableView<? extends EntidadDistribucion> tabla;
 
     
-    public DescargaServicio(String serv, TableView<EntidadDistribucion> tabla){
+    public DescargaServicio(String serv, TableView<? extends EntidadDistribucion> tabla){
         this.servicio = serv;
         this.tabla = tabla;
     }
     
-    public void DescargarTabla(int flag, String periodo, String ruta) throws IOException{
+    public void DescargarTabla(String periodo, String ruta) throws IOException{
         if(ruta == null){
             FILE_PATH = "";
         }else{
             FILE_PATH =ruta ;
         }
-//        Si recibe flag = 1; se agregara la columna Periodo
-//                  Periodo se obtiene el valor de AnhoMes
+//        Si recibe periodo != null; se agregará la columna Periodo
+//                  Periodo se obtiene el valor de AnhoMes numérico
         Workbook workbook = new XSSFWorkbook();    
         Sheet sheet = workbook.createSheet(servicio);
         Row row = sheet.createRow(0);
         int k = 0;
-        if(flag == 1){
+        if(periodo != null){
                 row.createCell(0).setCellValue("Periodo");
                 k = 1;
+                FILE_PATH=FILE_PATH+"/"+periodo+"_";
+        }
+        else{
+            FILE_PATH=FILE_PATH+"/";
         }
         
         for (int j = 0; j < tabla.getColumns().size(); j++) {
@@ -49,7 +53,7 @@ public class DescargaServicio {
 
         for (int i = 0; i < tabla.getItems().size(); i++) {
             row = sheet.createRow(i + 1);
-            if(flag == 1){
+            if(periodo != null){
                     if(periodo!=null)
                         row.createCell(0).setCellValue(periodo);
                 }
@@ -63,7 +67,7 @@ public class DescargaServicio {
             }
         }
         try{
-            FileOutputStream fileOut = new FileOutputStream(FILE_PATH+"/"+periodo+"_"+servicio+".xlsx");
+            FileOutputStream fileOut = new FileOutputStream(FILE_PATH+servicio+".xlsx");
             workbook.write(fileOut);
             fileOut.close();
         }

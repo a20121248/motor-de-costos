@@ -6,6 +6,7 @@ import controlador.Navegador;
 import controlador.ObjetoControladorInterfaz;
 import controlador.modals.BuscarEntidadControlador;
 import dao.PlanDeCuentaDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.CuentaContable;
@@ -37,6 +39,7 @@ import modelo.DriverCentro;
 import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
@@ -63,6 +66,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<CuentaContable, String> tabcolNombreGrupo;
     
     @FXML private Label lblNumeroRegistros;
+    @FXML private JFXButton btnDescargar;
     @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
@@ -240,6 +244,23 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
         txtBuscar.setText("");
         tablaEstaActualizada = true;
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio("Asignaciones", tabListar);
+                descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+            }else{
+                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+            }
+        }else{
+            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {

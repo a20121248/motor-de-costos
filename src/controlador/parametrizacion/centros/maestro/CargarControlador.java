@@ -116,7 +116,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {

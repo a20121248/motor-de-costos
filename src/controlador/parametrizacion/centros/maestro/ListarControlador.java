@@ -4,6 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -19,9 +21,11 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 import modelo.Centro;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -48,6 +52,8 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCentroPadre;
     @FXML private Label lblNumeroRegistros;
+    
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     CentroDAO centroDAO;
@@ -180,6 +186,23 @@ public class ListarControlador implements Initializable {
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_CARGAR);
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio("CentrosDeCostos-Catálogo", tabListar);
+                descargaFile.DescargarTabla(null,directorioSeleccionado.getAbsolutePath());
+            }else{
+                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+            }
+        }else{
+            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {

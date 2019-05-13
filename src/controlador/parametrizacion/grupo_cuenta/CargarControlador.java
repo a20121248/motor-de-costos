@@ -108,6 +108,7 @@ public class CargarControlador implements Initializable {
     }
 
     @FXML void lnkAsignarAction(ActionEvent event) {
+        menuControlador.objeto = "Todos";
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
 

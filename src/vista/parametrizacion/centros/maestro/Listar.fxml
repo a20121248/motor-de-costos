@@ -118,5 +118,10 @@
             </JFXButton>
          </children>
       </HBox>
+      <JFXButton fx:id="btnDescargar" layoutX="200.0" layoutY="555.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

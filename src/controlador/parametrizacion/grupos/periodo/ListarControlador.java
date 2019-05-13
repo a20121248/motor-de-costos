@@ -80,7 +80,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getControlador());
     
     private List<Grupo> vista;
-    private DescargaServicio descargaFile;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -229,13 +228,14 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
         if(!tabListar.getItems().isEmpty()){
             DirectoryChooser directory_chooser = new DirectoryChooser();
             directory_chooser.setTitle("Directorio a Descargar:");
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
-                descargaFile = new DescargaServicio("GruposDeCuentaContable", tabListar);
-                descargaFile.DescargarTabla(1,Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                descargaFile = new DescargaServicio("GruposDeCuentasContables", tabListar);
+                descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
             }else{
                 menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
             }

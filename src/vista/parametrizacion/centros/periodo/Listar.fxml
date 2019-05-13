@@ -92,9 +92,6 @@
                <graphic>
                   <FontAwesomeIconView glyphName="CUBES" />
                </graphic>
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
                <styleClass>
                   <String fx:value="btn" />
                   <String fx:value="important" />
@@ -114,6 +111,11 @@
       <JFXButton fx:id="btnAtras" layoutX="613.0" layoutY="549.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="215.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
       </JFXButton>
    </children>
