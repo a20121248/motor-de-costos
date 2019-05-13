@@ -6,6 +6,7 @@ import controlador.ObjetoControladorInterfaz;
 import controlador.Navegador;
 import controlador.modals.BuscarEntidadControlador;
 import dao.GrupoDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.DriverCentro;
@@ -54,6 +56,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAgregar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnDescargar;
     
     @FXML private Label lblTipoGasto;
     @FXML private ComboBox<String> cmbTipoGasto;
@@ -226,8 +229,19 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
-        descargaFile = new DescargaServicio("grupos", tabListar);
-        descargaFile.DescargarTabla("Grupos.xlsx",1,Integer.toString(periodoSeleccionado));
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio("GruposDeCuentaContable", tabListar);
+                descargaFile.DescargarTabla(1,Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+            }else{
+                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+            }
+        }else{
+            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {

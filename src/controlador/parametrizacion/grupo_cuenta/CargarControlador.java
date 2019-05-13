@@ -107,8 +107,8 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
 
-    @FXML void lnkAsignacionesAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
+    @FXML void lnkAsignarAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
 
     @FXML void lnkCargarAction(ActionEvent event) {

@@ -1,9 +1,11 @@
 package servicios;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import javafx.scene.control.TableView;
+import javafx.stage.DirectoryChooser;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,18 +16,22 @@ import modelo.EntidadDistribucion;
  * @author briggette.olenka.ro1
  */
 public class DescargaServicio {
-    private String servicio;
-    private String FILE_PATH = "vistas/";
-    private TableView<EntidadDistribucion> tabla;
+    private final String servicio;
+    private String FILE_PATH;
+    private final TableView<EntidadDistribucion> tabla;
 
     
     public DescargaServicio(String serv, TableView<EntidadDistribucion> tabla){
         this.servicio = serv;
         this.tabla = tabla;
-        
     }
     
-    public void DescargarTabla(String nameFileXLS, int flag, String periodo) throws IOException{
+    public void DescargarTabla(int flag, String periodo, String ruta) throws IOException{
+        if(ruta == null){
+            FILE_PATH = "";
+        }else{
+            FILE_PATH =ruta ;
+        }
 //        Si recibe flag = 1; se agregara la columna Periodo
 //                  Periodo se obtiene el valor de AnhoMes
         Workbook workbook = new XSSFWorkbook();    
@@ -57,12 +63,11 @@ public class DescargaServicio {
             }
         }
         try{
-            FileOutputStream fileOut = new FileOutputStream(FILE_PATH+nameFileXLS);
+            FileOutputStream fileOut = new FileOutputStream(FILE_PATH+"/"+periodo+"_"+servicio+".xlsx");
             workbook.write(fileOut);
             fileOut.close();
         }
         catch(IOException e){
         }
-
     }
  }
