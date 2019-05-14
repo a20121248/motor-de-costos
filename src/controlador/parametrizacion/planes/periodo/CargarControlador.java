@@ -167,7 +167,12 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
-
+                if(periodo != periodoSeleccionado){
+                    menuControlador.navegador.mensajeInformativo("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
+                    lista.clear();
+                    txtRuta.setText("");
+                    break;
+                }
                 CargarObjetoPeriodoLinea linea = new CargarObjetoPeriodoLinea(periodo,codigo,nombre);
                 lista.add(linea);
             }

@@ -184,21 +184,25 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<CuentaContable> lista = tabListar.getItems();
-        for (CuentaContable item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty()){
+            menuControlador.navegador.mensajeError("Subir Información", "No hay contenido.");
+        }else{
+            lista.forEach((item) -> {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logServicio.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
+                    item.setFlagCargar(false);
+                } else {
+                    logServicio.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
+                    item.setFlagCargar(true);
+                }
+            });
+            logServicio.agregarSeparadorArchivo('=', 100);
+            logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+            logServicio.agregarSeparadorArchivo('=', 100);
+            planDeCuentaDAO.insertarListaObjetoCuenta(lista, menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables subidas correctamente.");
+            btnDescargarLog.setVisible(true);
+            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Cuentas Contables.",menuControlador.usuario.getUsername()));
         }
-        logServicio.agregarSeparadorArchivo('=', 100);
-        logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        logServicio.agregarSeparadorArchivo('=', 100);
-        planDeCuentaDAO.insertarListaObjetoCuenta(lista, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables subidas correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Cuentas Contables.",menuControlador.usuario.getUsername()));
     }
 }
