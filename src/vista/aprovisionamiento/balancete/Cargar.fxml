@@ -86,10 +86,10 @@
       </JFXButton>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolPeriodo" prefWidth="100.0" styleClass="center" text="PERIODO" />
             <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="100.0" styleClass="left" text="NOMBRE" />
             <TableColumn fx:id="tabcolSaldo" prefWidth="100.0" styleClass="right" text="SALDO" />
+            <TableColumn fx:id="tabcolEstado" prefWidth="100.0" styleClass="center" text="ESTADO" />
          </columns>
       </TableView>
       <JFXButton fx:id="btnSubir" layoutX="365.0" layoutY="466.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">

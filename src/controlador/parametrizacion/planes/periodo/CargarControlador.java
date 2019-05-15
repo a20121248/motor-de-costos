@@ -113,7 +113,7 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnCargarRutaAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Abrir catálogo de planDeCuentas");
+        fileChooser.setTitle("Abrir Catálogo de planDeCuentas");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
