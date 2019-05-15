@@ -178,7 +178,16 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoAgrupacion = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreAgrupacion = celda.getStringCellValue();
-
+                
+                // Valida que los items del archivo tengan el periodo correcto
+                // De no cumplirlo, cancela la previsualización.
+                if(periodo != periodoSeleccionado){
+                    menuControlador.navegador.mensajeError("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
+                    lista.clear();
+                    txtRuta.setText("");
+                    break;
+                }
+                
                 CargarGrupoCuentaLinea linea = new CargarGrupoCuentaLinea(periodo,codigoCuenta,nombreCuenta,codigoAgrupacion,nombreAgrupacion);
                 lista.add(linea);
             }

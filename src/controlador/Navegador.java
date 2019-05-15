@@ -583,6 +583,19 @@ public class Navegador {
         return listaLeida.subList(0, lista.size()).equals(lista);
     }
     
+    public void mensajeCarga(String titulo, int nroError) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        // Si no se presentan errores en la validación presentará el primer mensaje
+        if(nroError == 0 ){
+            alert.setContentText("El archivo ha sido cargado correctamente.");
+        }else {
+            alert.setContentText("El archivo presenta "+ Integer.toString(nroError) + " conflictos al cargar. Se le sugiere DESCARGAR el LOG para más detalle." );
+        }
+        alert.showAndWait();
+    }
+
     public void mensajeError(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titulo);
