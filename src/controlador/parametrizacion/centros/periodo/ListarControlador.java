@@ -68,6 +68,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
+    FXMLLoader fxmlLoader;
     CentroDAO centroDAO;
     public MenuControlador menuControlador;
     FilteredList<EntidadDistribucion> filteredData;
@@ -152,24 +153,23 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar " + titulo2, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo("Agregar Centro " + titulo2, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
         menuControlador.codigos = tabListar.getItems().stream().map(i -> "'"+i.getCodigo()+"'").collect(Collectors.joining (","));
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
+            fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
             BuscarEntidadControlador buscarEntidadControlador = new BuscarEntidadControlador(menuControlador, this, tipoSeleccionado, -1, menuControlador.repartoTipo);
             fxmlLoader.setController(buscarEntidadControlador);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
-
             Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
+//            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(String.format("Agregar %s para el periodo de %s de %d",titulo2,cmbMes.getValue(),spAnho.getValue()));
             stage.setScene(scene);
             stage.setResizable(false);
-            stage.showAndWait();
+            stage.show();
         } catch(IOException e) {
             LOGGER.log(Level.INFO,e.getMessage());
         }

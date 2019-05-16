@@ -177,11 +177,13 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo2, "¿Está seguro de eliminar el " + titulo2 + " " + centro.getCodigo() + "?")) {
             return;
         }
-        centroDAO.eliminarObjeto(centro.getCodigo());
-        menuControlador.navegador.mensajeInformativo("Eliminar " + titulo2, titulo2 + " eliminado correctamente.");
-        
-        // centro repartoTipo
-        llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
+        if(centroDAO.verificarObjetoCentro(centro.getCodigo()) == 0){
+            centroDAO.eliminarObjetoCentro(centro.getCodigo());
+            llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
+            menuControlador.navegador.mensajeInformativo("Eliminar " + titulo2, titulo2 + " eliminado correctamente.");
+        }else{
+            menuControlador.navegador.mensajeError("Eliminar Centro de Costos", "No se pudo eliminar el Centro de Costos, pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+        }     
     }
     
     @FXML void btnCargarAction(ActionEvent event) {

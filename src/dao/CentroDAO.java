@@ -233,10 +233,48 @@ public class CentroDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
+//    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoCentro(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM centro_lineas\n" +
+                " WHERE centro_codigo='%s'",
+                codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    // POR REVISAR
+    public int verificarObjetoCentroPeriodoDriver(String codigo, int periodo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM driver_centro_lineas\n" +
+                " WHERE centro_codigo='%s' AND periodo=%d",
+                codigo,periodo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
     
-    public void eliminarObjeto(String codigo) {
-        String queryStr = String.format("DELETE FROM centros WHERE codigo='%s'",codigo);
-        ConexionBD.ejecutar(queryStr);
+    
+    public int eliminarObjetoCentro(String codigo) {
+        String queryStr = String.format("" +
+                "DELETE FROM centros\n" +
+                " WHERE codigo='%s'",
+                codigo);
+        return ConexionBD.ejecutar(queryStr);
     }
     
     public List<Centro> listarObjetos(int tipoReparto) {

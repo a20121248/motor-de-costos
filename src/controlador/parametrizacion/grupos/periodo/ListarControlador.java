@@ -201,9 +201,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Grupo de Cuentas Contables", "¿Está seguro de quitar el Grupo " + item.getNombre() + "?"))
             return;
-                
-        grupoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        
+        if(grupoDAO.verificarObjetoGrupoPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
+            grupoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+            buscarPeriodo(periodoSeleccionado, false);
+        }else{
+            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+        }   
     }
     
     @FXML void btnCargarAction(ActionEvent event) {

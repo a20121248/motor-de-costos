@@ -251,6 +251,41 @@ public class PlanDeCuentaDAO {
         ConexionBD.ejecutar(queryStr);
     }
     
+    public int verificarObjetoPlanCuentaPeriodoAsignacion(String codigo, int periodo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM grupo_plan_de_cuenta\n" +
+                " WHERE plan_de_cuenta_codigo='%s' AND periodo=%d",
+                codigo,periodo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
+//    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoPlanCuenta(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM plan_de_cuenta_lineas\n" +
+                " WHERE plan_de_cuenta_codigo='%s'",
+                codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
     public List<Grupo> listarObjetoGrupos(int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +

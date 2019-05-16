@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -175,16 +176,19 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Cuenta Contable", "¿Está seguro de eliminar la Cuenta Contable " + item.getCodigo() + "?")) {
             return;
         }
-        if (planDeCuentaDAO.eliminarObjetoCuenta(item.getCodigo()) != 1) {
+        
+        if(planDeCuentaDAO.verificarObjetoPlanCuenta(item.getCodigo()) == 0){
+            planDeCuentaDAO.eliminarObjetoCuenta(item.getCodigo());
+            txtBuscar.setText("");
+            filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
+            sortedData = new SortedList(filteredData);
+            tabListar.setItems(sortedData);
+            lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            menuControlador.navegador.mensajeInformativo("Eliminar Cuenta Contable", "Grupo eliminado correctamente.");
+            LOGGER.log(Level.INFO,String.format("El usuario %s eliminó la Cuenta Contable %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
+        }else{
             menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
-            return;
         }
-        txtBuscar.setText("");
-        filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
-        sortedData = new SortedList(filteredData);
-        tabListar.setItems(sortedData);
-        lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        menuControlador.navegador.mensajeInformativo("Eliminar Cuenta Contable", "Cuenta Contable eliminada correctamente.");
     }
     
     @FXML void btnCargarAction(ActionEvent event) {

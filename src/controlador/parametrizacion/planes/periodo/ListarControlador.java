@@ -194,8 +194,12 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Cuenta Contable", "¿Está seguro de quitar la Cuenta Contable " + item.getNombre() + "?"))
             return;        
                 
-        planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        if(planDeCuentaDAO.verificarObjetoPlanCuentaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
+            planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
+            buscarPeriodo(periodoSeleccionado, false);
+        }else{
+            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+        }   
     }
     
     @FXML void btnCargarAction(ActionEvent event) {

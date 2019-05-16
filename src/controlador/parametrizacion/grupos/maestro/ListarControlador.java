@@ -159,17 +159,19 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Grupo de Cuentas Contables", "¿Está seguro de eliminar el Grupo " + item.getCodigo() + "?")) {
             return;
         }
-        if (grupoDAO.eliminarObjeto(item.getCodigo()) != 1) {
+        
+        if(grupoDAO.verificarObjetoGrupo(item.getCodigo()) == 0){
+            grupoDAO.eliminarObjeto(item.getCodigo());
+            txtBuscar.setText("");
+            filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
+            sortedData = new SortedList(filteredData);
+            tabListar.setItems(sortedData);
+            lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Grupo eliminado correctamente.");
+            LOGGER.log(Level.INFO,String.format("El usuario %s eliminó el Grupo %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
+        }else{
             menuControlador.navegador.mensajeError("Eliminar Grupo de Cuentas Contables", "No se pudo eliminar el Grupo pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
-            return;
         }
-        txtBuscar.setText("");
-        filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
-        sortedData = new SortedList(filteredData);
-        tabListar.setItems(sortedData);
-        lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Grupo eliminado correctamente.");
-        LOGGER.log(Level.INFO,String.format("El usuario %s eliminó el Grupo %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
