@@ -583,6 +583,9 @@ public class Navegador {
         return listaLeida.subList(0, lista.size()).equals(lista);
     }
     
+// =======================================================================================
+// ******************** MENSAJES DE ERROR, CONFIRMACION E INFROMATIVO ********************
+// =======================================================================================
     public void mensajeCarga(String titulo, int nroError) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
@@ -598,17 +601,93 @@ public class Navegador {
 
     public void mensajeError(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(titulo);
+        switch(contenido){
+            case "UPLOAD_HEADER":
+                alert.setTitle("Cargar " + titulo);
+                alert.setContentText("La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
+                break;
+            case "DOWNLOAD":
+                alert.setTitle("Descargar "+ titulo);
+                alert.setContentText(contenido);
+                break;
+            case "DELETE_SELECTED":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("Por favor seleccione una Cuenta Contable.");
+                break;
+            case "DELETE_REFRESH":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+                break;
+            case "DELETE_ITEM":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("No se pudo eliminar "+ titulo +" item del Periodo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+                break;
+            default:
+                alert.setTitle(titulo);
+                alert.setContentText(contenido);
+        }
         alert.setHeaderText(null);
-        alert.setContentText(contenido);
+        alert.showAndWait();
+    }
+    
+    public void mensajeError(String contenido) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        switch(contenido){
+            case "UPLOAD":
+                alert.setTitle("Subida de archivo Excel");
+                alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
+                break;
+                
+            case "DOWNLOAD_EMPTY":
+                alert.setTitle("Descargar información");
+                alert.setContentText("No hay información");
+                break;
+            case "DOWNLOAD_CANCELED":
+                alert.setTitle("Descargar información");
+                alert.setContentText("Descarga Cancelada");
+            default:
+                alert.setTitle("");
+                alert.setContentText(contenido);
+        }
+        alert.setHeaderText(null);
         alert.showAndWait();
     }
     
     public void mensajeInformativo(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
+        switch(contenido){
+            case "UPLOAD":
+                alert.setTitle("Subida de archivo Excel");
+                alert.setContentText(titulo +  " asignados correctamente.");
+                break;
+            case "TABLE_EMPTY":
+                alert.setTitle("Consulta "+ titulo);
+                alert.setContentText("No existen Cuentas Contables para el periodo seleccionado.");
+                break;
+            default:
+                alert.setTitle(titulo);
+                alert.setContentText(contenido);
+        }
         alert.setHeaderText(null);
-        alert.setContentText(contenido);
+        alert.showAndWait();
+    }
+    
+    public void mensajeInformativo(String contenido) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        switch(contenido){
+            case "DOWNLOAD":
+                alert.setTitle("Descargar información");
+                alert.setContentText("Descargar completa.");
+                break;
+            case "LOG":
+                alert.setTitle("Guardar LOG");
+                alert.setContentText("Descarga completa.");
+                break;
+            default:
+                alert.setTitle("");
+                alert.setContentText(contenido);
+        }
+        alert.setHeaderText(null);
         alert.showAndWait();
     }
     

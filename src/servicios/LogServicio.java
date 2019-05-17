@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LogServicio {
-    String fileName;
+    String fileName = "";
     final static Logger LOGGER = Logger.getLogger("controlador.servicios.LogServicio");
     
     public LogServicio(String fileName) {
@@ -65,5 +65,9 @@ public class LogServicio {
         String linea = "";
         while(num-->0)linea+=caracter;
         agregarLineaArchivo(linea);
+    }
+    
+    public void reporteDeCarga(){
+        
     }
 }

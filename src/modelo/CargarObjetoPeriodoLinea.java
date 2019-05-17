@@ -9,6 +9,7 @@ public class CargarObjetoPeriodoLinea {
     final IntegerProperty periodo;
     final StringProperty codigo;
     private StringProperty nombre;
+    boolean flagCargar;
     
     public CargarObjetoPeriodoLinea(int periodo, String codigo) {
         this.periodo = new SimpleIntegerProperty(periodo);

@@ -9,6 +9,7 @@ public class Preferencias {
     private final String ParametroSID = "SID";
     private final String ParametroUsuario = "Usuario";
     private final String ParametroContrasenha = "Contrasenha";
+    private final String ParametroRutaLogs = "Logs";
     
     public Preferencias() {
         prefs = Preferences.userRoot().node(this.getClass().getName());
@@ -34,11 +35,16 @@ public class Preferencias {
         return prefs.get(ParametroContrasenha, "fibonacci");
     }    
     
-    public void guardarParametros(String servidor, String puerto, String sid, String usuario, String contrasenha) {
+    public String obtenerRutaLogs() {
+        return prefs.get(ParametroRutaLogs, "./Logs/");
+    }
+    public void guardarParametros(String servidor, String puerto, String sid, String usuario, String contrasenha, String rutaLogs) {
         prefs.put(ParametroServidor, servidor);
         prefs.put(ParametroPuerto, puerto);
         prefs.put(ParametroSID, sid);
         prefs.put(ParametroUsuario, usuario);
         prefs.put(ParametroContrasenha, contrasenha);
+        prefs.put(ParametroRutaLogs, contrasenha);
+        prefs.put(ParametroRutaLogs, rutaLogs);
     }
 }

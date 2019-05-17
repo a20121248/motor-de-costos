@@ -29,6 +29,7 @@ public class App extends Application {
 
     // El log para ESTA clase en particular
     final static Logger LOGGER = Logger.getLogger("App");
+//    private static String LOG_FILEPATH = "";
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -45,27 +46,28 @@ public class App extends Application {
     
     public static void main(String[] args) {
         Format formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
         SimpleFormatter simpleFormatter = new SimpleFormatter();
-        String fechaStr = formatter.format(new Date());
+        String fechaStr = formatterLogFile.format(new Date());
         try {
             Navegador.crearCarpeta("./reportes/");
             Navegador.crearCarpeta("./reportes/gastos/");
             Navegador.crearCarpeta("./reportes/ingresos/");
             
-            String carpetaLogsNombre = "./logs/";
-            Navegador.crearCarpeta(carpetaLogsNombre);
-
-            String fileName = String.format(carpetaLogsNombre + "%s_app.log",fechaStr);
-            Handler fileHandler = new FileHandler(fileName, false);
-            fileHandler.setFormatter(simpleFormatter);
-            Handler consoleHandler = new ConsoleHandler();            
-
-            LOG_RAIZ.addHandler(consoleHandler);
-            LOG_RAIZ.addHandler(fileHandler);
-            
-            consoleHandler.setLevel(Level.OFF);
-            fileHandler.setLevel(Level.ALL);
-        } catch (IOException | SecurityException ex) {
+//            String carpetaLogsNombre = "./logs/";
+//            Navegador.crearCarpeta(carpetaLogsNombre);
+//
+//            String fileName = String.format(LOG_FILEPATH + "%s_app.log",fechaStr);
+//            Handler fileHandler = new FileHandler(fileName, false);
+//            fileHandler.setFormatter(simpleFormatter);
+//            Handler consoleHandler = new ConsoleHandler();            
+//
+//            LOG_RAIZ.addHandler(consoleHandler);
+//            LOG_RAIZ.addHandler(fileHandler);
+//            
+//            consoleHandler.setLevel(Level.OFF);
+//            fileHandler.setLevel(Level.ALL);
+        } catch (SecurityException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
         launch(args);        

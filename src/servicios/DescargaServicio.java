@@ -32,12 +32,13 @@ public class DescargaServicio {
         }else{
             FILE_PATH =ruta ;
         }
-//        Si recibe periodo != null; se agregará la columna Periodo
-//                  Periodo se obtiene el valor de AnhoMes numérico
         Workbook workbook = new XSSFWorkbook();    
         Sheet sheet = workbook.createSheet(servicio);
         Row row = sheet.createRow(0);
         int k = 0;
+        
+//        Si recibe periodo != null; se agregará la columna Periodo
+//                  Periodo se obtiene el valor de AnhoMes numérico
         if(periodo != null){
                 row.createCell(0).setCellValue("Periodo");
                 k = 1;

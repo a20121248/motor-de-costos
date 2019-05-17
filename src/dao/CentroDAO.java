@@ -234,7 +234,7 @@ public class CentroDAO {
         ConexionBD.cerrarStatement();
     }
 //    Verifica si esta siendo usado en las lineas
-    public int verificarObjetoCentro(String codigo) {
+    public int verificarObjetoCentroLineas(String codigo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
                 "  FROM centro_lineas\n" +
@@ -250,6 +250,24 @@ public class CentroDAO {
         }
         return cont;
     }
+//    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoCentro(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM centros\n" +
+                " WHERE codigo='%s'",
+                codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
     // POR REVISAR
     public int verificarObjetoCentroPeriodoDriver(String codigo, int periodo) {
         String queryStr = String.format("" +

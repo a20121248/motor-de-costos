@@ -49,6 +49,7 @@ public class LoginControlador implements Initializable {
     public Preferencias preferencias;
     final SeguridadServicio seguridadServicio;
     final static Logger LOGGER = Logger.getLogger("app.controlador.LoginControlador");
+    private static String LOG_FILEPATH = "";
     
     // =========================================================
     // ******************** BARRA DE MENU **********************
@@ -72,7 +73,7 @@ public class LoginControlador implements Initializable {
     
     public LoginControlador(App app) {
         this.app = app;
-        estiloSeleccionado = "Default";
+        estiloSeleccionado = "PACIFICO";
         preferencias = new Preferencias();
         seguridadServicio = new SeguridadServicio();
         nombreBD = "Oracle";
@@ -80,6 +81,8 @@ public class LoginControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        txtUsuario.setText("admin");
+        txtContrasenha.setText("secret");
     }
     
     @FXML void btnLoginAction(ActionEvent event) {
@@ -136,7 +139,7 @@ public class LoginControlador implements Initializable {
             alert.setHeaderText(null);
             alert.setContentText("El usuario " + txtUsuario.getText() + "no existe.");
             alert.showAndWait();
-            LOGGER.log(Level.WARNING,String.format("Se introdujo el usuario %s que no existe.",txtUsuario.getText()));
+            LOGGER.log(Level.WARNING,String.format("Se introdujo el usuario %s que no existe.\n",txtUsuario.getText()));
             return;
         }
         
@@ -147,10 +150,10 @@ public class LoginControlador implements Initializable {
             alert.setHeaderText(null);
             alert.setContentText("La contraseña es incorrecta.");
             alert.showAndWait();
-            LOGGER.log(Level.WARNING,String.format("Se introdujo una contraseña incorrecta para el usuario %s.",txtUsuario.getText()));
+            LOGGER.log(Level.WARNING,String.format("Se introdujo una contraseña incorrecta para el usuario %s.\n",txtUsuario.getText()));
             return;
         }        
-        LOGGER.log(Level.INFO,String.format("El usuario %s inició sesión correctamente.",txtUsuario.getText()));
+        LOGGER.log(Level.INFO,String.format("El usuario %s inició sesión correctamente.\n",txtUsuario.getText()));
         
         try {
             String rutaEstilo, rutaImagen, rutaIcono;

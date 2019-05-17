@@ -61,7 +61,7 @@ public class CargarControlador implements Initializable {
     final int anhoSeleccionado;
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO_CARGAR.getControlador());
-    String titulo1;
+    final String  titulo = "Centro de Costos";
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -69,10 +69,6 @@ public class CargarControlador implements Initializable {
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
-        titulo1 = "Centros de Costos";
-        if (menuControlador.repartoTipo==2) {
-            titulo1 = "Centro de Beneficios";
-        }
     }
     
     @Override
@@ -118,7 +114,7 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnCargarRutaAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Abrir catálogo de " + titulo1);
+        fileChooser.setTitle("Abrir catálogo de " + titulo);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
@@ -201,8 +197,9 @@ public class CargarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
         else{
+            
             centroDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " asignados correctamente.");
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo + " asignados correctamente.");
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
         }
     }

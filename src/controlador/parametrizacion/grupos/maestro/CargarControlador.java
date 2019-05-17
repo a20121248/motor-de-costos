@@ -185,6 +185,7 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         List<Grupo> lista = tabListar.getItems();
+        Boolean findError = false;
         if(lista.isEmpty())
         {
             menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
@@ -194,6 +195,7 @@ public class CargarControlador implements Initializable {
                 if (lstCodigos.contains(item.getCodigo())) {
                     logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
                     item.setFlagCargar(false);
+                    findError = true;
                 } else {
                     logServicio.agregarLineaArchivo(String.format("Se creó el Grupo con código %s.",item.getCodigo()));
                     item.setFlagCargar(true);
@@ -203,7 +205,12 @@ public class CargarControlador implements Initializable {
             logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
             logServicio.agregarSeparadorArchivo('=', 100);
             grupoDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos de Cuentas Contables subidos correctamente.");
+            if(findError == true){
+                menuControlador.navegador.mensajeError("Subida de archivo Excel", "Grupos de Cuentas Contables subidas. Se presentaron algunos errores. \n"
+                                                                                + "Para mayor información Descargue el LOG.");
+            }else {
+                menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos de Cuentas Contables subidas correctamente.");
+            }            
             btnDescargarLog.setVisible(true);
             LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Grupos de Cuentas Contables.",menuControlador.usuario.getUsername()));
         }
