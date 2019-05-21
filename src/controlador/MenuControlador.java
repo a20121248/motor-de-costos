@@ -2,8 +2,10 @@ package controlador;
 
 import com.jfoenix.controls.JFXButton;
 import dao.TipoDAO;
+import java.io.IOException;
 import javafx.scene.layout.StackPane;
 import java.net.URL;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import modelo.Tipo;
 import modelo.Usuario;
+import servicios.LoggingServicio;
 
 public class MenuControlador implements Initializable {
     @FXML private ImageView imgLogo;
@@ -56,10 +59,17 @@ public class MenuControlador implements Initializable {
     String nombreBD;
     public boolean verCostos;
     final static Logger LOGGER = Logger.getLogger("controlador.MenuControlador");
+    public LoggingServicio Log;
     
-    public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD) {
+    public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD, String rutaLog) throws IOException {
         // Administrador de pantallas
         navegador = new Navegador(this);
+        
+        // Creación de Log por dia
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
+        String fechaStr = formatterLogFile.format(new Date());
+        Log = new LoggingServicio(String.format("%s_app.log",fechaStr), rutaLog);
+        Log.crearLog();
         
         // Usuario logueado
         this.usuario = usuario;

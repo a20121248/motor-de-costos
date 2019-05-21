@@ -584,7 +584,7 @@ public class Navegador {
     }
     
 // =======================================================================================
-// ******************** MENSAJES DE ERROR, CONFIRMACION E INFROMATIVO ********************
+// ******************** MENSAJES DE ERROR, CONFIRMACION E INFORMATIVO ********************
 // =======================================================================================
     public void mensajeCarga(String titulo, int nroError) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -715,6 +715,6 @@ public class Navegador {
         } catch(IOException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             LOGGER.log(Level.SEVERE,e.getMessage());
         }
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña %s.",menuControlador.usuario.getUsername(),rutas.getTitulo()));
+        menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), rutas.getControlador());
     }
 }

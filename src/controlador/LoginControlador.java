@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import modelo.RutaArchivos;
 import modelo.Usuario;
+import servicios.LoggingServicio;
 import servicios.SeguridadServicio;
 
 public class LoginControlador implements Initializable {
@@ -40,7 +41,6 @@ public class LoginControlador implements Initializable {
     @FXML private MenuItem itmSalir;
     @FXML private MenuItem itmAcerca;
     
-    public String rutaLogs;
     public String estiloSeleccionado;
     public String idiomaSeleccionado;    
     public String nombreBD;
@@ -49,7 +49,6 @@ public class LoginControlador implements Initializable {
     public Preferencias preferencias;
     final SeguridadServicio seguridadServicio;
     final static Logger LOGGER = Logger.getLogger("app.controlador.LoginControlador");
-    private static String LOG_FILEPATH = "";
     
     // =========================================================
     // ******************** BARRA DE MENU **********************
@@ -85,11 +84,12 @@ public class LoginControlador implements Initializable {
         txtContrasenha.setText("secret");
     }
     
-    @FXML void btnLoginAction(ActionEvent event) {
+    @FXML void btnLoginAction(ActionEvent event)  {
         login();
     }
     
-    private void login() {
+    private void login(){
+        String rutaLog = preferencias.obtenerRutaLogs();
         if (ConexionBD.connection == null) {
             //si la BD es nula, intento conectarme con las preferencias
             //obtener los parametros de conexion de las preferencias
@@ -184,7 +184,7 @@ public class LoginControlador implements Initializable {
             }
             
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(RUTAS_MENU.getVista()));
-            MenuControlador menuControlador = new MenuControlador(rutaImagen,usuario,nombreBD);
+            MenuControlador menuControlador = new MenuControlador(rutaImagen,usuario,nombreBD,rutaLog);
             fxmlLoader.setController(menuControlador);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);

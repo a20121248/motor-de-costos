@@ -38,13 +38,15 @@ public class Preferencias {
     public String obtenerRutaLogs() {
         return prefs.get(ParametroRutaLogs, "./Logs/");
     }
-    public void guardarParametros(String servidor, String puerto, String sid, String usuario, String contrasenha, String rutaLogs) {
+    public void guardarParametros(String servidor, String puerto, String sid, String usuario, String contrasenha) {
         prefs.put(ParametroServidor, servidor);
         prefs.put(ParametroPuerto, puerto);
         prefs.put(ParametroSID, sid);
         prefs.put(ParametroUsuario, usuario);
         prefs.put(ParametroContrasenha, contrasenha);
         prefs.put(ParametroRutaLogs, contrasenha);
+    }
+    public void guardarParametrosLog(String rutaLogs){
         prefs.put(ParametroRutaLogs, rutaLogs);
     }
 }
