@@ -84,4 +84,7 @@ public class LoggingServicio {
         logger.log(Level.INFO,String.format("%s cambió a vista %s.",user,destino));
     }
     
+    public void deleteItem(Logger logger, String user, String item, String ruta){
+        logger.log(Level.INFO,String.format("%s eliminó item %s de la vista %s.",user,item,ruta));
+    }
 }

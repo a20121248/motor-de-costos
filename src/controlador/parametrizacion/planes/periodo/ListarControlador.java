@@ -78,10 +78,12 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
@@ -193,12 +195,15 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Cuenta Contable", "¿Está seguro de quitar la Cuenta Contable " + item.getNombre() + "?"))
             return;        
-                
+        
+        //Si plan de cuenta no encuentra items asociados al periodo podrá eliminar el objeto
         if(planDeCuentaDAO.verificarObjetoPlanCuentaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
+            menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
-            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+            menuControlador.navegador.mensajeError(titulo, "DELETE_ITEM");
+//            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
         }   
     }
     
