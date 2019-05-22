@@ -72,6 +72,7 @@ public class EditarControlador implements Initializable {
         String nombre = txtNombre.getText();
         if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre)==1) {
             menuControlador.navegador.mensajeInformativo("Editar Cuenta Contable", "Cuenta Contable editada correctamente.");
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
             menuControlador.navegador.mensajeError("Editar Cuenta Contable", "No se pudo editar la Cuenta Contable.");

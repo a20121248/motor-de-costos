@@ -33,11 +33,13 @@ public class CrearControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     List<String> lstCodigos;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CREAR.getControlador());
+    String titulo;
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         lstCodigos = planDeCuentaDAO.listarCodigos();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
@@ -74,6 +76,7 @@ public class CrearControlador implements Initializable {
         }
         if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo)==1) {
             menuControlador.navegador.mensajeInformativo("Crear Cuenta Contable", "Cuenta Contable creada correctamente.");
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
             menuControlador.navegador.mensajeError("Crear Cuenta Contable", "No se puede crear la cuenta contable.");

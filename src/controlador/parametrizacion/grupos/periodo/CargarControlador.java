@@ -197,6 +197,9 @@ public class CargarControlador implements Initializable {
         }
         else{
             grupoDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
+            lista.forEach((item)->{
+                menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), item.getCodigo(), periodoSeleccionado, Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getDireccion());
+            });
             menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupo de Cuentas Contables asociados correctamente.");
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
         }

@@ -1,6 +1,9 @@
 package servicios;
 
 import controlador.Navegador;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -24,9 +27,11 @@ public class LoggingServicio {
     final static Logger LOG_REPORTING = Logger.getLogger("controlador.reporting");
     
     private final Preferences prefs;
+    private String carpetaLogDay;
+    private String reporteFileName;
     private String FILENAME = "";
     private String FILEPATH = "";
-    
+
     public LoggingServicio(String fileName, String filePath){
         this.prefs = Preferences.userRoot().node(this.getClass().getName());
         this.FILENAME = fileName;
@@ -49,11 +54,22 @@ public class LoggingServicio {
         return this.FILEPATH;
     }
     
+    void setReporteFileName(String fileName){
+        this.reporteFileName = fileName;
+    }
+    
+    String getReporteFileName(){
+        return this.reporteFileName;
+    }
+    
+    public String getCarpetaLogDay(){
+        return this.carpetaLogDay;
+    }
     public void crearLog() throws IOException{
         Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
         String fechaStr = formatterLogFile.format(new Date());
         try{
-            String carpetaLogDay = FILEPATH+String.format("./%s_Log/",fechaStr);
+            carpetaLogDay = FILEPATH+String.format("./%s_Log/",fechaStr);
             Navegador.crearCarpeta(carpetaLogDay);
             String pathFileLogs = carpetaLogDay+ FILENAME;
             Handler fileHandler = new FileHandler(pathFileLogs, true);
@@ -84,7 +100,87 @@ public class LoggingServicio {
         logger.log(Level.INFO,String.format("%s cambió a vista %s.",user,destino));
     }
     
-    public void deleteItem(Logger logger, String user, String item, String ruta){
-        logger.log(Level.INFO,String.format("%s eliminó item %s de la vista %s.",user,item,ruta));
+    public void deleteItemPeriodo(Logger logger, String user, String item, int periodo, String ruta){
+        logger.log(Level.INFO,String.format("%s eliminó item %s del Periodo %s desde la vista %s.", user, item, periodo, ruta));
+    }
+    
+    public void editarItemPeriodo(Logger logger, String user, String item, int periodo, String ruta){
+        logger.log(Level.INFO,String.format("%s editó item %s del Periodo %s desde la vista %s.", user, item, periodo, ruta));
+    }
+    
+    public void agregarItemPeriodo(Logger logger, String user, String item, int periodo, String ruta){
+        logger.log(Level.INFO,String.format("%s agregó item %s en el Periodo %s desde la vista %s.", user, item, periodo, ruta));
+    }
+    
+    public void descargarTablaPeriodo(Logger logger, String user, String titulo, int periodo,String ruta){
+        logger.log(Level.INFO,String.format("%s descargó tabla %s del periodo %s desde la vista %s.", user, titulo, periodo,ruta));
+    }
+    
+    public void descargarTabla(Logger logger, String user, String titulo,String ruta){
+        logger.log(Level.INFO,String.format("%s descargó tabla %s desde la vista %s.", user, titulo, ruta));
+    }
+    
+     public void deleteItem(Logger logger, String user, String item, String ruta){
+        logger.log(Level.INFO,String.format("%s eliminó item %s desde la vista %s.",user,item,ruta));
+    }
+    
+    public void editarItem(Logger logger, String user, String item, String ruta){
+        logger.log(Level.INFO,String.format("%s editó item %s desde la vista %s.",user,item,ruta));
+    }
+    
+    public void agregarItem(Logger logger, String user, String item, String ruta){
+        logger.log(Level.INFO,String.format("%s agregó item %s desde la vista %s.",user,item,ruta));
+    }
+    
+    public String obtenerFecha() {
+        return (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+    }
+    
+    public String obtenerLinea(char caracter, int num) {
+        String linea = "";
+        while (num-->0)linea+=caracter;
+        return linea+System.lineSeparator();
+    }
+    
+    public void crearArchivo(String fileName) {
+        setReporteFileName(fileName);
+        File file = new File(carpetaLogDay + this.reporteFileName);
+        try {
+            file.createNewFile();
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("");
+            bw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(LogServicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void agregarLineaArchivo(String linea) {
+        File file = new File(carpetaLogDay + this.reporteFileName);       
+        try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+             BufferedWriter bw = new BufferedWriter(fw);) {
+            bw.write(linea + System.lineSeparator());
+        } catch (IOException ex) {
+            Logger.getLogger(LogServicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void agregarLineaArchivoTiempo(String linea) {
+        File file = new File(carpetaLogDay + this.reporteFileName);     
+        try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+             BufferedWriter bw = new BufferedWriter(fw);) {
+            bw.write((new SimpleDateFormat("yyyy/MM/dd HH:mm:ss - ").format(new Date())) + linea + System.lineSeparator());
+        } catch (IOException ex) {
+            Logger.getLogger(LogServicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void agregarSeparadorArchivo(char caracter, int num) {
+        String linea = "";
+        while(num-->0)linea+=caracter;
+        agregarLineaArchivo(linea);
     }
 }
+

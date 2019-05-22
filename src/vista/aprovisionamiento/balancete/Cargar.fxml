@@ -97,6 +97,15 @@
             <FontAwesomeIconView glyphName="UPLOAD" />
          </graphic>
       </JFXButton>
+      <JFXButton fx:id="btnDescargarLog" layoutX="269.0" layoutY="533.0" onAction="#btnDescargarLogAction" text="Descargar LOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="269.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
+      </JFXButton>
       <JFXButton fx:id="btnCancelar" layoutX="268.0" layoutY="466.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
          <graphic>
             <FontAwesomeIconView glyphName="CLOSE" />
@@ -125,5 +134,10 @@
             <FontAwesomeIconView fill="#ffbf50" glyphName="WARNING" text="" />
          </graphic>
       </Label>
+      <JFXButton fx:id="btnAtras" layoutX="470.0" layoutY="545.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="220.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

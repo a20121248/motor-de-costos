@@ -61,6 +61,29 @@ public class MenuControlador implements Initializable {
     final static Logger LOGGER = Logger.getLogger("controlador.MenuControlador");
     public LoggingServicio Log;
     
+    // =========================================================
+    // *************************** MENSAJES*********************
+    // =========================================================
+   
+    
+    public final String MENSAJE_UPLOAD_HEADER = "UPLOAD_HEADER";
+    public final String MENSAJE_DOWNLOAD = "DOWNLOAD";
+    public final String MENSAJE_DOWNLOAD_LOG = "DOWNLOAD_LOG";
+    public final String MENSAJE_DOWNLOAD_EMPTY = "DOWNLOAD_EMPTY";
+    public final String MENSAJE_DOWNLOAD_CANCELED = "DOWNLOAD_CACNCELED";
+    public final String MENSAJE_DELETE_SELECTED = "DELETE_SELECTED";
+    public final String MENSAJE_DELETE_REFRESH = "DELETE_REFRESH";
+    public final String MENSAJE_DELETE_ITEM = "DELETE_ITEM";
+    public final String MENSAJE_UPLOAD = "UPLOAD";
+    public final String MENSAJE_UPLOAD_SUCCESS = "UPLOAD_SUCCESS";
+    public final String MENSAJE_UPLOAD_SUCCESS_ERROR = "UPLOAD_SUCCESS_ERROR";
+    public final String MENSAJE_UPLOAD_ERROR_PERIODO = "UPLOAD_ERROR_PERIODO";
+    public final String MENSAJE_UPLOAD_EMPTY = "UPLOAD_EMPTY";
+    public final String MENSAJE_TABLE_EMPTY = "TABLE_EMPTY";
+    public final String MENSAJE_ADD_REFRESH = "ADD_REFRESH";
+    public final String MENSAJE_SELECT_ENTITY = "SELECT_ENTITY";
+    public final String MENSAJE_EDIT_EMPTY = "EDIT_EMPTY";
+    
     public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD, String rutaLog) throws IOException {
         // Administrador de pantallas
         navegador = new Navegador(this);

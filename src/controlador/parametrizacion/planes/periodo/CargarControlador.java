@@ -61,6 +61,7 @@ public class CargarControlador implements Initializable {
     final int anhoSeleccionado;
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getControlador());
+    String titulo;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -68,6 +69,7 @@ public class CargarControlador implements Initializable {
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
@@ -191,10 +193,13 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
         if(lista.isEmpty()){
-            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             planDeCuentaDAO.insertarListaObjetoCuentaPeriodo(lista,menuControlador.repartoTipo);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables asignadas correctamente.");
+            for(CargarObjetoPeriodoLinea item: lista){
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),item.getPeriodo(),Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
+            }
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD);
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
         }
         

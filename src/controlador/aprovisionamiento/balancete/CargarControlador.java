@@ -14,9 +14,15 @@ import dao.PlanDeCuentaDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,6 +53,7 @@ public class CargarControlador implements Initializable {
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
+    @FXML private JFXButton btnDescargarLog;
     
     @FXML private TableView<CargarBalanceteLinea> tabListar;
     @FXML private TableColumn<CargarBalanceteLinea, Boolean> tabcolEstado;
@@ -68,19 +75,21 @@ public class CargarControlador implements Initializable {
     final int anhoSeleccionado;
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
-    
+    String titulo;
+    String logName;
+    Boolean findError;
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
+        this.titulo = "Balancete";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // tabla formato
-//        tabcolPeriodo.setCellValueFactory(cellData -> cellData.getValue().periodoProperty().asObject());
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
@@ -140,6 +149,7 @@ public class CargarControlador implements Initializable {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
+        btnDescargarLog.setVisible(false);
     }
     
     // Acción de la pestaña 'Inicio'
@@ -169,6 +179,7 @@ public class CargarControlador implements Initializable {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
             List<CargarBalanceteLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             tabListar.getItems().setAll(lista);
@@ -202,7 +213,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE","SALDO")))) {
-                menuControlador.navegador.mensajeError("Cargar Balancete", "La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
+                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
             
@@ -219,7 +230,7 @@ public class CargarControlador implements Initializable {
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
                 if(periodo != periodoSeleccionado){
-                    menuControlador.navegador.mensajeError("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
+                    menuControlador.navegador.mensajeError(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
                     lista.clear();
                     listaError.clear();
                     listaCuentas.clear();
@@ -258,18 +269,63 @@ public class CargarControlador implements Initializable {
     
     // Acción del botón 'Subir'
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
+        findError = false;
         if(listaCargar.isEmpty()){
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "No hay información.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             planDeCuentaDAO.insertarBalancete(periodoSeleccionado,listaCargar);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Balancete subido correctamente.");
-            menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
+            creandoReporteLOG();  
         }
-        
+        if(findError == true){
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+        }else {
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+
+        }
+        btnDescargarLog.setVisible(true);
     }
     
     // Acción del botón 'Cancelar'
     @FXML void btnCancelarAction(ActionEvent event) throws SQLException {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
-    }   
+    }
+    
+    void creandoReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_BALANCETE.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getEstado()){
+                menuControlador.Log.agregarLineaArchivo("Se creó item "+ item.getCodigo()+ " en Balancete correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se creó item "+ item.getCodigo()+ " en Balancete, debido a que no existe en Cuentas Contables.");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+    }
+    @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
+        String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar LOG");
+        fileChooser.setInitialFileName(logName);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
+        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
+        if (archivoSeleccionado != null) {
+            Path origen = Paths.get(rutaOrigen);
+            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_LOG);
+        }
+    }
+    
+    @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
+    }
 }

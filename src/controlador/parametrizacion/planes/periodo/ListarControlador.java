@@ -159,7 +159,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar Cuenta Contable", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CTA".equals(item.getCodigo())).findFirst().orElse(null);
@@ -183,27 +183,26 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar Cuenta Contable", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
             return;
         }
         
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar Cuenta Contable", "Por favor seleccione una Cuenta Contable.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Cuenta Contable", "¿Está seguro de quitar la Cuenta Contable " + item.getNombre() + "?"))
             return;        
         
-        //Si plan de cuenta no encuentra items asociados al periodo podrá eliminar el objeto
+        //Si PlanDeCuenta no encuentra items asociados al periodo podrá eliminar el objeto
         if(planDeCuentaDAO.verificarObjetoPlanCuentaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
-            menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
-            menuControlador.navegador.mensajeError(titulo, "DELETE_ITEM");
-//            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+            menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_DELETE_ITEM);
         }   
     }
     
@@ -223,7 +222,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Cuentas Contables", "No existen Cuentas Contables para el periodo seleccionado.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -242,11 +241,12 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("CuentasContables", tabListar);
                 descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
-            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
     
@@ -257,6 +257,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         planDeCuentaDAO.insertarObjetoCuentaPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
         buscarPeriodo(periodoSeleccionado, false);
     }
 

@@ -55,10 +55,12 @@ public class ListarControlador implements Initializable {
     SortedList<CuentaContable> sortedData;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         planDeCuentaDAO = new PlanDeCuentaDAO();
         this.menuControlador = menuControlador;
+        this.titulo = "Balancete";
     }
     
     @Override
@@ -163,7 +165,7 @@ public class ListarControlador implements Initializable {
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Balancete", "No existen Cuentas Contables para el periodo seleccionado.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);

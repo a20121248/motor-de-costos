@@ -41,7 +41,8 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODULO_INICIO = new RutaArchivos(
             "/vista/inicio/Principal.fxml",
             "controlador.inicio.PrincipalControlador",
-            "INICIO"
+            "INICIO",
+            "Inicio"
     );
     // =========================================================
     // ******************** MODULO APROVISIONAMIENTO ***********
@@ -49,60 +50,71 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODULO_APROVISIONAMIENTO = new RutaArchivos(
             "/vista/aprovisionamiento/Principal.fxml",
             "controlador.aprovisionamiento.PrincipalControlador",
-            "APROVISIONAMIENTO"
+            "APROVISIONAMIENTO",
+            "Inicio/Aprovisionamiento"
     );
     // --------------------- BALANCETE ----------------------
     public static final RutaArchivos RUTAS_BALANCETE_LISTAR = new RutaArchivos(
             "/vista/aprovisionamiento/balancete/Listar.fxml",
             "controlador.aprovisionamiento.balancete.ListarControlador",
-            "Balancete"
+            "Balancete",
+            "Inicio/Aprovisionamiento/Balancete"
     );
     public static final RutaArchivos RUTAS_BALANCETE_CARGAR = new RutaArchivos(
             "/vista/aprovisionamiento/balancete/Cargar.fxml",
             "controlador.aprovisionamiento.balancete.CargarControlador",
-            "Cargar Balancete"
+            "Cargar Balancete",
+            "Inicio/Aprovisionamiento/Balancete/Cargar"
     );
     // --------------------- DRIVERS ----------------------
     public static final RutaArchivos RUTAS_DRIVERS_CENTRO_LISTAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers/Listar.fxml",
             "controlador.aprovisionamiento.drivers.ListarControlador",
-            "Drivers - Centros"
+            "Drivers - Centros",
+            "Inicio/Aprovisionamiento/Drivers - Centros de Costos"
     );
     public static final RutaArchivos RUTAS_DRIVERS_CENTRO_CREAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers/Crear.fxml",
             "controlador.aprovisionamiento.drivers.CrearControlador",
-            "Crear Driver - Centro"
+            "Crear Driver - Centro",
+            "Inicio/Aprovisionamiento/Drivers - Centros de Costos/Crear"
     );
     public static final RutaArchivos RUTAS_DRIVERS_CENTRO_EDITAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers/Editar.fxml",
             "controlador.aprovisionamiento.drivers.EditarControlador",
-            "Editar Driver - Centro"
+            "Editar Driver - Centro",
+            "Inicio/Aprovisionamiento/Drivers - Centros de Costos/Editar"
     );
     public static final RutaArchivos RUTAS_DRIVERS_CENTRO_CARGAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers/Cargar.fxml",
             "controlador.aprovisionamiento.drivers.CargarControlador",
-            "Cargar Drivers - Centros"
+            "Cargar Drivers - Centros",
+            "Inicio/Aprovisionamiento/Drivers - Centros de Costos/Cargar"
     );
     // --------------------- DRIVERS OBJETO ----------------------
     public static final RutaArchivos RUTAS_DRIVERS_OBJETO_LISTAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers_objeto/Listar.fxml",
             "controlador.aprovisionamiento.drivers_objeto.ListarControlador",
-            "Drivers - Objetos"
+            "Drivers - Objetos",
+            "Inicio/Aprovisionamiento/Drivers - Objetos de Costos"
     );
     public static final RutaArchivos RUTAS_DRIVERS_OBJETO_CREAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers_objeto/Crear.fxml",
             "controlador.aprovisionamiento.drivers_objeto.CrearControlador",
-            "Crear Driver - Objeto"
+            "Crear Driver - Objeto",
+            "Inicio/Aprovisionamiento/Drivers - Objetos de Costos/Crear"
     );
     public static final RutaArchivos RUTAS_DRIVERS_OBJETO_EDITAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers_objeto/Editar.fxml",
             "controlador.aprovisionamiento.drivers_objeto.EditarControlador",
-            "Editar Driver - Objeto"
+            "Editar Driver - Objeto",
+            "Inicio/Aprovisionamiento/Drivers - Objetos de Costos/Editar"
     );
     public static final RutaArchivos RUTAS_DRIVERS_OBJETO_CARGAR = new RutaArchivos(
             "/vista/aprovisionamiento/drivers_objeto/Cargar.fxml",
             "controlador.aprovisionamiento.drivers_objeto.CargarControlador",
-            "Cargar Drivers - Objetos"
+            "Cargar Drivers - Objetos",
+            "Inicio/Aprovisionamiento/Drivers - Objetos de Costos/Cargar"
     );
     // =========================================================
     // ******************** MODALS *************
@@ -132,7 +144,8 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODALS_BUSCAR_ENTIDAD = new RutaArchivos(
             "/vista/modals/BuscarEntidad.fxml",
             "controlador.modals.BuscarEntidadControlador",
-            "Buscar Entidad"
+            "Buscar Entidad",
+            "/Buscar Entidad"
     );
     // =========================================================
     // ******************** MODULO PARAMETRIZACION *************
@@ -140,7 +153,8 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODULO_PARAMETRIZACION = new RutaArchivos(
             "/vista/parametrizacion/Principal.fxml",
             "controlador.parametrizacion.PrincipalControlador",
-            "PARAMETRIZACIÓN"
+            "PARAMETRIZACIÓN",
+            "Inicio/Parametrización"
     );
     // --------------------- PLAN DE CUENTAS ----------------------
     public static final RutaArchivos RUTAS_PLANES_PRINCIPAL = new RutaArchivos(
@@ -151,32 +165,38 @@ public class Navegador {
     public static final RutaArchivos RUTAS_PLANES_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/planes/maestro/Listar.fxml",
             "controlador.parametrizacion.planes.maestro.ListarControlador",
-            "Catálogo de Cuentas Contables"
+            "Catálogo de Cuentas Contables",
+            "Inicio/Parametrización/Cuentas Contables/Catálogo"
     );
     public static final RutaArchivos RUTAS_PLANES_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/planes/maestro/Crear.fxml",
             "controlador.parametrizacion.planes.maestro.CrearControlador",
-            "Crear Cuenta Contable"
+            "Crear Cuenta Contable",
+            "Inicio/Parametrización/Cuentas Contables/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_PLANES_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/planes/maestro/Editar.fxml",
             "controlador.parametrizacion.planes.maestro.EditarControlador",
-            "Editar Cuenta Contable"
+            "Editar Cuenta Contable",
+            "Inicio/Parametrización/Cuentas Contables/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_PLANES_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/planes/maestro/Cargar.fxml",
             "controlador.parametrizacion.planes.maestro.CargarControlador",
-            "Cargar Cuentas Contables"
+            "Cargar Cuentas Contables",
+            "Inicio/Parametrización/Cuentas Contables/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_PLANES_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/planes/periodo/Listar.fxml",
             "controlador.parametrizacion.planes.periodo.ListarControlador",
-            "Asociar Cuentas Contables a un periodo"
+            "Asociar Cuentas Contables a un periodo",
+            "Inicio/Parametrización/Cuentas Contables"
     );
     public static final RutaArchivos RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/planes/periodo/Cargar.fxml",
             "controlador.parametrizacion.planes.periodo.CargarControlador",
-            "Cargar asociaciones de Cuentas Contables a un periodo"
+            "Cargar asociaciones de Cuentas Contables a un periodo",
+            "Inicio/Parametrización/Cuentas Contables/Cargar"
     );
     // --------------------- GRUPOS ----------------------
     public static final RutaArchivos RUTAS_GRUPOS_PRINCIPAL = new RutaArchivos(
@@ -187,43 +207,51 @@ public class Navegador {
     public static final RutaArchivos RUTAS_GRUPOS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/grupos/maestro/Listar.fxml",
             "controlador.parametrizacion.grupos.maestro.ListarControlador",
-            "Catálogo de Grupos"
+            "Catálogo de Grupos",
+            "Inicio/Parametrización/Grupos/Catálogo"
     );
     public static final RutaArchivos RUTAS_GRUPOS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/grupos/maestro/Crear.fxml",
             "controlador.parametrizacion.grupos.maestro.CrearControlador",
-            "Crear Grupo"
+            "Crear Grupo",
+            "Inicio/Parametrización/Grupos/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_GRUPOS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/grupos/maestro/Editar.fxml",
             "controlador.parametrizacion.grupos.maestro.EditarControlador",
-            "Editar Grupo"
+            "Editar Grupo",
+            "Inicio/Parametrización/Grupos/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_GRUPOS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/grupos/maestro/Cargar.fxml",
             "controlador.parametrizacion.grupos.maestro.CargarControlador",
-            "Cargar Grupos"
+            "Cargar Grupos",
+            "Inicio/Parametrización/Grupos/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_GRUPOS_ASOCIAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/grupos/periodo/Listar.fxml",
             "controlador.parametrizacion.grupos.periodo.ListarControlador",
-            "Asociar Grupos a un periodo"
+            "Asociar Grupos a un periodo",
+            "Inicio/Parametrización/Grupos"
     );
     public static final RutaArchivos RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/grupos/periodo/Cargar.fxml",
             "controlador.parametrizacion.grupos.periodo.CargarControlador",
-            "Cargar asociaciones de Grupos a un periodo"
+            "Cargar asociaciones de Grupos a un periodo",
+            "Inicio/Parametrización/Grupos/Cargar"
     );
     // --------------------- GRUPOS - CUENTA ----------------------
     public static final RutaArchivos RUTAS_GRUPO_CUENTA_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/grupo_cuenta/Listar.fxml",
             "controlador.parametrizacion.grupo_cuenta.ListarControlador",
-            "Asignaciones de Grupos a Cuentas Contables"
+            "Asignaciones de Grupos a Cuentas Contables",
+            "Inicio/Parametrización/Asignaciones"
     );
     public static final RutaArchivos RUTAS_GRUPO_CUENTA_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/grupo_cuenta/Cargar.fxml",
             "controlador.parametrizacion.grupo_cuenta.CargarControlador",
-            "Cargar Asignaciones de Grupos a Cuentas Contables"
+            "Cargar Asignaciones de Grupos a Cuentas Contables",
+            "Inicio/Parametrización/Asignaciones/Cargar"
     );
     // --------------------- CENTROS ----------------------
     public static final RutaArchivos RUTAS_CENTROS_PRINCIPAL = new RutaArchivos(
@@ -234,241 +262,288 @@ public class Navegador {
     public static final RutaArchivos RUTAS_CENTROS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/centros/maestro/Listar.fxml",
             "controlador.parametrizacion.centros.maestro.ListarControlador",
-            "Centros Maestro Listar"
+            "Centros Maestro Listar",
+            "Inicio/Parametrización/Centros/Catálogo"
     );
     public static final RutaArchivos RUTAS_CENTROS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/centros/maestro/Crear.fxml",
             "controlador.parametrizacion.centros.maestro.CrearControlador",
-            "Centros Maestro Crear"
+            "Centros Maestro Crear",
+            "Inicio/Parametrización/Centros/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_CENTROS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/centros/maestro/Editar.fxml",
             "controlador.parametrizacion.centros.maestro.EditarControlador",
-            "Centros Maestro Editar"
+            "Centros Maestro Editar",
+            "Inicio/Parametrización/Centros/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_CENTROS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/centros/maestro/Cargar.fxml",
             "controlador.parametrizacion.centros.maestro.CargarControlador",
-            "Centros Maestro Cargar"
+            "Centros Maestro Cargar",
+            "Inicio/Parametrización/Centros/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_CENTROS_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/centros/periodo/Listar.fxml",
             "controlador.parametrizacion.centros.periodo.ListarControlador",
-            "Centros Asignar Periodo"
+            "Centros Asignar Periodo",
+            "Inicio/Parametrización/Centros"
     );
     public static final RutaArchivos RUTAS_CENTROS_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/centros/periodo/Cargar.fxml",
             "controlador.parametrizacion.centros.periodo.CargarControlador",
-            "Centros Asignar Periodo Cargar"
+            "Centros Asignar Periodo Cargar",
+            "Inicio/Parametrización/Centros/Cargar"
     );
     // --------------------- OFICINAS ----------------------
     public static final RutaArchivos RUTAS_OFICINAS_PRINCIPAL = new RutaArchivos(
             "/vista/parametrizacion/oficinas/Principal.fxml",
             "controlador.parametrizacion.oficinas.PrincipalControlador",
-            "Oficinas"
+            "Oficinas",
+            "Inicio/Parametrización/Oficinas"
     );
     public static final RutaArchivos RUTAS_OFICINAS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/maestro/Listar.fxml",
             "controlador.parametrizacion.oficinas.maestro.ListarControlador",
-            "Catálogo de Oficinas"
+            "Catálogo de Oficinas",
+            "Inicio/Parametrización/Oficinas/Catálogo"
     );
     public static final RutaArchivos RUTAS_OFICINAS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/maestro/Crear.fxml",
             "controlador.parametrizacion.oficinas.maestro.CrearControlador",
-            "Crear Oficina"
+            "Crear Oficina",
+            "Inicio/Parametrización/Oficinas/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_OFICINAS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/maestro/Editar.fxml",
             "controlador.parametrizacion.oficinas.maestro.EditarControlador",
-            "Editar Oficina"
+            "Editar Oficina",
+            "Inicio/Parametrización/Oficinas/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_OFICINAS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/maestro/Cargar.fxml",
             "controlador.parametrizacion.oficinas.maestro.CargarControlador",
-            "Cargar Oficinas"
+            "Cargar Oficinas",
+            "Inicio/Parametrización/Oficinas/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_OFICINAS_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/oficinas/periodo/Listar.fxml",
             "controlador.parametrizacion.oficinas.periodo.ListarControlador",
-            "Asociar Oficinas a un periodo"
+            "Asociar Oficinas a un periodo",
+            "Inicio/Parametrización/Oficinas/Asociación"
     );
     public static final RutaArchivos RUTAS_OFICINAS_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/periodo/Cargar.fxml",
             "controlador.parametrizacion.oficinas.periodo.CargarControlador",
-            "Cargar asociaciones de Oficinas a un periodo"
+            "Cargar asociaciones de Oficinas a un periodo",
+            "Inicio/Parametrización/Oficinas/Asociación/Cargar"
     );
     public static final RutaArchivos RUTAS_OFICINAS_GRUPOS_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/grupos/Listar.fxml",
             "controlador.parametrizacion.oficinas.grupos.ListarControlador",
-            "Catálogo de Grupos de Oficinas"
+            "Catálogo de Grupos de Oficinas",
+            "Inicio/Parametrización/Oficinas/Grupos"
     );
     public static final RutaArchivos RUTAS_OFICINAS_GRUPOS_CREAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/grupos/Crear.fxml",
             "controlador.parametrizacion.oficinas.grupos.CrearControlador",
-            "Crear Grupo de Oficinas"
+            "Crear Grupo de Oficinas",
+            "Inicio/Parametrización/Oficinas/Grupos/Crear"
     );
     public static final RutaArchivos RUTAS_OFICINAS_GRUPOS_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/grupos/Editar.fxml",
             "controlador.parametrizacion.oficinas.grupos.EditarControlador",
-            "Editar Grupo de Oficinas"
+            "Editar Grupo de Oficinas",
+            "Inicio/Parametrización/Oficinas/Grupos/Editar"
     );
     public static final RutaArchivos RUTAS_OFICINAS_GRUPOS_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/grupos/Cargar.fxml",
             "controlador.parametrizacion.oficinas.grupos.CargarControlador",
-            "Cargar Grupos de Oficinas"
+            "Cargar Grupos de Oficinas",
+            "Inicio/Parametrización/Oficinas/Grupos/Cargar"
     );
     public static final RutaArchivos RUTAS_OFICINAS_JERARQUIA = new RutaArchivos(
             "/vista/parametrizacion/oficinas/jerarquia/Listar.fxml",
             "controlador.parametrizacion.oficinas.jerarquia.ListarControlador",
-            "Jerarquia de Oficinas"
+            "Jerarquia de Oficinas",
+            "Inicio/Parametrización/Oficinas/Jerarquía"
     );
     public static final RutaArchivos RUTAS_OFICINAS_JERARQUIA_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/oficinas/jerarquia/Cargar.fxml",
             "controlador.parametrizacion.oficinas.jerarquia.CargarControlador",
-            "Cargar Jerarquía de Oficinas"
+            "Cargar Jerarquía de Oficinas",
+            "Inicio/Parametrización/Oficinas/Jerarquía/Cargar"
     );
     // --------------------- PRODUCTOS ----------------------
     public static final RutaArchivos RUTAS_PRODUCTOS_PRINCIPAL = new RutaArchivos(
             "/vista/parametrizacion/productos/Principal.fxml",
             "controlador.parametrizacion.productos.PrincipalControlador",
-            "Productos"
+            "Productos",
+            "Inicio/Parametrización/Productos"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/productos/maestro/Listar.fxml",
             "controlador.parametrizacion.productos.maestro.ListarControlador",
-            "Catálogo de Productos"
+            "Catálogo de Productos",
+            "Inicio/Parametrización/Productos/Catálogo"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/productos/maestro/Crear.fxml",
             "controlador.parametrizacion.productos.maestro.CrearControlador",
-            "Crear Producto"
+            "Crear Producto",
+            "Inicio/Parametrización/Productos/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/productos/maestro/Editar.fxml",
             "controlador.parametrizacion.productos.maestro.EditarControlador",
-            "Editar Producto"
+            "Editar Producto",
+            "Inicio/Parametrización/Productos/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/productos/maestro/Cargar.fxml",
             "controlador.parametrizacion.productos.maestro.CargarControlador",
-            "Cargar Productos"
+            "Cargar Productos",
+            "Inicio/Parametrización/Productos/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/productos/periodo/Listar.fxml",
             "controlador.parametrizacion.productos.periodo.ListarControlador",
-            "Asociar Productos a un periodo"
+            "Asociar Productos a un periodo",
+            "Inicio/Parametrización/Productos/Asociación"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/productos/periodo/Cargar.fxml",
             "controlador.parametrizacion.productos.periodo.CargarControlador",
-            "Cargar asociaciones de Productos a un periodo"
+            "Cargar asociaciones de Productos a un periodo",
+            "Inicio/Parametrización/Productos/Asociación/Cargar"
     );    
     public static final RutaArchivos RUTAS_PRODUCTOS_GRUPOS_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/productos/grupos/Listar.fxml",
             "controlador.parametrizacion.productos.grupos.ListarControlador",
-            "Catálogo de Grupos de Productos"
+            "Catálogo de Grupos de Productos",
+            "Inicio/Parametrización/Productos/Grupos"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_GRUPOS_CREAR = new RutaArchivos(
             "/vista/parametrizacion/productos/grupos/Crear.fxml",
             "controlador.parametrizacion.productos.grupos.CrearControlador",
-            "Crear Grupo de Productos"
+            "Crear Grupo de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Crear"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_GRUPOS_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/productos/grupos/Editar.fxml",
             "controlador.parametrizacion.productos.grupos.EditarControlador",
-            "Editar Grupo de Productos"
+            "Editar Grupo de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Editar"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_GRUPOS_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/productos/grupos/Cargar.fxml",
             "controlador.parametrizacion.productos.grupos.CargarControlador",
-            "Cargar Grupos de Productos"
+            "Cargar Grupos de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Cargar"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_JERARQUIA = new RutaArchivos(
             "/vista/parametrizacion/productos/jerarquia/Listar.fxml",
             "controlador.parametrizacion.productos.jerarquia.ListarControlador",
-            "Jerarquia de Productos"
+            "Jerarquia de Productos",
+            "Inicio/Parametrización/Productos/Jerarquía"
     );
     public static final RutaArchivos RUTAS_PRODUCTOS_JERARQUIA_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/productos/jerarquia/Cargar.fxml",
             "controlador.parametrizacion.productos.jerarquia.CargarControlador",
-            "Cargar Jerarquía de Productos"
+            "Cargar Jerarquía de Productos",
+            "Inicio/Parametrización/Productos/Jerarquía/Cargar"
     );
     // --------------------- PRODUCTOS ----------------------
     public static final RutaArchivos RUTAS_OBJETOS_PRINCIPAL = new RutaArchivos(
             "/vista/parametrizacion/objetos/Principal.fxml",
             "controlador.parametrizacion.objetos.PrincipalControlador",
-            "Productos"
+            "Productos",
+            "Inicio/Parametrización/Productos"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Listar.fxml",
             "controlador.parametrizacion.objetos.maestro.ListarControlador",
-            "Catálogo de Productos"
+            "Catálogo de Productos",
+            "Inicio/Parametrización/Productos/Catálogo"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Crear.fxml",
             "controlador.parametrizacion.objetos.maestro.CrearControlador",
-            "Crear Producto"
+            "Crear Producto",
+            "Inicio/Parametrización/Productos/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Editar.fxml",
             "controlador.parametrizacion.objetos.maestro.EditarControlador",
-            "Editar Producto"
+            "Editar Producto",
+            "Inicio/Parametrización/Productos/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Cargar.fxml",
             "controlador.parametrizacion.objetos.maestro.CargarControlador",
-            "Cargar Productos"
+            "Cargar Productos",
+            "Inicio/Parametrización/Productos/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/objetos/periodo/Listar.fxml",
             "controlador.parametrizacion.objetos.periodo.ListarControlador",
-            "Asociar Productos a un periodo"
+            "Asociar Productos a un periodo",
+            "Inicio/Parametrización/Productos/Asociación"
     );
     public static final RutaArchivos RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/periodo/Cargar.fxml",
             "controlador.parametrizacion.objetos.periodo.CargarControlador",
-            "Cargar asociaciones de Productos a un periodo"
+            "Cargar asociaciones de Productos a un periodo",
+            "Inicio/Parametrización/Productos/Asociación/Cargar"
     );    
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Listar.fxml",
             "controlador.parametrizacion.objetos.grupos.ListarControlador",
-            "Catálogo de Grupos de Productos"
+            "Catálogo de Grupos de Productos",
+            "Inicio/Parametrización/Productos/Grupos"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_CREAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Crear.fxml",
             "controlador.parametrizacion.objetos.grupos.CrearControlador",
-            "Crear Grupo de Productos"
+            "Crear Grupo de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Crear"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Editar.fxml",
             "controlador.parametrizacion.objetos.grupos.EditarControlador",
-            "Editar Grupo de Productos"
+            "Editar Grupo de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Editar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Cargar.fxml",
             "controlador.parametrizacion.objetos.grupos.CargarControlador",
-            "Cargar Grupos de Productos"
+            "Cargar Grupos de Productos",
+            "Inicio/Parametrización/Productos/Grupos/Cargar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_JERARQUIA = new RutaArchivos(
             "/vista/parametrizacion/objetos/jerarquia/Listar.fxml",
             "controlador.parametrizacion.objetos.jerarquia.ListarControlador",
-            "Jerarquia de Productos"
+            "Jerarquia de Productos",
+            "Inicio/Parametrización/Productos/Jerarquía"
     );
     public static final RutaArchivos RUTAS_OBJETOS_JERARQUIA_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/jerarquia/Cargar.fxml",
             "controlador.parametrizacion.objetos.jerarquia.CargarControlador",
-            "Cargar Jerarquía de Productos"
+            "Cargar Jerarquía de Productos",
+            "Inicio/Parametrización/Productos/Jerarquía/Cargar"
     );
     // --------------------- BANCAS ----------------------
     public static final RutaArchivos RUTAS_BANCAS_PRINCIPAL = new RutaArchivos(
             "/vista/parametrizacion/bancas/Principal.fxml",
             "controlador.parametrizacion.bancas.PrincipalControlador",
-            "Bancas"
+            "Bancas",
+            "Inicio/Parametrización/Bancas"
     );
     public static final RutaArchivos RUTAS_BANCAS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/bancas/maestro/Listar.fxml",
             "controlador.parametrizacion.bancas.maestro.ListarControlador",
-            "Catálogo de Bancas"
+            "Catálogo de Bancas",
+            "Inicio/Parametrización/Bancas/Catálogo"
     );
     public static final RutaArchivos RUTAS_BANCAS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/bancas/maestro/Crear.fxml",
@@ -499,6 +574,7 @@ public class Navegador {
             "/vista/parametrizacion/bancas/grupos/Listar.fxml",
             "controlador.parametrizacion.bancas.grupos.ListarControlador",
             "Catálogo de Grupos de Bancas"
+     
     );
     public static final RutaArchivos RUTAS_BANCAS_GRUPOS_CREAR = new RutaArchivos(
             "/vista/parametrizacion/bancas/grupos/Crear.fxml",
@@ -529,12 +605,14 @@ public class Navegador {
     public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/driver_entidad/Listar.fxml",
             "controlador.parametrizacion.driver_entidad.ListarControlador",
-            "Asignaciones de Drivers a Entidades"
+            "Asignaciones de Drivers a Entidades",
+            "Inicio/Parametrización/Asignaciones Drivers"
     );
     public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/driver_entidad/Cargar.fxml",
             "controlador.parametrizacion.driver_entidad.CargarControlador",
-            "Cargar Asignaciones de Drivers a Entidades"
+            "Cargar Asignaciones de Drivers a Entidades",
+            "Inicio/Parametrización/Asignaciones Drivers/Cargar"
     );
     // =========================================================
     // ******************** MODULO PROCESOS ********************
@@ -542,7 +620,8 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODULO_PROCESOS = new RutaArchivos(
             "/vista/procesos/Principal.fxml",
             "controlador.procesos.PrincipalControlador",
-            "PROCESOS"
+            "PROCESOS",
+            "Inicio/Procesos"
     );
     // =========================================================
     // ******************** MODULO REPORTING ********************
@@ -550,7 +629,8 @@ public class Navegador {
     public static final RutaArchivos RUTAS_MODULO_REPORTING = new RutaArchivos(
             "/vista/reporting/Principal.fxml",
             "controlador.reporting.PrincipalControlador",
-            "REPORTING"
+            "REPORTING",
+            "Inicio/Reporting"
     );
     
     public void omitirFilas(Iterator<Row> filas, int numFilas) {
@@ -602,6 +682,10 @@ public class Navegador {
     public void mensajeError(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         switch(contenido){
+            case "UPLOAD":
+                alert.setTitle("Subida de archivo Excel");
+                alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
+                break; 
             case "UPLOAD_HEADER":
                 alert.setTitle("Cargar " + titulo);
                 alert.setContentText("La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
@@ -622,22 +706,33 @@ public class Navegador {
                 alert.setTitle("Quitar " + titulo);
                 alert.setContentText("No se pudo eliminar "+ titulo +" item del Periodo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
                 break;
-            default:
+            case "TABLE_EMPTY":
+                alert.setTitle("Consulta "+ titulo);
+                alert.setContentText("No existen "+ titulo+ " para el periodo seleccionado.");
+                break;
+            case "ADD_REFRESH":
+                alert.setTitle("Agregar "+ titulo);
+                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+                break;
+            default:    
+
                 alert.setTitle(titulo);
                 alert.setContentText(contenido);
         }
         alert.setHeaderText(null);
         alert.showAndWait();
     }
-    
     public void mensajeError(String contenido) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         switch(contenido){
-            case "UPLOAD":
+            case "UPLOAD_ERROR_PERIODO":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
                 break;
-                
+            case "UPLOAD_EMPTY":
+                alert.setTitle("Subir Información");
+                alert.setContentText("No hay información.");
+                break;
             case "DOWNLOAD_EMPTY":
                 alert.setTitle("Descargar información");
                 alert.setContentText("No hay información");
@@ -645,6 +740,11 @@ public class Navegador {
             case "DOWNLOAD_CANCELED":
                 alert.setTitle("Descargar información");
                 alert.setContentText("Descarga Cancelada");
+                break;
+            case "SELECT_ENTITY":
+                alert.setTitle("Seleccionar entidad");
+                alert.setContentText("No seleccionó ninguna entidad.");
+                break;
             default:
                 alert.setTitle("");
                 alert.setContentText(contenido);
@@ -660,9 +760,49 @@ public class Navegador {
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText(titulo +  " asignados correctamente.");
                 break;
+            case "UPLOAD_HEADER":
+                alert.setTitle("Cargar " + titulo);
+                alert.setContentText("La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
+                break;
+            case "UPLOAD_SUCCESS_ERROR":
+                alert.setTitle("Subida de información " + titulo);
+                alert.setContentText(titulo + " subidas. Se presentaron algunos errores. \nPara mayor información Descargar LOG.");
+                break;
+            case "DOWNLOAD":
+                alert.setTitle("Descargar "+ titulo);
+                alert.setContentText(contenido);
+                break;
+            case "DELETE_SELECTED":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("Por favor seleccione "+ titulo);
+                break;
+            case "DELETE_REFRESH":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+                break;
+            case "DELETE_ITEM":
+                alert.setTitle("Quitar " + titulo);
+                alert.setContentText("No se pudo eliminar "+ titulo +" item del Periodo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+                break;
             case "TABLE_EMPTY":
                 alert.setTitle("Consulta "+ titulo);
-                alert.setContentText("No existen Cuentas Contables para el periodo seleccionado.");
+                alert.setContentText("No existen "+ titulo+ " para el periodo seleccionado.");
+                break;
+            case "ADD_REFRESH":
+                alert.setTitle("Agregar "+ titulo);
+                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+                break;
+            case "EDIT_EMPTY":
+                alert.setTitle("Editar "+ titulo);
+                alert.setContentText("Seleccione item.");
+                break;
+            case "EDIT_SUCCESS":
+                alert.setTitle("Editar "+ titulo);
+                alert.setContentText(titulo +" editada correctamente.");
+                break;
+            case "EDIT_ERROR":
+                alert.setTitle("Editar "+ titulo);
+                alert.setContentText("No se pudo editar " + titulo);
                 break;
             default:
                 alert.setTitle(titulo);
@@ -679,9 +819,29 @@ public class Navegador {
                 alert.setTitle("Descargar información");
                 alert.setContentText("Descargar completa.");
                 break;
-            case "LOG":
+            case "DOWNLOAD_LOG":
                 alert.setTitle("Guardar LOG");
                 alert.setContentText("Descarga completa.");
+                break;
+            case "DOWNLOAD_CANCELED":
+                alert.setTitle("Descargar información");
+                alert.setContentText("Descarga Cancelada");
+                break;
+            case "SELECT_ENTITY":
+                alert.setTitle("Seleccionar entidad");
+                alert.setContentText("No seleccionó ninguna entidad.");
+                break;
+            case "UPLOAD_ERROR_PERIODO":
+                alert.setTitle("Subida de archivo Excel");
+                alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
+                break;
+            case "UPLOAD_EMPTY":
+                alert.setTitle("Subir Información");
+                alert.setContentText("No hay información.");
+                break;
+            case "UPLOAD_SUCCESS":
+                alert.setTitle("Subir Información");
+                alert.setContentText("La información se subió correctamente.");
                 break;
             default:
                 alert.setTitle("");
@@ -715,6 +875,6 @@ public class Navegador {
         } catch(IOException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             LOGGER.log(Level.SEVERE,e.getMessage());
         }
-        menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), rutas.getControlador());
+        menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), rutas.getDireccion());
     }
 }

@@ -169,11 +169,7 @@ public class BuscarEntidadControlador implements Initializable {
         try {
             EntidadDistribucion entidadSeleccionada = tabEntidades.getSelectionModel().getSelectedItem();            
             if (entidadSeleccionada == null) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Seleccionar entidad");
-                alert.setHeaderText(null);
-                alert.setContentText("No seleccionó ninguna entidad.");
-                alert.showAndWait();
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_SELECT_ENTITY);
             } else {
                 objetoControlador.seleccionarEntidad(entidadSeleccionada);
                 ((Stage) btnSeleccionar.getScene().getWindow()).close();

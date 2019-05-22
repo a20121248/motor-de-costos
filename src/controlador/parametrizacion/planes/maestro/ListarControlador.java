@@ -61,10 +61,12 @@ public class ListarControlador implements Initializable {
     FilteredList<CuentaContable> filteredData;
     SortedList<CuentaContable> sortedData;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        this.titulo = "Cuenta Contable";
     }
     
     @Override
@@ -160,8 +162,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         CuentaContable item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Editar Cuenta Contable", "Por favor seleccione una Cuenta Contable.");
-            return;
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY );
         }
         menuControlador.objeto = item;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_EDITAR);
@@ -179,13 +180,14 @@ public class ListarControlador implements Initializable {
         
         if(planDeCuentaDAO.verificarObjetoPlanCuenta(item.getCodigo()) == 0){
             planDeCuentaDAO.eliminarObjetoCuenta(item.getCodigo());
+            
             txtBuscar.setText("");
             filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
             sortedData = new SortedList(filteredData);
             tabListar.setItems(sortedData);
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
             menuControlador.navegador.mensajeInformativo("Eliminar Cuenta Contable", "Grupo eliminado correctamente.");
-            LOGGER.log(Level.INFO,String.format("El usuario %s eliminó la Cuenta Contable %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
+            menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
         }else{
             menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
         }
@@ -204,11 +206,12 @@ public class ListarControlador implements Initializable {
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("CuentasContables-Catálogo", tabListar);
                 descargaFile.DescargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
-            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
     

@@ -78,12 +78,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getControlador());
-    
+    String titulo;
     private List<Grupo> vista;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
+        this.titulo = "Grupos de Cuentas Contables";
     }
     
     @Override
@@ -240,8 +241,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("GruposDeCuentasContables", tabListar);
                 descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER,menuControlador.usuario.getUsername(), titulo, periodoSeleccionado, Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
             menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
@@ -255,6 +257,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         grupoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), entidad.getCodigo(), Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
 

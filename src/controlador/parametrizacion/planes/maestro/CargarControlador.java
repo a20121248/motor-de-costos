@@ -138,12 +138,6 @@ public class CargarControlador implements Initializable {
                 return null;
             }
             
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTAS_CONTABLES.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
@@ -164,7 +158,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
+        String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar LOG");
         fileChooser.setInitialFileName(logName);
@@ -188,19 +182,25 @@ public class CargarControlador implements Initializable {
         if(lista.isEmpty()){
             menuControlador.navegador.mensajeError("Subir Información", "No hay contenido.");
         }else{
+            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTAS_CONTABLES.log";
+            menuControlador.Log.crearArchivo(logName);
+            menuControlador.Log.agregarSeparadorArchivo('=', 100);
+            menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+            menuControlador.Log.agregarSeparadorArchivo('=', 100);
             for(CuentaContable item:lista) {
                 if (lstCodigos.contains(item.getCodigo())) {
-                    logServicio.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
+                    menuControlador.Log.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
                     item.setFlagCargar(false);
                     findError = true;
                 } else {
-                    logServicio.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
+                    menuControlador.Log.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
+                    menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
                     item.setFlagCargar(true);
                 }
             }
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
+            menuControlador.Log.agregarSeparadorArchivo('=', 100);
+            menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+            menuControlador.Log.agregarSeparadorArchivo('=', 100);
             planDeCuentaDAO.insertarListaObjetoCuenta(lista, menuControlador.repartoTipo);
             if(findError == true){
                 menuControlador.navegador.mensajeError("Subida de archivo Excel", "Cuentas contables subidas. Se presentaron algunos errores. \n"
@@ -211,7 +211,6 @@ public class CargarControlador implements Initializable {
 
             }
             btnDescargarLog.setVisible(true);
-            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Cuentas Contables.",menuControlador.usuario.getUsername()));
         }
     }
 }
