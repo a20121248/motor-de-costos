@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -16,6 +18,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.prefs.Preferences;
+import modelo.EntidadDistribucion;
 
 public class LoggingServicio {
     final public Logger LOG_RAIZ = Logger.getLogger("");
@@ -182,5 +185,39 @@ public class LoggingServicio {
         while(num-->0)linea+=caracter;
         agregarLineaArchivo(linea);
     }
+    
+//    Boolean creandoReporteLOG(List<?extends EntidadDistribucion> tabListar, String fileName,Logger LOGGER, String user, String ruta){
+//        Boolean findError = false;
+//        String logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + fileName;
+//        crearArchivo(logName);
+//        agregarSeparadorArchivo('=', 100);
+//        agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+//        agregarSeparadorArchivo('=', 100);
+//        Iterator<?extends EntidadDistribucion> iterator = tabListar.iterator();
+//        while(iterator.hasNext()){
+//            if(iterator.){
+//                agregarLineaArchivo("Se creó item "+ item.getCodigo()+ " en Balancete correctamente.");
+//                agregarItem(LOGGER, user, item.getCodigo(), ruta);
+//            }
+//            else{
+//                agregarLineaArchivo("No se creó item "+ item.getCodigo()+ " en Balancete, debido a que no existe en Cuentas Contables.");
+//                findError = true;
+//            }
+//        }
+//        tabListar.getItems().forEach((item)->{
+//            if(item.getEstado()){
+//                agregarLineaArchivo("Se creó item "+ item.getCodigo()+ " en Balancete correctamente.");
+//                agregarItem(LOGGER, user, item.getCodigo(), ruta);
+//            }
+//            else{
+//                agregarLineaArchivo("No se creó item "+ item.getCodigo()+ " en Balancete, debido a que no existe en Cuentas Contables.");
+//                findError = true;
+//            }
+//        });
+//        agregarSeparadorArchivo('=', 100);
+//        agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+//        agregarSeparadorArchivo('=', 100);
+//        return findError;
+//    }
 }
 

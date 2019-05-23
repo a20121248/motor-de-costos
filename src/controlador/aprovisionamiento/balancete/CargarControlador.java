@@ -182,7 +182,12 @@ public class CargarControlador implements Initializable {
             btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
             List<CargarBalanceteLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
-            tabListar.getItems().setAll(lista);
+            if (lista != null) {
+                tabListar.getItems().setAll(lista);
+            } else {
+                txtRuta.setText("");
+            }
+            
 //                lblNumeroCheck.setText("Cuentas contables a cargar: " + lista.size());
 //            cmbMes.setDisable(true);
 //            spAnho.setDisable(true);
@@ -274,15 +279,16 @@ public class CargarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             planDeCuentaDAO.insertarBalancete(periodoSeleccionado,listaCargar);
-            creandoReporteLOG();  
-        }
-        if(findError == true){
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-        }else {
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+            creandoReporteLOG();
+            if(findError == true){
+                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+            }else {
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
 
+            }
+            btnDescargarLog.setVisible(true);
         }
-        btnDescargarLog.setVisible(true);
+        
     }
     
     // Acción del botón 'Cancelar'

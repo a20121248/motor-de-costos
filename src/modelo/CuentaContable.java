@@ -1,6 +1,8 @@
 package modelo;
 
 import java.util.Date;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 
 public class CuentaContable extends EntidadDistribucion {
@@ -12,8 +14,10 @@ public class CuentaContable extends EntidadDistribucion {
     private StringProperty distribuyeCentroCosto;
     private StringProperty codProducto;
     private StringProperty descripcionProducto;
+    private BooleanProperty flagCargar;
     // datos del saldo
     private Tipo grupo;
+    
     
     public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
@@ -22,6 +26,11 @@ public class CuentaContable extends EntidadDistribucion {
     public CuentaContable(String codigo, String nombre, String descripcion, Date fechaCreacion, Date fechaActualizacion, double saldo, Tipo grupo, boolean estaActiva) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, estaActiva);
         this.grupo = grupo;
+    }
+    
+    public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
     public Tipo getGrupo() {
@@ -127,5 +136,13 @@ public class CuentaContable extends EntidadDistribucion {
 
     public void setDescripcionProducto(String descripcionProducto) {
         this.descripcionProducto.set(descripcionProducto);
+    }
+    
+    public boolean getFlagCargar(){
+        return flagCargar.get();
+    }
+    
+    public void setFlagCargar(Boolean flagCargar){
+        this.flagCargar.set(flagCargar);
     }
 }

@@ -64,12 +64,16 @@ public class CargarControlador implements Initializable {
     String logName;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<CuentaContable> listaCargar = new ArrayList() ;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getControlador());
+    String titulo;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         lstCodigos = planDeCuentaDAO.listarCodigos();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
@@ -123,6 +127,7 @@ public class CargarControlador implements Initializable {
     
     private List<CuentaContable> leerArchivo(String rutaArchivo) {
         List<CuentaContable> lstPrevisualizar = new ArrayList();
+//        List<CuentaContable> listaError = new ArrayList();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -133,8 +138,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar Cuentas Contables", msj);
+                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
             
@@ -145,7 +149,16 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 
-                CuentaContable linea = new CuentaContable(codigo,nombre,null,0,null,null);
+                CuentaContable linea = new CuentaContable(codigo,nombre,null,0,null,null,true);
+                
+                String cuenta = lstCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                if(cuenta!= null){
+                    listaCargar.add(linea);
+                    
+                }else {
+                    linea.setFlagCargar(false);
+//                    listaError.add(linea);
+                }
                 lstPrevisualizar.add(linea);
             }
             //cerramos el libro
@@ -177,40 +190,40 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        List<CuentaContable> lista = tabListar.getItems();
-        boolean findError = false;
-        if(lista.isEmpty()){
+        findError = false;
+        if(listaCargar.isEmpty()){
             menuControlador.navegador.mensajeError("Subir Información", "No hay contenido.");
         }else{
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTAS_CONTABLES.log";
-            menuControlador.Log.crearArchivo(logName);
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            for(CuentaContable item:lista) {
-                if (lstCodigos.contains(item.getCodigo())) {
-                    menuControlador.Log.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
-                    item.setFlagCargar(false);
-                    findError = true;
-                } else {
-                    menuControlador.Log.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
-                    menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
-                    item.setFlagCargar(true);
-                }
-            }
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            planDeCuentaDAO.insertarListaObjetoCuenta(lista, menuControlador.repartoTipo);
+            planDeCuentaDAO.insertarListaObjetoCuenta(listaCargar, menuControlador.repartoTipo);
+            crearReporteLOG();
             if(findError == true){
-                menuControlador.navegador.mensajeError("Subida de archivo Excel", "Cuentas contables subidas. Se presentaron algunos errores. \n"
-                                                                                      + "Para mayor información Descargue el LOG.");
-
+                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
             }else {
-                menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables subidas correctamente.");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
 
             }
             btnDescargarLog.setVisible(true);
         }
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_BALANCETE.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }
