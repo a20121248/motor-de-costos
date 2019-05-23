@@ -199,7 +199,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         //Si PlanDeCuenta no encuentra items asociados al periodo podrá eliminar el objeto
         if(planDeCuentaDAO.verificarObjetoPlanCuentaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
-            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
             menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_DELETE_ITEM);
@@ -257,7 +257,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         planDeCuentaDAO.insertarObjetoCuentaPeriodo(entidad.getCodigo(), periodoSeleccionado);
-        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getControlador());
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
 

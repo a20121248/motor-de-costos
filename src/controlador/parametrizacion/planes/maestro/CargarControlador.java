@@ -172,18 +172,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {

@@ -1,8 +1,10 @@
 package modelo;
 
 import java.util.Date;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -10,6 +12,7 @@ public class Centro extends EntidadDistribucion {
     private IntegerProperty nivel;
     private ObjectProperty<Centro> centroPadre;
     private ObjectProperty<Tipo> tipo;
+    private BooleanProperty flagCargar;
     
     public Centro(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
@@ -20,6 +23,14 @@ public class Centro extends EntidadDistribucion {
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
         this.tipo = new SimpleObjectProperty(tipo);
+    }
+    
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+        super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
+        this.nivel = new SimpleIntegerProperty(nivel);
+        this.centroPadre = new SimpleObjectProperty(centroPadre);
+        this.tipo = new SimpleObjectProperty(tipo);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
     public IntegerProperty nivelProperty() {
@@ -56,5 +67,13 @@ public class Centro extends EntidadDistribucion {
 
     public void setTipo(Tipo tipo) {
         this.tipo.set(tipo);
+    }
+    
+    public boolean getFlagCargar() {
+        return flagCargar.get();
+    }
+
+    public void setFlagCargar(Boolean flagCargar) {
+        this.flagCargar.set(flagCargar);
     }
 }

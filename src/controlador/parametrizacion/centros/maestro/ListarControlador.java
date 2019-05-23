@@ -59,14 +59,14 @@ public class ListarControlador implements Initializable {
     CentroDAO centroDAO;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getControlador());
-    String titulo2;
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
-        titulo2 = "Centro de Costos";
+        titulo = "Centro de Costos";
         if (menuControlador.repartoTipo == 2) { 
-            titulo2 = "Centro de Beneficio";
+            titulo = "Centro de Beneficio";
         }
     }
     
@@ -161,7 +161,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         Centro centro = tabListar.getSelectionModel().getSelectedItem();
         if (centro == null) {
-            menuControlador.navegador.mensajeInformativo("Editar " + titulo2, "Por favor seleccione un " + titulo2 + ".");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY );
             return;
         }
         menuControlador.objeto = centro;
@@ -171,18 +171,20 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         Centro centro = tabListar.getSelectionModel().getSelectedItem();
         if (centro == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar " + titulo2, "Por favor seleccione un " + titulo2 + ".");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
-        if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo2, "¿Está seguro de eliminar el " + titulo2 + " " + centro.getCodigo() + "?")) {
+        if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo, "¿Está seguro de eliminar el " + titulo + " " + centro.getCodigo() + "?")) {
             return;
         }
         if(centroDAO.verificarObjetoCentro(centro.getCodigo()) == 0){
             centroDAO.eliminarObjetoCentro(centro.getCodigo());
             llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
-            menuControlador.navegador.mensajeInformativo("Eliminar " + titulo2, titulo2 + " eliminado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
+            menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),centro.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
+
         }else{
-            menuControlador.navegador.mensajeError("Eliminar Centro de Costos", "No se pudo eliminar el Centro de Costos, pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
         }     
     }
     
@@ -199,11 +201,12 @@ public class ListarControlador implements Initializable {
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("CentrosDeCostos-Catálogo", tabListar);
                 descargaFile.DescargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
-            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
     

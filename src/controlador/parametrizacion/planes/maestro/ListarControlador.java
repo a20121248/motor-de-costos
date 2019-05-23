@@ -171,7 +171,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         CuentaContable item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Cuenta Contable", "Por favor seleccione una Cuenta Contable.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Cuenta Contable", "¿Está seguro de eliminar la Cuenta Contable " + item.getCodigo() + "?")) {
@@ -186,10 +186,10 @@ public class ListarControlador implements Initializable {
             sortedData = new SortedList(filteredData);
             tabListar.setItems(sortedData);
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-            menuControlador.navegador.mensajeInformativo("Eliminar Cuenta Contable", "Grupo eliminado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
         }else{
-            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
         }
     }
     

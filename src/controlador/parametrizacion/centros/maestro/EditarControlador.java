@@ -44,11 +44,13 @@ public class EditarControlador implements Initializable {
     CentroDAO centroDAO;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centro = (Centro) menuControlador.objeto;
         centroDAO = new CentroDAO();
+        this.titulo = "Centro de Costos";
     }
     
     @Override
@@ -135,10 +137,11 @@ public class EditarControlador implements Initializable {
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
         if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo)==1) {
-            menuControlador.navegador.mensajeInformativo("Guardar Centros de Costos", "Centro de Costos actualizado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Guardar Centros de Costos", "Error. No se pudo actualizar el Centro de Costos.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
         }
     }
     

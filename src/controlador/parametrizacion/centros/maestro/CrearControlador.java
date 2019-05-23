@@ -44,11 +44,13 @@ public class CrearControlador implements Initializable {
     CentroDAO centroDAO;
     List<String> lstCentrosCodigo;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getControlador());
+    String titulo;
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         lstCentrosCodigo = centroDAO.listarCodigos();
+        this.titulo = "Centro de Costos";
     }
     
     @Override
@@ -132,14 +134,15 @@ public class CrearControlador implements Initializable {
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
         if (lstCentrosCodigo.contains(codigo)) {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, "El código ya existe. No se puede crear el " + titulo2 + ".");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;
         }
         if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, titulo2 + " creado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, "Error. No se puede crear el " + titulo2);
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
         }
     }
     

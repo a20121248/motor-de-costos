@@ -74,6 +74,7 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_DELETE_SELECTED = "DELETE_SELECTED";
     public final String MENSAJE_DELETE_REFRESH = "DELETE_REFRESH";
     public final String MENSAJE_DELETE_ITEM = "DELETE_ITEM";
+    public final String MENSAJE_DELETE_SUCCESS = "DELETE_SUCCESS";
     public final String MENSAJE_UPLOAD = "UPLOAD";
     public final String MENSAJE_UPLOAD_SUCCESS = "UPLOAD_SUCCESS";
     public final String MENSAJE_UPLOAD_SUCCESS_ERROR = "UPLOAD_SUCCESS_ERROR";
@@ -85,6 +86,11 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_ADD_REFRESH = "ADD_REFRESH";
     public final String MENSAJE_SELECT_ENTITY = "SELECT_ENTITY";
     public final String MENSAJE_EDIT_EMPTY = "EDIT_EMPTY";
+    public final String MENSAJE_EDIT_SUCCESS = "EDIT_SUCCESS";
+    public final String MENSAJE_EDIT_ERROR = "EDIT_ERROR";
+    public final String MENSAJE_CREATE_ITEM_EXIST = "CREATE_ITEM_EXIST";
+    public final String MENSAJE_CREATE_SUCCESS = "CREATE_SUCCESS";
+    public final String MENSAJE_CREATE_ERROR = "CREATE_ERROR";
     
     public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD, String rutaLog) throws IOException {
         // Administrador de pantallas

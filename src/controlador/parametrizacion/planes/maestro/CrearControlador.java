@@ -71,15 +71,15 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear Cuenta Contable", "El código " + codigo + " ya existe. No se puede crear la Cuenta Contable.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;
         }
         if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear Cuenta Contable", "Cuenta Contable creada correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear Cuenta Contable", "No se puede crear la cuenta contable.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
         }
     }
     

@@ -35,11 +35,13 @@ public class EditarControlador implements Initializable {
     CuentaContable planDeCuenta;
     PlanDeCuentaDAO planDeCuentaDAO;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuenta = (CuentaContable) menuControlador.objeto;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
@@ -71,11 +73,11 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String nombre = txtNombre.getText();
         if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre)==1) {
-            menuControlador.navegador.mensajeInformativo("Editar Cuenta Contable", "Cuenta Contable editada correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Editar Cuenta Contable", "No se pudo editar la Cuenta Contable.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
         }
     }
     

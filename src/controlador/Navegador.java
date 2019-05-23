@@ -781,16 +781,20 @@ public class Navegador {
                 alert.setContentText(contenido);
                 break;
             case "DELETE_SELECTED":
-                alert.setTitle("Quitar " + titulo);
+                alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("Por favor seleccione "+ titulo);
                 break;
             case "DELETE_REFRESH":
-                alert.setTitle("Quitar " + titulo);
+                alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
                 break;
             case "DELETE_ITEM":
-                alert.setTitle("Quitar " + titulo);
+                alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("No se pudo eliminar "+ titulo +" item del Periodo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+                break;
+            case "DELETE_SUCCESS":
+                alert.setTitle("Eliminar " + titulo);
+                alert.setContentText( titulo +" eliminado correctamente.");
                 break;
             case "TABLE_EMPTY":
                 alert.setTitle("Consulta "+ titulo);
@@ -810,7 +814,19 @@ public class Navegador {
                 break;
             case "EDIT_ERROR":
                 alert.setTitle("Editar "+ titulo);
-                alert.setContentText("No se pudo editar " + titulo);
+                alert.setContentText("No se pudo editar " + titulo +".");
+                break;
+            case "CREATE_ITEM_EXIST":
+                alert.setTitle("Crear "+ titulo);
+                alert.setContentText("El código de " + titulo + " ya existe. No se pudo crear el item.");
+                break;
+            case "CREATE_SUCCESS":
+                alert.setTitle("Crear "+ titulo);
+                alert.setContentText(titulo +" creado correctamente.");
+                break;
+            case "CREATE_ERROR":
+                alert.setTitle("Crear "+ titulo);
+                alert.setContentText("Error. No se pudo crear " + titulo);
                 break;
             default:
                 alert.setTitle(titulo);
