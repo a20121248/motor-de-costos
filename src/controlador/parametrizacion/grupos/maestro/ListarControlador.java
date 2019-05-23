@@ -60,10 +60,12 @@ public class ListarControlador implements Initializable {
     FilteredList<Grupo> filteredData;
     SortedList<Grupo> sortedData;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_LISTAR.getControlador());
-    
+    String titulo;
+
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
+        this.titulo = "Grupos de Cuentas Contables";
     }
     
     @Override
@@ -153,7 +155,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         Grupo item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Por favor seleccione un Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Grupo de Cuentas Contables", "¿Está seguro de eliminar el Grupo " + item.getCodigo() + "?")) {
@@ -167,16 +169,15 @@ public class ListarControlador implements Initializable {
             sortedData = new SortedList(filteredData);
             tabListar.setItems(sortedData);
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-            menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Grupo eliminado correctamente.");
-            LOGGER.log(Level.INFO,String.format("El usuario %s eliminó el Grupo %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
+            menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
         }else{
-            menuControlador.navegador.mensajeError("Eliminar Grupo de Cuentas Contables", "No se pudo eliminar el Grupo pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
         }
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_MAESTRO_CARGAR);
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Cargar Grupos.",menuControlador.usuario.getUsername()));
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
@@ -188,17 +189,17 @@ public class ListarControlador implements Initializable {
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("GruposDeCuentasContables-Catálogo", tabListar);
                 descargaFile.DescargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
-            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Asociación.",menuControlador.usuario.getUsername()));
     }
     
     @FXML void btnBuscarAction(ActionEvent event) {

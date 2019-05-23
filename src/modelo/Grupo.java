@@ -2,7 +2,9 @@ package modelo;
 
 import java.util.Date;
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class Grupo extends EntidadDistribucion {
@@ -10,11 +12,19 @@ public class Grupo extends EntidadDistribucion {
     Tipo tipo;
     Grupo grupoPadre;
     List<CuentaContable> listaPlanDeCuentas;
+    final BooleanProperty flagCargar;
     
     public Grupo(String codigo, String nombre, String descripcion, double saldoAcumulado, List<CuentaContable> listaPlanDeCuentas, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         this.listaPlanDeCuentas = listaPlanDeCuentas;
         nivel = new SimpleIntegerProperty(0);
+        this.flagCargar = new SimpleBooleanProperty();
+    }
+    public Grupo(String codigo, String nombre, String descripcion, double saldoAcumulado, List<CuentaContable> listaPlanDeCuentas, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+        super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
+        this.listaPlanDeCuentas = listaPlanDeCuentas;
+        nivel = new SimpleIntegerProperty(0);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
     public List<CuentaContable> getListaPlanDeCuentas() {
@@ -51,5 +61,12 @@ public class Grupo extends EntidadDistribucion {
 
     public void setNivel(int nivel) {
         this.nivel.set(nivel);
+    }
+    public boolean getFlagCargar() {
+        return flagCargar.get();
+    }
+
+    public void setFlagCargar(boolean nivel) {
+        this.flagCargar.set(nivel);
     }
 }

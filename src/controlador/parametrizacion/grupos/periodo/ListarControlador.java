@@ -166,7 +166,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar Grupo", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "GCTA".equals(item.getCodigo())).findFirst().orElse(null);
@@ -190,13 +190,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar Grupo de Cuentas Contables", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
             return;
         }
         
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar Grupo de Cuentas Contables", "Por favor seleccione un Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
        
@@ -205,9 +205,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
         if(grupoDAO.verificarObjetoGrupoPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             grupoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
-            menuControlador.navegador.mensajeError("Eliminar Cuenta Contable", "No se pudo eliminar la Cuenta Contable del periodo "+periodoSeleccionado + " pues está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+            menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_DELETE_ITEM);
         }   
     }
     
@@ -223,7 +224,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         vista = grupoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         if (vista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Grupos", "No existen Grupos para el periodo seleccionado.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         sortedData = new SortedList(filteredData);
@@ -246,7 +247,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
         }else{
-            menuControlador.navegador.mensajeInformativo("Descargar Información", "No hay información.");
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
     
