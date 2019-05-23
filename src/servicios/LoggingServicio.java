@@ -1,10 +1,16 @@
 package servicios;
 
+import com.jfoenix.controls.JFXButton;
+import controlador.MenuControlador;
 import controlador.Navegador;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +24,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.prefs.Preferences;
+import javafx.stage.FileChooser;
 import modelo.EntidadDistribucion;
 
 public class LoggingServicio {
@@ -184,6 +191,21 @@ public class LoggingServicio {
         String linea = "";
         while(num-->0)linea+=caracter;
         agregarLineaArchivo(linea);
+    }
+    
+    public void descargarLog(JFXButton btnDescargarLog,String logName, MenuControlador menuControlador ) throws IOException {
+        String rutaOrigen = getCarpetaLogDay() + logName;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar LOG");
+        fileChooser.setInitialFileName(logName);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
+        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
+        if (archivoSeleccionado != null) {
+            Path origen = Paths.get(rutaOrigen);
+            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_LOG);
+        }
     }
     
 //    Boolean creandoReporteLOG(List<?extends EntidadDistribucion> tabListar, String fileName,Logger LOGGER, String user, String ruta){
