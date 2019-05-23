@@ -126,7 +126,8 @@ public class CargarControlador implements Initializable {
     }
     
     private List<CuentaContable> leerArchivo(String rutaArchivo) {
-        List<CuentaContable> lstPrevisualizar = new ArrayList();
+        List<CuentaContable> lista = new ArrayList();
+        List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
 //        List<CuentaContable> listaError = new ArrayList();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
@@ -151,15 +152,15 @@ public class CargarControlador implements Initializable {
                 
                 CuentaContable linea = new CuentaContable(codigo,nombre,null,0,null,null,true);
                 
-                String cuenta = lstCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
-                if(cuenta!= null){
-                    listaCargar.add(linea);
-                    
+                String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                if(cuenta == null){
+                    listaCargar.add(linea);                    
+                    listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
-                lstPrevisualizar.add(linea);
+                lista.add(linea);
             }
             //cerramos el libro
             f.close();
@@ -167,7 +168,7 @@ public class CargarControlador implements Initializable {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE,ex.getMessage());
         }
-        return lstPrevisualizar;
+        return lista;
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
@@ -191,23 +192,26 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
-        if(listaCargar.isEmpty()){
-            menuControlador.navegador.mensajeError("Subir Información", "No hay contenido.");
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }else{
-            planDeCuentaDAO.insertarListaObjetoCuenta(listaCargar, menuControlador.repartoTipo);
-            crearReporteLOG();
-            if(findError == true){
-                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-            }else {
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
-
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ALLCHARGED_YET);
+            }else{
+                planDeCuentaDAO.insertarListaObjetoCuenta(listaCargar, menuControlador.repartoTipo);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
             }
-            btnDescargarLog.setVisible(true);
         }
     }
     
     void crearReporteLOG(){
-        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_BALANCETE.log";
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTACONTABLE_CATALOGO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");

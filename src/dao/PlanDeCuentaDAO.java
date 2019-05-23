@@ -33,7 +33,7 @@ public class PlanDeCuentaDAO {
     public PlanDeCuentaDAO() {
         connection = new ConnectionDB();
     }
-    
+
     public List<CuentaContable> listarMaestro(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {
@@ -58,8 +58,8 @@ public class PlanDeCuentaDAO {
             Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return lista;
-    }    
-    
+    }
+
     public List<String> listarCodigos() {
         String queryStr = String.format("SELECT CODIGO FROM PLAN_DE_CUENTAS");
         List<String> lista = new ArrayList();
@@ -73,7 +73,7 @@ public class PlanDeCuentaDAO {
         }
         return lista;
     }
-    
+
     public int actualizarGrupoObjeto(String codigo, String nombre, int estado) {
         String queryStr = String.format("" +
                 "UPDATE grupos\n" +
@@ -82,7 +82,7 @@ public class PlanDeCuentaDAO {
                 nombre,estado,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int actualizarObjeto(String codigo, String nombre) {
         String queryStr = String.format("" +
                 "UPDATE plan_de_cuentas\n" +
@@ -91,28 +91,28 @@ public class PlanDeCuentaDAO {
                 nombre,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int insertarObjetoCuenta(String codigo, String nombre, int repartoTipo) {
-        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
+        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
                 "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 codigo,nombre,1,repartoTipo,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void insertarObjetoCuentaPeriodo(String codigo, int periodo) {
-        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());        
+        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
                 "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES('%s',%d,0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 codigo,periodo,fechaStr,fechaStr);
         ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void insertarListaObjetoCuenta(List<CuentaContable> lista, int repartoTipo) {
         ConexionBD.crearStatement();
-        lista.stream().filter(item -> item.getFlagCargar()).map((item) -> {
+        for(CuentaContable item: lista){
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
@@ -121,14 +121,12 @@ public class PlanDeCuentaDAO {
                     "INSERT INTO PLAN_DE_CUENTAS(CODIGO,NOMBRE,ESTA_ACTIVO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                     "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigo,nombre,1,repartoTipo,fechaStr,fechaStr);
-            return queryStr;
-        }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);
-        });
+        }
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
-    
+
     public int borrarListaObjetoCuentaPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM plan_de_cuenta_lineas A\n" +
@@ -140,7 +138,7 @@ public class PlanDeCuentaDAO {
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void insertarListaObjetoCuentaPeriodo(List<CargarObjetoPeriodoLinea> lista, int repartoTipo) {
         borrarListaObjetoCuentaPeriodo(lista.get(0).getPeriodo(), repartoTipo);
         ConexionBD.crearStatement();
@@ -148,7 +146,7 @@ public class PlanDeCuentaDAO {
             int periodo = item.getPeriodo();
             String codigo = item.getCodigo();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-            
+
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
@@ -163,7 +161,7 @@ public class PlanDeCuentaDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
-    
+
     public List<CuentaContable> listar(int periodo, String tipoGasto, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
@@ -200,7 +198,7 @@ public class PlanDeCuentaDAO {
         }
         return lista;
     }
-    
+
     public List<CuentaContable> listarObjetoCuentas(int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
@@ -234,7 +232,7 @@ public class PlanDeCuentaDAO {
                 codigo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int eliminarObjetoCuenta(String codigo) {
         String queryStr = String.format("" +
                 "DELETE FROM plan_de_cuentas\n" +
@@ -242,7 +240,7 @@ public class PlanDeCuentaDAO {
                 codigo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void eliminarObjetoCuentaPeriodo(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "DELETE FROM plan_de_cuenta_lineas\n" +
@@ -250,7 +248,7 @@ public class PlanDeCuentaDAO {
                 codigo,periodo);
         ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int verificarObjetoPlanCuentaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
@@ -267,7 +265,7 @@ public class PlanDeCuentaDAO {
         }
         return cont;
     }
-    
+
 //    Verifica si esta siendo usado en las lineas
     public int verificarObjetoPlanCuenta(String codigo) {
         String queryStr = String.format("" +
@@ -285,7 +283,7 @@ public class PlanDeCuentaDAO {
         }
         return cont;
     }
-    
+
     public List<Grupo> listarObjetoGrupos(int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
@@ -311,14 +309,14 @@ public class PlanDeCuentaDAO {
         }
         return lista;
     }
-    
+
     public int insertarListaObjetoGrupo(List<CargarGrupoLinea> lista) {
         ConexionBD.crearStatement();
         for (CargarGrupoLinea item: lista) {
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-            
+
             // inserto el nombre
             String queryStr = String.format("" +
                     "INSERT INTO grupos(codigo,nombre,esta_activo,fecha_creacion,fecha_actualizacion)\n" +
@@ -330,7 +328,7 @@ public class PlanDeCuentaDAO {
         ConexionBD.cerrarStatement();
         return 1;
     }
-    
+
     public int insertarObjetoGrupo(String codigo, String nombre, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
@@ -367,7 +365,7 @@ public class PlanDeCuentaDAO {
                 int periodo = lista.get(posI).getPeriodo();
                 String codigo = lista.get(posI).getCodigo();
                 String nombre = lista.get(posI).getNombre();
-                
+
                 query = String.format("SELECT COUNT(1) count FROM grupos WHERE codigo='%s'",codigo);
                 System.out.println(query);
                 rs = ps1.executeQuery(query);
@@ -398,14 +396,14 @@ public class PlanDeCuentaDAO {
                         codigo, periodo);
                 //System.out.println(query);
                 ps3.addBatch(query);
-                
+
                 query = String.format("" +
                         "INSERT INTO grupo_plan_de_cuenta(grupo_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
                         "VALUES('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                         codigo,"-",periodo,fechaStr,fechaStr);
                 //System.out.println(query);
                 ps3.addBatch(query);
-                
+
                 ++numOper;
                 if(numOper % batchSize == 0) {
                     result = ps2.executeBatch();
@@ -413,7 +411,7 @@ public class PlanDeCuentaDAO {
                     result = ps3.executeBatch();
                     access3.commit();
                 }
-            }            
+            }
         } catch (BatchUpdateException b) {
             access2.rollback();
             access3.rollback();
@@ -426,7 +424,7 @@ public class PlanDeCuentaDAO {
             System.out.println(e.getMessage());
         }*/
     }
-    
+
     public int borrarCuentasGrupo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM grupo_plan_de_cuenta A\n" +
@@ -438,7 +436,7 @@ public class PlanDeCuentaDAO {
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int borrarCuentaGrupo(String cuentaCodigo,int periodo) {
         String queryStr = String.format("" +
                 "DELETE FROM grupo_plan_de_cuenta\n" +
@@ -446,7 +444,7 @@ public class PlanDeCuentaDAO {
                 cuentaCodigo,periodo);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public int insertarCuentaGrupo(String cuentaCodigo, String grupoCodigo, int periodo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
@@ -459,7 +457,7 @@ public class PlanDeCuentaDAO {
                     fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void insertarCuentasGrupo(int periodo, List<CargarGrupoCuentaLinea> lista, int repartoTipo) {
         borrarCuentasGrupo(periodo,repartoTipo);
         ConexionBD.crearStatement();
@@ -467,8 +465,8 @@ public class PlanDeCuentaDAO {
             String codigoGrupo = item.getCodigoAgrupacion();
             String codigoCuenta = item.getCodigoPlanDeCuenta();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-            
-            // inserto una linea dummy           
+
+            // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO grupo_plan_de_cuenta(grupo_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
@@ -482,7 +480,7 @@ public class PlanDeCuentaDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
-        
+
     public List<Tipo> listarGrupos(int periodo) {
         String queryStr = String.format("" +
                 "SELECT DISTINCT A.codigo,\n" +
@@ -536,7 +534,7 @@ public class PlanDeCuentaDAO {
         }
         return lista;
     }
-    
+
 public List<Grupo> listarGruposNombres() {
         String queryStr = "SELECT codigo,nombre FROM GRUPOS WHERE esta_activo=1 ORDER BY codigo";
         List<Grupo> lista = new ArrayList();
@@ -552,7 +550,7 @@ public List<Grupo> listarGruposNombres() {
         }
         return lista;
     }
-    
+
     public List<Grupo> listarGruposNombres(int periodo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
@@ -583,7 +581,7 @@ public List<Grupo> listarGruposNombres() {
         }
         return lista;
     }
-    
+
     public List<CuentaContable> listarProductosNombresNewF(int periodo) {
         String queryStr = String.format("" +
                 "SELECT DISTINCT A.codigo,\n" +
@@ -603,7 +601,7 @@ public List<Grupo> listarGruposNombres() {
                 "  JOIN plan_de_cuenta_lineas B ON B.plan_de_cuenta_codigo=A.codigo\n" +
                 " WHERE A.esta_activo=1 AND B.periodo=%d\n" +
                 " ORDER BY A.codigo",
-                periodo);        
+                periodo);
         List<CuentaContable> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -620,7 +618,7 @@ public List<Grupo> listarGruposNombres() {
                 String descripcionProducto = rs.getString("descripcion_producto");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                
+
                 //PlanDeCuenta item = new CuentaContable(codigo,nombre,descripcion,grupoBalance,rubroOperativo,codPonderacion,situacionIVA,situacionIT,distribuyeCentroCosto,codProducto,descripcionProducto,fechaCreacion,fechaActualizacion);
                 //lista.add(item);
             }
@@ -664,7 +662,7 @@ public List<Grupo> listarGruposNombres() {
                 String descripcionProducto = rs.getString("descripcion_producto");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                
+
                 CuentaContable item = new CuentaContable(codigo,nombre,descripcion,grupoBalance,rubroOperativo,codPonderacion,situacionIVA,situacionIT,distribuyeCentroCosto,codProducto,descripcionProducto,fechaCreacion,fechaActualizacion);
                 lista.add(item);
             }
@@ -678,7 +676,7 @@ public List<Grupo> listarGruposNombres() {
         }
         return lista;*/
     }
-    
+
     public void insertarBalancete(int periodo, List<CargarBalanceteLinea> lista) throws SQLException {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
@@ -698,14 +696,14 @@ public List<Grupo> listarGruposNombres() {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
-    
+
     public void insertarListaPlanDeCuenta(List<CargarPlanDeCuentaLinea> lista) {
         Connection access1 = connection.getConnection();
         Connection access2 = connection.getConnection();
         Connection access3 = connection.getConnection();
         Connection access4 = connection.getConnection();
         Connection access5 = connection.getConnection();
-        
+
         PreparedStatement ps1, ps2, ps3, ps4, ps5 = null;
         ResultSet rs = null;
         java.sql.Date fecha_sql = null;
@@ -720,7 +718,7 @@ public List<Grupo> listarGruposNombres() {
             int numOper2 = 0;
             int numOper3 = 0;
             int numOper4 = 0;
-            int batchSize = 20;            
+            int batchSize = 20;
             ps1 = access1.prepareStatement("SELECT COUNT(1) count FROM plan_de_cuentas WHERE codigo=?");
             ps2 = access2.prepareStatement("" +
                     "UPDATE plan_de_cuentas\n" +
@@ -797,11 +795,11 @@ public List<Grupo> listarGruposNombres() {
                 ps5.setInt(2, item.getPeriodo());
                 ps5.setInt(3, 0);
                 ps5.setDate(4, fecha_sql);
-                ps5.setDate(5, fecha_sql); 
+                ps5.setDate(5, fecha_sql);
                 //valor = ps.executeUpdate();
                 System.out.println("ps5: " + ps5.toString());
                 ps5.addBatch();
-                
+
                 ++numOper4;
 
                 if((numOper2 + numOper3) % batchSize == 0) {
@@ -810,7 +808,7 @@ public List<Grupo> listarGruposNombres() {
                     result = ps3.executeBatch();
                     access3.commit();
                 }
-                
+
                 if(numOper4 % batchSize == 0) {
                     result = ps4.executeBatch();
                     access4.commit();
@@ -837,8 +835,8 @@ public List<Grupo> listarGruposNombres() {
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
+
     public void insertarPlanDeCuenta(CargarPlanDeCuentaLinea item) {
         Connection access = connection.getConnection();
         PreparedStatement ps = null;
@@ -872,7 +870,7 @@ public List<Grupo> listarGruposNombres() {
                 ps.setInt(11, 1);
                 ps.setDate(12, fecha_sql);
                 ps.setString(13, item.getRubroContable());
-                
+
                 valor = ps.executeUpdate();
             } else { // no lo encontró, entonces lo inserto
                 ps = access.prepareStatement("" +
@@ -892,21 +890,21 @@ public List<Grupo> listarGruposNombres() {
                 ps.setString(11, item.getDescripcionProducto());
                 ps.setInt(12, 1);
                 ps.setDate(13, fecha_sql);
-                ps.setDate(14, fecha_sql);                
+                ps.setDate(14, fecha_sql);
                 valor = ps.executeUpdate();
             }
-            
+
             // inserto una linea dummy correspondiente al periodo
-            
-            
+
+
             ps = access.prepareStatement("" +
                     "DELETE FROM plan_de_cuenta_lineas\n" +
                     "WHERE plan_de_cuenta_codigo=? AND periodo=?"
             );
             ps.setString(1, item.getRubroContable());
             ps.setInt(2, item.getPeriodo());
-            valor = ps.executeUpdate();            
-            
+            valor = ps.executeUpdate();
+
             ps = access.prepareStatement("" +
                     "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
                     "VALUES (?,?,?,?,?)"
@@ -915,7 +913,7 @@ public List<Grupo> listarGruposNombres() {
             ps.setInt(2, item.getPeriodo());
             ps.setInt(3, 0);
             ps.setDate(4, fecha_sql);
-            ps.setDate(5, fecha_sql); 
+            ps.setDate(5, fecha_sql);
             valor = ps.executeUpdate();
         } catch (SQLException sqlEx) {
             System.out.println("SQLException occured. getErrorCode=> " + sqlEx.getErrorCode());
@@ -969,7 +967,7 @@ public List<Grupo> listarGruposNombres() {
         }
         return lista_plan_de_cuentas;
     }
-    
+
     public List<CuentaContable> listarPlanDeCuentaConGrupo(int periodo, String tipoGasto, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo pdc_codigo,\n" +
@@ -1016,7 +1014,7 @@ public List<Grupo> listarGruposNombres() {
         }
         return lista;
     }
-    
+
     public void insertarSaldo(CargarBalanceteLinea cargarBalanceteLinea) {
         Connection access = connection.getConnection();
         PreparedStatement ps = null;
@@ -1029,7 +1027,7 @@ public List<Grupo> listarGruposNombres() {
             ps.setString(1, cargarBalanceteLinea.getCodigo());
             ps.setInt(2, cargarBalanceteLinea.getPeriodo());
             valor = ps.executeUpdate();
-            
+
             ps = access.prepareStatement("" +
                     "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
                     "VALUES (?,?,?,?,?)");

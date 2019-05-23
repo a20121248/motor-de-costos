@@ -1,6 +1,8 @@
 package modelo;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -9,7 +11,7 @@ public class CargarObjetoPeriodoLinea {
     final IntegerProperty periodo;
     final StringProperty codigo;
     private StringProperty nombre;
-    boolean flagCargar;
+    private BooleanProperty flagCargar;
     
     public CargarObjetoPeriodoLinea(int periodo, String codigo) {
         this.periodo = new SimpleIntegerProperty(periodo);
@@ -20,6 +22,13 @@ public class CargarObjetoPeriodoLinea {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigo = new SimpleStringProperty(codigo);
         this.nombre = new SimpleStringProperty(nombre);
+    }
+    
+    public CargarObjetoPeriodoLinea(int periodo, String codigo, String nombre, Boolean flagCargar ) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigo = new SimpleStringProperty(codigo);
+        this.nombre = new SimpleStringProperty(nombre);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
 
     public IntegerProperty periodoProperty() {
@@ -56,5 +65,13 @@ public class CargarObjetoPeriodoLinea {
 
     public void setNombre(String nombre) {
         this.nombre.set(nombre);
+    }
+    
+    public Boolean getFlagCargar() {
+        return flagCargar.get();
+    }
+
+    public void setFlagCargar(Boolean flagCargar) {
+        this.flagCargar.set(flagCargar);
     }
 }

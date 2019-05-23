@@ -79,6 +79,8 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_UPLOAD_SUCCESS_ERROR = "UPLOAD_SUCCESS_ERROR";
     public final String MENSAJE_UPLOAD_ERROR_PERIODO = "UPLOAD_ERROR_PERIODO";
     public final String MENSAJE_UPLOAD_EMPTY = "UPLOAD_EMPTY";
+    public final String MENSAJE_UPLOAD_ALLCHARGED_YET = "UPLOAD_ALLCHARGED_YET";
+    public final String MENSAJE_UPLOAD_ITEM_DONTEXIST = "UPLOAD_ITEM_DONTEXIST";
     public final String MENSAJE_TABLE_EMPTY = "TABLE_EMPTY";
     public final String MENSAJE_ADD_REFRESH = "ADD_REFRESH";
     public final String MENSAJE_SELECT_ENTITY = "SELECT_ENTITY";

@@ -768,6 +768,14 @@ public class Navegador {
                 alert.setTitle("Subida de información " + titulo);
                 alert.setContentText(titulo + " subidas. Se presentaron algunos errores. \nPara mayor información Descargar LOG.");
                 break;
+            case "UPLOAD_ALLCHARGED_YET":
+                alert.setTitle("Subida de información " + titulo);
+                alert.setContentText("Toda La información ya está cargada.");
+                break;
+            case "UPLOAD_ITEM_DONTEXIST":
+                alert.setTitle("Subida de información " + titulo);
+                alert.setContentText("Los items no existen en el Catálogo");
+                break;
             case "DOWNLOAD":
                 alert.setTitle("Descargar "+ titulo);
                 alert.setContentText(contenido);
