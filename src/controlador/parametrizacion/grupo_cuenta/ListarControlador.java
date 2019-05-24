@@ -254,7 +254,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("Asignaciones", tabListar);
-                descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
             }else{
                 menuControlador.navegador.mensajeInformativo("Descargar Información", "Canceló la descarga");
             }

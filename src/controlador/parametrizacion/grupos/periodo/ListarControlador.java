@@ -241,7 +241,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("GruposDeCuentasContables", tabListar);
-                descargaFile.DescargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER,menuControlador.usuario.getUsername(), titulo, periodoSeleccionado, Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
             }else{
                 menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);

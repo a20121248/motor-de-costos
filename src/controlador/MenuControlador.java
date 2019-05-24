@@ -71,6 +71,7 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_DOWNLOAD_LOG = "DOWNLOAD_LOG";
     public final String MENSAJE_DOWNLOAD_EMPTY = "DOWNLOAD_EMPTY";
     public final String MENSAJE_DOWNLOAD_CANCELED = "DOWNLOAD_CACNCELED";
+    public final String MENSAJE_DELETE_EMPTY = "DELETE_EMPTY";
     public final String MENSAJE_DELETE_SELECTED = "DELETE_SELECTED";
     public final String MENSAJE_DELETE_REFRESH = "DELETE_REFRESH";
     public final String MENSAJE_DELETE_ITEM = "DELETE_ITEM";

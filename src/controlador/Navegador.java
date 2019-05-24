@@ -780,6 +780,10 @@ public class Navegador {
                 alert.setTitle("Descargar "+ titulo);
                 alert.setContentText(contenido);
                 break;
+            case "DELETE_EMPTY":
+                alert.setTitle("Eliminar " + titulo);
+                alert.setContentText("Por favor seleccione item");
+                break;
             case "DELETE_SELECTED":
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("Por favor seleccione "+ titulo);
@@ -806,7 +810,7 @@ public class Navegador {
                 break;
             case "EDIT_EMPTY":
                 alert.setTitle("Editar "+ titulo);
-                alert.setContentText("Seleccione item.");
+                alert.setContentText("Por favor seleccione item.");
                 break;
             case "EDIT_SUCCESS":
                 alert.setTitle("Editar "+ titulo);

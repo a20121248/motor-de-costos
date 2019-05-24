@@ -80,10 +80,11 @@ public class DriverDAO {
     
     public List<DriverLinea> obtenerLstDriverLinea(int periodo, String driverCodigo, int repartoTipo) {
         String queryStr = String.format("" +
-                "SELECT B.codigo,B.nombre,B.nivel,A.porcentaje\n" +
-                "  FROM driver_lineas A\n" +
-                "  JOIN centros B ON A.entidad_destino_codigo=B.codigo\n" +
-                " WHERE A.periodo=%d AND A.driver_codigo='%s' AND B.reparto_tipo=%d",
+                "  SELECT B.codigo,B.nombre,B.nivel,A.porcentaje\n" +
+                "    FROM driver_lineas A\n" +
+                "    JOIN centros B ON A.entidad_destino_codigo=B.codigo\n" +
+                "   WHERE A.periodo=%d AND A.driver_codigo='%s' AND B.reparto_tipo=%d\n"+
+                "ORDER BY A.driver_codigo, B.codigo",
                 periodo,driverCodigo,repartoTipo);
         List<DriverLinea> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

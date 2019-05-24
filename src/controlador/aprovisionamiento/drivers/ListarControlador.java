@@ -4,6 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.DriverDAO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -19,8 +21,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.DirectoryChooser;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -38,6 +42,7 @@ public class ListarControlador implements Initializable {
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnEditar;
     @FXML private JFXButton btnEliminar;
+    @FXML private JFXButton btnDescargar;
 
     @FXML private TableView<DriverCentro> tabListaDrivers;
     @FXML private TableColumn<DriverCentro, String> tabcolCodigo;
@@ -60,7 +65,7 @@ public class ListarControlador implements Initializable {
     int periodoSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getControlador());
-    String titulo1;
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
@@ -69,12 +74,12 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Centros de Costos";
+        titulo = "Centros de Costos";
         if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDriversCentro.setText("Drivers - " + titulo1);
-            lblEntidades.setText(titulo1 + " a distribuir");
+            titulo = "Centros de Beneficio";
+            lblTitulo.setText("Drivers - " + titulo);
+            lnkDriversCentro.setText("Drivers - " + titulo);
+            lblEntidades.setText(titulo + " a distribuir");
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -159,7 +164,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         DriverCentro driver = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (driver == null) {
-            menuControlador.navegador.mensajeInformativo("Editar Driver - " + titulo1, "Por favor seleccione un Driver.");
+            menuControlador.navegador.mensajeInformativo("Driver - " + titulo, menuControlador.MENSAJE_EDIT_EMPTY);
             return;
         }
         menuControlador.objeto = driver;
@@ -170,14 +175,14 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         DriverCentro item = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Driver - " + titulo1, "Por favor seleccione un Driver.");
+            menuControlador.navegador.mensajeInformativo("Driver - " + titulo, menuControlador.MENSAJE_DELETE_EMPTY);
             return;
         }
-        if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo1, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
+        if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
             return;
         }
         if (driverDAO.eliminarDriverCentro(item.getCodigo()) == -1) {
-            menuControlador.navegador.mensajeError("Eliminar Driver - " + titulo1, "No se pudo eliminar el Driver pues está siendo utilizado en otros módulos.\nPara eliminarlo, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
+            menuControlador.navegador.mensajeError("Driver - " + titulo, menuControlador.MENSAJE_DELETE_ITEM);
             return;
         }
         List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
@@ -188,12 +193,30 @@ public class ListarControlador implements Initializable {
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
         List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         if (lista.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("Consulta de drivers", "No existen drivers para el periodo seleccionado.");
+            menuControlador.navegador.mensajeInformativo("drivers", menuControlador.MENSAJE_TABLE_EMPTY);
             tabListaDrivers.getItems().clear();
             tabDetalleDriver.getItems().clear();
         } else {
             tabListaDrivers.getItems().setAll(lista);
             lblNumeroRegistros.setText("Número de registros : " + lista.size());
+        }
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListaDrivers.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
+                descargaFile.descargarTablaDriverCECO(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
 }

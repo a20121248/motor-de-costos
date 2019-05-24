@@ -205,7 +205,7 @@ public class ListarControlador implements Initializable {
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("CuentasContables-Catálogo", tabListar);
-                descargaFile.DescargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
             }else{
                 menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
