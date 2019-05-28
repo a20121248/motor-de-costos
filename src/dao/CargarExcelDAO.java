@@ -14,7 +14,6 @@ import modelo.DriverLinea;
 import modelo.DriverObjetoLinea;
 import modelo.Oficina;
 import modelo.Producto;
-import servicios.LogServicio;
 
 public class CargarExcelDAO {
     
@@ -24,6 +23,7 @@ public class CargarExcelDAO {
     }
 
     public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, StringBuilder msj) {
+//        TO DO: Validar que centro este asignado al periodo
         String queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 CECO_CODIGO,\n" +

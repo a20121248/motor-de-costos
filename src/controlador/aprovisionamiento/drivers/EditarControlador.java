@@ -74,7 +74,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     final int mesSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_EDITAR.getControlador());
-    String titulo1,titulo2;
+    String titulo, titulo1,titulo2;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -83,6 +83,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
         periodoSeleccionado = menuControlador.periodoSeleccionado;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
+        this.titulo = "Drivers";
     }
     
     @Override
@@ -92,8 +93,8 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
         if (menuControlador.repartoTipo == 2) { 
             titulo1 = "Centros de Beneficio";
             titulo2 = "Centro de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDrivers.setText("Drivers - " + titulo1);
+            lblTitulo.setText(titulo + "  - " + titulo1);
+            lnkDrivers.setText(titulo + " - " + titulo1);
             lblEntidades.setText(titulo1 + " a distribuir");
         }
         // meses
@@ -207,6 +208,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
             porcentajeTotal -= item.getPorcentaje();
             lblSuma.setText(String.format("Suma: %.4f%%",porcentajeTotal));
             tabDetalleDriver.getItems().remove(item);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getEntidadDistribucionDestino().getCodigo() + " Driver " + driver.getCodigo(),periodoSeleccionado,Navegador.RUTAS_DRIVERS_CENTRO_EDITAR.getDireccion());
             --numeroRegistros;
             lblNumeroRegistros.setText("Número de registros: " + numeroRegistros);
         }
@@ -228,9 +230,10 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
 
         // inicio mensaje informativo
         if (driverDAO.actualizarDriverCentro(driver, periodoSeleccionado) != 1) {
-            menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "Error. No se pudo actualizar el driver.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
         } else {
-            menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "Driver actualizado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_DRIVERS_CENTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
         }
 
@@ -246,6 +249,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
         DriverLinea item = new DriverLinea(entidad, 0, fecha, fecha);        
         // lo agrego a la vista
         tabDetalleDriver.getItems().add(item);
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(),item.getEntidadDistribucionDestino().getCodigo() + " Driver " + driver.getCodigo(),periodoSeleccionado, Navegador.RUTAS_DRIVERS_CENTRO_EDITAR.getDireccion());
         ++numeroRegistros;
         lblNumeroRegistros.setText("Número de registros: " + numeroRegistros);
     }

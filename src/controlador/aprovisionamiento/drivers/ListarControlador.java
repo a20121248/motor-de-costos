@@ -74,6 +74,8 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+ 
+        
         titulo = "Centros de Costos";
         if (menuControlador.repartoTipo == 2) { 
             titulo = "Centros de Beneficio";
@@ -138,6 +140,9 @@ public class ListarControlador implements Initializable {
                 lblSuma.setText(String.format("Suma: %,.4f%%",porcentajeTotal));
             }
         });
+        
+               List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        tabListaDrivers.getItems().setAll(lista);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -185,6 +190,7 @@ public class ListarControlador implements Initializable {
             menuControlador.navegador.mensajeError("Driver - " + titulo, menuControlador.MENSAJE_DELETE_ITEM);
             return;
         }
+        menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getDireccion());
         List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         tabDetalleDriver.getItems().clear();

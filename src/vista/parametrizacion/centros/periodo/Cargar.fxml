@@ -83,11 +83,6 @@
          </styleClass>
       </JFXButton>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnCancelar" layoutX="260.0" layoutY="466.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="CLOSE" />
-         </graphic>
-      </JFXButton>
       <JFXButton fx:id="btnSubir" layoutX="365.0" layoutY="466.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="UPLOAD" />
@@ -109,7 +104,7 @@
             <String fx:value="large" />
          </styleClass>
       </JFXButton>
-      <JFXButton fx:id="btnAtras" layoutX="475.0" layoutY="548.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="220.0">
+      <JFXButton fx:id="btnAtras" layoutX="475.0" layoutY="548.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
          </graphic>

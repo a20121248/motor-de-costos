@@ -82,7 +82,7 @@ public class CargarControlador implements Initializable {
     LogServicio logServicio;
     String logName;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getControlador());
-    String titulo1;
+    String titulo, titulo1;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -93,6 +93,7 @@ public class CargarControlador implements Initializable {
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
         cargarExcelDAO = new CargarExcelDAO();
+        this.titulo = "Drivers";
     }
     
     @Override
@@ -182,24 +183,15 @@ public class CargarControlador implements Initializable {
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("DRIVERS")))) {
                 String msj = "El título de la hoja " + shIndexName + " no es la correcta, deber ser DRIVERS.\nNo se puede cargar el archivo.";
                 menuControlador.navegador.mensajeError("Cargar drivers", msj);
-                //logServicio.agregarLineaArchivo(msj);
                 return null;
             }
             
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","DRIVER","¿CARGAR?")))) {
-                String msj = "La cabecera de la hoja INDEX no es la correcta.\nNo se puede cargar el archivo.";
+                String msj = "La cabecera de la hoja "+ shIndexName +" no es la correcta.\nNo se puede cargar el archivo.";
                 menuControlador.navegador.mensajeError("Cargar drivers", msj);
-                //logServicio.agregarLineaArchivo(msj);
-                //LOGGER.log(Level.SEVERE, String.format("Cargar drivers: La cabecera de la hoja INDEX no es la correcta.\nNo se puede cargar el archivo."));
                 return null;
             }
             
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_CENTRO.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             cargarExcelDAO.limpiarTablas();
             ConexionBD.crearStatement();
             ConexionBD.tamanhoBatchMax=10000;
@@ -292,26 +284,37 @@ public class CargarControlador implements Initializable {
         }
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 10000;
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_CENTRO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
         for (DriverCentro driver: tabListar.getItems()) {
             StringBuilder sbMsj = new StringBuilder("");
             List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(),sbMsj);
             String msj = "";
-            if (!esPrimerItem) {
-                for (int i=0; i < 100; ++i) msj+="-";msj += "\n";
-            }
+//            if (!esPrimerItem) {
+//                for (int i=0; i < 100; ++i) msj+="-";msj += "\n";
+//            }
             if (lista != null) {
                 driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista);
-                msj += String.format("Driver %s: Se cargó correctamente.\n",driver.getCodigo());
+                msj += String.format("Driver %s: Se cargó correctamente con %s items.\n",driver.getCodigo(),lista.size());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getDireccion());
             } else {
                 msj += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\n",driver.getCodigo());
             }
             sbMsj.insert(0, msj);
-            logServicio.agregarLineaArchivo(sbMsj.toString());
+            menuControlador.Log.agregarLineaArchivo(sbMsj.toString());
             esPrimerItem = false;
         }
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
+        
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        
         //driverDAO.insertarListaDriverObjeto(lista, periodoSeleccionado);
         cmbMes.setDisable(false);
         spAnho.setDisable(false);
@@ -325,7 +328,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
+        String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar LOG");
         fileChooser.setInitialFileName(logName);
@@ -335,7 +338,7 @@ public class CargarControlador implements Initializable {
             Path origen = Paths.get(rutaOrigen);
             Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_LOG);
         }
     }
 }

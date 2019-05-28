@@ -70,12 +70,14 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     int periodoSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_CREAR.getControlador());
-    String titulo1;
+    String titulo, titulo1;
+    
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         driverDAO = new DriverDAO();
         numeroRegistros = 0;
+        this.titulo = "Drivers";
     }
     
     @Override
@@ -222,9 +224,10 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
             int periodo = anhoSeleccionado*100 + mesSeleccionado;
             // inicio mensaje informativo
             if (driverDAO.insertarDriverCentro(driver, periodo,menuControlador.repartoTipo) != 1) {
-                menuControlador.navegador.mensajeInformativo("Crear driver", "Error. No se pudo crear el driver.");
+                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
             } else {
-                menuControlador.navegador.mensajeInformativo("Crear driver", "Driver creado correctamente.");
+                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), codigo + " con " + driver.getListaDriverLinea().size() + " elementos ", periodo, Navegador.RUTAS_DRIVERS_CENTRO_CREAR.getDireccion());
                 menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
             }
         } catch(Exception e) {

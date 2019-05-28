@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" styleClass="page-heading" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -76,25 +76,41 @@
       </JFXButton>
       <HBox alignment="TOP_RIGHT" layoutX="300.0" layoutY="168.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
+            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
+            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
+            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" text="Cargar">
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>
