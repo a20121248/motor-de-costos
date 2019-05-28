@@ -240,6 +240,48 @@ public class Navegador {
             "Cargar asociaciones de Grupos a un periodo",
             "Inicio/Parametrización/Grupos/Cargar"
     );
+     // --------------------- PARTIDAS ----------------------
+    public static final RutaArchivos RUTAS_PARTIDAS_PRINCIPAL = new RutaArchivos(
+            "/vista/parametrizacion/partidas/Principal.fxml",
+            "controlador.parametrizacion.partidas.PrincipalControlador",
+            "Partidas"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_MAESTRO_LISTAR = new RutaArchivos(
+            "/vista/parametrizacion/partidas/maestro/Listar.fxml",
+            "controlador.parametrizacion.partidas.maestro.ListarControlador",
+            "Catálogo de Partidas",
+            "Inicio/Parametrización/Partidas/Catálogo"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_MAESTRO_CREAR = new RutaArchivos(
+            "/vista/parametrizacion/partidas/maestro/Crear.fxml",
+            "controlador.parametrizacion.partidas.maestro.CrearControlador",
+            "Crear Partida",
+            "Inicio/Parametrización/Partidas/Catálogo/Crear"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_MAESTRO_EDITAR = new RutaArchivos(
+            "/vista/parametrizacion/partidas/maestro/Editar.fxml",
+            "controlador.parametrizacion.partidas.maestro.EditarControlador",
+            "Editar Partida",
+            "Inicio/Parametrización/Partidas/Catálogo/Editar"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_MAESTRO_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/partidas/maestro/Cargar.fxml",
+            "controlador.parametrizacion.partidas.maestro.CargarControlador",
+            "Cargar Partidas",
+            "Inicio/Parametrización/Partidas/Catálogo/Cargar"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_ASOCIAR_PERIODO = new RutaArchivos(
+            "/vista/parametrizacion/partidas/periodo/Listar.fxml",
+            "controlador.parametrizacion.partidas.periodo.ListarControlador",
+            "Asociar Partidas a un periodo",
+            "Inicio/Parametrización/Partidas"
+    );
+    public static final RutaArchivos RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/partidas/periodo/Cargar.fxml",
+            "controlador.parametrizacion.partidas.periodo.CargarControlador",
+            "Cargar asociaciones de Partidas a un periodo",
+            "Inicio/Parametrización/Partidas/Cargar"
+    );
     // --------------------- GRUPOS - CUENTA ----------------------
     public static final RutaArchivos RUTAS_GRUPO_CUENTA_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/grupo_cuenta/Listar.fxml",
@@ -858,6 +900,10 @@ public class Navegador {
             case "SELECT_ENTITY":
                 alert.setTitle("Seleccionar entidad");
                 alert.setContentText("No seleccionó ninguna entidad.");
+                break;
+            case "DOWNLOAD_EMPTY":
+                alert.setTitle("Descargar información");
+                alert.setContentText("No hay información");
                 break;
             case "UPLOAD_ERROR_PERIODO":
                 alert.setTitle("Subida de archivo Excel");

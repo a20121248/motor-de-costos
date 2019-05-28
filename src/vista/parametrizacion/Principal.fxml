@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ScrollPane fitToWidth="true" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
         <content>
@@ -79,7 +79,7 @@
                               </AnchorPane>
                             <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="246.0">
                                  <children>
-                                    <JFXButton fx:id="btnGrupos" layoutX="14.0" layoutY="-2.0" onAction="#btnGruposAction" text="Grupos" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                    <JFXButton fx:id="btnPartidas" layoutX="14.0" layoutY="-2.0" onAction="#btnPartidasAction" text="Partidas" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="CUBES" />
                                        </graphic>

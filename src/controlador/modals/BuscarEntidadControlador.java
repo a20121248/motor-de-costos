@@ -9,6 +9,7 @@ import dao.OficinaDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProductoDAO;
 import dao.ObjetoGrupoDAO;
+import dao.PartidaDAO;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,6 +45,7 @@ public class BuscarEntidadControlador implements Initializable {
     
     //EntidadDistribucionDAO entidadDistribucionDAO;
     PlanDeCuentaDAO planDeCuentaDAO;
+    PartidaDAO partidaDAO;
     GrupoDAO grupoDAO;
     CentroDAO centroDAO;
     OficinaDAO oficinaDAO;
@@ -65,6 +67,7 @@ public class BuscarEntidadControlador implements Initializable {
         this.periodoSeleccionado = periodoSeleccionado;
         this.repartoTipo = repartoTipo;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        partidaDAO = new PartidaDAO();
         grupoDAO = new GrupoDAO();
         centroDAO = new CentroDAO();
         bancaDAO = new BancaDAO();
@@ -83,6 +86,11 @@ public class BuscarEntidadControlador implements Initializable {
                 case "CTA": // Cuenta Contable
                     if (periodoSeleccionado==-1) lista = planDeCuentaDAO.listarMaestro(menuControlador.codigos, repartoTipo);
                     else lista = planDeCuentaDAO.listar(periodoSeleccionado,"Todos", repartoTipo);
+                    break;
+                case "PART": // Partidas
+                    //lista = planDeCuentaDAO.listarGruposNombres(periodoSeleccionado,repartoTipo);
+                    if (periodoSeleccionado==-1) lista = partidaDAO.listarObjetos(menuControlador.codigos, repartoTipo);
+                    else lista = partidaDAO.listar(periodoSeleccionado,"Todos", repartoTipo);
                     break;
                 case "GCTA": // Grupo de Cuentas Contables
                     //lista = planDeCuentaDAO.listarGruposNombres(periodoSeleccionado,repartoTipo);
@@ -114,6 +122,7 @@ public class BuscarEntidadControlador implements Initializable {
                 case "GPRO": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
                     break;
+
                 default:
                     lista = null;
             }
