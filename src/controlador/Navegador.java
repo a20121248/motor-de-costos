@@ -295,6 +295,19 @@ public class Navegador {
             "Cargar Asignaciones de Grupos a Cuentas Contables",
             "Inicio/Parametrización/Asignaciones/Cargar"
     );
+    // --------------------- CUENTA - PARTIDA ----------------------
+    public static final RutaArchivos RUTAS_CUENTA_PARTIDA_LISTAR = new RutaArchivos(
+            "/vista/parametrizacion/partida_cuenta/Listar.fxml",
+            "controlador.parametrizacion.cuenta_partida.ListarControlador",
+            "Asignaciones de Cuenats Contables a Partidas",
+            "Inicio/Parametrización/Asignaciones"
+    );
+    public static final RutaArchivos RUTAS_CUENTA_PARTIDA_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/partida_cuenta/Cargar.fxml",
+            "controlador.parametrizacion.cuenta_partida.CargarControlador",
+            "Cargar Asignaciones de Cuentas Contables a Partidas",
+            "Inicio/Parametrización/Asignaciones/Cargar"
+    );
     // --------------------- CENTROS ----------------------
     public static final RutaArchivos RUTAS_CENTROS_PRINCIPAL = new RutaArchivos(
             "/vista/parametrizacion/centros/Principal.fxml",
@@ -849,6 +862,10 @@ public class Navegador {
             case "ADD_REFRESH":
                 alert.setTitle("Agregar "+ titulo);
                 alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+                break;
+            case "ADD_EMPTY":
+                alert.setTitle("Agregar "+ titulo);
+                alert.setContentText("Por favor seleccione item.");
                 break;
             case "EDIT_EMPTY":
                 alert.setTitle("Editar "+ titulo);

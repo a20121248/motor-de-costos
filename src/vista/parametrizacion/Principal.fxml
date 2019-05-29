@@ -88,7 +88,7 @@
                                           <String fx:value="large" />
                                        </styleClass>
                                     </JFXButton>
-                                    <JFXButton fx:id="btnGrupoCuenta" layoutX="14.0" layoutY="24.0" onAction="#btnGrupoCuentaAction" text="Asignación" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0">
+                                    <JFXButton fx:id="btnCuentaPartida" layoutX="14.0" layoutY="24.0" onAction="#btnCuentaPartidaAction" text="Asignación" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="CUBES" />
                                        </graphic>

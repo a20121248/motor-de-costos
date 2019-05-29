@@ -84,6 +84,11 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
     
+    @FXML void btnCuentaPartidaAction(ActionEvent event) {
+        menuControlador.objeto = "Todos";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_LISTAR);
+    }
+    
     @FXML void btnCentrosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }

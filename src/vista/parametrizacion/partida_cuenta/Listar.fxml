@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label layoutX="21.0" layoutY="11.0" text="Asignaciones Cuenta Contable y Partida" textFill="#676a6c">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" layoutX="40.0" layoutY="40.0" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <Hyperlink fx:id="lnkInicio" onAction="#lnkInicioAction" text="Inicio" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkParametrizacion" onAction="#lnkParametrizacionAction" text="Parametrización" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkAsignaciones" onAction="#lnkAsignacionesAction" text="Asignaciones" textFill="#676a6c">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+      <Label layoutX="60.0" layoutY="134.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
+      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
+      <Spinner fx:id="spAnho" layoutX="236.0" layoutY="169.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
+         <valueFactory>
+            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+         </valueFactory>
+      </Spinner>
+      <JFXButton fx:id="btnBuscarPeriodo" layoutX="322.0" layoutY="120.0" onAction="#btnBuscarPeriodoAction" AnchorPane.topAnchor="120.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="SEARCH" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="small" />
+         </styleClass>
+      </JFXButton>
+      <HBox alignment="TOP_RIGHT" layoutX="122.0" layoutY="183.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <JFXButton fx:id="btnAsignar" onAction="#btnAsignarAction" text="Asignar Cuenta">
+               <graphic>
+                  <FontAwesomeIconView glyphName="PLUS" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
+            <JFXButton fx:id="btnQuitar" onAction="#btnQuitarAction" text="Quitar Cuenta">
+               <graphic>
+                  <FontAwesomeIconView glyphName="MINUS" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+               <graphic>
+                  <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
+      <Label fx:id="lblTipoGasto" layoutX="70.0" layoutY="199.0" text="Tipo de gasto:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="164.0" />
+      <ComboBox fx:id="cmbTipoGasto" layoutX="156.0" layoutY="195.0" prefWidth="170.0" AnchorPane.leftAnchor="135.0" AnchorPane.topAnchor="160.0" />
+      <Label layoutX="482.0" layoutY="204.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
+      <TextField fx:id="txtBuscar" layoutX="524.0" layoutY="232.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
+      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
+         <columns>
+            <TableColumn fx:id="tabcolCodigoCuenta" prefWidth="120.0" styleClass="center" text="CÓDIGO CUENTA" />
+            <TableColumn fx:id="tabcolNombreCuenta" prefWidth="120.0" styleClass="left" text="NOMBRE CUENTA" />
+            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="120.0" styleClass="center" text="CÓDIGO PARTIDA" />
+            <TableColumn fx:id="tabcolNombrePartida" prefWidth="120.0" styleClass="left" text="NOMBRE PARTIDA" />
+         </columns>
+      </TableView>
+      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
+      <JFXButton fx:id="btnAtras" layoutX="633.0" layoutY="573.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="200.0" layoutY="555.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
+   </children>
+</AnchorPane>

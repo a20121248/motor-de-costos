@@ -72,7 +72,7 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        partidaDAO.actualizarObjeto(codigo, nombre, 1);
+        partidaDAO.actualizarObjeto(codigo, nombre);
         menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
         menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);

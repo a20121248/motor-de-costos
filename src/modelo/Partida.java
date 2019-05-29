@@ -17,6 +17,8 @@ public class Partida extends EntidadDistribucion{
     Tipo tipo;
     Partida partidaPadre;
     final BooleanProperty flagCargar;
+    // Datos de la CuentaContable asociado a la Partida
+    private Tipo cuentaContable;
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
@@ -28,6 +30,12 @@ public class Partida extends EntidadDistribucion{
         nivel = new SimpleIntegerProperty(0);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
+    public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable) {
+        super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
+        nivel = new SimpleIntegerProperty(0);
+        this.cuentaContable = cuentaContable;
+        this.flagCargar = new SimpleBooleanProperty();
+    }
     
 //    public List<CuentaContable> getListaPlanDeCuentas() {
 //        return listaPlanDeCuentas;
@@ -36,6 +44,14 @@ public class Partida extends EntidadDistribucion{
 //    public void setListaPlanDeCuentas(List<CuentaContable> listaPlanDeCuentas) {
 //        this.listaPlanDeCuentas = listaPlanDeCuentas;
 //    }
+    
+    public Tipo getCuentaContable() {
+        return cuentaContable;
+    }
+
+    public void setGrupo(Tipo cuentaContable) {
+        this.cuentaContable = cuentaContable;
+    }
     
     public Partida getPartidaPadre() {
         return partidaPadre;
@@ -64,6 +80,8 @@ public class Partida extends EntidadDistribucion{
     public void setNivel(int nivel) {
         this.nivel.set(nivel);
     }
+    
+    
     public boolean getFlagCargar() {
         return flagCargar.get();
     }

@@ -85,6 +85,7 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_UPLOAD_ITEM_DONTEXIST = "UPLOAD_ITEM_DONTEXIST";
     public final String MENSAJE_TABLE_EMPTY = "TABLE_EMPTY";
     public final String MENSAJE_ADD_REFRESH = "ADD_REFRESH";
+    public final String MENSAJE_ADD_EMPTY = "ADD_EMPTY";
     public final String MENSAJE_SELECT_ENTITY = "SELECT_ENTITY";
     public final String MENSAJE_EDIT_EMPTY = "EDIT_EMPTY";
     public final String MENSAJE_EDIT_SUCCESS = "EDIT_SUCCESS";
