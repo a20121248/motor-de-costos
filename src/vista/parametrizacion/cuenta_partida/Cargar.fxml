@@ -19,7 +19,7 @@
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label layoutX="21.0" layoutY="11.0" text="Cargar asignaciones Grupo y Plan de Cuenta" textFill="#676a6c">
+            <Label layoutX="21.0" layoutY="11.0" text="Cargar asignaciones Cuenta Contable y Partida" textFill="#676a6c">
                <font>
                   <Font size="24.0" />
                </font>
@@ -76,9 +76,18 @@
       <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="124.0" />
       <TextField fx:id="txtRuta" disable="true" layoutX="91.0" layoutY="120.0" prefHeight="25.0" prefWidth="511.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="120.0" />
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnCancelar" layoutX="298.0" layoutY="470.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
+      <JFXButton fx:id="btnDescargarLog" layoutX="198.0" layoutY="549.0" onAction="#btnDescargarLogAction" text="DescargarLOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="220.0">
          <graphic>
-            <FontAwesomeIconView glyphName="CLOSE" />
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
+      </JFXButton>
+      <JFXButton fx:id="btnAtras" layoutX="298.0" layoutY="470.0" onAction="#btnAtrasAction" styleClass="btn" text="Atras" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
       <JFXButton fx:id="btnSubir" layoutX="387.0" layoutY="474.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">

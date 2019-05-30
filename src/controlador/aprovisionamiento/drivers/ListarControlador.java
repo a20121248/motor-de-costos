@@ -209,20 +209,22 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
-        DescargaServicio descargaFile;
-        if(!tabListaDrivers.getItems().isEmpty()){
-            DirectoryChooser directory_chooser = new DirectoryChooser();
-            directory_chooser.setTitle("Directorio a Descargar:");
-            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
-            if(directorioSeleccionado != null){
-                descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
-                descargaFile.descargarTablaDriverCECO(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
-                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
+        if (menuControlador.navegador.mensajeConfirmar("Descargar Driver", "¿Está seguro que desea descargar el driver del periodo " + periodoSeleccionado + "?")) {
+            DescargaServicio descargaFile;
+            if(!tabListaDrivers.getItems().isEmpty()){
+                DirectoryChooser directory_chooser = new DirectoryChooser();
+                directory_chooser.setTitle("Directorio a Descargar:");
+                File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+                if(directorioSeleccionado != null){
+                    descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
+                    descargaFile.descargarTablaDriverCECO(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                    menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
+                }else{
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                }
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
             }
-        }else{
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
     }
 }

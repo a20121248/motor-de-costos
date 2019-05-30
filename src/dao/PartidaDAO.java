@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.CargarObjetoPeriodoLinea;
+import modelo.CargarCuentaPartidaLinea;
 import modelo.Driver;
 import modelo.Partida;
 import modelo.Tipo;
@@ -31,6 +31,16 @@ public class PartidaDAO {
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT codigo FROM partidas")) {
             while(rs.next()) lista.add(rs.getString("codigo"));
+        } catch (SQLException ex) {
+            Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    public List<String> listarCodigosPeriodo(int periodo) {
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT partida_codigo FROM partida_lineas WHERE periodo=%d", periodo))) {
+            while(rs.next()) lista.add(rs.getString("partida_codigo"));
         } catch (SQLException ex) {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -285,13 +295,13 @@ public class PartidaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarListaObjetoPeriodo(List<CargarObjetoPeriodoLinea> lista, int repartoTipo) {
+    public void insertarListaObjetoPeriodo(List<CargarCuentaPartidaLinea> lista, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         borrarListaObjetoPeriodo(lista.get(0).getPeriodo(),repartoTipo);
         ConexionBD.crearStatement();
-        for (CargarObjetoPeriodoLinea item: lista) {
+        for (CargarCuentaPartidaLinea item: lista) {
             int periodo = item.getPeriodo();
-            String codigo = item.getCodigo();
+            String codigo = item.getCodigoPartida();
             String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO partida_lineas(partida_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s',%d,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
@@ -302,7 +312,7 @@ public class PartidaDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public int insertarCuentaPartida(String partidaCodigo, String cuentaContableCodigo, int periodo) {
+    public int insertarPartidaCuenta(String partidaCodigo, String cuentaContableCodigo, int periodo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
                 "INSERT INTO partida_plan_de_cuenta(partida_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
@@ -313,6 +323,29 @@ public class PartidaDAO {
                     fechaStr,
                     fechaStr);
         return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public void insertarPartidasCuenta(int periodo, List<CargarCuentaPartidaLinea> lista, int repartoTipo) {
+        borrarPartidasCuenta(periodo,repartoTipo);
+        ConexionBD.crearStatement();
+        for (CargarCuentaPartidaLinea item: lista) {
+            String codigoPartida = item.getCodigoPartida();
+            String codigoCuenta = item.getCodigoCuentaContable();
+            String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+
+            // inserto una linea dummy
+            String queryStr = String.format(Locale.US, "" +
+                "INSERT INTO partida_plan_de_cuenta(partida_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigoPartida,
+                    codigoCuenta,
+                    periodo,
+                    fechaStr,
+                    fechaStr);
+            ConexionBD.agregarBatch(queryStr);
+        }
+        ConexionBD.ejecutarBatch();
+        ConexionBD.cerrarStatement();
     }
     
     public int borrarPartidasCuenta(int periodo, int repartoTipo) {

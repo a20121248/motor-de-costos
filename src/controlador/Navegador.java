@@ -297,13 +297,13 @@ public class Navegador {
     );
     // --------------------- CUENTA - PARTIDA ----------------------
     public static final RutaArchivos RUTAS_CUENTA_PARTIDA_LISTAR = new RutaArchivos(
-            "/vista/parametrizacion/partida_cuenta/Listar.fxml",
+            "/vista/parametrizacion/cuenta_partida/Listar.fxml",
             "controlador.parametrizacion.cuenta_partida.ListarControlador",
             "Asignaciones de Cuenats Contables a Partidas",
             "Inicio/Parametrización/Asignaciones"
     );
     public static final RutaArchivos RUTAS_CUENTA_PARTIDA_CARGAR = new RutaArchivos(
-            "/vista/parametrizacion/partida_cuenta/Cargar.fxml",
+            "/vista/parametrizacion/cuenta_partida/Cargar.fxml",
             "controlador.parametrizacion.cuenta_partida.CargarControlador",
             "Cargar Asignaciones de Cuentas Contables a Partidas",
             "Inicio/Parametrización/Asignaciones/Cargar"

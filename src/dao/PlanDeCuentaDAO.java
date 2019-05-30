@@ -73,6 +73,20 @@ public class PlanDeCuentaDAO {
         }
         return lista;
     }
+    
+    public List<String> listarCodigosPeriodo(int periodo) {
+        String queryStr = String.format(String.format("SELECT plan_de_cuenta_codigo FROM PLAN_DE_CUENTA_LINEAS WHERE periodo=%d ", periodo));
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("plan_de_cuenta_codigo");
+                lista.add(codigo);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
 
     public int actualizarGrupoObjeto(String codigo, String nombre, int estado) {
         String queryStr = String.format("" +

@@ -219,16 +219,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (partidaSeleccionada.getCuentaContable().getCodigo().equals("Sin driver asignado"))
             return;
         
-        if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar el Grupo " + partidaSeleccionada.getCuentaContable().getNombre() + "?"))
+        if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar la Cuenta Contable " + partidaSeleccionada.getCuentaContable().getNombre() + "?"))
             return;
         
         partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),partidaSeleccionada.getCuentaContable().getCodigo()+ " a la Partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.objeto = periodoSeleccionado;
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_CARGAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_CARGAR);
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
@@ -257,6 +258,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio("Asignaciones", tabListar);
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
             }else{
                 menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
             }
@@ -275,7 +277,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_ADD_EMPTY);
             return;
         }
-        partidaDAO.insertarCuentaPartida(partidaSeleccionada.getCodigo(), entidad.getCodigo(), periodoSeleccionado);
+        partidaDAO.insertarPartidaCuenta(partidaSeleccionada.getCodigo(), entidad.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo()+ " a la partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
 
