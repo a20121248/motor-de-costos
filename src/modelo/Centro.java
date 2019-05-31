@@ -7,12 +7,18 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Centro extends EntidadDistribucion {
     private IntegerProperty nivel;
     private ObjectProperty<Centro> centroPadre;
     private ObjectProperty<Tipo> tipo;
     private BooleanProperty flagCargar;
+    private StringProperty esBolsa;
+    private StringProperty atribuible;
+    private StringProperty tipoGasto;
+    private StringProperty claseGasto;
     
     public Centro(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
@@ -30,6 +36,17 @@ public class Centro extends EntidadDistribucion {
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
         this.tipo = new SimpleObjectProperty(tipo);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
+    
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String atribuible, String tipoGasto, String claseGasto, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+        super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
+        this.nivel = new SimpleIntegerProperty(nivel);
+        this.centroPadre = new SimpleObjectProperty(centroPadre);
+        this.tipo = new SimpleObjectProperty(tipo);
+        this.atribuible = new SimpleStringProperty(atribuible);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.claseGasto = new SimpleStringProperty(claseGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
@@ -69,6 +86,54 @@ public class Centro extends EntidadDistribucion {
         this.tipo.set(tipo);
     }
     
+    public StringProperty esBolsaProperty() {
+        return this.esBolsa;
+    }
+
+    public String getBolsa() {
+        return esBolsa.get();
+    }
+
+    public void setBolsa(String esBolsa) {
+        this.esBolsa.set(esBolsa);
+    }
+    
+    public StringProperty atribuibleProperty() {
+        return this.atribuible;
+    }
+
+    public String getAtribuible() {
+        return atribuible.get();
+    }
+
+    public void setAtribuible(String atribuible) {
+        this.atribuible.set(atribuible);
+    }
+
+    public StringProperty tipoGastoProperty() {
+        return this.tipoGasto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto.get();
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto.set(tipoGasto);
+    }
+
+    public StringProperty claseGastoProperty() {
+        return this.claseGasto;
+    }
+
+    public String getClaseGasto() {
+        return claseGasto.get();
+    }
+
+    public void setClaseGasto(String claseGasto) {
+        this.claseGasto.set(claseGasto);
+    }
+
     public boolean getFlagCargar() {
         return flagCargar.get();
     }

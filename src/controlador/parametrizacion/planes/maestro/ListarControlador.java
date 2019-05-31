@@ -187,7 +187,7 @@ public class ListarControlador implements Initializable {
             return;
         }
         
-        if(planDeCuentaDAO.verificarObjetoPlanCuenta(item.getCodigo()) == 0){
+        if(planDeCuentaDAO.verificarObjetoPlanCuentaLineas(item.getCodigo()) == 0){
             planDeCuentaDAO.eliminarObjetoCuenta(item.getCodigo());
             txtBuscar.setText("");
             filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);

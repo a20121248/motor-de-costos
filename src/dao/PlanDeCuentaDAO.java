@@ -307,7 +307,7 @@ public class PlanDeCuentaDAO {
     }
 
 //    Verifica si esta siendo usado en las lineas
-    public int verificarObjetoPlanCuenta(String codigo) {
+    public int verificarObjetoPlanCuentaLineas(String codigo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
                 "  FROM plan_de_cuenta_lineas\n" +

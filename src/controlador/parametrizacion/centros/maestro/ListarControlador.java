@@ -19,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.DirectoryChooser;
@@ -51,6 +52,10 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Centro, String> tabcolGrupo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCentroPadre;
+    @FXML private TableColumn<Centro, String> tabcolEsBolsa;
+    @FXML private TableColumn<Centro, String> tabcolAtribuible;
+    @FXML private TableColumn<Centro, String> tabcolTipo;
+    @FXML private TableColumn<Centro, String> tabcolClase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -109,17 +114,24 @@ public class ListarControlador implements Initializable {
         
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 40);
-        tabcolGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 20);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 29);
+        tabcolGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
+        tabcolCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 8);
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
+        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
-        //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);        
+        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
+        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
         // tabla completar items
         llenarTabla("-","-");
     }
@@ -177,12 +189,11 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo, "¿Está seguro de eliminar el " + titulo + " " + centro.getCodigo() + "?")) {
             return;
         }
-        if(centroDAO.verificarObjetoCentro(centro.getCodigo()) == 0){
+        if(centroDAO.verificarObjetoCentroLineas(centro.getCodigo()) == 0){
             centroDAO.eliminarObjetoCentro(centro.getCodigo());
             llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),centro.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
-
         }else{
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
         }     

@@ -85,9 +85,10 @@
             <TableColumn fx:id="tabcolGrupo" styleClass="center" text="GRUPO" />
             <TableColumn fx:id="tabcolNivel" prefWidth="78.0" styleClass="center" text="NIVEL" />
             <TableColumn fx:id="tabcolCentroPadre" styleClass="center" text="CECO PADRE" />
-            <TableColumn fx:id="tabcolAtribuible" prefWidth="70.0" text="ATRIBUIBLE" />
-            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" text="TIPO DE GASTO" />
-            <TableColumn fx:id="tabcolClase" prefWidth="91.0" text="CLASE DE GASTO" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="40.0" styleClass="center" text="BOLSA" />
+            <TableColumn fx:id="tabcolAtribuible" prefWidth="108.0" styleClass="center" text="ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" styleClass="center" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolClase" prefWidth="91.0" styleClass="center" text="CLASE DE GASTO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
