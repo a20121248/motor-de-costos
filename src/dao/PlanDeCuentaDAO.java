@@ -97,21 +97,30 @@ public class PlanDeCuentaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int actualizarObjeto(String codigo, String nombre) {
+    public int actualizarObjeto(String codigo, String nombre, String atribuible, String tipoGasto, String claseGasto) {
+        atribuible = convertirPalabraAbreviatura(atribuible);
+        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+        claseGasto = convertirPalabraAbreviatura(claseGasto);
         String queryStr = String.format("" +
                 "UPDATE plan_de_cuentas\n" +
-                "   SET nombre='%s'\n" +
+                "   SET nombre='%s',\n"+
+                "       atribuible = '%s',\n" +
+                "       tipo = '%s',\n" +
+                "       clase = '%s'\n" +
                 " WHERE codigo='%s'",
-                nombre,codigo);
+                nombre,atribuible,tipoGasto,claseGasto,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int insertarObjetoCuenta(String codigo, String nombre, int repartoTipo) {
+    public int insertarObjetoCuenta(String codigo, String nombre, int repartoTipo, String atribuible, String tipoGasto, String claseGasto) {
+        atribuible = convertirPalabraAbreviatura(atribuible);
+        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+        claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,repartoTipo,fechaStr,fechaStr);
+                "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s',%d,%d,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,1,repartoTipo,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
 
@@ -129,12 +138,18 @@ public class PlanDeCuentaDAO {
         for(CuentaContable item: lista){
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
+            String atribuible = item.getAtribuible();
+            String tipoGasto = item.getTipoGasto();
+            String claseGasto = item.getClaseGasto();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+            atribuible = convertirPalabraAbreviatura(atribuible);
+            tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+            claseGasto = convertirPalabraAbreviatura(claseGasto);
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO PLAN_DE_CUENTAS(CODIGO,NOMBRE,ESTA_ACTIVO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,repartoTipo,fechaStr,fechaStr);
+                    "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s',%d,%d,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,1,repartoTipo,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
@@ -217,6 +232,9 @@ public class PlanDeCuentaDAO {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
+                "       A.atribuible,\n" +
+                "       A.tipo,\n" +
+                "       A.clase,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
                 "  FROM plan_de_cuentas A\n" +
@@ -227,10 +245,18 @@ public class PlanDeCuentaDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
+                String atribuible = rs.getString("atribuible");
+                String tipoGasto = rs.getString("tipo");
+                String claseGasto = rs.getString("clase");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
                 double saldo = 0;
-                CuentaContable item = new CuentaContable(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion);
+                
+                atribuible = convertirAbreviaturaPalabra(atribuible);
+                tipoGasto = convertirAbreviaturaPalabra(tipoGasto);
+                claseGasto = convertirAbreviaturaPalabra(claseGasto);
+                
+                CuentaContable item = new CuentaContable(codigo, nombre, null, atribuible, tipoGasto, claseGasto, saldo, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
@@ -1060,5 +1086,59 @@ public List<Grupo> listarGruposNombres() {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+    
+    public String convertirPalabraAbreviatura(String palabra){
+        switch(palabra){
+            case "Atribuible":
+                palabra = "SI";
+                break;
+            case "No Atribuible":
+                palabra = "NO";
+                break;
+            case "Adquisión":
+                palabra = "GA";
+                break;
+            case "Mantenimiento":
+                palabra = "GM";
+                break;
+            case "Fijo":
+                palabra = "FI";
+                break;
+            case "Variable":
+                palabra = "VA";
+                break;
+            default:
+                palabra = null;
+                break;
+        }
+        return palabra;
+    }
+    
+    public String convertirAbreviaturaPalabra(String palabra){
+        switch(palabra){
+                    case "SI":
+                        palabra = "Atribuible";
+                        break;
+                    case "NO":
+                        palabra = "No Atribuible";
+                        break;
+                    case "GA":
+                        palabra = "Adquisión";
+                        break;
+                    case "GM":
+                        palabra = "Mantenimiento";
+                        break;
+                    case "FI":
+                        palabra = "Fijo";
+                        break;
+                    case "VA":
+                        palabra = "Variable";
+                        break;
+                    default:
+                        palabra = null;
+                        break;
+                }
+        return palabra;
     }
 }

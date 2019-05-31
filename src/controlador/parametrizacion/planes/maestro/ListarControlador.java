@@ -50,6 +50,9 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
     @FXML private TableColumn<CuentaContable, String> tabcolNombre;
     @FXML private TableColumn<CuentaContable, Boolean> tabcolEstado;
+    @FXML private TableColumn<CuentaContable, String> tabcolAtribuible;
+    @FXML private TableColumn<CuentaContable, String> tabcolTipo;
+    @FXML private TableColumn<CuentaContable, String> tabcolClase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -83,11 +86,17 @@ public class ListarControlador implements Initializable {
         cmbTipoGasto.getSelectionModel().select(0);
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 85);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 45);
+        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         //tabcolEstado.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
         /*tabcolEstado.setCellValueFactory(cellData -> cellData.getValue().estaActivaProperty());
         tabcolEstado.setCellFactory(column -> {
             return new TableCell<CuentaContable, Boolean>() {
@@ -180,7 +189,6 @@ public class ListarControlador implements Initializable {
         
         if(planDeCuentaDAO.verificarObjetoPlanCuenta(item.getCodigo()) == 0){
             planDeCuentaDAO.eliminarObjetoCuenta(item.getCodigo());
-            
             txtBuscar.setText("");
             filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
             sortedData = new SortedList(filteredData);

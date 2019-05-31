@@ -7,9 +7,11 @@ import dao.PlanDeCuentaDAO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -26,6 +28,9 @@ public class EditarControlador implements Initializable {
     
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
+    @FXML private ComboBox cmbAtribuible;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbClaseGasto;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -48,6 +53,12 @@ public class EditarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {        
         txtCodigo.setText(planDeCuenta.getCodigo());
         txtNombre.setText(planDeCuenta.getNombre());
+        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        cmbAtribuible.getSelectionModel().select(planDeCuenta.getAtribuible());
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(planDeCuenta.getTipoGasto());
+        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        cmbClaseGasto.getSelectionModel().select(planDeCuenta.getClaseGasto());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -72,7 +83,7 @@ public class EditarControlador implements Initializable {
 
     @FXML void btnGuardarAction(ActionEvent event) {
         String nombre = txtNombre.getText();
-        if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre)==1) {
+        if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre, cmbAtribuible.getValue().toString(),cmbTipoGasto.getValue().toString(),cmbClaseGasto.getValue().toString())==1) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);

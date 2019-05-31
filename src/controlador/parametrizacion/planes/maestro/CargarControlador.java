@@ -52,6 +52,9 @@ public class CargarControlador implements Initializable {
     @FXML private TableView<CuentaContable> tabListar;
     @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
     @FXML private TableColumn<CuentaContable, String> tabcolNombre;
+    @FXML private TableColumn<CuentaContable, String> tabcolAtribuible;
+    @FXML private TableColumn<CuentaContable, String> tabcolTipo;
+    @FXML private TableColumn<CuentaContable, String> tabcolClase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -80,11 +83,17 @@ public class CargarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 85);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 45);
+        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -138,7 +147,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
                 menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -149,8 +158,15 @@ public class CargarControlador implements Initializable {
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String tipoGasto = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String claseGasto = celda.getStringCellValue();
+
+                atribuible = planDeCuentaDAO.convertirAbreviaturaPalabra(atribuible);
+                tipoGasto = planDeCuentaDAO.convertirAbreviaturaPalabra(tipoGasto);
+                claseGasto = planDeCuentaDAO.convertirAbreviaturaPalabra(claseGasto);
                 
-                CuentaContable linea = new CuentaContable(codigo,nombre,null,0,null,null,true);
+                CuentaContable linea = new CuentaContable(codigo,nombre,null,atribuible,tipoGasto, claseGasto,0,null,null,true);
                 
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if(cuenta == null){

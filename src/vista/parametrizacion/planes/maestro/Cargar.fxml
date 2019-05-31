@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -87,6 +87,9 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolAtribuible" prefWidth="70.0" styleClass="center" text="ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" styleClass="center" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolClase" prefWidth="91.0" styleClass="center" text="CLASE DE GASTO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="50.0" layoutY="549.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />

@@ -17,15 +17,11 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.CargarCuentaPartidaLinea;
+import modelo.CargarObjetoPeriodoLinea;
 import modelo.Driver;
 import modelo.Partida;
 import modelo.Tipo;
 
-
-/**
- *
- * @author briggette.olenka.ro1
- */
 public class PartidaDAO {
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
@@ -295,13 +291,13 @@ public class PartidaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarListaObjetoPeriodo(List<CargarCuentaPartidaLinea> lista, int repartoTipo) {
+    public void insertarListaObjetoPeriodo(List<CargarObjetoPeriodoLinea> lista, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         borrarListaObjetoPeriodo(lista.get(0).getPeriodo(),repartoTipo);
         ConexionBD.crearStatement();
-        for (CargarCuentaPartidaLinea item: lista) {
+        for (CargarObjetoPeriodoLinea item: lista) {
             int periodo = item.getPeriodo();
-            String codigo = item.getCodigoPartida();
+            String codigo = item.getCodigo();
             String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO partida_lineas(partida_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s',%d,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",

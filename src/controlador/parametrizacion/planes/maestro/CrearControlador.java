@@ -8,9 +8,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 
@@ -24,6 +26,10 @@ public class CrearControlador implements Initializable {
         
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
+    @FXML private ComboBox cmbAtribuible;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbClaseGasto;
+
     
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
@@ -44,7 +50,12 @@ public class CrearControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        cmbAtribuible.getSelectionModel().select(0);
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
+        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        cmbClaseGasto.getSelectionModel().select(0);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -70,11 +81,15 @@ public class CrearControlador implements Initializable {
     @FXML void btnCrearAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
+        String atribuible = cmbAtribuible.getValue().toString();
+        String tipoGasto = cmbTipoGasto.getValue().toString();
+        String claseGasto = cmbClaseGasto.getValue().toString();
+
         if (lstCodigos.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;
         }
-        if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo)==1) {
+        if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo,atribuible, tipoGasto, claseGasto)==1) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);

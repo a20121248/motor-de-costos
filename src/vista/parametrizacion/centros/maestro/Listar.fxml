@@ -80,11 +80,14 @@
       <TextField fx:id="txtBuscar" layoutX="514.0" layoutY="222.0" prefHeight="25.0" prefWidth="200.0" visible="false" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
       <TableView fx:id="tabListar" layoutX="56.0" layoutY="170.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="56.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolGrupo" prefWidth="128.0" styleClass="center" text="GRUPO" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="128.0" styleClass="center" text="NIVEL" />
-            <TableColumn fx:id="tabcolCentroPadre" prefWidth="128.0" styleClass="center" text="CECO PADRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="68.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="99.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolGrupo" styleClass="center" text="GRUPO" />
+            <TableColumn fx:id="tabcolNivel" prefWidth="78.0" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolCentroPadre" styleClass="center" text="CECO PADRE" />
+            <TableColumn fx:id="tabcolAtribuible" prefWidth="70.0" text="ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolClase" prefWidth="91.0" text="CLASE DE GASTO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />

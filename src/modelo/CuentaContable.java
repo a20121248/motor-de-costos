@@ -3,6 +3,7 @@ package modelo;
 import java.util.Date;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class CuentaContable extends EntidadDistribucion {
@@ -15,6 +16,9 @@ public class CuentaContable extends EntidadDistribucion {
     private StringProperty codProducto;
     private StringProperty descripcionProducto;
     private BooleanProperty flagCargar;
+    private StringProperty atribuible;
+    private StringProperty tipoGasto;
+    private StringProperty claseGasto;
     // datos del saldo
     private Tipo grupo;
     
@@ -33,6 +37,19 @@ public class CuentaContable extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
+    public CuentaContable(String codigo, String nombre, String descripcion, String atribuible, String tipoGasto, String claseGasto,  double saldo, Date fechaCreacion, Date fechaActualizacion) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.atribuible = new SimpleStringProperty(atribuible);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.claseGasto = new SimpleStringProperty(claseGasto);
+    }
+    public CuentaContable(String codigo, String nombre, String descripcion, String atribuible, String tipoGasto, String claseGasto,  double saldo, Date fechaCreacion, Date fechaActualizacion, boolean  flagCargar) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.atribuible = new SimpleStringProperty(atribuible);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.claseGasto = new SimpleStringProperty(claseGasto);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
     public Tipo getGrupo() {
         return grupo;
     }
@@ -137,7 +154,43 @@ public class CuentaContable extends EntidadDistribucion {
     public void setDescripcionProducto(String descripcionProducto) {
         this.descripcionProducto.set(descripcionProducto);
     }
-    
+
+    public StringProperty atribuibleProperty() {
+        return this.atribuible;
+    }
+
+    public String getAtribuible() {
+        return atribuible.get();
+    }
+
+    public void setAtribuible(String atribuible) {
+        this.atribuible.set(atribuible);
+    }
+
+    public StringProperty tipoGastoProperty() {
+        return this.tipoGasto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto.get();
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto.set(tipoGasto);
+    }
+
+    public StringProperty claseGastoProperty() {
+        return this.claseGasto;
+    }
+
+    public String getClaseGasto() {
+        return claseGasto.get();
+    }
+
+    public void setClaseGasto(String claseGasto) {
+        this.claseGasto.set(claseGasto);
+    }
+
     public boolean getFlagCargar(){
         return flagCargar.get();
     }
