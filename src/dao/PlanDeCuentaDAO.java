@@ -1089,23 +1089,29 @@ public List<Grupo> listarGruposNombres() {
     }
     
     public String convertirPalabraAbreviatura(String palabra){
-        switch(palabra){
-            case "Atribuible":
+        switch(palabra.toLowerCase()){
+            case "sí":
                 palabra = "SI";
                 break;
-            case "No Atribuible":
+            case "no":
                 palabra = "NO";
                 break;
-            case "Adquisión":
+            case "atribuible":
+                palabra = "SI";
+                break;
+            case "no atribuible":
+                palabra = "NO";
+                break;
+            case "adquisición":
                 palabra = "GA";
                 break;
-            case "Mantenimiento":
+            case "mantenimiento":
                 palabra = "GM";
                 break;
-            case "Fijo":
+            case "fijo":
                 palabra = "FI";
                 break;
-            case "Variable":
+            case "variable":
                 palabra = "VA";
                 break;
             default:
@@ -1124,7 +1130,7 @@ public List<Grupo> listarGruposNombres() {
                         palabra = "No Atribuible";
                         break;
                     case "GA":
-                        palabra = "Adquisión";
+                        palabra = "Adquisición";
                         break;
                     case "GM":
                         palabra = "Mantenimiento";

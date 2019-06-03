@@ -39,15 +39,27 @@ public class Centro extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String atribuible, String tipoGasto, String claseGasto, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String esBolsa,  String atribuible, String tipoGasto, String claseGasto, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
         this.tipo = new SimpleObjectProperty(tipo);
+        this.esBolsa =  new SimpleStringProperty(esBolsa);
         this.atribuible = new SimpleStringProperty(atribuible);
         this.tipoGasto = new SimpleStringProperty(tipoGasto);
         this.claseGasto = new SimpleStringProperty(claseGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
+    
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String esBolsa,  String atribuible, String tipoGasto, String claseGasto, Date fechaCreacion, Date fechaActualizacion) {
+        super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
+        this.nivel = new SimpleIntegerProperty(nivel);
+        this.centroPadre = new SimpleObjectProperty(centroPadre);
+        this.tipo = new SimpleObjectProperty(tipo);
+        this.esBolsa =  new SimpleStringProperty(esBolsa);
+        this.atribuible = new SimpleStringProperty(atribuible);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.claseGasto = new SimpleStringProperty(claseGasto);
     }
     
     public IntegerProperty nivelProperty() {
@@ -90,11 +102,11 @@ public class Centro extends EntidadDistribucion {
         return this.esBolsa;
     }
 
-    public String getBolsa() {
+    public String getEsBolsa() {
         return esBolsa.get();
     }
 
-    public void setBolsa(String esBolsa) {
+    public void setEsBolsa(String esBolsa) {
         this.esBolsa.set(esBolsa);
     }
     

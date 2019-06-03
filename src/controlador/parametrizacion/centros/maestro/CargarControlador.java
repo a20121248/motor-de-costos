@@ -59,6 +59,10 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Centro, String> tabcolNombreGrupo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCodigoCentroPadre;
+    @FXML private TableColumn<Centro, String> tabcolEsBolsa;
+    @FXML private TableColumn<Centro, String> tabcolAtribuible;
+    @FXML private TableColumn<Centro, String> tabcolTipo;
+    @FXML private TableColumn<Centro, String> tabcolClase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -96,12 +100,15 @@ public class CargarControlador implements Initializable {
         }
         // tabla centros
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 36);
-        tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 12);
-        tabcolNombreGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 12);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 29);
+        tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
+        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 8);
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
+        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -109,6 +116,10 @@ public class CargarControlador implements Initializable {
         tabcolNombreGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);
+        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
+        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
         btnDescargarLog.setVisible(false);
     }    
     
@@ -162,7 +173,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
                 menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -176,8 +187,16 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String tipoGasto = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String claseGasto = celda.getStringCellValue();
+                
+                atribuible = centroDAO.convertirAbreviaturaPalabra(atribuible);
+                tipoGasto = centroDAO.convertirAbreviaturaPalabra(tipoGasto);
+                claseGasto = centroDAO.convertirAbreviaturaPalabra(claseGasto);
 
-                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),null,null,true);
+                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa,atribuible,tipoGasto, claseGasto, null,null,true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if(cuenta == null){
                     listaCargar.add(linea);                    

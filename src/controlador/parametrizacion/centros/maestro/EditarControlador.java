@@ -35,6 +35,10 @@ public class EditarControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
+    @FXML private ComboBox cmbEsBolsa;
+    @FXML private ComboBox cmbAtribuible;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbClaseGasto;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -79,7 +83,7 @@ public class EditarControlador implements Initializable {
         });
         cmbTipo.setValue(centro.getTipo());
         if (menuControlador.repartoTipo == 1) {
-            cmbTipo.getSelectionModel().select(0);
+            cmbTipo.getSelectionModel().select(centro.getTipo());
         } else if (menuControlador.repartoTipo == 2) {
             cmbTipo.getSelectionModel().select(obsListaTipos.size()-1);
             cmbTipo.setDisable(true);
@@ -102,12 +106,20 @@ public class EditarControlador implements Initializable {
             if (nivel == 0) {
                 cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
             } else {
-                cmbNivel.getSelectionModel().select(0);
+                cmbNivel.getSelectionModel().select(centro.getNivel()-1);
             }
         } else if (menuControlador.repartoTipo == 2) {
             cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
             cmbNivel.setDisable(true);
         }
+        cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
+        cmbEsBolsa.getSelectionModel().select(centro.getEsBolsa());
+        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        cmbAtribuible.getSelectionModel().select(centro.getAtribuible());
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(centro.getTipoGasto());
+        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        cmbClaseGasto.getSelectionModel().select(centro.getClaseGasto());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -136,7 +148,11 @@ public class EditarControlador implements Initializable {
         String codigoGrupo = cmbTipo.getValue().getCodigo();
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
-        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo)==1) {
+        String esBolsa = cmbEsBolsa.getValue().toString();
+        String atribuible = cmbAtribuible.getValue().toString();
+        String tipoGasto = cmbTipoGasto.getValue().toString();
+        String claseGasto = cmbClaseGasto.getValue().toString();
+        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,esBolsa, atribuible,tipoGasto, claseGasto)==1) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);

@@ -35,7 +35,11 @@ public class CrearControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
-    
+    @FXML private ComboBox cmbEsBolsa;
+    @FXML private ComboBox cmbAtribuible;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbClaseGasto;
+
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
     
@@ -99,6 +103,14 @@ public class CrearControlador implements Initializable {
             cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
             cmbNivel.setDisable(true);
         }
+        cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
+        cmbEsBolsa.getSelectionModel().select(0);
+        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        cmbAtribuible.getSelectionModel().select(0);
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
+        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        cmbClaseGasto.getSelectionModel().select(0);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -133,11 +145,15 @@ public class CrearControlador implements Initializable {
         String codigoGrupo = cmbTipo.getValue().getCodigo();
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
+        String esBolsa = cmbEsBolsa.getValue().toString();
+        String atribuible = cmbAtribuible.getValue().toString();
+        String tipoGasto = cmbTipoGasto.getValue().toString();
+        String claseGasto = cmbClaseGasto.getValue().toString();
         if (lstCentrosCodigo.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;
         }
-        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo)==1) {
+        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto)==1) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);

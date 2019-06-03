@@ -25,12 +25,11 @@ public class CrearControlador implements Initializable {
     @FXML private Hyperlink lnkCrear;
         
     @FXML private TextField txtCodigo;
-    @FXML private TextField txtNombre;
+    @FXML private TextField txtNombre;    
     @FXML private ComboBox cmbAtribuible;
     @FXML private ComboBox cmbTipoGasto;
     @FXML private ComboBox cmbClaseGasto;
 
-    
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
     

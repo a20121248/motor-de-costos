@@ -50,7 +50,7 @@ public class MenuControlador implements Initializable {
     public String objetoTipo;
     final TipoDAO tipoDAO;
     public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos;
-    public List<String> lstAtribuible, lstTipoGasto, lstClaseGasto;
+    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto;
     public String codigos;
     final Image img;
     public List<Integer> lstFases;
@@ -152,12 +152,16 @@ public class MenuControlador implements Initializable {
         lstEntidadTipos = tipoDAO.listarEntidadTipos();
 
         //Caracteristicas de los Gastos de Centros y Cuentas Contables
+        lstEsBolsa = new ArrayList();
+        lstEsBolsa.add("NO");
+        lstEsBolsa.add("SI");
+        
         lstAtribuible = new ArrayList();
         lstAtribuible.add("Atribuible");
         lstAtribuible.add("No Atribuible");
 
         lstTipoGasto = new ArrayList();
-        lstTipoGasto.add("Adquisión");
+        lstTipoGasto.add("Adquisición");
         lstTipoGasto.add("Mantenimiento");
 
         lstClaseGasto = new ArrayList();

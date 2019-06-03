@@ -95,22 +95,28 @@ public class CentroDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int actualizarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo) {
+    public int actualizarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, String esBolsa , String atribuible, String tipoGasto, String claseGasto) {
+        atribuible = convertirPalabraAbreviatura(atribuible);
+        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+        claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
                 "UPDATE centros\n" +
-                "   SET nombre='%s',esta_activo=%d,centro_tipo_codigo='%s',nivel=%d,centro_padre_codigo='%s',fecha_creacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
+                "   SET nombre='%s',centro_tipo_codigo='%s',nivel=%d,centro_padre_codigo='%s',es_bolsa='%s',atribuible='%s',tipo='%s',clase='%s',fecha_creacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
                 " WHERE codigo='%s'",
-                nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,fechaStr,fechaStr,codigo);
+                nombre,cecoTipoCodigo,nivel,cecoPadreCodigo,esBolsa, atribuible, tipoGasto, claseGasto,fechaStr,fechaStr,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, int repartoTipo) {
+    public int insertarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, int repartoTipo, String es_bolsa, String atribuible, String tipoGasto, String claseGasto ) {
+        atribuible = convertirPalabraAbreviatura(atribuible);
+        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+        claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO centros(codigo,nombre,esta_activo,centro_tipo_codigo,nivel,centro_padre_codigo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,'%s',%d,'%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,repartoTipo,fechaStr,fechaStr);
+                "INSERT INTO centros(codigo,nombre,esta_activo,centro_tipo_codigo,nivel,centro_padre_codigo,reparto_tipo, es_bolsa, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s',%d,'%s',%d,'%s',%d,'%s','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,repartoTipo,es_bolsa, atribuible, tipoGasto, claseGasto, fechaStr, fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -219,13 +225,21 @@ public class CentroDAO {
             String codigoGrupo = item.getTipo().getCodigo();
             String centroPadreCodigo = "xxx";
             int nivel = item.getNivel();
+            String esBolsa = item.getEsBolsa();
+            String atribuible = item.getAtribuible();
+            String tipoGasto = item.getTipoGasto();
+            String claseGasto = item.getClaseGasto();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+            
+            atribuible = convertirPalabraAbreviatura(atribuible);
+            tipoGasto = convertirPalabraAbreviatura(tipoGasto);
+            claseGasto = convertirPalabraAbreviatura(claseGasto);
             
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s','%s',%d,%d,'%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,repartoTipo,fechaStr,fechaStr);
+                    "INSERT INTO CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO, es_bolsa, atribuible, tipo, clase,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s','%s',%d,%d,'%s','%s',%d,'%s','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto,fechaStr,fechaStr);
             return queryStr;
         }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);
@@ -299,9 +313,12 @@ public class CentroDAO {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
-                "       A.esta_activo,\n" +
                 "       A.nivel,\n" +
                 "       A.centro_padre_codigo,\n" +
+                "       A.es_bolsa,\n" +
+                "       A.atribuible,\n" +
+                "       A.tipo,\n" +
+                "       A.clase,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion,\n" +
                 "       B.codigo tipo_codigo,\n" +
@@ -316,9 +333,12 @@ public class CentroDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
-                int estaActivo = rs.getInt("esta_activo");
                 int nivel = rs.getInt("nivel");
                 String centroPadreCodigo = rs.getString("centro_padre_codigo");
+                String esBolsa = rs.getString("es_bolsa");
+                String atribuible = rs.getString("atribuible");
+                String tipoGasto = rs.getString("tipo");
+                String claseGasto = rs.getString("clase");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
                 double saldo = 0;
@@ -326,7 +346,12 @@ public class CentroDAO {
                 String tipoNombre = rs.getString("tipo_nombre");
                 String tipoDescripcion = rs.getString("tipo_descripcion");
                 Tipo tipo = new Tipo(tipoCodigo,tipoNombre,tipoDescripcion);
-                Centro item = new Centro(codigo, nombre, nivel, null, saldo, tipo, fechaCreacion, fechaActualizacion);
+                
+                atribuible = convertirAbreviaturaPalabra(atribuible);
+                tipoGasto = convertirAbreviaturaPalabra(tipoGasto);
+                claseGasto = convertirAbreviaturaPalabra(claseGasto);
+                
+                Centro item = new Centro(codigo, nombre, nivel, null, saldo, tipo, esBolsa, atribuible, tipoGasto, claseGasto, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
@@ -522,5 +547,64 @@ public class CentroDAO {
                 "VALUES('%s',%d,%d,%.8f,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 centroCodigo, periodo, iteracion, saldo, entidadOrigenCodigo, fechaStr, fechaStr);
         ConexionBD.agregarBatch(queryStr);
+    }
+    public String convertirPalabraAbreviatura(String palabra){
+        switch(palabra.toLowerCase()){
+            case "sí":
+                palabra = "SI";
+                break;
+            case "no":
+                palabra = "NO";
+                break;
+            case "atribuible":
+                palabra = "SI";
+                break;
+            case "no atribuible":
+                palabra = "NO";
+                break;
+            case "adquisición":
+                palabra = "GA";
+                break;
+            case "mantenimiento":
+                palabra = "GM";
+                break;
+            case "fijo":
+                palabra = "FI";
+                break;
+            case "variable":
+                palabra = "VA";
+                break;
+            default:
+                palabra = null;
+                break;
+        }
+        return palabra;
+    }
+    
+    public String convertirAbreviaturaPalabra(String palabra){
+        switch(palabra){
+                    case "SI":
+                        palabra = "Atribuible";
+                        break;
+                    case "NO":
+                        palabra = "No Atribuible";
+                        break;
+                    case "GA":
+                        palabra = "Adquisición";
+                        break;
+                    case "GM":
+                        palabra = "Mantenimiento";
+                        break;
+                    case "FI":
+                        palabra = "Fijo";
+                        break;
+                    case "VA":
+                        palabra = "Variable";
+                        break;
+                    default:
+                        palabra = null;
+                        break;
+                }
+        return palabra;
     }
 }

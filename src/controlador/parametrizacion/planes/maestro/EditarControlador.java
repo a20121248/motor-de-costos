@@ -82,8 +82,12 @@ public class EditarControlador implements Initializable {
     }
 
     @FXML void btnGuardarAction(ActionEvent event) {
+        String codigo = planDeCuenta.getCodigo();
         String nombre = txtNombre.getText();
-        if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre, cmbAtribuible.getValue().toString(),cmbTipoGasto.getValue().toString(),cmbClaseGasto.getValue().toString())==1) {
+        String atribuible = cmbAtribuible.getValue().toString();
+        String tipoGasto = cmbTipoGasto.getValue().toString();
+        String claseGasto = cmbClaseGasto.getValue().toString();
+        if (planDeCuentaDAO.actualizarObjeto(codigo,nombre, atribuible, tipoGasto,claseGasto)==1) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);

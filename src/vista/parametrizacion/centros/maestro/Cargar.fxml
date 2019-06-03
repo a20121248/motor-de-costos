@@ -80,6 +80,10 @@
             <TableColumn fx:id="tabcolNombreGrupo" prefWidth="75.0" styleClass="left" text="NOMBRE GRUPO" />
             <TableColumn fx:id="tabcolNivel" prefWidth="75.0" styleClass="center" text="NIVEL" />
             <TableColumn fx:id="tabcolCodigoCentroPadre" prefWidth="75.0" styleClass="center" text="CÓDIGO CENTRO PADRE" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="40.0" styleClass="center" text="BOLSA" />
+            <TableColumn fx:id="tabcolAtribuible" prefWidth="108.0" styleClass="center" text="ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" styleClass="center" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolClase" prefWidth="91.0" styleClass="center" text="CLASE DE GASTO" />
          </columns>
       </TableView>
       <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
