@@ -138,6 +138,9 @@ public class ListarControlador implements Initializable {
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getAtribuible().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getTipoGasto().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getClaseGasto().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());

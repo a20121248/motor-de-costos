@@ -65,7 +65,7 @@ public class PartidaDAO {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
-                "       B.saldo saldo,\n" +
+                "       SUM(COALESCE(B.saldo,0)) saldo,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
                 "  FROM partidas A\n" +
@@ -79,7 +79,8 @@ public class PartidaDAO {
             case "Operativo":
                 queryStr += "   AND SUBSTR(A.codigo,0,2)='44'";
         }
-        
+        queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
+                    "\n ORDER BY A.codigo";
         List<Partida> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -143,6 +144,7 @@ public class PartidaDAO {
         return lista;
     }
     
+    // Lista objetos para catálogo
     public List<Partida> listarObjetos(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {
@@ -170,10 +172,9 @@ public class PartidaDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
-                Double saldo = rs.getDouble("saldo");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                Partida item = new Partida(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion);
+                Partida item = new Partida(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {

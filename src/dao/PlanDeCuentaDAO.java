@@ -209,7 +209,7 @@ public class PlanDeCuentaDAO {
             case "Operativo":
                 queryStr += "\n   AND SUBSTR(A.codigo,0,2)='44'";
         }
-        queryStr += "\n GROUP BY A.codigo,A.nombre,A.esta_activo,A.fecha_creacion,A.fecha_actualizacion\n" +
+        queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                     "\n ORDER BY A.codigo";
         List<CuentaContable> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

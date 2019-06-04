@@ -64,6 +64,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableView<EntidadDistribucion> tabListar;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolCodigo;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
+    @FXML private TableColumn<EntidadDistribucion, Double> tabcolSaldo;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -123,9 +124,11 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
