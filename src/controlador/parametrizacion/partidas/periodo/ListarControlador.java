@@ -64,10 +64,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private ComboBox<String> cmbTipoGasto;
     
     @FXML private TextField txtBuscar;
-    @FXML private TableView<EntidadDistribucion> tabListar;
-    @FXML private TableColumn<EntidadDistribucion, String> tabcolCodigo;
-    @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
-    @FXML private TableColumn<EntidadDistribucion, Double> tabcolSaldo;
+    @FXML private TableView<Partida> tabListar;
+    @FXML private TableColumn<Partida, String> tabcolCodigo;
+    @FXML private TableColumn<Partida, String> tabcolNombre;
+    @FXML private TableColumn<Partida, Double> tabcolSaldo;
 
     @FXML private Label lblNumeroRegistros;
     
@@ -77,8 +77,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FXMLLoader fxmlLoader;
     PartidaDAO partidaDAO;
     public MenuControlador menuControlador;    
-    FilteredList<EntidadDistribucion> filteredData;
-    SortedList<EntidadDistribucion> sortedData;
+    FilteredList<Partida> filteredData;
+    SortedList<Partida> sortedData;
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR.getControlador());
@@ -135,7 +135,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<EntidadDistribucion, Double>() {
+                return new TableCell<Partida, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);

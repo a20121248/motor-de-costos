@@ -110,8 +110,8 @@ public class PartidaDAO {
                 "  JOIN partida_lineas B ON B.partida_codigo=A.codigo\n" +
 //                Revisar las consultas con la nueva tabla PARTIDA y PARTIDA_LINEA
                 "  LEFT JOIN entidad_origen_driver C ON C.entidad_origen_codigo=A.codigo AND C.periodo=B.periodo\n" +
-                "  LEFT JOIN partida_plan_de_cuenta D ON D.partida_codigo=A.codigo AND D.periodo=B.periodo\n" +
-                "  LEFT JOIN plan_de_cuenta_lineas E ON E.plan_de_cuenta_codigo=D.plan_de_cuenta_codigo AND E.periodo=B.periodo\n" +
+                "  LEFT JOIN partida_cuenta_contable D ON D.partida_codigo=A.codigo AND D.periodo=B.periodo\n" +
+                "  LEFT JOIN plan_de_cuenta_lineas E ON E.plan_de_cuenta_codigo=D.cuenta_contable_codigo AND E.periodo=B.periodo\n" +
                 " WHERE  B.periodo=%d AND A.reparto_tipo=%d\n",
                 periodo,repartoTipo);
         switch(tipoGasto) {
@@ -185,19 +185,22 @@ public class PartidaDAO {
     
     //TOCHECK: partida_lineas tienen saldo???
     public List<Partida> listarPartidaConCuentaContable(int periodo, String tipoGasto, int repartoTipo) {
+        actualizarSaldoCuentaPartida(periodo);
+
+        
         String queryStr = String.format("" +
                 "SELECT "+
-                "       NVL(D.codigo,'Sin CuentaContable asignada') plan_de_cuenta_codigo,\n" +
-                "       NVL(D.nombre,'Sin CuentaContable asignada') plan_de_cuenta_nombre,\n" +
+                "       NVL(D.codigo,'Sin CuentaContable asignada') cuenta_contable_codigo,\n" +
+                "       NVL(D.nombre,'Sin CuentaContable asignada') cuenta_contable_nombre,\n" +
                 "       A.codigo partida_codigo,\n" +
                 "       A.nombre partida_nombre,\n" +
-                "       B.saldo partida_saldo,\n" +
+                "       NVL(C.saldo,0) partida_cuenta_contable_saldo,\n" +
                 "       A.fecha_creacion partida_fecha_creacion,\n" +
                 "       A.fecha_actualizacion partida_fecha_actualizacion\n" +
                 "  FROM partidas A\n" +
                 "  JOIN partida_lineas B ON A.codigo=B.partida_codigo AND B.periodo=%d\n" +
-                "  LEFT JOIN partida_plan_de_cuenta C ON A.codigo=C.partida_codigo AND C.periodo=%d\n" +
-                "  LEFT JOIN plan_de_cuentas D ON C.plan_de_cuenta_codigo=D.codigo\n" +
+                "  LEFT JOIN partida_cuenta_contable C ON A.codigo=C.partida_codigo AND C.periodo=%d\n" +
+                "  LEFT JOIN plan_de_cuentas D ON C.cuenta_contable_codigo=D.codigo\n" +
                 " WHERE A.reparto_tipo=%d",
                 periodo,periodo,repartoTipo);
         switch(tipoGasto) {
@@ -207,20 +210,20 @@ public class PartidaDAO {
             case "Operativo":
                 queryStr += "\n WHERE SUBSTR(A.codigo,0,2)='44'";
         }
-        queryStr += "\n ORDER BY partida_codigo,plan_de_cuenta_codigo";
+        queryStr += "\n ORDER BY partida_codigo,cuenta_contable_codigo";
         List<Partida> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String cuentaContableCodigo = rs.getString("plan_de_cuenta_codigo");
-                String cuentaContableNombre = rs.getString("plan_de_cuenta_nombre");
+                String cuentaContableCodigo = rs.getString("cuenta_contable_codigo");
+                String cuentaContableNombre = rs.getString("cuenta_contable_nombre");
                 String partidaCodigo = rs.getString("partida_codigo");
                 String partidaNombre = rs.getString("partida_nombre");
-                double partidaSaldo = rs.getDouble("partida_saldo");
+                double Saldo = rs.getDouble("partida_cuenta_contable_saldo");
                 Date partidaFechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_creacion"));
                 Date partidaFechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_actualizacion"));
 
                 Tipo cuentaContable = new Tipo(cuentaContableCodigo, cuentaContableNombre, null);
-                Partida item = new Partida(partidaCodigo, partidaNombre, null, partidaSaldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable);
+                Partida item = new Partida(partidaCodigo, partidaNombre, null, Saldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable);
 
                 lista.add(item);
             }
@@ -232,7 +235,7 @@ public class PartidaDAO {
     public int verificarObjetoPartidaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM partida_plan_de_cuenta\n" +
+                "  FROM partida_cuenta_contable\n" +
                 " WHERE partida_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         int cont=-1;
@@ -303,6 +306,53 @@ public class PartidaDAO {
         return cnt;
     }
     
+    public double leerSaldoCuentaPartida(String cuentaContableCodigo, String partidaCodigo, int periodo){
+        String queryStr = String.format("" +
+                "SELECT COALESCE(saldo,0) SALDO \n"+
+                "  FROM partida_cuenta_contable\n" +
+                " WHERE partida_codigo='%s'"+
+                "   AND cuenta_contable_codigo='%s'"+
+                "   AND periodo = '%d'",
+                cuentaContableCodigo, partidaCodigo, periodo);
+        double saldo=0;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                saldo = rs.getInt("SALDO");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return saldo;
+        
+    }
+    
+    public double leerSaldoPartida(String partidaCodigo, int periodo){
+        String queryStr = String.format("" +
+                "SELECT COALESCE(saldo,0) SALDO \n"+
+                "  FROM partida_lineas\n" +
+                " WHERE partida_codigo='%s'"+
+                "   AND periodo = '%d'",
+                 partidaCodigo, periodo);
+        double saldo=0;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                saldo = rs.getInt("SALDO");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return saldo;
+    }
+
+    public int actualizarSaldoCuentaPartida( int periodo){
+        String queryStr = String.format(
+                "UPDATE PARTIDA_CUENTA_CONTABLE A"+ 
+                "   SET SALDO = (SELECT B.SALDO FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND PERIODO = '%d')"+
+                " WHERE EXISTS (SELECT 1 FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d')"
+                , periodo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
     public int eliminarObjetoPeriodo(String codigo, int periodo) {
         String queryStr = String.format("DELETE FROM partida_lineas WHERE partida_codigo='%s' AND periodo=%d",codigo,periodo);
         return ConexionBD.ejecutar(queryStr);
@@ -348,12 +398,14 @@ public class PartidaDAO {
     
     public int insertarPartidaCuenta(String partidaCodigo, String cuentaContableCodigo, int periodo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+        Double saldo = leerSaldoPartida(partidaCodigo, periodo);
         String queryStr = String.format("" +
-                "INSERT INTO partida_plan_de_cuenta(partida_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%.2f' ,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     partidaCodigo,
                     cuentaContableCodigo,
                     periodo,
+                    saldo,
                     fechaStr,
                     fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -369,7 +421,7 @@ public class PartidaDAO {
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO partida_plan_de_cuenta(partida_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
+                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigoPartida,
                     codigoCuenta,
@@ -384,10 +436,10 @@ public class PartidaDAO {
     
     public int borrarPartidasCuenta(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_plan_de_cuenta A\n" +
+                "DELETE FROM partida_cuenta_contable A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
                 "                 FROM plan_de_cuentas B\n" +
-                "                WHERE A.plan_de_cuenta_codigo=B.codigo\n" +
+                "                WHERE A.cuenta_contable_codigo=B.codigo\n" +
                 "                  AND A.periodo=%d\n" +
                 "                  AND B.reparto_tipo=%d)",
                 periodo,repartoTipo);
@@ -395,7 +447,7 @@ public class PartidaDAO {
     }
     public int borrarPartidaCuenta(String partidaCodigo,int periodo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_plan_de_cuenta\n" +
+                "DELETE FROM partida_cuenta_contable\n" +
                 " WHERE partida_codigo='%s' AND periodo=%d",
                 partidaCodigo,periodo);
         return ConexionBD.ejecutar(queryStr);

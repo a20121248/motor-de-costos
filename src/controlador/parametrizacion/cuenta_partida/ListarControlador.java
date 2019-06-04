@@ -64,6 +64,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<Partida, String> tabcolNombreCuenta;
     @FXML private TableColumn<Partida, String> tabcolCodigoPartida;
     @FXML private TableColumn<Partida, String> tabcolNombrePartida;
+    @FXML private TableColumn<Partida, Double> tabcolSaldo;
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargar;
@@ -127,11 +128,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombreCuenta.setCellValueFactory(cellData -> cellData.getValue().getCuentaContable().nombreProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombreCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 35);
+        tabcolNombreCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 35);
+        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {

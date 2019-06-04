@@ -27,6 +27,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -59,9 +60,11 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnCatalogo;
     
     @FXML private TextField txtBuscar;
-    @FXML private TableView<EntidadDistribucion> tabListar;
-    @FXML private TableColumn<EntidadDistribucion, String> tabcolCodigo;
-    @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
+    @FXML private TableView<Centro> tabListar;
+    @FXML private TableColumn<Centro, String> tabcolCodigo;
+    @FXML private TableColumn<Centro, String> tabcolNombre;
+    @FXML private TableColumn<Centro, String> tabcolTipoCentro;
+    @FXML private TableColumn<Centro, Double> tabcolSaldo;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -71,8 +74,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FXMLLoader fxmlLoader;
     CentroDAO centroDAO;
     public MenuControlador menuControlador;
-    FilteredList<EntidadDistribucion> filteredData;
-    SortedList<EntidadDistribucion> sortedData;
+    FilteredList<Centro> filteredData;
+    SortedList<Centro> sortedData;
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getControlador());
@@ -117,9 +120,27 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolTipoCentro.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
+        tabcolSaldo.setCellFactory(column -> {
+                return new TableCell<Centro, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(String.format("%,.2f", item));
+                    }
+                }
+            };
+        });
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 50);
+        tabcolTipoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listar(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -127,6 +148,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 if (newValue == null || newValue.isEmpty()) return true;
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });

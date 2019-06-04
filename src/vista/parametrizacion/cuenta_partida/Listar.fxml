@@ -108,6 +108,7 @@
             <TableColumn fx:id="tabcolNombreCuenta" prefWidth="120.0" styleClass="left" text="NOMBRE CUENTA" />
             <TableColumn fx:id="tabcolCodigoPartida" prefWidth="120.0" styleClass="center" text="CÓDIGO PARTIDA" />
             <TableColumn fx:id="tabcolNombrePartida" prefWidth="120.0" styleClass="left" text="NOMBRE PARTIDA" />
+            <TableColumn fx:id="tabcolSaldo" prefWidth="120.0" styleClass="right" text="SALDO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
