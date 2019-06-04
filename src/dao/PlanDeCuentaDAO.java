@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.CargarBalanceteLinea;
+import modelo.CargarDetalleGastoLinea;
 import modelo.CargarGrupoCuentaLinea;
 import modelo.CargarGrupoLinea;
 import modelo.CargarObjetoLinea;
@@ -717,11 +717,11 @@ public List<Grupo> listarGruposNombres() {
         return lista;*/
     }
 
-    public void insertarBalancete(int periodo, List<CargarBalanceteLinea> lista) throws SQLException {
+    public void insertarDetalleGasto(int periodo, List<CargarDetalleGastoLinea> lista) throws SQLException {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (CargarBalanceteLinea item: lista) {
+        for (CargarDetalleGastoLinea item: lista) {
             String queryStr = String.format(Locale.US, "" +
                     "UPDATE plan_de_cuenta_lineas\n" +
                     "   SET SALDO=%.2f,fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
@@ -736,6 +736,7 @@ public List<Grupo> listarGruposNombres() {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
+    
 
     public void insertarListaPlanDeCuenta(List<CargarPlanDeCuentaLinea> lista) {
         Connection access1 = connection.getConnection();
@@ -1055,7 +1056,7 @@ public List<Grupo> listarGruposNombres() {
         return lista;
     }
 
-    public void insertarSaldo(CargarBalanceteLinea cargarBalanceteLinea) {
+    public void insertarSaldo(CargarDetalleGastoLinea cargarBalanceteLinea) {
         Connection access = connection.getConnection();
         PreparedStatement ps = null;
         int valor = -1;

@@ -9,14 +9,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class CargarBalanceteLinea {
+public class CargarDetalleGastoLinea {
     private IntegerProperty periodo;
     private StringProperty codigo;
     private StringProperty nombre;
     private DoubleProperty saldo;
     private BooleanProperty estado;
     
-    public CargarBalanceteLinea(int periodo, String codigo, String nombre, double saldo, boolean estado) {
+    public CargarDetalleGastoLinea(int periodo, String codigo, String nombre, double saldo, boolean estado) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigo = new SimpleStringProperty(codigo);
         this.nombre = new SimpleStringProperty(nombre);

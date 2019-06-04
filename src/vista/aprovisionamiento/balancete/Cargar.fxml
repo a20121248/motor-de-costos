@@ -20,7 +20,7 @@
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label layoutX="21.0" layoutY="11.0" text="Balancete" textFill="#676a6c">
+            <Label layoutX="21.0" layoutY="11.0" text="Detalle de Gasto" textFill="#676a6c">
                <font>
                   <Font size="24.0" />
                </font>
@@ -47,7 +47,7 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Hyperlink fx:id="lnkBalancete" onAction="#lnkBalanceteAction" text="Balancete" textFill="#676a6c">
+                  <Hyperlink fx:id="lnkBalancete" onAction="#lnkBalanceteAction" text="Detalle de Gasto" textFill="#676a6c">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -86,8 +86,12 @@
       </JFXButton>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="100.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="100.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolCodigo1" prefWidth="100.0" styleClass="center" text="CÓDIGO PARTIDA" />
+            <TableColumn fx:id="tabcolNombre1" prefWidth="100.0" styleClass="left" text="NOMBRE PARTIDA" />
+            <TableColumn fx:id="tabcolCodigo2" prefWidth="100.0" styleClass="center" text="CÓDIGO CENTRO COSTO" />
+            <TableColumn fx:id="tabcolNombre2" prefWidth="100.0" styleClass="left" text="NOMBRE CENTRO COSTO" />
             <TableColumn fx:id="tabcolSaldo" prefWidth="100.0" styleClass="right" text="SALDO" />
             <TableColumn fx:id="tabcolEstado" prefWidth="100.0" styleClass="center" text="ESTADO" />
          </columns>

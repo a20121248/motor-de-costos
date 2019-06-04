@@ -35,7 +35,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import modelo.CargarBalanceteLinea;
+import modelo.CargarDetalleGastoLinea;
 import modelo.CuentaContable;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -55,11 +55,11 @@ public class CargarControlador implements Initializable {
     @FXML private JFXButton btnCargarRuta;
     @FXML private JFXButton btnDescargarLog;
     
-    @FXML private TableView<CargarBalanceteLinea> tabListar;
-    @FXML private TableColumn<CargarBalanceteLinea, Boolean> tabcolEstado;
-    @FXML private TableColumn<CargarBalanceteLinea, String> tabcolCodigo;
-    @FXML private TableColumn<CargarBalanceteLinea, String> tabcolNombre;
-    @FXML private TableColumn<CargarBalanceteLinea, Double> tabcolSaldo;
+    @FXML private TableView<CargarDetalleGastoLinea> tabListar;
+    @FXML private TableColumn<CargarDetalleGastoLinea, Boolean> tabcolEstado;
+    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolCodigo;
+    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolNombre;
+    @FXML private TableColumn<CargarDetalleGastoLinea, Double> tabcolSaldo;
     
     @FXML private Button btnCancelar;
     @FXML private Button btnSubir;
@@ -67,7 +67,7 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroWarning;
     @FXML private Label lblNumeroError;  
     
-    List<CargarBalanceteLinea> listaCargar = new ArrayList() ;
+    List<CargarDetalleGastoLinea> listaCargar = new ArrayList() ;
 
     public MenuControlador menuControlador;
     public PlanDeCuentaDAO planDeCuentaDAO;
@@ -94,7 +94,7 @@ public class CargarControlador implements Initializable {
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<CargarBalanceteLinea, Double>() {
+                return new TableCell<CargarDetalleGastoLinea, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
@@ -110,7 +110,7 @@ public class CargarControlador implements Initializable {
 //        Estado
         tabcolEstado.setCellValueFactory(cellData -> cellData.getValue().estadoProperty());
         tabcolEstado.setCellFactory(column -> {
-            return new TableCell<CargarBalanceteLinea, Boolean>() {
+            return new TableCell<CargarDetalleGastoLinea, Boolean>() {
                 @Override
                 protected void updateItem(Boolean item, boolean empty) {
                     super.updateItem(item, empty);
@@ -181,7 +181,7 @@ public class CargarControlador implements Initializable {
         if (archivoSeleccionado != null) {
             btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
-            List<CargarBalanceteLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
+            List<CargarDetalleGastoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
             } else {
@@ -203,9 +203,9 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<CargarBalanceteLinea> leerArchivo(String rutaArchivo) {
-        List<CargarBalanceteLinea> lista = new ArrayList();
-        List<CargarBalanceteLinea> listaError = new ArrayList();
+    private List<CargarDetalleGastoLinea> leerArchivo(String rutaArchivo) {
+        List<CargarDetalleGastoLinea> lista = new ArrayList();
+        List<CargarDetalleGastoLinea> listaError = new ArrayList();
         List<CuentaContable> listaCuentas = planDeCuentaDAO.listar(periodoSeleccionado,"Todos",menuControlador.repartoTipo);
         try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(rutaArchivo));){
             XSSFSheet hoja = wb.getSheetAt(0);
@@ -242,7 +242,7 @@ public class CargarControlador implements Initializable {
                     txtRuta.setText("");
                     break;
                 }
-                CargarBalanceteLinea cuentaLeida = new CargarBalanceteLinea(periodo, codigo, nombre, saldo,true);                
+                CargarDetalleGastoLinea cuentaLeida = new CargarDetalleGastoLinea(periodo, codigo, nombre, saldo,true);                
                 
                 // Verifica que exista la cuenta para poder agregarla
                 CuentaContable cuenta = listaCuentas.stream().filter(item -> codigo.equals(item.getCodigo())).findAny().orElse(null);
@@ -278,7 +278,7 @@ public class CargarControlador implements Initializable {
         if(listaCargar.isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
-            planDeCuentaDAO.insertarBalancete(periodoSeleccionado,listaCargar);
+            planDeCuentaDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
             creandoReporteLOG();
             if(findError == true){
                 menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
