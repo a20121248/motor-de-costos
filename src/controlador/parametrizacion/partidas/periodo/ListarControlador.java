@@ -28,12 +28,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import modelo.CargarBalanceteLinea;
 import modelo.DriverCentro;
 import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
@@ -65,6 +67,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableView<EntidadDistribucion> tabListar;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolCodigo;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
+    @FXML private TableColumn<EntidadDistribucion, Double> tabcolSaldo;
+
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnAtras;
@@ -122,14 +126,31 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         // Periodo seleccionado
         periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
-        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
+        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
+        tabcolSaldo.setCellFactory(column -> {
+                return new TableCell<EntidadDistribucion, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(String.format("%,.2f", item));
+                    }
+                }
+            };
+        });
         // Tabla: Buscar
         
-        vista = partidaDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        vista = partidaDAO.listarPeriodo(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
@@ -222,7 +243,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        vista = partidaDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        vista = partidaDAO.listarPeriodo(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         if (vista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");

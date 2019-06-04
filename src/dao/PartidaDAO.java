@@ -61,6 +61,42 @@ public class PartidaDAO {
         ConexionBD.cerrarStatement();
     }
     
+    public List<Partida> listarPeriodo(int periodo,String tipoGasto, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.codigo,\n" +
+                "       A.nombre,\n" +
+                "       B.saldo saldo,\n" +
+                "       A.fecha_creacion,\n" +
+                "       A.fecha_actualizacion\n" +
+                "  FROM partidas A\n" +
+                "  JOIN partida_lineas B ON B.partida_codigo=A.codigo\n" +
+                " WHERE  B.periodo=%d AND A.reparto_tipo=%d\n",
+                periodo,repartoTipo);
+        switch(tipoGasto) {
+            case "Administrativo":
+                queryStr += "   AND SUBSTR(A.codigo,0,2)='45'";
+                break;
+            case "Operativo":
+                queryStr += "   AND SUBSTR(A.codigo,0,2)='44'";
+        }
+        
+        List<Partida> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("codigo");
+                String nombre = rs.getString("nombre");
+                double saldo = rs.getDouble("saldo");
+                Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
+                Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
+                Partida item = new Partida(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion);              
+                lista.add(item);
+            }
+        } catch (SQLException | ParseException ex) {
+            Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public List<Partida> listar(int periodo, String tipoGasto, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
@@ -134,9 +170,10 @@ public class PartidaDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
+                Double saldo = rs.getDouble("saldo");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                Partida item = new Partida(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion);
+                Partida item = new Partida(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {

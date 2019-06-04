@@ -8,21 +8,26 @@ package modelo;
 import java.util.Date;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class Partida extends EntidadDistribucion{
+    
+    private DoubleProperty saldo;
     final IntegerProperty nivel;
-    Tipo tipo;
-    Partida partidaPadre;
-    final BooleanProperty flagCargar;
+    private Tipo tipo;
+    private Partida partidaPadre;
     // Datos de la CuentaContable asociado a la Partida
     private Tipo cuentaContable;
+    final BooleanProperty flagCargar;
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         nivel = new SimpleIntegerProperty(0);
+        this.saldo = new SimpleDoubleProperty(saldoAcumulado);
         this.flagCargar = new SimpleBooleanProperty();
     }
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
@@ -33,6 +38,7 @@ public class Partida extends EntidadDistribucion{
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         nivel = new SimpleIntegerProperty(0);
+        this.saldo = new SimpleDoubleProperty(saldoAcumulado);
         this.cuentaContable = cuentaContable;
         this.flagCargar = new SimpleBooleanProperty();
     }
@@ -44,6 +50,21 @@ public class Partida extends EntidadDistribucion{
 //    public void setListaPlanDeCuentas(List<CuentaContable> listaPlanDeCuentas) {
 //        this.listaPlanDeCuentas = listaPlanDeCuentas;
 //    }
+
+    @Override
+    public DoubleProperty saldoAcumuladoProperty() {
+        return saldoAcumulado;
+    }
+    
+    @Override
+    public double getSaldoAcumulado() {
+        return saldoAcumulado.get();
+    }
+
+    @Override
+    public void setSaldoAcumulado(double saldoAcumulado) {
+        this.saldoAcumulado.set(saldoAcumulado);
+    }
     
     public Tipo getCuentaContable() {
         return cuentaContable;
