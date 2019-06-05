@@ -64,6 +64,22 @@ public class CentroDAO {
         return lista;
     }
     
+    public List<String> listarCodigosPeriodo(int periodo) {
+        String queryStr = String.format(""
+                + "SELECT centro_codigo "
+                + "  FROM centro_lineas"
+                + " WHERE periodo = '%d'",periodo);
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lista.add(rs.getString("centro_codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public List<Centro> listarMaestro(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {

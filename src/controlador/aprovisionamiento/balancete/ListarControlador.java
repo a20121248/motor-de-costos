@@ -42,8 +42,12 @@ public class ListarControlador implements Initializable {
     
     @FXML private TextField txtBuscar;
     @FXML private TableView<CuentaContable> tabListar;
-    @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
-    @FXML private TableColumn<CuentaContable, String> tabcolNombre;
+    @FXML private TableColumn<CuentaContable, String> tabcolCodigoCuentaContable;
+    @FXML private TableColumn<CuentaContable, String> tabcolNombreCuentaContable;
+    @FXML private TableColumn<CuentaContable, String> tabcolCodigoPartida;
+    @FXML private TableColumn<CuentaContable, String> tabcolNombrePartida;
+    @FXML private TableColumn<CuentaContable, String> tabcolCodigoCECO;
+    @FXML private TableColumn<CuentaContable, String> tabcolNombreCECO;
     @FXML private TableColumn<CuentaContable, Double> tabcolSaldo;
     
     @FXML private JFXButton btnCargar;
@@ -92,11 +96,19 @@ public class ListarControlador implements Initializable {
         periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoCECO.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreCECO.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
+        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
+        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
+        tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
                 return new TableCell<CuentaContable, Double>() {

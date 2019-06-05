@@ -10,27 +10,27 @@ package modelo;
  * @author briggette.olenka.ro1
  */
 public class AsignacionPartidaCuenta {
-    private Partida  partida;
-    private Tipo cuentaContable;
+    private String partida;
+    private String cuentaContable;
     
-    public AsignacionPartidaCuenta(Partida partida, Tipo cuentaContable) {
-        this.partida = partida;
-        this.cuentaContable = cuentaContable;
+    public AsignacionPartidaCuenta(String codigoCuenta, String codigoPartida) {
+        this.partida = codigoPartida;
+        this.cuentaContable = codigoCuenta;
     }
     
-    public Partida getPartida() {
+    public String getPartida() {
         return partida;
     }
 
-    public void setPartida(Partida partida) {
+    public void setPartida(String partida) {
         this.partida = partida;
     }
 
-    public Tipo getCuentaContable() {
+    public String getCuentaContable() {
         return cuentaContable;
     }
 
-    public void setCuentaContable(Tipo cuentaContable) {
+    public void setCuentaContable(String cuentaContable) {
         this.cuentaContable = cuentaContable;
     }
 }

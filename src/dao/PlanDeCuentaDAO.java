@@ -715,28 +715,7 @@ public List<Grupo> listarGruposNombres() {
             System.out.println(e.getMessage());
         }
         return lista;*/
-    }
-
-    public void insertarDetalleGasto(int periodo, List<CargarDetalleGastoLinea> lista) throws SQLException {
-        ConexionBD.crearStatement();
-        ConexionBD.tamanhoBatchMax = 100;
-        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (CargarDetalleGastoLinea item: lista) {
-            String queryStr = String.format(Locale.US, "" +
-                    "UPDATE plan_de_cuenta_lineas\n" +
-                    "   SET SALDO=%.2f,fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
-                    " WHERE plan_de_cuenta_codigo='%s' AND periodo=%d",
-                    item.getSaldo(),
-                    fechaStr,
-                    item.getCodigo(),
-                    periodo);
-            ConexionBD.agregarBatch(queryStr);
-        }
-        // los posibles registros que no se hayan ejecutado
-        ConexionBD.ejecutarBatch();
-        ConexionBD.cerrarStatement();
-    }
-    
+    }   
 
     public void insertarListaPlanDeCuenta(List<CargarPlanDeCuentaLinea> lista) {
         Connection access1 = connection.getConnection();
@@ -1054,39 +1033,6 @@ public List<Grupo> listarGruposNombres() {
             Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return lista;
-    }
-
-    public void insertarSaldo(CargarDetalleGastoLinea cargarBalanceteLinea) {
-        Connection access = connection.getConnection();
-        PreparedStatement ps = null;
-        int valor = -1;
-        try {
-            ps = access.prepareStatement("" +
-                    "DELETE FROM plan_de_cuenta_lineas\n" +
-                    " WHERE plan_de_cuenta_codigo=? AND periodo=?"
-            );
-            ps.setString(1, cargarBalanceteLinea.getCodigo());
-            ps.setInt(2, cargarBalanceteLinea.getPeriodo());
-            valor = ps.executeUpdate();
-
-            ps = access.prepareStatement("" +
-                    "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES (?,?,?,?,?)");
-            java.sql.Date fecha_sql = new java.sql.Date(System.currentTimeMillis());
-            ps.setString(1, cargarBalanceteLinea.getCodigo());
-            ps.setInt(2, cargarBalanceteLinea.getPeriodo());
-            ps.setDouble(3, cargarBalanceteLinea.getSaldo());
-            ps.setDate(4, fecha_sql);
-            ps.setDate(5, fecha_sql);
-            valor = ps.executeUpdate();
-        } catch (SQLException sqlEx) {
-            System.out.println("SQLException occured. getErrorCode=> " + sqlEx.getErrorCode());
-            System.out.println("SQLException occured. getCause=> " + sqlEx.getSQLState());
-            System.out.println("SQLException occured. getCause=> " + sqlEx.getCause() );
-            System.out.println("SQLException occured. getMessage=> " + sqlEx.getMessage());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
     
     public String convertirPalabraAbreviatura(String palabra){
