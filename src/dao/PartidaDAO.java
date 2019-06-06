@@ -233,6 +233,7 @@ public class PartidaDAO {
         }
         return lista;
     }
+    
     public int verificarObjetoPartidaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
@@ -287,45 +288,45 @@ public class PartidaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int cantObjetosSinDriver(int repartoTipo, int periodo) {
-        String queryStr = String.format("" +
-            "SELECT COUNT(1) cnt\n" +
-            "  FROM partidas A\n" +
-            "  JOIN partida_lineas B ON A.codigo=B.partida_codigo\n" +
-            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
-            " WHERE A.reparto_tipo=%d\n" +
-            "   AND B.periodo=%d\n" +
-            "   AND C.entidad_origen_codigo IS NULL",repartoTipo,periodo);
-        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
-        int cnt = 0;
-        try {
-            rs.next();
-            cnt = rs.getInt("cnt");
-        } catch (SQLException ex) {
-            Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return cnt;
-    }
+//    public int cantObjetosSinDriver(int repartoTipo, int periodo) {
+//        String queryStr = String.format("" +
+//            "SELECT COUNT(1) cnt\n" +
+//            "  FROM partidas A\n" +
+//            "  JOIN partida_lineas B ON A.codigo=B.partida_codigo\n" +
+//            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
+//            " WHERE A.reparto_tipo=%d\n" +
+//            "   AND B.periodo=%d\n" +
+//            "   AND C.entidad_origen_codigo IS NULL",repartoTipo,periodo);
+//        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+//        int cnt = 0;
+//        try {
+//            rs.next();
+//            cnt = rs.getInt("cnt");
+//        } catch (SQLException ex) {
+//            Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return cnt;
+//    }
     
-    public double leerSaldoCuentaPartida(String cuentaContableCodigo, String partidaCodigo, int periodo){
-        String queryStr = String.format("" +
-                "SELECT COALESCE(saldo,0) SALDO \n"+
-                "  FROM partida_cuenta_contable\n" +
-                " WHERE partida_codigo='%s'"+
-                "   AND cuenta_contable_codigo='%s'"+
-                "   AND periodo = '%d'",
-                cuentaContableCodigo, partidaCodigo, periodo);
-        double saldo=0;
-        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
-            while(rs.next()) {
-                saldo = rs.getInt("SALDO");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return saldo;
-        
-    }
+//    public double leerSaldoCuentaPartida(String cuentaContableCodigo, String partidaCodigo, int periodo){
+//        String queryStr = String.format("" +
+//                "SELECT COALESCE(saldo,0) SALDO \n"+
+//                "  FROM partida_cuenta_contable\n" +
+//                " WHERE partida_codigo='%s'"+
+//                "   AND cuenta_contable_codigo='%s'"+
+//                "   AND periodo = '%d'",
+//                cuentaContableCodigo, partidaCodigo, periodo);
+//        double saldo=0;
+//        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+//            while(rs.next()) {
+//                saldo = rs.getInt("SALDO");
+//            }
+//        } catch (SQLException ex) {
+//            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return saldo;
+//        
+//    }
     
     public double leerSaldoPartida(String partidaCodigo, int periodo){
         String queryStr = String.format("" +
@@ -345,14 +346,14 @@ public class PartidaDAO {
         return saldo;
     }
 
-    public int actualizarSaldoCuentaPartida( int periodo){
-        String queryStr = String.format(
-                "UPDATE PARTIDA_CUENTA_CONTABLE A"+ 
-                "   SET SALDO = (SELECT B.SALDO FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND PERIODO = '%d')"+
-                " WHERE EXISTS (SELECT 1 FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d')"
-                , periodo,periodo);
-        return ConexionBD.ejecutar(queryStr);
-    }
+//    public int actualizarSaldoCuentaPartida( int periodo){
+//        String queryStr = String.format(
+//                "UPDATE PARTIDA_CUENTA_CONTABLE A"+ 
+//                "   SET SALDO = (SELECT B.SALDO FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND PERIODO = '%d')"+
+//                " WHERE EXISTS (SELECT 1 FROM PARTIDA_LINEAS B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d')"
+//                , periodo,periodo);
+//        return ConexionBD.ejecutar(queryStr);
+//    }
     
     public int eliminarObjetoPeriodo(String codigo, int periodo) {
         String queryStr = String.format("DELETE FROM partida_lineas WHERE partida_codigo='%s' AND periodo=%d",codigo,periodo);

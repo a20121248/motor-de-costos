@@ -49,6 +49,7 @@ public class ListarControlador implements Initializable {
     @FXML private TableView<Partida> tabListar;
     @FXML private TableColumn<Partida,String> tabcolCodigo;
     @FXML private TableColumn<Partida,String> tabcolNombre;
+    @FXML private TableColumn<Partida,String> tabcolGrupoGasto;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -83,9 +84,11 @@ public class ListarControlador implements Initializable {
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 85);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 70);
+        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {

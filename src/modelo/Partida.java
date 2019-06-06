@@ -10,6 +10,7 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -18,11 +19,11 @@ public class Partida extends EntidadDistribucion{
     
     private DoubleProperty saldo;
     final IntegerProperty nivel;
-    private Tipo tipo;
-    private Partida partidaPadre;
+    private ObjectProperty<GrupoGasto> grupoaGasto;
+    final BooleanProperty flagCargar;
     // Datos de la CuentaContable asociado a la Partida
     private Tipo cuentaContable;
-    final BooleanProperty flagCargar;
+    
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
@@ -70,24 +71,20 @@ public class Partida extends EntidadDistribucion{
         return cuentaContable;
     }
 
-    public void setGrupo(Tipo cuentaContable) {
+    public void setCuentaContable(Tipo cuentaContable) {
         this.cuentaContable = cuentaContable;
     }
     
-    public Partida getPartidaPadre() {
-        return partidaPadre;
-    }
-
-    public void setPartidaPadre(Partida partidaPadre) {
-        this.partidaPadre = partidaPadre;
+    public ObjectProperty<GrupoGasto> tipoProperty() {
+        return grupoaGasto;
     }
     
-    public Tipo getTipo() {
-        return tipo;
+    public GrupoGasto getTipo() {
+        return grupoaGasto.get();
     }
 
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
+    public void setTipo(GrupoGasto grupoGasto) {
+        this.grupoaGasto.set(grupoGasto);
     }
 
     public IntegerProperty nivelProperty() {
