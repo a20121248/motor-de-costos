@@ -48,15 +48,15 @@
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="188.0" layoutY="6.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="188.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="145.0" />
-                        <JFXButton fx:id="btnBalancete" layoutX="14.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" onAction="#btnBalanceteAction" text="Detalle de Gasto&#10;SALDO" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="11.0">
+                        <TextArea editable="false" layoutX="188.0" layoutY="6.0" prefHeight="44.0" prefWidth="300.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
+                        <JFXButton fx:id="btnBalancete" layoutX="14.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" onAction="#btnBalanceteAction" prefWidth="127.0" text="Detalle de Gasto&#10;SALDO" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>
@@ -74,15 +74,15 @@
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="188.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="147.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="145.0" />
+                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="147.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
                         <JFXButton fx:id="btnDrivers" layoutX="54.0" layoutY="22.0" onAction="#btnDriversAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>
@@ -100,15 +100,15 @@
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="188.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="43.0" size="30" text="" AnchorPane.leftAnchor="145.0" />
+                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="43.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
                         <JFXButton fx:id="btnDriversObjeto" layoutX="54.0" layoutY="22.0" onAction="#btnDriversObjetoAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>

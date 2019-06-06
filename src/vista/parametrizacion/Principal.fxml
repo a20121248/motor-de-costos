@@ -134,9 +134,65 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </TitledPane>
-                  <TitledPane fx:id="tpObjetos" animated="false" collapsible="false" prefHeight="90.0" text="OBJETOS DE COSTOS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="350.0">
+                  <TitledPane animated="false" collapsible="false" prefHeight="90.0" text="DRIVERS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="350.0">
                      <content>
-                        <SplitPane dividerPositions="0.33, 0.66" maxHeight="80.0" prefHeight="50.0" prefWidth="498.0">
+                        <SplitPane dividerPositions="0.333, 0.666" maxHeight="80.0" prefHeight="50.0" prefWidth="498.0">
+                           <items>
+                              <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
+                                 <children>
+                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                    <JFXButton fx:id="btnDriverCentrosBolsas" layoutX="10.0" layoutY="10.0" onAction="#btnDriverCentrosBolsasAction" text="Asignaciones &#10;CECO - BOLSAS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                       <graphic>
+                                          <FontAwesomeIconView glyphName="CUBES" />
+                                       </graphic>
+                                       <styleClass>
+                                          <String fx:value="btn" />
+                                          <String fx:value="x-large" />
+                                       </styleClass>
+                                    </JFXButton>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
+                                 <children>
+                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                    <JFXButton fx:id="btnDriverCentrosCentros" layoutX="-63.0" layoutY="17.0" onAction="#btnDriverCentrosCentrosAction" text="Asignaciones &#10;CECOs- CECOs" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                       <graphic>
+                                          <FontAwesomeIconView glyphName="CUBES" />
+                                       </graphic>
+                                       <styleClass>
+                                          <String fx:value="btn" />
+                                          <String fx:value="x-large" />
+                                       </styleClass>
+                                    </JFXButton>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
+                                 <children>
+                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxxxxxxxxxxx&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                    <JFXButton fx:id="btnDriverCentrosObjetos" layoutX="-63.0" layoutY="17.0" onAction="#btnDriverCentrosObjetosAction" text="Asignaciones &#10;CECOs - OBJETOS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                       <graphic>
+                                          <FontAwesomeIconView glyphName="CUBES" />
+                                       </graphic>
+                                       <styleClass>
+                                          <String fx:value="btn" />
+                                          <String fx:value="x-large" />
+                                       </styleClass>
+                                    </JFXButton>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </content>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </TitledPane>
+                  <TitledPane fx:id="tpObjetos" animated="false" collapsible="false" prefHeight="90.0" text="OBJETOS DE COSTOS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="450.0">
+                     <content>
+                        <SplitPane dividerPositions="0.333, 0.666" maxHeight="80.0" prefHeight="50.0" prefWidth="498.0">
                            <items>
                               <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
                                  <children>
@@ -181,32 +237,6 @@
                                     </JFXButton>
                                     <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
                                     <TextArea editable="false" layoutX="45.0" layoutY="13.0" prefHeight="30.0" prefWidth="350.0" text="- Esta sección permite el mantenimiento de los Productos." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                 </children>
-                              </AnchorPane>
-                           </items>
-                        </SplitPane>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <TitledPane animated="false" collapsible="false" prefHeight="90.0" text="DRIVERS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="450.0">
-                     <content>
-                        <SplitPane maxHeight="80.0" prefHeight="50.0" prefWidth="498.0">
-                           <items>
-                              <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
-                                 <children>
-                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
-                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- Esta sección permite asignar un Driver a una entidad (Grupo de Cuentas Contables o Centros de Costos)." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                    <JFXButton fx:id="btnDriverEntidad" layoutX="-63.0" layoutY="17.0" onAction="#btnDriverEntidadAction" text="Asignaciones" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
-                                       <graphic>
-                                          <FontAwesomeIconView glyphName="CUBES" />
-                                       </graphic>
-                                       <styleClass>
-                                          <String fx:value="btn" />
-                                          <String fx:value="large" />
-                                       </styleClass>
-                                    </JFXButton>
                                  </children>
                               </AnchorPane>
                            </items>

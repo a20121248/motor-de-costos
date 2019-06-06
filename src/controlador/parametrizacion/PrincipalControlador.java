@@ -108,8 +108,16 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
-    @FXML void btnDriverEntidadAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+    @FXML void btnDriverCentrosCentrosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
+    }
+    
+    @FXML void btnDriverCentrosBolsasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR);
+    }
+    
+    @FXML void btnDriverCentrosObjetosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR);
     }
     
     @FXML void btnCopiarAction(ActionEvent event) {

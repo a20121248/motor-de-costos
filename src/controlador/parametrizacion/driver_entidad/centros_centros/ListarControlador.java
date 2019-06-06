@@ -1,4 +1,4 @@
-package controlador.parametrizacion.driver_entidad;
+package controlador.parametrizacion.driver_entidad.centros_centros;
 
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
@@ -100,7 +100,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     String titulo1, titulo2;
-    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR.getControlador());
+    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
@@ -274,7 +274,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.objeto = periodoSeleccionado;
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_CARGAR);
     }
 
     @FXML void btnDriverAction(ActionEvent event) {

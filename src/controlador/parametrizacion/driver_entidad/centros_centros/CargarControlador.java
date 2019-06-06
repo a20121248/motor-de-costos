@@ -1,4 +1,4 @@
-package controlador.parametrizacion.driver_entidad;
+package controlador.parametrizacion.driver_entidad.centros_centros;
 
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
@@ -68,7 +68,7 @@ public class CargarControlador implements Initializable {
     int periodoSeleccionado;
     final int anhoSeleccionado;
     final int mesSeleccionado;
-    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR.getControlador());
+    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -117,11 +117,11 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkAsignacionesAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
     
     @FXML void lnkCargarAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_CARGAR);
     }
     
     @FXML void btnCargarRutaAction(ActionEvent event) {
@@ -227,7 +227,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
@@ -239,7 +239,7 @@ public class CargarControlador implements Initializable {
         else{
             asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.navegador.mensajeInformativo("Cargar asignaciones de driver a entidades", "Las asignaciones se guardaron correctamente.");
-            menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
         }
         
     }

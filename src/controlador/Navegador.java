@@ -58,13 +58,13 @@ public class Navegador {
             "/vista/aprovisionamiento/balancete/Listar.fxml",
             "controlador.aprovisionamiento.balancete.ListarControlador",
             "Balancete",
-            "Inicio/Aprovisionamiento/Balancete"
+            "Inicio/Aprovisionamiento/Detalle Gasto"
     );
     public static final RutaArchivos RUTAS_BALANCETE_CARGAR = new RutaArchivos(
             "/vista/aprovisionamiento/balancete/Cargar.fxml",
             "controlador.aprovisionamiento.balancete.CargarControlador",
             "Cargar Balancete",
-            "Inicio/Aprovisionamiento/Balancete/Cargar"
+            "Inicio/Aprovisionamiento/Detalle Gasto/Cargar"
     );
     // --------------------- DRIVERS ----------------------
     public static final RutaArchivos RUTAS_DRIVERS_CENTRO_LISTAR = new RutaArchivos(
@@ -657,17 +657,41 @@ public class Navegador {
             "Cargar Jerarquía de Bancas"
     );
     // --------------------- ENTIDAD - DRIVER ----------------------
-    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_LISTAR = new RutaArchivos(
-            "/vista/parametrizacion/driver_entidad/Listar.fxml",
-            "controlador.parametrizacion.driver_entidad.ListarControlador",
-            "Asignaciones de Drivers a Entidades",
-            "Inicio/Parametrización/Asignaciones Drivers"
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_centros/Listar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_centros.ListarControlador",
+            "Asignaciones de Drivers de Centros a Centros",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Centros"
     );
-    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CARGAR = new RutaArchivos(
-            "/vista/parametrizacion/driver_entidad/Cargar.fxml",
-            "controlador.parametrizacion.driver_entidad.CargarControlador",
-            "Cargar Asignaciones de Drivers a Entidades",
-            "Inicio/Parametrización/Asignaciones Drivers/Cargar"
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_centros/Cargar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_centros.CargarControlador",
+            "Cargar Asignaciones de Drivers de Centros a Centros",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Centros/Cargar"
+    );
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_bolsas/Listar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_bolsas.ListarControlador",
+            "Asignaciones de Drivers de Centros a Bolsas",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Bolsas"
+    );
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_bolsas/Cargar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_bolsas.CargarControlador",
+            "Cargar Asignaciones de Drivers de Centros a Bolsas",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Bolsas/Cargar"
+    );
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_objetos/Listar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_objetos.ListarControlador",
+            "Asignaciones de Drivers de Centros a Objetos",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Objetos"
+    );
+    public static final RutaArchivos RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_CARGAR = new RutaArchivos(
+            "/vista/parametrizacion/driver_entidad/centros_objetos/Cargar.fxml",
+            "controlador.parametrizacion.driver_entidad.centros_objetos.CargarControlador",
+            "Cargar Asignaciones de Drivers de Centros a Objetos",
+            "Inicio/Parametrización/Asignaciones Drivers Centros - Objetos/Cargar"
     );
     // =========================================================
     // ******************** MODULO PROCESOS ********************
