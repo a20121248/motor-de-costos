@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class CargarDetalleGastoLinea {
+public class DetalleGasto {
     private IntegerProperty periodo;
     private StringProperty codigoCuentaContable;
     private StringProperty nombreCuentaContable;
@@ -20,7 +20,7 @@ public class CargarDetalleGastoLinea {
     private DoubleProperty saldo;
     private BooleanProperty estado;
     
-    public CargarDetalleGastoLinea(int periodo, String codigoCuentaContable, String nombreCuentaContable, String codigoPartida, String nombrePartida, String codigoCECO, String nombreCECO, double saldo, boolean estado) {
+    public DetalleGasto(int periodo, String codigoCuentaContable, String nombreCuentaContable, String codigoPartida, String nombrePartida, String codigoCECO, String nombreCECO, double saldo, boolean estado) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCuentaContable = new SimpleStringProperty(codigoCuentaContable);
         this.nombreCuentaContable = new SimpleStringProperty(nombreCuentaContable);

@@ -38,7 +38,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import modelo.AsignacionPartidaCuenta;
-import modelo.CargarDetalleGastoLinea;
+import modelo.DetalleGasto;
 import modelo.Centro;
 import modelo.CuentaContable;
 import org.apache.poi.ss.usermodel.Cell;
@@ -59,15 +59,15 @@ public class CargarControlador implements Initializable {
     @FXML private JFXButton btnCargarRuta;
     @FXML private JFXButton btnDescargarLog;
     
-    @FXML private TableView<CargarDetalleGastoLinea> tabListar;
-    @FXML private TableColumn<CargarDetalleGastoLinea, Boolean> tabcolEstado;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolCodigoCuentaContable;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolNombreCuentaContable;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolCodigoPartida;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolNombrePartida;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolCodigoCECO;
-    @FXML private TableColumn<CargarDetalleGastoLinea, String> tabcolNombreCECO;
-    @FXML private TableColumn<CargarDetalleGastoLinea, Double> tabcolSaldo;
+    @FXML private TableView<DetalleGasto> tabListar;
+    @FXML private TableColumn<DetalleGasto, Boolean> tabcolEstado;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoPartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCECO;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCECO;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolSaldo;
     
     @FXML private Button btnCancelar;
     @FXML private Button btnSubir;
@@ -75,7 +75,7 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroWarning;
     @FXML private Label lblNumeroError;  
     
-    List<CargarDetalleGastoLinea> listaCargar = new ArrayList() ;
+    List<DetalleGasto> listaCargar = new ArrayList() ;
 
     public MenuControlador menuControlador;
     public DetalleGastoDAO detalleGastoDAO;
@@ -118,7 +118,7 @@ public class CargarControlador implements Initializable {
         tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreCECOProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<CargarDetalleGastoLinea, Double>() {
+                return new TableCell<DetalleGasto, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
@@ -134,7 +134,7 @@ public class CargarControlador implements Initializable {
 //        Estado
         tabcolEstado.setCellValueFactory(cellData -> cellData.getValue().estadoProperty());
         tabcolEstado.setCellFactory(column -> {
-            return new TableCell<CargarDetalleGastoLinea, Boolean>() {
+            return new TableCell<DetalleGasto, Boolean>() {
                 @Override
                 protected void updateItem(Boolean item, boolean empty) {
                     super.updateItem(item, empty);
@@ -200,7 +200,7 @@ public class CargarControlador implements Initializable {
         if (archivoSeleccionado != null) {
             btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
-            List<CargarDetalleGastoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
+            List<DetalleGasto> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
             } else {
@@ -222,11 +222,11 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<CargarDetalleGastoLinea> leerArchivo(String rutaArchivo) {
-        List<CargarDetalleGastoLinea> lista = new ArrayList();
-        List<CargarDetalleGastoLinea> listaError = new ArrayList();
+    private List<DetalleGasto> leerArchivo(String rutaArchivo) {
+        List<DetalleGasto> lista = new ArrayList();
+        List<DetalleGasto> listaError = new ArrayList();
         List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado);
-        List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(periodoSeleccionado);
+        
         List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado);
         try    (FileInputStream f = new FileInputStream(rutaArchivo);
                 XSSFWorkbook wb = new XSSFWorkbook(f);){
@@ -250,13 +250,17 @@ public class CargarControlador implements Initializable {
                 
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                if(periodo == 0){
+                    break;
+                }
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCECO = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCECO = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);double saldo = celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);
+                double saldo = Double.valueOf(celda.getStringCellValue());
                 
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
@@ -265,12 +269,13 @@ public class CargarControlador implements Initializable {
                     lista.clear();
                     listaError.clear();
                     listacodigosCuentaPeriodo.clear();
-                    listacodigosPartidaPeriodo.clear();
+                    
                     listaCentroPeriodo.clear();
                     txtRuta.setText("");
                     break;
                 }
-                CargarDetalleGastoLinea cuentaLeida = new CargarDetalleGastoLinea(periodo, codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCECO, nombreCECO, saldo, true);                
+                DetalleGasto cuentaLeida = new DetalleGasto(periodo, codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCECO, nombreCECO, saldo, true);                
+                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable,periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
                 String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
@@ -284,6 +289,7 @@ public class CargarControlador implements Initializable {
                 }
                 
                 lista.add(cuentaLeida);
+                listacodigosPartidaPeriodo.clear();
             }
             wb.close();
             f.close();
@@ -304,20 +310,30 @@ public class CargarControlador implements Initializable {
     // Acción del botón 'Subir'
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         findError = false;
-        if(listaCargar.isEmpty()){
+        if(tabListar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
-            detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
-            creandoReporteLOG();
-            if(findError == true){
-                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-            }else {
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
-
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
+            }else{
+                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
             }
-            btnDescargarLog.setVisible(true);
-        }
-        
+        }        
     }
     
     // Acción del botón 'Cancelar'
@@ -325,7 +341,7 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }
     
-    void creandoReporteLOG(){
+    void crearReporteLOG(){
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DETALLE_GASTO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);

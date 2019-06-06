@@ -62,6 +62,7 @@ public class PartidaDAO {
     }
     
     public List<Partida> listarPeriodo(int periodo,String tipoGasto, int repartoTipo) {
+        
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
@@ -185,7 +186,7 @@ public class PartidaDAO {
     
     //TOCHECK: partida_lineas tienen saldo???
     public List<Partida> listarPartidaConCuentaContable(int periodo, String tipoGasto, int repartoTipo) {
-        actualizarSaldoCuentaPartida(periodo);
+//        actualizarSaldoCuentaPartida(periodo);
 
         
         String queryStr = String.format("" +

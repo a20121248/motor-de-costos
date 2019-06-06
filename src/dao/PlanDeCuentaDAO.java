@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.CargarDetalleGastoLinea;
+import modelo.DetalleGasto;
 import modelo.CargarGrupoCuentaLinea;
 import modelo.CargarGrupoLinea;
 import modelo.CargarObjetoLinea;

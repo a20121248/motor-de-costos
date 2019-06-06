@@ -829,7 +829,7 @@ public class Navegador {
                 break;
             case "UPLOAD_ITEM_DONTEXIST":
                 alert.setTitle("Subida de información " + titulo);
-                alert.setContentText("Los items no existen en el Catálogo");
+                alert.setContentText("Los items no existen en su respectivo Catálogo");
                 break;
             case "DOWNLOAD":
                 alert.setTitle("Descargar "+ titulo);

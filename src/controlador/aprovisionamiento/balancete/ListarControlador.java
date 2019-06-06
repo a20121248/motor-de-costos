@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import controlador.MenuControlador;
 import controlador.Navegador;
+import dao.DetalleGastoDAO;
 import dao.PlanDeCuentaDAO;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import modelo.CuentaContable;
+import modelo.DetalleGasto;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -41,28 +42,28 @@ public class ListarControlador implements Initializable {
     @FXML private ComboBox<String> cmbTipoGasto;
     
     @FXML private TextField txtBuscar;
-    @FXML private TableView<CuentaContable> tabListar;
-    @FXML private TableColumn<CuentaContable, String> tabcolCodigoCuentaContable;
-    @FXML private TableColumn<CuentaContable, String> tabcolNombreCuentaContable;
-    @FXML private TableColumn<CuentaContable, String> tabcolCodigoPartida;
-    @FXML private TableColumn<CuentaContable, String> tabcolNombrePartida;
-    @FXML private TableColumn<CuentaContable, String> tabcolCodigoCECO;
-    @FXML private TableColumn<CuentaContable, String> tabcolNombreCECO;
-    @FXML private TableColumn<CuentaContable, Double> tabcolSaldo;
+    @FXML private TableView<DetalleGasto> tabListar;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoPartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCECO;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCECO;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolSaldo;
     
     @FXML private JFXButton btnCargar;
     
     // Variables de la aplicacion
-    PlanDeCuentaDAO planDeCuentaDAO;
+    DetalleGastoDAO detalleGastoDAO;
     MenuControlador menuControlador;
-    FilteredList<CuentaContable> filteredData;
-    SortedList<CuentaContable> sortedData;
+    FilteredList<DetalleGasto> filteredData;
+    SortedList<DetalleGasto> sortedData;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_LISTAR.getControlador());
     String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
-        planDeCuentaDAO = new PlanDeCuentaDAO();
+        detalleGastoDAO = new DetalleGastoDAO();
         this.menuControlador = menuControlador;
         this.titulo = "Balancete";
     }
@@ -103,15 +104,15 @@ public class ListarControlador implements Initializable {
         tabcolCodigoCECO.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombreCECO.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
+        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
+        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
+        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
+        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
+        tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoCECOProperty());
+        tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreCECOProperty());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<CuentaContable, Double>() {
+                return new TableCell<DetalleGasto, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
@@ -125,13 +126,17 @@ public class ListarControlador implements Initializable {
             };
         });
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoCuentaContable().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombreCuentaContable().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoPartida().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombrePartida().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoCECO().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombreCECO().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
@@ -175,7 +180,7 @@ public class ListarControlador implements Initializable {
     }
 
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");

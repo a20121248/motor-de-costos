@@ -6,8 +6,6 @@
 package dao;
 
 import controlador.ConexionBD;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -17,12 +15,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.AsignacionPartidaCuenta;
-import modelo.CargarDetalleGastoLinea;
+import modelo.DetalleGasto;
 import modelo.ConnectionDB;
-import modelo.CuentaContable;
-import modelo.Partida;
-import modelo.Centro;
 
 /**
  *
@@ -35,24 +29,41 @@ public class DetalleGastoDAO {
     public DetalleGastoDAO() {
         connection = new ConnectionDB();
     }
-    public List<CuentaContable> listarMaestro(String codigos, int repartoTipo) {
-        String queryStr;
-        if (codigos.isEmpty()) {
-            queryStr = String.format("SELECT codigo,nombre FROM plan_de_cuentas WHERE esta_activo=1 AND reparto_tipo=%d ORDER BY codigo",repartoTipo);
-        } else {
-            queryStr = String.format(""+
-                    "SELECT codigo,nombre\n" +
-                    "  FROM plan_de_cuentas\n" +
-                    " WHERE esta_activo=1 AND codigo NOT IN (%s) AND reparto_tipo=%d\n" +
-                    " ORDER BY codigo",
-                    codigos,repartoTipo);
+    public List<DetalleGasto> listar(int periodo, String tipoGasto, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.cuenta_contable_codigo cuenta_contable_codigo,\n" +
+                "       B.nombre cuenta_contable_nombre,\n" +
+                "       A.partida_codigo partida_codigo,\n" +
+                "       C.nombre partida_nombre,\n" +
+                "       A.centro_codigo centro_codigo,\n" +
+                "       D.nombre centro_nombre,\n" +
+                "       SUM(COALESCE(A.saldo,0)) saldo\n" +
+                "  FROM cuenta_partida_centro A\n" +
+                "  JOIN plan_de_cuentas B ON B.codigo=A.cuenta_contable_codigo\n" +
+                "  JOIN partidas C ON C.codigo=A.partida_codigo\n" +
+                "  JOIN centros D ON D.codigo=A.centro_codigo\n" +
+                " WHERE A.periodo=%d\n",
+                periodo,repartoTipo);
+        switch(tipoGasto) {
+            case "Administrativo":
+                queryStr += "\n   AND SUBSTR(B.codigo,0,2)='45'";
+                break;
+            case "Operativo":
+                queryStr += "\n   AND SUBSTR(B.codigo,0,2)='44'";
         }
-        List<CuentaContable> lista = new ArrayList();
+        queryStr += "\n GROUP BY A.cuenta_contable_codigo,B.nombre, A.partida_codigo, C.nombre, A.centro_codigo, D.nombre\n" +
+                    "\n ORDER BY A.cuenta_contable_codigo,A.partida_codigo,A.centro_codigo";
+        List<DetalleGasto> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String codigo = rs.getString("codigo");
-                String nombre = rs.getString("nombre");
-                CuentaContable item = new CuentaContable(codigo, nombre, null, 0, null, null);
+                String codigoCuentaContable = rs.getString("cuenta_contable_codigo");
+                String nombreCuentaContable = rs.getString("cuenta_contable_nombre");
+                String codigoPartida = rs.getString("partida_codigo");
+                String nombrePartida = rs.getString("partida_nombre");
+                String codigoCECO = rs.getString("centro_codigo");
+                String nombreCECO = rs.getString("centro_nombre");
+                double saldo = rs.getDouble("saldo");
+                DetalleGasto item = new DetalleGasto(periodo, codigoCuentaContable, nombreCuentaContable,codigoPartida, nombrePartida,codigoCECO, nombreCECO,saldo, true);
                 lista.add(item);
             }
         } catch (SQLException ex) {
@@ -65,7 +76,7 @@ public class DetalleGastoDAO {
         String queryStr = String.format(""
                 + "SELECT   distinct(cuenta_contable_codigo)"
                 + "  FROM   PARTIDA_CUENTA_CONTABLE"
-                + " WHERE   periodo = '%d'",periodo);
+                + " WHERE   periodo = '%d'  ",periodo);
         List<String> lista = new ArrayList();
         
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -79,11 +90,11 @@ public class DetalleGastoDAO {
         return lista;
     }
     
-    public List<String> listarCodigosPartidas_CuentaPartida(int periodo) {
+    public List<String> listarCodigosPartidas_CuentaPartida(String codigoCuentaContable,int periodo) {
         String queryStr = String.format(""
                 + "SELECT   partida_codigo"
                 + "  FROM   PARTIDA_CUENTA_CONTABLE"
-                + " WHERE   periodo = '%d'",periodo);
+                + " WHERE   periodo = '%d' AND cuenta_contable_codigo = '%s'",periodo, codigoCuentaContable);
         List<String> lista = new ArrayList();
         
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -96,57 +107,97 @@ public class DetalleGastoDAO {
         }
         return lista;
     }
+    public int borrarListaDetalleGastoPeriodo(int periodo) {
+        String queryStr = String.format("" +
+                "DELETE FROM cuenta_partida_centro A\n" +
+                " WHERE periodo = '%d'",
+                periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
     
-    public void insertarDetalleGasto(int periodo, List<CargarDetalleGastoLinea> lista) throws SQLException {
+    public void insertarDetalleGasto(int periodo, List<DetalleGasto> lista) throws SQLException {
+        limpiarSaldosAsociadosPeriodo(periodo);
+        borrarListaDetalleGastoPeriodo(periodo);
         ConexionBD.crearStatement();
-        ConexionBD.tamanhoBatchMax = 100;
-        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (CargarDetalleGastoLinea item: lista) {
+        for (DetalleGasto item: lista) {
+            String codigoCuentaContable = item.getCodigoCuentaContable();
+            String codigoPartida = item.getCodigoPartida();
+            String codigoCentro = item.getCodigoCECO();
+            double saldo = item.getSaldo();
+            String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format(Locale.US, "" +
-                    "UPDATE plan_de_cuenta_lineas\n" +
-                    "   SET SALDO=%.2f,fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
-                    " WHERE plan_de_cuenta_codigo='%s' AND periodo=%d",
-                    item.getSaldo(),
+                    "INSERT INTO cuenta_partida_centro(cuenta_contable_codigo, partida_codigo, centro_codigo, periodo, saldo, fecha_creacion, fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s','%d',%.2f,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
+                    codigoCuentaContable,
+                    codigoPartida,
+                    codigoCentro,
+                    periodo,
+                    saldo,
                     fechaStr,
-                    item.getCodigoCuentaContable(),
-                    periodo);
+                    fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
+        actualizarSaldoCentroPeriodo(periodo);
+        actualizarSaldoPartidaPeriodo(periodo);
+        actualizarSaldoCuentaPeriodo(periodo);
+        actualizarSaldoCuentaPartidaPeriodo(periodo);
     }
-    
-//    public void insertarSaldo(CargarDetalleGastoLinea cargarDetalleGastoLinea) {
-//        Connection access = connection.getConnection();
-//        PreparedStatement ps = null;
-//        int valor = -1;
-//        try {
-//            ps = access.prepareStatement("" +
-//                    "DELETE FROM plan_de_cuenta_lineas\n" +
-//                    " WHERE plan_de_cuenta_codigo=? AND periodo=?"
-//            );
-//            ps.setString(1, cargarDetalleGastoLinea.getCodigoCuentaContable());
-//            ps.setInt(2, cargarDetalleGastoLinea.getPeriodo());
-//            valor = ps.executeUpdate();
-//
-//            ps = access.prepareStatement("" +
-//                    "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-//                    "VALUES (?,?,?,?,?)");
-//            java.sql.Date fecha_sql = new java.sql.Date(System.currentTimeMillis());
-//            ps.setString(1, cargarDetalleGastoLinea.getCodigoCuentaContable());
-//            ps.setInt(2, cargarDetalleGastoLinea.getPeriodo());
-//            ps.setDouble(3, cargarDetalleGastoLinea.getSaldo());
-//            ps.setDate(4, fecha_sql);
-//            ps.setDate(5, fecha_sql);
-//            valor = ps.executeUpdate();
-//        } catch (SQLException sqlEx) {
-//            System.out.println("SQLException occured. getErrorCode=> " + sqlEx.getErrorCode());
-//            System.out.println("SQLException occured. getCause=> " + sqlEx.getSQLState());
-//            System.out.println("SQLException occured. getCause=> " + sqlEx.getCause() );
-//            System.out.println("SQLException occured. getMessage=> " + sqlEx.getMessage());
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
+
+    public int actualizarSaldoCuentaPartidaPeriodo( int periodo){
+        String queryStr = String.format(
+                "UPDATE PARTIDA_CUENTA_CONTABLE A"+
+                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND A.cuenta_contable_codigo = B.cuenta_contable_codigo AND PERIODO = '%d' group by B.cuenta_contable_codigo, B.partida_codigo)"+
+                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND A.cuenta_contable_codigo = B.cuenta_contable_codigo AND B.PERIODO = '%d') AND PERIODO = '%d'"
+                , periodo,periodo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+
+    public int actualizarSaldoCentroPeriodo( int periodo){
+        String queryStr = String.format(
+                "UPDATE CENTRO_LINEAS A"+
+                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO  AND PERIODO = '%d' group by  B.CENTRO_CODIGO)"+
+                " WHERE EXISTS (SELECT 1 FROM CENTRO_LINEAS B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
+                , periodo,periodo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+
+    public int actualizarSaldoPartidaPeriodo( int periodo){
+        String queryStr = String.format(
+                "UPDATE PARTIDA_LINEAS A"+
+                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO  AND PERIODO = '%d' group by  B.partida_codigo)"+
+                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
+                , periodo,periodo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+
+    public int actualizarSaldoCuentaPeriodo( int periodo){
+        String queryStr = String.format(
+                "UPDATE PLAN_DE_CUENTA_LINEAS A"+
+                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PLAN_DE_CUENTA_CODIGO = B.CUENTA_CONTABLE_CODIGO  AND PERIODO = '%d' group by  B.CUENTA_CONTABLE_codigo)"+
+                " WHERE EXISTS (SELECT 1 FROM PLAN_DE_CUENTA_LINEAS B WHERE A.PLAN_DE_CUENTA_CODIGO = B.PLAN_DE_CUENTA_CODIGO AND B.PERIODO = '%d')  AND PERIODO = '%d'"
+                , periodo,periodo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+
+    public void limpiarSaldosAsociadosPeriodo(int periodo){
+        ArrayList<String> lineas = new ArrayList();
+        lineas.add("centro_lineas");
+        lineas.add("partida_lineas");
+        lineas.add("plan_de_cuenta_lineas");
+
+        ConexionBD.crearStatement();
+        for(String linea:lineas){
+          String queryStr = String.format("" +
+                "UPDATE "+linea+" \n" +
+                "   SET saldo = '0'\n"+
+                " WHERE periodo = '%d'",
+                periodo);
+        ConexionBD.agregarBatch(queryStr);
+        }
+        ConexionBD.ejecutarBatch();
+        ConexionBD.cerrarStatement();
+    }
 }

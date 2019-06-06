@@ -35,7 +35,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import modelo.CargarDetalleGastoLinea;
+import modelo.DetalleGasto;
 import modelo.DriverCentro;
 import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
