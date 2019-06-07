@@ -50,7 +50,7 @@ public class MenuControlador implements Initializable {
     public String objetoTipo;
     final TipoDAO tipoDAO;
     public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos;
-    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto;
+    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto, lstGrupoGasto;
     public String codigos;
     final Image img;
     public List<Integer> lstFases;
@@ -167,7 +167,13 @@ public class MenuControlador implements Initializable {
         lstClaseGasto = new ArrayList();
         lstClaseGasto.add("Fijo");
         lstClaseGasto.add("Variable");
-
+        
+        //Caracteristicas Partidas
+        lstGrupoGasto = new ArrayList();
+        lstGrupoGasto.add("Gastos de Tecnología");
+        lstGrupoGasto.add("Gastos de Personal");
+        lstGrupoGasto.add("Gastos de Operaciones");
+        
         // repartoTipo de fases
         lstFases = new ArrayList();
         lstFases.add(1);

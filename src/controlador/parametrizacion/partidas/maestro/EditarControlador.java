@@ -7,9 +7,11 @@ import dao.PartidaDAO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import modelo.Partida;
@@ -24,6 +26,7 @@ public class EditarControlador implements Initializable {
         
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
+    @FXML private ComboBox cmbGrupoGasto;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -47,6 +50,8 @@ public class EditarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {        
         txtCodigo.setText(partida.getCodigo());
         txtNombre.setText(partida.getNombre());
+        cmbGrupoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstGrupoGasto));
+        cmbGrupoGasto.getSelectionModel().select(partida.getGrupoGasto());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -72,7 +77,8 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        partidaDAO.actualizarObjeto(codigo, nombre);
+        String grupoGasto = cmbGrupoGasto.getValue().toString();
+        partidaDAO.actualizarObjeto(codigo, nombre,grupoGasto);
         menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
         menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);

@@ -14,34 +14,32 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Partida extends EntidadDistribucion{
     
-    private DoubleProperty saldo;
-    final IntegerProperty nivel;
-    private ObjectProperty<GrupoGasto> grupoaGasto;
-    final BooleanProperty flagCargar;
-    // Datos de la CuentaContable asociado a la Partida
+    private StringProperty grupoGasto;
+    private BooleanProperty flagCargar;
     private Tipo cuentaContable;
-    
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
-        nivel = new SimpleIntegerProperty(0);
-        this.saldo = new SimpleDoubleProperty(saldoAcumulado);
-        this.flagCargar = new SimpleBooleanProperty();
     }
-    public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+    
+    public Partida(String codigo, String nombre, String descripcion, String grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
-        nivel = new SimpleIntegerProperty(0);
+        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+    }
+    
+    public Partida(String codigo, String nombre, String descripcion, String grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+        super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
+        this.grupoGasto = new SimpleStringProperty(grupoGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
-        nivel = new SimpleIntegerProperty(0);
-        this.saldo = new SimpleDoubleProperty(saldoAcumulado);
         this.cuentaContable = cuentaContable;
-        this.flagCargar = new SimpleBooleanProperty();
     }
     
 //    public List<CuentaContable> getListaPlanDeCuentas() {
@@ -75,30 +73,28 @@ public class Partida extends EntidadDistribucion{
         this.cuentaContable = cuentaContable;
     }
     
-    public ObjectProperty<GrupoGasto> tipoProperty() {
-        return grupoaGasto;
-    }
-    
-    public GrupoGasto getTipo() {
-        return grupoaGasto.get();
-    }
-
-    public void setTipo(GrupoGasto grupoGasto) {
-        this.grupoaGasto.set(grupoGasto);
-    }
-
-    public IntegerProperty nivelProperty() {
-        return nivel;
-    }
-    
-    public int getNivel() {
-        return nivel.get();
+//    public ObjectProperty<GrupoGasto> tipoProperty() {
+//        return grupoaGasto;
+//    }
+//    
+//    public GrupoGasto getTipo() {
+//        return grupoaGasto.get();
+//    }
+//
+//    public void setTipo(GrupoGasto grupoGasto) {
+//        this.grupoaGasto.set(grupoGasto);
+//    } 
+    public StringProperty grupoGastoProperty() {
+        return this.grupoGasto;
     }
 
-    public void setNivel(int nivel) {
-        this.nivel.set(nivel);
+    public String getGrupoGasto() {
+        return grupoGasto.get();
     }
-    
+
+    public void setGrupoGasto(String grupoGasto) {
+        this.grupoGasto.set(grupoGasto);
+    }
     
     public boolean getFlagCargar() {
         return flagCargar.get();

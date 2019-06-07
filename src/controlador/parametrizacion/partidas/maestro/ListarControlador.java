@@ -88,7 +88,7 @@ public class ListarControlador implements Initializable {
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().grupoGastoProperty());
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {

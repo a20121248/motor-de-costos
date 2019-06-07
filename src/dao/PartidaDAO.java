@@ -48,11 +48,14 @@ public class PartidaDAO {
         lista.stream().filter(item -> item.getFlagCargar()).map((item) -> {
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
+            String grupoGasto = item.getGrupoGasto();
+            grupoGasto = palabraAbreviatura(grupoGasto);
+            
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format("" +
-                    "INSERT INTO PARTIDAS(CODIGO,NOMBRE,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,repartoTipo,fechaStr,fechaStr);
+                    "INSERT INTO PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,grupoGasto,repartoTipo,fechaStr,fechaStr);
             return queryStr;
         }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);
@@ -152,6 +155,7 @@ public class PartidaDAO {
             queryStr = String.format("" +
                 "SELECT codigo,\n" +
                 "       nombre,\n" +
+                "       grupo_gasto,\n" +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
                 "  FROM partidas\n" +
@@ -161,6 +165,7 @@ public class PartidaDAO {
             queryStr = String.format("" +
                 "SELECT codigo,\n" +
                 "       nombre,\n" +
+                "       grupo_gasto,\n" +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
                 "  FROM partidas\n" +
@@ -173,9 +178,11 @@ public class PartidaDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
+                String grupoGasto = rs.getString("grupo_gasto");
+                grupoGasto = abrevituraPalabra(grupoGasto);
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                Partida item = new Partida(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion);
+                Partida item = new Partida(codigo, nombre, null, grupoGasto, 0, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
@@ -269,17 +276,19 @@ public class PartidaDAO {
         return cont;
     }
     
-    public int insertarObjeto(String codigo, String nombre, int repartoTipo) {
+    public int insertarObjeto(String codigo, String nombre, String grupoGasto, int repartoTipo) {
+        grupoGasto = palabraAbreviatura(grupoGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO partidas(codigo,nombre,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,repartoTipo,fechaStr,fechaStr);
+                "INSERT INTO partidas(codigo,nombre,grupo_gasto, reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,grupoGasto,repartoTipo,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int actualizarObjeto(String codigo, String nombre) {
-        String queryStr = String.format("UPDATE partidas SET nombre='%s' WHERE codigo='%s'",nombre,codigo);
+    public int actualizarObjeto(String codigo, String nombre, String grupoGasto) {
+        grupoGasto = palabraAbreviatura(grupoGasto);
+        String queryStr = String.format("UPDATE partidas SET nombre='%s', grupo_gasto='%s' WHERE codigo='%s'",nombre,grupoGasto,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -453,5 +462,41 @@ public class PartidaDAO {
                 " WHERE partida_codigo='%s' AND periodo=%d",
                 partidaCodigo,periodo);
         return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public String abrevituraPalabra(String palabra){
+        switch(palabra){
+            case "GT":
+                palabra = "Gastos de Tecnología";
+                break;
+            case "GP":
+                palabra = "Gastos de Personal";
+                break;
+            case "GO":
+                palabra = "Gastos de Operaciones";
+                break;
+            default:
+                palabra = null;
+                break;
+        }
+        return palabra;
+    }
+    
+    public String palabraAbreviatura(String palabra){
+        switch(palabra){
+            case "Gastos de Tecnología":
+                palabra = "GT";
+                break;
+            case "Gastos de Personal":
+                palabra = "GP";
+                break;
+            case "Gastos de Operaciones":
+                palabra = "GO";
+                break;
+            default:
+                palabra = null;
+                break;
+        }
+        return palabra;
     }
 }

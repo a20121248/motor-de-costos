@@ -49,6 +49,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableView<Partida> tabListar;
     @FXML private TableColumn<Partida, String> tabcolCodigo;
     @FXML private TableColumn<Partida, String> tabcolNombre;
+    @FXML private TableColumn<Partida, String> tabcolGrupoGasto;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -77,10 +78,13 @@ public class CargarControlador implements Initializable {
         // tabla dimensiones
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 85);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 70);
+        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().grupoGastoProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -133,7 +137,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","GRUPO GASTO")))) {
                 menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -144,8 +148,10 @@ public class CargarControlador implements Initializable {
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
-
-                Partida linea = new Partida(codigo,nombre,null,0,null,null,true);
+                celda = celdas.next();celda.setCellType(CellType.STRING);String grupoGasto = celda.getStringCellValue();
+                
+                grupoGasto = partidaDAO.abrevituraPalabra(grupoGasto);
+                Partida linea = new Partida(codigo,nombre,null,grupoGasto,0,null,null,true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if(cuenta == null){
                     listaCargar.add(linea);                    
@@ -205,7 +211,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que ya está cargado.");
                 findError = true;
             }
         });

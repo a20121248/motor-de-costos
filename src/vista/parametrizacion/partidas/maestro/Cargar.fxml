@@ -76,6 +76,7 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolGrupoGasto" prefWidth="75.0" styleClass="left" text="GRUPO GASTO" />
          </columns>
       </TableView>
       <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
