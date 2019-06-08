@@ -239,7 +239,7 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila;
             Cell celda;
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO COSTO","NOMBRE CENTRO COSTO","SALDO")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO COSTO","NOMBRE CENTRO COSTO","SALDO")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }

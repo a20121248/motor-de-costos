@@ -159,7 +159,7 @@ public class DetalleGastoDAO {
         String queryStr = String.format(
                 "UPDATE CENTRO_LINEAS A"+
                 "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO  AND PERIODO = '%d' group by  B.CENTRO_CODIGO)"+
-                " WHERE EXISTS (SELECT 1 FROM CENTRO_LINEAS B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
+                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
                 , periodo,periodo,periodo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -177,7 +177,7 @@ public class DetalleGastoDAO {
         String queryStr = String.format(
                 "UPDATE PLAN_DE_CUENTA_LINEAS A"+
                 "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PLAN_DE_CUENTA_CODIGO = B.CUENTA_CONTABLE_CODIGO  AND PERIODO = '%d' group by  B.CUENTA_CONTABLE_codigo)"+
-                " WHERE EXISTS (SELECT 1 FROM PLAN_DE_CUENTA_LINEAS B WHERE A.PLAN_DE_CUENTA_CODIGO = B.PLAN_DE_CUENTA_CODIGO AND B.PERIODO = '%d')  AND PERIODO = '%d'"
+                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PLAN_DE_CUENTA_CODIGO = B.CUENTA_CONTABLE_CODIGO AND B.PERIODO = '%d')  AND PERIODO = '%d'"
                 , periodo,periodo,periodo);
         return ConexionBD.ejecutar(queryStr);
     }
