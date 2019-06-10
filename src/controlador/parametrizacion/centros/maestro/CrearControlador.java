@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -98,13 +99,25 @@ public class CrearControlador implements Initializable {
             }
         });
         if (menuControlador.repartoTipo == 1) {
-            cmbNivel.getSelectionModel().select(0);
+            cmbNivel.getSelectionModel().select(2);
         } else if (menuControlador.repartoTipo == 2) {
             cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
             cmbNivel.setDisable(true);
         }
+        
         cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
-        cmbEsBolsa.getSelectionModel().select(0);
+        cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (cmbNivel.getValue().getCodigo().equals("-1")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+            } else {
+                cmbEsBolsa.getSelectionModel().select(0);
+            }
+        });
+        cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (cmbEsBolsa.getValue().toString().equals("SI")) {
+                cmbNivel.getSelectionModel().select(1);
+            }
+        });
         cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
         cmbAtribuible.getSelectionModel().select(0);
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));

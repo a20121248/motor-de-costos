@@ -120,6 +120,20 @@ public class EditarControlador implements Initializable {
         cmbTipoGasto.getSelectionModel().select(centro.getTipoGasto());
         cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
         cmbClaseGasto.getSelectionModel().select(centro.getClaseGasto());
+        
+        cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (cmbNivel.getValue().getCodigo().equals("-1")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+            } else {
+                cmbEsBolsa.getSelectionModel().select(0);
+            }
+        });
+        cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (cmbEsBolsa.getValue().toString().equals("SI")) {
+                cmbNivel.getSelectionModel().select(1);
+            }
+        });
+        
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {

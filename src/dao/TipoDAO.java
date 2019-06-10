@@ -19,7 +19,7 @@ public class TipoDAO {
     }
 
     public List<Tipo> listarCentroNiveles() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_niveles";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_niveles order by nombre";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

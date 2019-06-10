@@ -211,10 +211,15 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + titulo2, "¿Está seguro de quitar el " + titulo2 + " " + item.getNombre() + "?"))
             return;        
-        // >>> Falta verificar existencia con Drivers(Aún por definir)         
-        centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        // >>> Falta verificar existencia con Drivers(Aún por definir)
+        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado)==0){
+            centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
+            buscarPeriodo(periodoSeleccionado, false);
+        }else{
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
+        }
+        
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
