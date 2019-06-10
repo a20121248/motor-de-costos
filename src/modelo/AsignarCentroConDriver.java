@@ -1,6 +1,7 @@
 package modelo;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -19,7 +20,7 @@ public class AsignarCentroConDriver {
     public AsignarCentroConDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
-        this.codigoCentro = new SimpleStringProperty(nombreCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
@@ -27,11 +28,11 @@ public class AsignarCentroConDriver {
     public AsignarCentroConDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
-        this.codigoCuenta = new SimpleStringProperty(nombreCuenta);
+        this.nombreCuenta = new SimpleStringProperty(nombreCuenta);
         this.codigoPartida = new SimpleStringProperty(codigoPartida);
-        this.codigoPartida = new SimpleStringProperty(nombrePartida);
+        this.nombrePartida = new SimpleStringProperty(nombrePartida);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
-        this.codigoCentro = new SimpleStringProperty(nombreCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
@@ -143,4 +144,5 @@ public class AsignarCentroConDriver {
     public void setNombreDriver(String nombreDriver) {
         this.nombreDriver.set(nombreDriver);
     }
+
 }

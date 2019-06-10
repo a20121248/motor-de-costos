@@ -78,6 +78,23 @@ public class DriverDAO {
         return lista;
     }
     
+    public String obtenerNombreDriver(String driverCodigo, int repartoTipo){
+        String queryStr = String.format("" +
+                "  SELECT A.nombre\n" +
+                "    FROM drivers A\n" +
+                "   WHERE A.codigo='%s' AND B.reparto_tipo=%d\n",
+                driverCodigo,repartoTipo);
+        String lista = "";
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lista = rs.getString("nombre");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public List<DriverLinea> obtenerLstDriverLinea(int periodo, String driverCodigo, int repartoTipo) {
         String queryStr = String.format("" +
                 "  SELECT B.codigo,B.nombre,B.nivel,A.porcentaje\n" +
