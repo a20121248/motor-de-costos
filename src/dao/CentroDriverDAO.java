@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import modelo.AsignarCentroConDriver;
+import modelo.CentroDriver;
 import modelo.CargarEntidadDriver;
 
 public class CentroDriverDAO {
@@ -63,10 +63,10 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int borrarAsignacionesPeriodo(List<AsignarCentroConDriver> lstEntidades, int periodo) {
+    public int borrarAsignacionesPeriodo(List<CentroDriver> lstEntidades, int periodo) {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
-        for (AsignarCentroConDriver item: lstEntidades) {
+        for (CentroDriver item: lstEntidades) {
             String queryStr = String.format("" +
                 "DELETE FROM bolsa_driver\n" +
                 " WHERE cuenta_contable_codigo='%s' AND partida_codigo='%s' AND centro_codigo='%s' AND periodo=%d",
@@ -79,14 +79,14 @@ public class CentroDriverDAO {
         return 1;
     }
     
-    public void insertarListaEntidades(List<AsignarCentroConDriver> lstCentros, int periodo) {
+    public void insertarListaEntidades(List<CentroDriver> lstCentros, int periodo) {
         //borrarAsignacionesPeriodo(periodo);
         borrarAsignacionesPeriodo(lstCentros, periodo);
         
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (AsignarCentroConDriver item: lstCentros) {
+        for (CentroDriver item: lstCentros) {
             if (!item.getCodigoDriver().equals("Sin driver asignado")) {
                 String queryStr = String.format(Locale.US, "" +
                         "INSERT INTO bolsa_driver(driver_codigo, cuenta_contable_codigo, partida_codigo, centro_codigo, periodo,fecha_creacion,fecha_actualizacion)\n" +
@@ -106,18 +106,20 @@ public class CentroDriverDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public void insertarListaAsignaciones(List<CargarEntidadDriver> lstEntidadDriver, int periodo, int repartoTipo) {
+    public void insertarListaAsignaciones(List<CentroDriver> lstEntidadDriver, int periodo, int repartoTipo) {
         borrarAsignacionesPeriodo(periodo, repartoTipo);
         
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (CargarEntidadDriver item: lstEntidadDriver) {
+        for (CentroDriver item: lstEntidadDriver) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO bolsa_driver(entidad_origen_codigo,driver_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    item.getCodigoEntidad(),
+                    "INSERT INTO bolsa_driver(driver_codigo, cuenta_contable_codigo, partida_codigo, centro_codigo, periodo, fecha_creacion, fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     item.getCodigoDriver(),
+                    item.getCodigoCuenta(),
+                    item.getCodigoPartida(),
+                    item.getCodigoCentro(),
                     item.getPeriodo(),
                     fechaStr,
                     fechaStr);

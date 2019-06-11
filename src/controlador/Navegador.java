@@ -761,7 +761,7 @@ public class Navegador {
     public void mensajeError(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         switch(contenido){
-            case "UPLOAD":
+            case "UPLOAD_ERROR_PERIODO":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
                 break; 

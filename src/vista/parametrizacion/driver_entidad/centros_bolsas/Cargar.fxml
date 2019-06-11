@@ -78,7 +78,7 @@
             <String fx:value="small" />
          </styleClass>
       </JFXButton>
-      <TableView fx:id="tabAsignaciones" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
+      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
             <TableColumn fx:id="tabcolCodigoCuentaContable" prefWidth="75.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
             <TableColumn fx:id="tabcolNombreCuentaContable" prefWidth="75.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
@@ -91,9 +91,9 @@
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnCancelar" layoutX="285.0" layoutY="458.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
+      <JFXButton fx:id="btnAtras" layoutX="285.0" layoutY="458.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
          <graphic>
-            <FontAwesomeIconView glyphName="CLOSE" />
+            <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
       <JFXButton fx:id="btnSubir" layoutX="369.0" layoutY="458.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
@@ -106,5 +106,10 @@
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
          </valueFactory>
       </Spinner>
+      <JFXButton fx:id="btnDescargarLog" layoutX="190.0" layoutY="545.0" onAction="#btnDescargarLogAction" styleClass="btn" text="DescargarLOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

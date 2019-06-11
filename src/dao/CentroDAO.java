@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.AsignarCentroConDriver;
+import modelo.CentroDriver;
 import modelo.CargarCentroLinea;
 import modelo.CargarObjetoPeriodoLinea;
 import modelo.ConnectionDB;
@@ -70,6 +70,23 @@ public class CentroDAO {
                 + "SELECT centro_codigo "
                 + "  FROM centro_lineas"
                 + " WHERE periodo = '%d'",periodo);
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lista.add(rs.getString("centro_codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    public List<String> listarCodigosCentrosBolsasPeriodo(int periodo) {
+        String queryStr = String.format(""
+                + "SELECT A.centro_codigo "
+                + "  FROM centro_lineas A"
+                + "  JOIN centros B ON B.codigo = A.centro_codigo"
+                + " WHERE A.periodo = '%d' and B.es_bolsa = 'SI'",periodo);
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -501,7 +518,7 @@ public class CentroDAO {
         }
     }
     
-    public List<AsignarCentroConDriver> listarCuentaPartidaCentroConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
+    public List<CentroDriver> listarCuentaPartidaCentroConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
         String queryStr = String.format("" +
             "SELECT E.cuenta_contable_codigo cuenta_contable_codigo,\n" +
             "       F.nombre cuenta_contable_nombre,\n" +
@@ -517,7 +534,7 @@ public class CentroDAO {
             "  JOIN cuenta_partida_centro E ON B.centro_codigo= E.centro_codigo\n" +
             "  JOIN plan_de_cuentas F on F.codigo = E.cuenta_contable_codigo\n" +
             "  JOIN partidas G on G.codigo = E.partida_codigo and B.periodo=E.periodo\n" +
-            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
+            "  LEFT JOIN bolsa_driver C ON A.codigo=C.centro_codigo AND E.periodo=C.periodo AND e.partida_codigo = C.partida_codigo\n" +
             "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
             " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND a.es_bolsa = '%s'\n",
             periodo,repartoTipo,esBolsa);
@@ -525,7 +542,7 @@ public class CentroDAO {
         if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
         queryStr += " GROUP BY E.cuenta_contable_codigo,F.nombre, E.partida_codigo,G.nombre, A.codigo,A.nombre,C.driver_codigo,D.nombre\n" +
                     " ORDER BY E.cuenta_contable_codigo,E.partida_codigo,A.codigo";
-        List<AsignarCentroConDriver> lista = new ArrayList();
+        List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
                 String codigoCuenta = rs.getString("cuenta_contable_codigo");
@@ -537,7 +554,7 @@ public class CentroDAO {
                 double saldo = rs.getDouble("saldo");
                 String driverCodigo = rs.getString("driver_codigo");
                 String driverNombre = rs.getString("driver_nombre");
-                AsignarCentroConDriver item = new AsignarCentroConDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, driverCodigo, driverNombre);
+                CentroDriver item = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, driverCodigo, driverNombre);
                 lista.add(item);
             }
         } catch (SQLException ex) {

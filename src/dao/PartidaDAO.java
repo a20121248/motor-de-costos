@@ -432,10 +432,11 @@ public class PartidaDAO {
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigoPartida,
                     codigoCuenta,
+                    0,
                     periodo,
                     fechaStr,
                     fechaStr);

@@ -171,7 +171,7 @@ public class CargarControlador implements Initializable {
                 // Valida que los items del archivo tengan el periodo correcto 
                 // De no cumplirlo, cancela la previsualización.
                 if(periodo != periodoSeleccionado){
-                    menuControlador.navegador.mensajeError("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
                     lista.clear();
                     txtRuta.setText("");
                     break;
@@ -208,14 +208,13 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
-        List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
         if(tabListar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             if(listaCargar.isEmpty()){
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             }else{
-                centroDAO.insertarListaObjetoPeriodo(lista,menuControlador.repartoTipo);
+                centroDAO.insertarListaObjetoPeriodo(listaCargar,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);

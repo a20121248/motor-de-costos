@@ -1,12 +1,14 @@
 package modelo;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class AsignarCentroConDriver {
+public class CentroDriver {
     private IntegerProperty periodo;
     private StringProperty codigoCuenta;
     private StringProperty nombreCuenta;
@@ -16,8 +18,9 @@ public class AsignarCentroConDriver {
     private StringProperty nombreCentro;
     private StringProperty codigoDriver;
     private StringProperty nombreDriver;
+    private BooleanProperty flagCargar;
     
-    public AsignarCentroConDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
         this.nombreCentro = new SimpleStringProperty(nombreCentro);
@@ -25,7 +28,7 @@ public class AsignarCentroConDriver {
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
     
-    public AsignarCentroConDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
+    public CentroDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
         this.nombreCuenta = new SimpleStringProperty(nombreCuenta);
@@ -35,6 +38,19 @@ public class AsignarCentroConDriver {
         this.nombreCentro = new SimpleStringProperty(nombreCentro);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
+    }
+    
+    public CentroDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver, boolean flagCargar) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
+        this.nombreCuenta = new SimpleStringProperty(nombreCuenta);
+        this.codigoPartida = new SimpleStringProperty(codigoPartida);
+        this.nombrePartida = new SimpleStringProperty(nombrePartida);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.nombreDriver = new SimpleStringProperty(nombreDriver);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
     public IntegerProperty periodoProperty() {
@@ -144,5 +160,12 @@ public class AsignarCentroConDriver {
     public void setNombreDriver(String nombreDriver) {
         this.nombreDriver.set(nombreDriver);
     }
+    
+    public boolean getFlagCargar() {
+        return flagCargar.get();
+    }
 
+    public void setFlagCargar(boolean nivel) {
+        this.flagCargar.set(nivel);
+    }
 }
