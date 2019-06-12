@@ -18,6 +18,8 @@ public class CentroDriver {
     private StringProperty nombreCentro;
     private StringProperty codigoDriver;
     private StringProperty nombreDriver;
+    private StringProperty grupoGasto;
+    
     private BooleanProperty flagCargar;
     
     public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
@@ -28,6 +30,27 @@ public class CentroDriver {
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
     
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String grupoGasto, String codigoDriver, String nombreDriver) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
+        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.nombreDriver = new SimpleStringProperty(nombreDriver);
+    }
+    
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String grupoGasto, String codigoDriver, String nombreDriver, boolean flagCargar) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
+        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.nombreDriver = new SimpleStringProperty(nombreDriver);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+
+    }
+    
+//    Listar de Bolsas
     public CentroDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
@@ -40,6 +63,7 @@ public class CentroDriver {
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
     
+//    Cargar de bolsas
     public CentroDriver(int periodo, String codigoCuenta, String nombreCuenta, String codigoPartida, String nombrePartida,String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver, boolean flagCargar) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
@@ -167,5 +191,17 @@ public class CentroDriver {
 
     public void setFlagCargar(boolean nivel) {
         this.flagCargar.set(nivel);
+    }
+    
+    public StringProperty grupoGastoProperty() {
+        return nombreDriver;
+    }
+
+    public String getGrupoGasto() {
+        return nombreDriver.get();
+    }
+
+    public void setGrupoGasto(String grupoGasto) {
+        this.nombreDriver.set(grupoGasto);
     }
 }

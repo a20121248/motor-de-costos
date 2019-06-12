@@ -17,7 +17,7 @@ public class CentroDriverDAO {
     public CentroDriverDAO() {
     }
     
-    public int borrarAsignacion(String cuentaCodigo, String partidaCodigo, String centroCodigo, int periodo) {
+    public int borrarAsignacionBolsa(String cuentaCodigo, String partidaCodigo, String centroCodigo, int periodo) {
         String queryStr = String.format("" +
                 "DELETE FROM bolsa_driver \n" +
                 " WHERE cuenta_contable_codigo='%s' AND partida_codigo='%s' AND centro_codigo='%s' AND periodo=%d",
@@ -26,8 +26,8 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int asignar(String cuentaCodigo, String partidaCodigo, String centroCodigo, String driverCodigo, int periodo) {        
-        borrarAsignacion(cuentaCodigo, partidaCodigo, centroCodigo, periodo);
+    public int asignarDriverBolsa(String cuentaCodigo, String partidaCodigo, String centroCodigo, String driverCodigo, int periodo) {        
+        borrarAsignacionBolsa(cuentaCodigo, partidaCodigo, centroCodigo, periodo);
         
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
@@ -41,7 +41,7 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int borrarAsignacionesPeriodo(int periodo, int repartoTipo) {
+    public int borrarAsignacionesBolsaPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM bolsa_driver A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
@@ -63,7 +63,7 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int borrarAsignacionesPeriodo(List<CentroDriver> lstEntidades, int periodo) {
+    public int borrarAsignacionesBolsaPeriodo(List<CentroDriver> lstEntidades, int periodo) {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
         for (CentroDriver item: lstEntidades) {
@@ -79,9 +79,9 @@ public class CentroDriverDAO {
         return 1;
     }
     
-    public void insertarListaEntidades(List<CentroDriver> lstCentros, int periodo) {
+    public void insertarListaDriverBolsas(List<CentroDriver> lstCentros, int periodo) {
         //borrarAsignacionesPeriodo(periodo);
-        borrarAsignacionesPeriodo(lstCentros, periodo);
+        borrarAsignacionesBolsaPeriodo(lstCentros, periodo);
         
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
@@ -106,8 +106,8 @@ public class CentroDriverDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public void insertarListaAsignaciones(List<CentroDriver> lstEntidadDriver, int periodo, int repartoTipo) {
-        borrarAsignacionesPeriodo(periodo, repartoTipo);
+    public void insertarListaAsignacionesDriverBolsa(List<CentroDriver> lstEntidadDriver, int periodo, int repartoTipo) {
+        CentroDriverDAO.this.borrarAsignacionesBolsaPeriodo(periodo, repartoTipo);
         
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;

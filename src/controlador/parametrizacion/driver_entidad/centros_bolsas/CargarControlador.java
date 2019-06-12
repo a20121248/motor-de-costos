@@ -233,6 +233,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
@@ -248,7 +249,7 @@ public class CargarControlador implements Initializable {
             if(listaCargar.isEmpty()){
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             }else{
-                centroDriverDAO.insertarListaAsignaciones(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
+                centroDriverDAO.insertarListaAsignacionesDriverBolsa(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);

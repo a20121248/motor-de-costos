@@ -90,10 +90,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     // Variables de la aplicacion
     DriverDAO driverDAO;
     DriverServicio driverServicio;
-    PlanDeCuentaDAO planDeCuentaDAO;
     CentroDAO centroDAO;
-    ProductoDAO productoDAO;
-    BancaDAO bancaDAO;
     CentroDriverDAO centroDriverDAO;
     FXMLLoader fxmlLoader;
     MenuControlador menuControlador;
@@ -107,10 +104,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
-        planDeCuentaDAO = new PlanDeCuentaDAO();
         centroDAO = new CentroDAO();
-        productoDAO = new ProductoDAO();
-        bancaDAO = new BancaDAO();
         centroDriverDAO = new CentroDriverDAO();
         this.menuControlador = menuControlador;
     }
@@ -268,7 +262,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Driver", "¿Está seguro de quitar el Driver " + entidadSeleccionada.getNombreDriver() + "?"))
             return;
         
-        centroDriverDAO.borrarAsignacion(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), periodoSeleccionado);
+        centroDriverDAO.borrarAsignacionBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), periodoSeleccionado);
         menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
@@ -355,7 +349,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.navegador.mensajeInformativo("Asignar Driver que distribuye a Centros de Costos", "Por favor seleccione una entidad.");
             return;
         }
-        centroDriverDAO.asignar(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), driver.getCodigo(), periodoSeleccionado);
+        centroDriverDAO.asignarDriverBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), driver.getCodigo(), periodoSeleccionado);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }

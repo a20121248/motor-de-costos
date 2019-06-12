@@ -159,7 +159,7 @@ public class CentroDAO {
         String queryStr = String.format("" +
                 "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,-1,0,"0",fechaStr,fechaStr);
+                codigo,periodo,-2,0,"0",fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -200,7 +200,7 @@ public class CentroDAO {
             String queryStr = String.format("" +
                     "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
                     "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,periodo,-1,0,"0",fechaStr,fechaStr);
+                    codigo,periodo,-2,0,"0",fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
@@ -413,110 +413,110 @@ public class CentroDAO {
         return lista;
     }
     
-    public void insertarCentrosDeCostos(List<CargarCentroLinea> lista) throws SQLException {
-        Connection access1 = connection.getConnection();
-        Connection access2 = connection.getConnection();
-        Connection access3 = connection.getConnection();
-        access1.setAutoCommit(false);
-        access2.setAutoCommit(false);
-        access3.setAutoCommit(false);
-        Statement ps1 = null;
-        Statement ps2 = null;
-        Statement ps3 = null;
-        Date fecha = null;
-        Format formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        int posI = -1;
-        ResultSet rs;
-        String query=null, fechaStr=null;
-        int numOper = -1;
-        int batchSize = 1;
-        int result[] = null;
-        try {
-            ps1 = access1.createStatement();
-            ps2 = access2.createStatement();
-            ps3 = access3.createStatement();
-            numOper = 0;
-            for (posI = 0; posI < lista.size(); ++posI) {
-                //int periodo = lista.get(posI).getPeriodo();
-                int periodo = 201801;
-                String codigo = lista.get(posI).getCodigo();
-                String nombre = lista.get(posI).getNombre();
-                String codigoGrupo = lista.get(posI).getCodigoGrupo();
-                int nivel = lista.get(posI).getNivel();
-                
-                query = String.format("SELECT COUNT(1) count FROM centros WHERE codigo='%s'",codigo);
-                System.out.println(query);
-                rs = ps1.executeQuery(query);
-                rs.next();
-                fecha = new Date();
-                fechaStr = formatter.format(fecha);
-                if (rs.getInt("count") == 1) {  // lo encontró, entonces lo actualizo
-                    query = String.format("" +
-                            "UPDATE centros\n" +
-                            "   SET nombre='%s',descripcion=%s,esta_activo=%d,\n" +
-                            "       nivel=%d,centro_padre_codigo=%s,\n" +
-                            "       fecha_creacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
-                            " WHERE codigo='%s'",
-                            nombre,null,1,nivel,null,fechaStr,fechaStr,codigo);
-                    //System.out.println(query);
-                    ps2.addBatch(query);
-                } else { // no lo encontró, entonces lo inserto
-                    query = String.format("" +
-                            "INSERT INTO centros(codigo,nombre,descripcion,esta_activo,nivel,centro_padre_codigo,fecha_creacion,fecha_actualizacion)\n" +
-                            "VALUES ('%s','%s',%s,%d,%d,%s,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                            codigo,nombre,null,1,nivel,null,fechaStr,fechaStr);
-                    //System.out.println(query);
-                    ps2.addBatch(query);
-                }
-                // inserto una linea dummy correspondiente al periodo
-                query = String.format("" +
-                        "DELETE FROM centro_tipo\n" +
-                        " WHERE centro_codigo='%s' AND periodo=%d",
-                        codigo,periodo);
-                //System.out.println(query);
-                ps3.addBatch(query);
-                
-                query = String.format("" +
-                        "INSERT INTO centro_tipo(centro_codigo,centro_tipo_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                        "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                        codigo,codigoGrupo,periodo,fechaStr,fechaStr);
-                //System.out.println(query);
-                ps3.addBatch(query);
-                
-                query = String.format("" +
-                        "DELETE FROM centro_lineas\n" +
-                        " WHERE centro_codigo='%s' AND periodo=%d",
-                        codigo, periodo);
-                //System.out.println(query);
-                ps3.addBatch(query);
-                
-                query = String.format("" +
-                        "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
-                        "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                        codigo,periodo,-1,0,'0',fechaStr,fechaStr);
-                //System.out.println(query);
-                ps3.addBatch(query);
-                
-                ++numOper;
-                if(numOper % batchSize == 0) {
-                    result = ps2.executeBatch();
-                    access2.commit();
-                    result = ps3.executeBatch();
-                    access3.commit();
-                }
-            }            
-        } catch (BatchUpdateException b) {
-            access2.rollback();
-            access3.rollback();
-        } catch (SQLException sqlEx) {
-            System.out.println("SQLException occured. getErrorCode=> " + sqlEx.getErrorCode());
-            System.out.println("SQLException occured. getCause=> " + sqlEx.getSQLState());
-            System.out.println("SQLException occured. getCause=> " + sqlEx.getCause() );
-            System.out.println("SQLException occured. getMessage=> " + sqlEx.getMessage());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//    public void insertarCentrosDeCostos(List<CargarCentroLinea> lista) throws SQLException {
+//        Connection access1 = connection.getConnection();
+//        Connection access2 = connection.getConnection();
+//        Connection access3 = connection.getConnection();
+//        access1.setAutoCommit(false);
+//        access2.setAutoCommit(false);
+//        access3.setAutoCommit(false);
+//        Statement ps1 = null;
+//        Statement ps2 = null;
+//        Statement ps3 = null;
+//        Date fecha = null;
+//        Format formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//        int posI = -1;
+//        ResultSet rs;
+//        String query=null, fechaStr=null;
+//        int numOper = -1;
+//        int batchSize = 1;
+//        int result[] = null;
+//        try {
+//            ps1 = access1.createStatement();
+//            ps2 = access2.createStatement();
+//            ps3 = access3.createStatement();
+//            numOper = 0;
+//            for (posI = 0; posI < lista.size(); ++posI) {
+//                //int periodo = lista.get(posI).getPeriodo();
+//                int periodo = 201801;
+//                String codigo = lista.get(posI).getCodigo();
+//                String nombre = lista.get(posI).getNombre();
+//                String codigoGrupo = lista.get(posI).getCodigoGrupo();
+//                int nivel = lista.get(posI).getNivel();
+//                
+//                query = String.format("SELECT COUNT(1) count FROM centros WHERE codigo='%s'",codigo);
+//                System.out.println(query);
+//                rs = ps1.executeQuery(query);
+//                rs.next();
+//                fecha = new Date();
+//                fechaStr = formatter.format(fecha);
+//                if (rs.getInt("count") == 1) {  // lo encontró, entonces lo actualizo
+//                    query = String.format("" +
+//                            "UPDATE centros\n" +
+//                            "   SET nombre='%s',descripcion=%s,esta_activo=%d,\n" +
+//                            "       nivel=%d,centro_padre_codigo=%s,\n" +
+//                            "       fecha_creacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
+//                            " WHERE codigo='%s'",
+//                            nombre,null,1,nivel,null,fechaStr,fechaStr,codigo);
+//                    //System.out.println(query);
+//                    ps2.addBatch(query);
+//                } else { // no lo encontró, entonces lo inserto
+//                    query = String.format("" +
+//                            "INSERT INTO centros(codigo,nombre,descripcion,esta_activo,nivel,centro_padre_codigo,fecha_creacion,fecha_actualizacion)\n" +
+//                            "VALUES ('%s','%s',%s,%d,%d,%s,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                            codigo,nombre,null,1,nivel,null,fechaStr,fechaStr);
+//                    //System.out.println(query);
+//                    ps2.addBatch(query);
+//                }
+//                // inserto una linea dummy correspondiente al periodo
+//                query = String.format("" +
+//                        "DELETE FROM centro_tipo\n" +
+//                        " WHERE centro_codigo='%s' AND periodo=%d",
+//                        codigo,periodo);
+//                //System.out.println(query);
+//                ps3.addBatch(query);
+//                
+//                query = String.format("" +
+//                        "INSERT INTO centro_tipo(centro_codigo,centro_tipo_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
+//                        "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                        codigo,codigoGrupo,periodo,fechaStr,fechaStr);
+//                //System.out.println(query);
+//                ps3.addBatch(query);
+//                
+//                query = String.format("" +
+//                        "DELETE FROM centro_lineas\n" +
+//                        " WHERE centro_codigo='%s' AND periodo=%d",
+//                        codigo, periodo);
+//                //System.out.println(query);
+//                ps3.addBatch(query);
+//                
+//                query = String.format("" +
+//                        "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
+//                        "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                        codigo,periodo,-1,0,'0',fechaStr,fechaStr);
+//                //System.out.println(query);
+//                ps3.addBatch(query);
+//                
+//                ++numOper;
+//                if(numOper % batchSize == 0) {
+//                    result = ps2.executeBatch();
+//                    access2.commit();
+//                    result = ps3.executeBatch();
+//                    access3.commit();
+//                }
+//            }            
+//        } catch (BatchUpdateException b) {
+//            access2.rollback();
+//            access3.rollback();
+//        } catch (SQLException sqlEx) {
+//            System.out.println("SQLException occured. getErrorCode=> " + sqlEx.getErrorCode());
+//            System.out.println("SQLException occured. getCause=> " + sqlEx.getSQLState());
+//            System.out.println("SQLException occured. getCause=> " + sqlEx.getCause() );
+//            System.out.println("SQLException occured. getMessage=> " + sqlEx.getMessage());
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
     
     public List<CentroDriver> listarCuentaPartidaCentroConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
         String queryStr = String.format("" +
