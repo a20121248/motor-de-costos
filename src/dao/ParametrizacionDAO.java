@@ -48,6 +48,7 @@ public class ParametrizacionDAO {
                     periodoOrigen);
         ConexionBD.ejecutar(queryStr);
     }
+    
     public void copiarCuentaPartida(int periodoOrigen, int periodoDestino, String fechaStr) {
         String queryStr = String.format("" +
                 "DELETE FROM partida_cuenta_contable\n" +
@@ -57,7 +58,7 @@ public class ParametrizacionDAO {
         
         queryStr = String.format("" +
                     "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,es_bolsa,fecha_creacion,fecha_actualizacion)\n" +
-                    "SELECT partida_codigo,cuenta_contable_codigo,%d periodo,0 saldo,es_bolsa,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
+                    "SELECT partida_codigo,cuenta_contable_codigo,%d periodo,0 saldo,'NO' es_bolsa,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
                     "  FROM partida_cuenta_contable\n" +
                     " WHERE periodo=%d",
                     periodoDestino,
@@ -66,7 +67,7 @@ public class ParametrizacionDAO {
                     periodoOrigen);
         ConexionBD.ejecutar(queryStr);
     }
-    
+
     public void copiarGrupoPlanDeCuentas(int periodoOrigen, int periodoDestino, String fechaStr) {
         String queryStr = String.format("" +
                 "DELETE FROM grupo_lineas\n" +
@@ -234,7 +235,6 @@ public class ParametrizacionDAO {
     
     public void copiarParametrizacion(int periodoOrigen, int periodoDestino) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-        
         // copiar las Cuentas Contables
         copiarCuentasContables(periodoOrigen, periodoDestino, fechaStr);
         // copiar las Partidas
@@ -242,7 +242,7 @@ public class ParametrizacionDAO {
         // copiar los grupos x plan de cuentas
         copiarGrupoPlanDeCuentas(periodoOrigen, periodoDestino, fechaStr);
         // copiar las Asignaciones de Cuenta - Partida
-//        copiarCuentaPartida(periodoOrigen, periodoDestino, fechaStr);
+        copiarCuentaPartida(periodoOrigen, periodoDestino, fechaStr);
         // copiar los centros de costos
         copiarCentroLineas(periodoOrigen, periodoDestino, fechaStr);
         // copiar las oficinas
