@@ -51,6 +51,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private JFXButton btnBuscarPeriodo;
+    @FXML private JFXButton btnEsBolsa;
     @FXML private JFXButton btnAsignar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
@@ -65,6 +66,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<Partida, String> tabcolCodigoPartida;
     @FXML private TableColumn<Partida, String> tabcolNombrePartida;
     @FXML private TableColumn<Partida, Double> tabcolSaldo;
+    @FXML private TableColumn<Partida, String> tabcolEsBolsa;
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargar;
@@ -129,11 +131,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
+        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombreCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolNombreCuenta.setMaxWidth(1f * Integer.MAX_VALUE * 25);
         tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 25);
+        tabcolEsBolsa.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
@@ -167,6 +171,27 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void lnkAsignacionesAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_LISTAR);
     }
+    @FXML void btnEsBolsaAction(ActionEvent event) {
+        if (!tablaEstaActualizada) {
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPDATE_REFRESH);
+            return;
+        }
+        
+        partidaSeleccionada = tabListar.getSelectionModel().getSelectedItem();
+        if (partidaSeleccionada == null) {
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPDATE_EMPTY);
+            return;
+        }
+        if (partidaSeleccionada.getCuentaContable().getCodigo().equals("Sin CuentaContable asignada")){
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_ITEM_WITHOUT_ALLOCATE);
+            return;
+        }    
+        partidaDAO.actualizarCuentaPartidaBolsa(partidaSeleccionada, periodoSeleccionado);
+        String item = "modificó bolsa a "+partidaSeleccionada.getEsBolsa()+"de la asignación ("+partidaSeleccionada.getCuentaContable().getCodigo()+","+ partidaSeleccionada.getCodigo()+")";
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),item,periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
+        buscarPeriodo(periodoSeleccionado, false);
+        
+    }
     
     @FXML void btnAsignarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
@@ -181,6 +206,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         if (!partidaSeleccionada.getCuentaContable().getCodigo().equals("Sin CuentaContable asignada")) {
             if (menuControlador.navegador.mensajeConfirmar("Asignar Partida a Cuentas Contables", "La partida ya cuenta con Cuenta Contable asignada.\n¿Está seguro que desea reemplazar dicha Cuenta Contable?")) {
+                partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado);
                 buscarCuentaContable();
             }
             return;

@@ -73,6 +73,15 @@
       </JFXButton>
       <HBox alignment="TOP_RIGHT" layoutX="122.0" layoutY="183.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
+            <JFXButton fx:id="btnEsBolsa" onAction="#btnEsBolsaAction" text="Bolsa">
+               <graphic>
+                  <FontAwesomeIconView glyphName="CHECK" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
             <JFXButton fx:id="btnAsignar" onAction="#btnAsignarAction" text="Asignar Cuenta">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
@@ -104,11 +113,12 @@
       <TextField fx:id="txtBuscar" layoutX="524.0" layoutY="232.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigoCuenta" prefWidth="120.0" styleClass="center" text="CÓDIGO CUENTA" />
-            <TableColumn fx:id="tabcolNombreCuenta" prefWidth="120.0" styleClass="left" text="NOMBRE CUENTA" />
-            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="120.0" styleClass="center" text="CÓDIGO PARTIDA" />
-            <TableColumn fx:id="tabcolNombrePartida" prefWidth="120.0" styleClass="left" text="NOMBRE PARTIDA" />
-            <TableColumn fx:id="tabcolSaldo" prefWidth="120.0" styleClass="right" text="SALDO" />
+            <TableColumn fx:id="tabcolCodigoCuenta" prefWidth="108.0" styleClass="center" text="CÓDIGO CUENTA" />
+            <TableColumn fx:id="tabcolNombreCuenta" prefWidth="117.0" styleClass="left" text="NOMBRE CUENTA" />
+            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="109.0" styleClass="center" text="CÓDIGO PARTIDA" />
+            <TableColumn fx:id="tabcolNombrePartida" prefWidth="115.0" styleClass="left" text="NOMBRE PARTIDA" />
+            <TableColumn fx:id="tabcolSaldo" prefWidth="66.0" styleClass="right" text="SALDO" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="109.0" styleClass="center" text="¿Es bolsa?" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />

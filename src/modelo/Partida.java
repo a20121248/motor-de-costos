@@ -22,6 +22,7 @@ public class Partida extends EntidadDistribucion{
     
     private ObjectProperty<Tipo> grupoGasto;
     private BooleanProperty flagCargar;
+    private StringProperty esBolsa;
     private Tipo cuentaContable;
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
@@ -38,9 +39,12 @@ public class Partida extends EntidadDistribucion{
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
-    public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable) {
+    
+    // Construcción para Listar ASignacion Cuenta-Partida
+    public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable, String esBolsa) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         this.cuentaContable = cuentaContable;
+        this.esBolsa =  new SimpleStringProperty(esBolsa);
     }
     
 //    public List<CuentaContable> getListaPlanDeCuentas() {
@@ -103,5 +107,17 @@ public class Partida extends EntidadDistribucion{
 
     public void setFlagCargar(boolean nivel) {
         this.flagCargar.set(nivel);
+    }
+    
+    public StringProperty esBolsaProperty() {
+        return this.esBolsa;
+    }
+
+    public String getEsBolsa() {
+        return esBolsa.get();
+    }
+
+    public void setEsBolsa(String esBolsa) {
+        this.esBolsa.set(esBolsa);
     }
 }

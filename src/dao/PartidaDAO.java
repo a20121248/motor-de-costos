@@ -204,6 +204,7 @@ public class PartidaDAO {
                 "       A.codigo partida_codigo,\n" +
                 "       A.nombre partida_nombre,\n" +
                 "       NVL(C.saldo,0) partida_cuenta_contable_saldo,\n" +
+                "       NVL(C.es_bolsa,'-') es_bolsa,\n" +
                 "       A.fecha_creacion partida_fecha_creacion,\n" +
                 "       A.fecha_actualizacion partida_fecha_actualizacion\n" +
                 "  FROM partidas A\n" +
@@ -227,12 +228,13 @@ public class PartidaDAO {
                 String cuentaContableNombre = rs.getString("cuenta_contable_nombre");
                 String partidaCodigo = rs.getString("partida_codigo");
                 String partidaNombre = rs.getString("partida_nombre");
+                String esBolsa = rs.getString("es_bolsa");
                 double Saldo = rs.getDouble("partida_cuenta_contable_saldo");
                 Date partidaFechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_creacion"));
                 Date partidaFechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_actualizacion"));
 
                 Tipo cuentaContable = new Tipo(cuentaContableCodigo, cuentaContableNombre, null);
-                Partida item = new Partida(partidaCodigo, partidaNombre, null, Saldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable);
+                Partida item = new Partida(partidaCodigo, partidaNombre, null, Saldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable, esBolsa);
 
                 lista.add(item);
             }
@@ -408,14 +410,15 @@ public class PartidaDAO {
     
     public int insertarPartidaCuenta(String partidaCodigo, String cuentaContableCodigo, int periodo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        Double saldo = leerSaldoPartida(partidaCodigo, periodo);
+//        Double saldo = leerSaldoPartida(partidaCodigo, periodo);
         String queryStr = String.format("" +
-                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo, fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d','%.2f' ,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,es_bolsa, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%.2f','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     partidaCodigo,
                     cuentaContableCodigo,
                     periodo,
-                    saldo,
+                    0.0,
+                    "NO",
                     fechaStr,
                     fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -427,16 +430,18 @@ public class PartidaDAO {
         for (CargarCuentaPartidaLinea item: lista) {
             String codigoPartida = item.getCodigoPartida();
             String codigoCuenta = item.getCodigoCuentaContable();
+            String esBolsa = item.getEsBolsa();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,es_bolsa,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%d','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigoPartida,
                     codigoCuenta,
                     0,
                     periodo,
+                    esBolsa,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
@@ -461,6 +466,20 @@ public class PartidaDAO {
                 "DELETE FROM partida_cuenta_contable\n" +
                 " WHERE partida_codigo='%s' AND periodo=%d",
                 partidaCodigo,periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public int actualizarCuentaPartidaBolsa(Partida cuentaPartida , int periodo ){
+        String estado=null;
+        if(cuentaPartida.getEsBolsa().equals("SI")) estado = "NO";
+        else if(cuentaPartida.getEsBolsa().equals("NO")) estado = "SI";
+        else if(cuentaPartida.getEsBolsa().equals("-")) estado = "NO";
+        
+        String queryStr = String.format("" +
+                "UPDATE partida_cuenta_contable\n"
+                + " SET es_bolsa = '%s'" +
+                " WHERE partida_codigo='%s' AND cuenta_contable_codigo='%s' AND periodo=%d",
+                estado,cuentaPartida.getCodigo(),cuentaPartida.getCuentaContable().getCodigo(),periodo);
         return ConexionBD.ejecutar(queryStr);
     }
     

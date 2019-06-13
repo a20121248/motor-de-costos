@@ -71,6 +71,7 @@
             <TableColumn fx:id="tabcolNombreCuenta" prefWidth="120.0" styleClass="left" text="NOMBRE CUENTA" />
             <TableColumn fx:id="tabcolCodigoPartida" prefWidth="120.0" styleClass="center" text="CÓDIGO PARTIDA" />
             <TableColumn fx:id="tabcolNombrePartida" prefWidth="120.0" styleClass="left" text="NOMBRE PARTIDA" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="120.0" styleClass="left" text="¿Es bolsa?" />
          </columns>
       </TableView>
       <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="124.0" />

@@ -56,6 +56,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolNombreCuenta;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolCodigoPartida;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolNombrePartida;
+    @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolEsBolsa;
     
     @FXML private Button btnCancelar;
     @FXML private Button btnSubir;
@@ -91,12 +92,14 @@ public class CargarControlador implements Initializable {
         tabcolNombreCuenta.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
+        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigoCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombreCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 35);
+        tabcolNombreCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 30);
         tabcolCodigoPartida.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombrePartida.setMaxWidth( 1f * Integer.MAX_VALUE * 35);        
+        tabcolNombrePartida.setMaxWidth( 1f * Integer.MAX_VALUE * 30);        
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 10);  
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(mesSeleccionado-1);
@@ -156,7 +159,7 @@ public class CargarControlador implements Initializable {
             Cell celda = null;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA")))) {
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA","BOLSA")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -170,6 +173,7 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
                 
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
@@ -180,7 +184,7 @@ public class CargarControlador implements Initializable {
                     break;
                 }
                 
-                CargarCuentaPartidaLinea linea = new CargarCuentaPartidaLinea(periodo,codigoCuenta,nombreCuenta,codigoPartida,nombrePartida,true);
+                CargarCuentaPartidaLinea linea = new CargarCuentaPartidaLinea(periodo,codigoCuenta,nombreCuenta,codigoPartida,nombrePartida,esBolsa,true);
                 String partida = listaCodigosPartidaPeriodo.stream().filter(item ->codigoPartida.equals(item)).findAny().orElse(null);
                 String cuenta = listaCodigosCuentaPeriodo.stream().filter(item ->codigoCuenta.equals(item)).findAny().orElse(null);
                 if(partida!= null && cuenta!=null){
