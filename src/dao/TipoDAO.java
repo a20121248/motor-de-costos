@@ -90,4 +90,20 @@ public class TipoDAO {
         }
         return lista;
     }
+    
+    public List<Tipo> listarGrupoGastos() {
+        String queryStr = "SELECT CODIGO,NOMBRE FROM GRUPO_GASTOS";
+        List<Tipo> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                Tipo tipo = new Tipo(codigo,nombre);
+                lista.add(tipo);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TipoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
 }

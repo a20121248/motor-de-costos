@@ -10,12 +10,15 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
+import modelo.Tipo;
         
 public class CrearControlador implements Initializable {
     // Variables de la vista
@@ -27,7 +30,7 @@ public class CrearControlador implements Initializable {
         
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
-    @FXML private ComboBox cmbGrupoGasto;
+    @FXML private ComboBox<Tipo> cmbGrupoGasto;
 
     
     @FXML private JFXButton btnGuardar;
@@ -49,7 +52,18 @@ public class CrearControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cmbGrupoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstGrupoGasto));
+        ObservableList<Tipo> obsListaTipos = FXCollections.observableList(menuControlador.lstGrupoGasto);
+        cmbGrupoGasto.setItems(obsListaTipos);
+        cmbGrupoGasto.setConverter(new StringConverter<Tipo>() {
+            @Override
+            public String toString(Tipo object) {
+                return object.getNombre();
+            }
+            @Override
+            public Tipo fromString(String string) {
+                return cmbGrupoGasto.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
+            }
+        });
         cmbGrupoGasto.getSelectionModel().select(0);
     }    
     
@@ -76,7 +90,7 @@ public class CrearControlador implements Initializable {
     @FXML void btnCrearAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        String grupoGasto = cmbGrupoGasto.getValue().toString();
+        String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
         if (lstCodigos.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;

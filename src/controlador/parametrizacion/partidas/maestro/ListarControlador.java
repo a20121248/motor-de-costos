@@ -27,6 +27,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import modelo.Partida;
+import modelo.Tipo;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
@@ -88,7 +89,7 @@ public class ListarControlador implements Initializable {
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().grupoGastoProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {

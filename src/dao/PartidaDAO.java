@@ -48,8 +48,7 @@ public class PartidaDAO {
         lista.stream().filter(item -> item.getFlagCargar()).map((item) -> {
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
-            String grupoGasto = item.getGrupoGasto();
-            grupoGasto = palabraAbreviatura(grupoGasto);
+            String grupoGasto = item.getGrupoGasto().getCodigo();
             
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format("" +
@@ -150,6 +149,7 @@ public class PartidaDAO {
     
     // Lista objetos para catálogo
     public List<Partida> listarObjetos(String codigos, int repartoTipo) {
+        TipoDAO tipoDAO = new TipoDAO();
         String queryStr;
         if (codigos.isEmpty()) {
             queryStr = String.format("" +
@@ -172,17 +172,18 @@ public class PartidaDAO {
                 " WHERE codigo NOT IN (%s) AND reparto_tipo=%d\n" +
                 " ORDER BY codigo",codigos,repartoTipo);
         }
-        
+        List<Tipo> listaGrupoGastos = tipoDAO.listarGrupoGastos();
         List<Partida> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
                 String grupoGasto = rs.getString("grupo_gasto");
-                grupoGasto = abrevituraPalabra(grupoGasto);
+//                grupoGasto = abrevituraPalabra(grupoGasto);
+                Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null); 
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                Partida item = new Partida(codigo, nombre, null, grupoGasto, 0, fechaCreacion, fechaActualizacion);
+                Partida item = new Partida(codigo, nombre, null, tipoGrupoGasto, 0, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
@@ -277,7 +278,6 @@ public class PartidaDAO {
     }
     
     public int insertarObjeto(String codigo, String nombre, String grupoGasto, int repartoTipo) {
-        grupoGasto = palabraAbreviatura(grupoGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
                 "INSERT INTO partidas(codigo,nombre,grupo_gasto, reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
@@ -287,7 +287,6 @@ public class PartidaDAO {
     }
     
     public int actualizarObjeto(String codigo, String nombre, String grupoGasto) {
-        grupoGasto = palabraAbreviatura(grupoGasto);
         String queryStr = String.format("UPDATE partidas SET nombre='%s', grupo_gasto='%s' WHERE codigo='%s'",nombre,grupoGasto,codigo);
         return ConexionBD.ejecutar(queryStr);
     }

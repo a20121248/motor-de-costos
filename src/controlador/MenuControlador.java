@@ -49,8 +49,8 @@ public class MenuControlador implements Initializable {
     public int repartoTipo;
     public String objetoTipo;
     final TipoDAO tipoDAO;
-    public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos;
-    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto, lstGrupoGasto;
+    public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos, lstGrupoGasto;
+    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto;
     public String codigos;
     final Image img;
     public List<Integer> lstFases;
@@ -150,6 +150,8 @@ public class MenuControlador implements Initializable {
         lstCentroNiveles = tipoDAO.listarCentroNiveles();
         // repartoTipo de entidades
         lstEntidadTipos = tipoDAO.listarEntidadTipos();
+        // grupoGastos de Partidas, Objetos-Drivers
+        lstGrupoGasto = tipoDAO.listarGrupoGastos();
 
         //Caracteristicas de los Gastos de Centros y Cuentas Contables
         lstEsBolsa = new ArrayList();
@@ -169,10 +171,10 @@ public class MenuControlador implements Initializable {
         lstClaseGasto.add("Variable");
         
         //Caracteristicas Partidas
-        lstGrupoGasto = new ArrayList();
-        lstGrupoGasto.add("Gastos de Tecnología");
-        lstGrupoGasto.add("Gastos de Personal");
-        lstGrupoGasto.add("Gastos de Operaciones");
+//        lstGrupoGasto = new ArrayList();
+//        lstGrupoGasto.add("Gastos de Tecnología");
+//        lstGrupoGasto.add("Gastos de Personal");
+//        lstGrupoGasto.add("Gastos de Operaciones");
         
         // repartoTipo de fases
         lstFases = new ArrayList();

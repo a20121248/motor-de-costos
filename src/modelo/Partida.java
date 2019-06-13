@@ -14,12 +14,13 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Partida extends EntidadDistribucion{
     
-    private StringProperty grupoGasto;
+    private ObjectProperty<Tipo> grupoGasto;
     private BooleanProperty flagCargar;
     private Tipo cuentaContable;
     
@@ -27,14 +28,14 @@ public class Partida extends EntidadDistribucion{
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
     }
     
-    public Partida(String codigo, String nombre, String descripcion, String grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
+    public Partida(String codigo, String nombre, String descripcion, Tipo grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
-        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
     }
     
-    public Partida(String codigo, String nombre, String descripcion, String grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+    public Partida(String codigo, String nombre, String descripcion, Tipo grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
-        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, Tipo cuentaContable) {
@@ -84,15 +85,15 @@ public class Partida extends EntidadDistribucion{
 //    public void setTipo(GrupoGasto grupoGasto) {
 //        this.grupoaGasto.set(grupoGasto);
 //    } 
-    public StringProperty grupoGastoProperty() {
+    public ObjectProperty<Tipo> grupoGastoProperty() {
         return this.grupoGasto;
     }
 
-    public String getGrupoGasto() {
+    public Tipo getGrupoGasto() {
         return grupoGasto.get();
     }
 
-    public void setGrupoGasto(String grupoGasto) {
+    public void setGrupoGasto(Tipo grupoGasto) {
         this.grupoGasto.set(grupoGasto);
     }
     

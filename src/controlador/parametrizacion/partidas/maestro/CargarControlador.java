@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.PartidaDAO;
+import dao.TipoDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import modelo.CargarObjetoLinea;
 import modelo.Partida;
+import modelo.Tipo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,6 +60,7 @@ public class CargarControlador implements Initializable {
     
     // Variables de la aplicacion
     PartidaDAO partidaDAO;
+    TipoDAO tipoDAO;
     LogServicio logServicio;
     String logName;
     public MenuControlador menuControlador;
@@ -70,6 +73,7 @@ public class CargarControlador implements Initializable {
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         partidaDAO = new PartidaDAO();
+        tipoDAO = new TipoDAO();
         lstCodigos = partidaDAO.listarCodigos();
     }
     
@@ -84,7 +88,7 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().grupoGastoProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -128,6 +132,7 @@ public class CargarControlador implements Initializable {
     private List<Partida> leerArchivo(String rutaArchivo) {
         List<Partida> lista = new ArrayList();
         List<String> listaCodigos = partidaDAO.listarCodigos();
+        List<Tipo> listaGrupoGastos = tipoDAO.listarGrupoGastos();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -150,10 +155,10 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String grupoGasto = celda.getStringCellValue();
                 
-                grupoGasto = partidaDAO.abrevituraPalabra(grupoGasto);
-                Partida linea = new Partida(codigo,nombre,null,grupoGasto,0,null,null,true);
+                Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null);       
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
-                if(cuenta == null){
+                Partida linea = new Partida(codigo,nombre,null,tipoGrupoGasto,0,null,null,true);
+                if(cuenta == null && tipoGrupoGasto != null){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {

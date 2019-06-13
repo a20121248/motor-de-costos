@@ -258,11 +258,11 @@ CREATE TABLE centro_tipos (
 Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('-','Todos','Todos los grupos.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
 Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('A','Staff','Centros de costos correspondientes a los gastos de staff.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
 Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('B','Soporte','Centros de costos correspondientes a los gastos de soporte.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
-Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('C','Ficticio','Centros de costos de apoyo ficticio.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
-Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('D','Unidades de Negocio','Centros de costos correspondientes a las unidades operacionales.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
+Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('C','-','Centros de costos de apoyo ficticio.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
+Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('D','Ficticio','Centros de costos de apoyo ficticio.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
 Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('E','Canales','Centros de costos Objeto Canal.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
 Insert into CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) values ('F','Lineas de Negocio','Centros de costos Objeto Linea de Negocio.',to_date('01/01/18','DD/MM/RR'),to_date('01/01/18','DD/MM/RR'));
-COMMIT;
+
 
 --SELECT * FROM centro_tipos;
 ------------------------------------------------------------------------------------------
@@ -679,7 +679,8 @@ CREATE TABLE PARTIDA_CUENTA_CONTABLE
 	PERIODO NUMBER(6,0),
 	FECHA_CREACION DATE,
 	FECHA_ACTUALIZACION DATE,
-	SALDO NUMBER(35,8) NOT NULL
+	SALDO NUMBER(35,8) NOT NULL,
+  ES_BOLSA CHAR(2) NOT NULL
 );
 
 CREATE TABLE PARTIDA_LINEAS
@@ -700,4 +701,14 @@ CREATE TABLE PARTIDA_LINEAS
  	FECHA_ACTUALIZACION DATE,
  	GRUPO_GASTO CHAR(2 BYTE) NOT NULL ,
  	 --CONSTRAINT "PARTIDAS_PK" PRIMARY KEY ("CODIGO")
+ );
+
+ CREATE TABLE OBJETO_DRIVER
+ (
+   CENTRO_CODIGO VARCHAR2(8) NOT NULL
+ , GRUPO_GASTO VARCHAR2(2) NOT NULL
+ , DRIVER_CODIGO VARCHAR2(8) NOT NULL
+ , PERIODO NUMBER(6, 0) NOT NULL
+ , FECHA_CREACION DATE
+ , FECHA_ACTUALIZACION DATE
  );

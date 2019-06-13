@@ -8,13 +8,16 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 import modelo.Partida;
+import modelo.Tipo;
 
 public class EditarControlador implements Initializable {
     // Variables de la vista
@@ -26,7 +29,7 @@ public class EditarControlador implements Initializable {
         
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
-    @FXML private ComboBox cmbGrupoGasto;
+    @FXML private ComboBox<Tipo> cmbGrupoGasto;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -50,7 +53,20 @@ public class EditarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {        
         txtCodigo.setText(partida.getCodigo());
         txtNombre.setText(partida.getNombre());
-        cmbGrupoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstGrupoGasto));
+        ObservableList<Tipo> obsListaTipos;
+        
+        obsListaTipos = FXCollections.observableList(menuControlador.lstGrupoGasto);
+        cmbGrupoGasto.setItems(obsListaTipos);
+        cmbGrupoGasto.setConverter(new StringConverter<Tipo>() {
+            @Override
+            public String toString(Tipo object) {
+                return object.getNombre();
+            }
+            @Override
+            public Tipo fromString(String string) {
+                return cmbGrupoGasto.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
+            }
+        });
         cmbGrupoGasto.getSelectionModel().select(partida.getGrupoGasto());
     }    
     
@@ -77,7 +93,7 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        String grupoGasto = cmbGrupoGasto.getValue().toString();
+        String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
         partidaDAO.actualizarObjeto(codigo, nombre,grupoGasto);
         menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
         menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
