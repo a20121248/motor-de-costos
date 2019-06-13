@@ -142,7 +142,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolTipoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listar(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -236,7 +236,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Centro> lista = centroDAO.listar(periodo,menuControlador.repartoTipo);
+        List<Centro> lista = centroDAO.listarPeriodo(periodo,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");

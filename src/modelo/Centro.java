@@ -24,6 +24,12 @@ public class Centro extends EntidadDistribucion {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
     }
     
+    //Objetos Centros para Listar en Periodo 
+    public Centro(String codigo, String nombre, double saldo, Tipo tipo) {
+        super(codigo, nombre, null, saldo, null, null, true);
+        this.tipo = new SimpleObjectProperty(tipo);
+    }
+    
     public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);

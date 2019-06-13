@@ -157,9 +157,9 @@ public class CentroDAO {
     public int insertarObjetoPeriodo(String codigo, int periodo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,-2,0,"0",fechaStr,fechaStr);
+                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES('%s',%d,%d,%d,'%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,periodo,-2,0,"0","-",fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -198,9 +198,9 @@ public class CentroDAO {
             
             // inserto una linea dummy
             String queryStr = String.format("" +
-                    "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES('%s',%d,%d,%d,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,periodo,-2,0,"0",fechaStr,fechaStr);
+                    "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES('%s',%d,%d,%d,'%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,periodo,-2,0,"0","-",fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
@@ -246,6 +246,38 @@ public class CentroDAO {
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    public List<Centro> listarPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.codigo,\n" +
+                "       A.nombre,\n" +
+                "       B.codigo tipo_codigo,\n" +
+                "       B.nombre tipo_nombre,\n" +
+                "       SUM(COALESCE(C.saldo,0)) saldo\n" +
+                "  FROM centros A\n" +
+                "  JOIN centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
+                "  JOIN centro_lineas C ON A.codigo=C.centro_codigo\n" +
+                " WHERE C.periodo=%d AND A.reparto_tipo=%d\n AND c.iteracion = -1 OR C.iteracion = -2" +
+                " GROUP BY A.codigo,A.nombre," +
+                "          B.codigo,B.nombre",
+                periodo,repartoTipo);
+        List<Centro> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("codigo");
+                String nombre = rs.getString("nombre");
+                String tipoCodigo = rs.getString("tipo_codigo");
+                String tipoNombre = rs.getString("tipo_nombre");
+                double saldo = rs.getDouble("saldo");
+                
+                Tipo tipo = new Tipo(tipoCodigo, tipoNombre, "");
+                Centro item = new Centro(codigo, nombre, saldo, tipo);
+                lista.add(item);
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return lista;
