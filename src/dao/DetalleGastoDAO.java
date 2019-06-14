@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modelo.Centro;
 import modelo.DetalleGasto;
 import modelo.ConnectionDB;
 
@@ -155,14 +156,36 @@ public class DetalleGastoDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int actualizarSaldoCentroPeriodo( int periodo){
-        String queryStr = String.format(
-                "UPDATE CENTRO_LINEAS A"+
-                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO  AND PERIODO = '%d' group by  B.CENTRO_CODIGO)"+
-                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.CENTRO_CODIGO = B.CENTRO_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
-                , periodo,periodo,periodo);
-        return ConexionBD.ejecutar(queryStr);
+    public void actualizarSaldoCentroPeriodo( int periodo){
+        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+        String queryStr = String.format("" +
+                "DELETE FROM centro_lineas\n" +
+                " WHERE periodo=%d and iteracion = -1" ,
+                periodo);
+        ConexionBD.ejecutar(queryStr);
+
+        queryStr = String.format("" +
+                    "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,grupo_gasto,fecha_creacion,fecha_actualizacion,entidad_origen_codigo)\n"
+                +   "     SELECT centro_codigo,"
+                +   "            %d periodo,"
+                +   "            -1 iteracion,"
+                +   "            sum(coalesce(A.saldo,0)) saldo,"
+                +   "            B.grupo_gasto,"
+                +   "            TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,"
+                +   "            TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion,"
+                +   "            0 entidad_origen_codigo\n"
+                +   "       FROM CUENTA_PARTIDA_CENTRO A\n"
+                +   "       JOIN PARTIDAS B ON B.codigo = A.partida_codigo\n"
+                +   "      WHERE a.periodo=%d\n"
+                +   "   GROUP BY a.centro_codigo,b.grupo_gasto\n"
+                ,
+                periodo,
+                fechaStr,
+                fechaStr,
+                periodo);
+        ConexionBD.ejecutar(queryStr);
     }
+    
 
     public int actualizarSaldoPartidaPeriodo( int periodo){
         String queryStr = String.format(
@@ -184,19 +207,23 @@ public class DetalleGastoDAO {
 
     public void limpiarSaldosAsociadosPeriodo(int periodo){
         ArrayList<String> lineas = new ArrayList();
-        lineas.add("centro_lineas");
         lineas.add("partida_lineas");
         lineas.add("plan_de_cuenta_lineas");
 
         ConexionBD.crearStatement();
         for(String linea:lineas){
-          String queryStr = String.format("" +
+            String queryStr = String.format("" +
                 "UPDATE "+linea+" \n" +
                 "   SET saldo = '0'\n"+
                 " WHERE periodo = '%d'",
                 periodo);
-        ConexionBD.agregarBatch(queryStr);
+            ConexionBD.agregarBatch(queryStr);
         }
+        String queryStr = String.format("" +
+                "DELETE FROM centro_lineas \n" +
+                " WHERE periodo = '%d' AND iteracion = -1",
+                periodo);
+        ConexionBD.agregarBatch(queryStr);
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }

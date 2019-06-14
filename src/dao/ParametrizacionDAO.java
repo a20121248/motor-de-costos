@@ -110,8 +110,8 @@ public class ParametrizacionDAO {
         ConexionBD.ejecutar(queryStr);
 
         queryStr = String.format("" +
-                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,fecha_creacion,fecha_actualizacion,entidad_origen_codigo)\n" +
-                "SELECT centro_codigo,%d periodo,-1 iteracion,0 saldo,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion,0 entidad_origen_codigo\n" +
+                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,grupo_gasto,fecha_creacion,fecha_actualizacion,entidad_origen_codigo)\n" +
+                "SELECT centro_codigo,%d periodo,-2 iteracion,0 saldo,'-' grupo_gasto,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion,0 entidad_origen_codigo\n" +
                 "  FROM centro_lineas\n" +
                 " WHERE periodo=%d AND iteracion=-1",
                 periodoDestino,
