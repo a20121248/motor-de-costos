@@ -550,7 +550,7 @@ public class CentroDAO {
 //        }
 //    }
     
-    public List<CentroDriver> listarCuentaPartidaCentroConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
+    public List<CentroDriver> listarCuentaPartidaCentroBolsaConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
         String queryStr = String.format("" +
             "SELECT E.cuenta_contable_codigo cuenta_contable_codigo,\n" +
             "       F.nombre cuenta_contable_nombre,\n" +
@@ -623,6 +623,43 @@ public class CentroDAO {
                 Centro centro = new Centro(codigo,nombre,0,null,saldo,null,null,null);
                 centro.setDriver(new Driver(driverCodigo,driverNombre,null,null,null,null));
                 lista.add(centro);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    public List<CentroDriver> listarCentrosObjetosConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
+        List<Tipo> listaGrupoGasto = tipoDAO.listarGrupoGastos();
+        String queryStr = String.format("" +
+            "SELECT A.centro_codigo centro_codigo,\n" +
+            "       B.nombre centro_nombre,\n" +
+            "       C.codigo grupo_gastos,\n" +
+            "       COALESCE(D.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
+            "       COALESCE(E.nombre,'Sin driver asignado') driver_nombre\n" +
+            "  FROM centro_lineas A\n" +
+            "  JOIN centros B ON  B.codigo = A.centro_codigo\n"+
+            "  JOIN grupo_gastos C ON 1=1" +
+            "  LEFT JOIN objeto_driver D ON D.centro_codigo = A.centro_codigo AND d.periodo=a.periodo AND D.grupo_gasto = c.codigo\n" +
+            "  LEFT JOIN drivers E ON e.codigo = d.driver_codigo\n" +
+            " WHERE A.periodo =%d AND A.iteracion = -2\n",
+            periodo);
+        if (tipo.equals("-")) queryStr += "AND (B.centro_tipo_codigo = 'D' OR B.centro_tipo_codigo = 'E' OR B.centro_tipo_codigo = 'F')\n";
+        else if (!tipo.equals("-")) queryStr += String.format("   AND B.centro_tipo_codigo='%s'\n",tipo);
+        if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
+        queryStr += " ORDER BY A.centro_codigo";
+        List<CentroDriver> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCentro = rs.getString("centro_codigo");
+                String nombreCentro = rs.getString("centro_nombre");
+                String grupoGasto = rs.getString("grupo_gastos");
+                String codigoDriver = rs.getString("driver_codigo");
+                String nombreDriver = rs.getString("driver_nombre");
+                Tipo tipoGrupoGasto = listaGrupoGasto.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null);       
+                CentroDriver centroDriver = new CentroDriver(periodo, codigoCentro, nombreCentro, tipoGrupoGasto, codigoDriver, nombreDriver);
+                lista.add(centroDriver);
             }
         } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);

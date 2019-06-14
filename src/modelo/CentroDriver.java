@@ -5,6 +5,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -18,7 +19,7 @@ public class CentroDriver {
     private StringProperty nombreCentro;
     private StringProperty codigoDriver;
     private StringProperty nombreDriver;
-    private StringProperty grupoGasto;
+    private ObjectProperty<Tipo> grupoGasto;
     
     private BooleanProperty flagCargar;
     
@@ -30,20 +31,21 @@ public class CentroDriver {
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
     
-    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String grupoGasto, String codigoDriver, String nombreDriver) {
+//    Listar Centros Objetos 
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, Tipo grupoGasto, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
         this.nombreCentro = new SimpleStringProperty(nombreCentro);
-        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
-    
-    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String grupoGasto, String codigoDriver, String nombreDriver, boolean flagCargar) {
+//    Cargar Centros Objetos
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, Tipo grupoGasto, String codigoDriver, String nombreDriver, boolean flagCargar) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
         this.nombreCentro = new SimpleStringProperty(nombreCentro);
-        this.grupoGasto = new SimpleStringProperty(grupoGasto);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
@@ -193,15 +195,15 @@ public class CentroDriver {
         this.flagCargar.set(nivel);
     }
     
-    public StringProperty grupoGastoProperty() {
-        return nombreDriver;
+    public ObjectProperty<Tipo> grupoGastoProperty() {
+        return this.grupoGasto;
     }
 
-    public String getGrupoGasto() {
-        return nombreDriver.get();
+    public Tipo getGrupoGasto() {
+        return grupoGasto.get();
     }
 
-    public void setGrupoGasto(String grupoGasto) {
-        this.nombreDriver.set(grupoGasto);
+    public void setGrupoGasto(Tipo grupoGasto) {
+        this.grupoGasto.set(grupoGasto);
     }
 }

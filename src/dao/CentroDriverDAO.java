@@ -26,6 +26,15 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
+    public int borrarAsignacionDriverObjeto(String centroCodigo, String grupoGasto, int periodo) {
+        String queryStr = String.format("" +
+                "DELETE FROM bolsa_driver \n" +
+                " WHERE centro_codigo='%s' AND grupo_gasto='%s' AND periodo=%d",
+                centroCodigo, grupoGasto,
+                periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
     public int asignarDriverBolsa(String cuentaCodigo, String partidaCodigo, String centroCodigo, String driverCodigo, int periodo) {        
         borrarAsignacionBolsa(cuentaCodigo, partidaCodigo, centroCodigo, periodo);
         
@@ -40,7 +49,21 @@ public class CentroDriverDAO {
                 fechaStr);        
         return ConexionBD.ejecutar(queryStr);
     }
-    
+    public int asignarDriverObjeto(String centroCodigo, String grupoGasto, String driverCodigo, int periodo) {        
+        borrarAsignacionDriverObjeto(centroCodigo, grupoGasto, periodo);
+        
+        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+        String queryStr = String.format("" +
+                "INSERT INTO objeto_driver(driver_codigo, centro_codigo,grupo_gasto, periodo, fecha_creacion, fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                driverCodigo,
+                centroCodigo,
+                grupoGasto,
+                periodo,
+                fechaStr,
+                fechaStr);        
+        return ConexionBD.ejecutar(queryStr);
+    }
     public int borrarAsignacionesBolsaPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM bolsa_driver A\n" +

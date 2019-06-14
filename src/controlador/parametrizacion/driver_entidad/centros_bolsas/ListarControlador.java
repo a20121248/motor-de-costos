@@ -153,7 +153,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // Tabla: Buscar
-        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI");
+        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
@@ -196,7 +196,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CentroDriver> listaEntidades = new ArrayList();
-        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI"));
+        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI"));
         if (listaEntidades.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
