@@ -558,12 +558,12 @@ public class CentroDAO {
             "       G.nombre partida_nombre,\n" +
             "       A.codigo centro_codigo,\n" +
             "       A.nombre centro_nombre,\n" +
-            "       SUM(E.saldo) saldo,\n" +
+//            "       SUM(E.saldo) saldo,\n" +
             "       COALESCE(C.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
             "       COALESCE(D.nombre,'Sin driver asignado') driver_nombre\n" +
             "  FROM centros A\n" +
             "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-            "  JOIN cuenta_partida_centro E ON B.centro_codigo= E.centro_codigo\n" +
+            "  JOIN partida_cuenta_contable E ON E.es_bolsa = 'SI'\n" +
             "  JOIN plan_de_cuentas F on F.codigo = E.cuenta_contable_codigo\n" +
             "  JOIN partidas G on G.codigo = E.partida_codigo and B.periodo=E.periodo\n" +
             "  LEFT JOIN bolsa_driver C ON A.codigo=C.centro_codigo AND E.periodo=C.periodo AND e.partida_codigo = C.partida_codigo\n" +
@@ -583,7 +583,7 @@ public class CentroDAO {
                 String nombrePartida = rs.getString("partida_nombre");
                 String codigoCentro = rs.getString("centro_codigo");
                 String nombreCentro = rs.getString("centro_nombre");
-                double saldo = rs.getDouble("saldo");
+//                double saldo = rs.getDouble("saldo");
                 String driverCodigo = rs.getString("driver_codigo");
                 String driverNombre = rs.getString("driver_nombre");
                 CentroDriver item = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, driverCodigo, driverNombre);
