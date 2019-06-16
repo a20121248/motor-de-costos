@@ -102,7 +102,7 @@ public class CargarControlador implements Initializable {
         tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
         tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
-        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().grupoGastoProperty());
+        tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // meses
