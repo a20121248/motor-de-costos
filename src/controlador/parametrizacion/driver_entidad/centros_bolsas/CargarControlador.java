@@ -169,7 +169,7 @@ public class CargarControlador implements Initializable {
     
     private List<CentroDriver> leerArchivo(String rutaArchivo) {
         List<CentroDriver> lista = new ArrayList();
-        List<DetalleGasto> lstEntidades = detalleGastoDAO.listar(periodoSeleccionado, titulo, menuControlador.repartoTipo);
+        List<CentroDriver> lstEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI");
         List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
         List<String> lstCentroBolsa = centroDAO.listarCodigosCentrosBolsasPeriodo(periodoSeleccionado);
         try {
@@ -211,7 +211,7 @@ public class CargarControlador implements Initializable {
                     return null;
                 }
 //                Validar la existencia de la llave Cuenta-Partida-Centro
-                DetalleGasto entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCECO())  && codigoPartida.equals(item.getCodigoPartida()) && codigoCuenta.equals(item.getCodigoCuentaContable())).findAny().orElse(null);
+                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro())  && codigoPartida.equals(item.getCodigoPartida()) && codigoCuenta.equals(item.getCodigoCuenta())).findAny().orElse(null);
                 String centroBolsa = lstCentroBolsa.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
 //                Validar la existencia del Driver en periodo a Cargar
                 String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
