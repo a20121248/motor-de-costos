@@ -331,14 +331,14 @@ public class DriverDAO {
         return lista;
     }
     
-    public List<String> listarCodigosDriverPeriodo(int periodo, int repartoTipo) {
+    public List<String> listarCodigosDriverPeriodo(int periodo, int repartoTipo, String tipoDriver) {
         String queryStr = String.format("" +
                 "SELECT DISTINCT A.driver_codigo driver_codigo\n" +
                 "  FROM driver_lineas A\n" +
                 "  JOIN drivers B ON B.codigo=A.driver_codigo\n" +
-                " WHERE A.periodo=%d AND B.driver_tipo_codigo='CECO' AND B.reparto_tipo=%d\n" +
+                " WHERE A.periodo=%d AND B.driver_tipo_codigo='%s' AND B.reparto_tipo=%d\n" +
                 " ORDER BY A.driver_codigo",
-                periodo,repartoTipo);
+                periodo,tipoDriver, repartoTipo);
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

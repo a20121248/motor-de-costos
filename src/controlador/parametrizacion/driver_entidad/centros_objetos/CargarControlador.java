@@ -7,6 +7,7 @@ import dao.CentroDAO;
 import dao.CentroDriverDAO;
 import dao.DetalleGastoDAO;
 import dao.DriverDAO;
+import dao.TipoDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import modelo.CentroDriver;
 import modelo.DetalleGasto;
+import modelo.Tipo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -159,10 +161,11 @@ public class CargarControlador implements Initializable {
     }
     
     private List<CentroDriver> leerArchivo(String rutaArchivo) {
+        TipoDAO tipoDAO = new TipoDAO();
         List<CentroDriver> lista = new ArrayList();
-        List<DetalleGasto> lstEntidades = detalleGastoDAO.listar(periodoSeleccionado, titulo, menuControlador.repartoTipo);
-        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-        List<String> lstCentroBolsa = centroDAO.listarCodigosCentrosBolsasPeriodo(periodoSeleccionado);
+        List<CentroDriver> lstEntidades = centroDAO.listarCentrosObjetosConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1);
+        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"OBCO");
+        List<Tipo> listaGrupoGasto = tipoDAO.listarGrupoGastos();
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -199,17 +202,17 @@ public class CargarControlador implements Initializable {
                     return null;
                 }
 //                Validar la existencia de la llave Cuenta-Partida-Centro
-//                DetalleGasto entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCECO())  && codigoPartida.equals(item.getCodigoPartida()) && codigoCuenta.equals(item.getCodigoCuentaContable())).findAny().orElse(null);
-//                String centroBolsa = lstCentroBolsa.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
-////                Validar la existencia del Driver en periodo a Cargar
-//                String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
-//                CentroDriver linea = new CentroDriver(periodo,codigoCentro,nombreCentro,grupoGasto,codigoDriver,nombreDriver, true);
-//                if (entidad != null && centroBolsa!=null && driver!=null) {
-//                    listaCargar.add(linea);
-//                } else {
-//                    linea.setFlagCargar(false);
-//                }
-//                lista.add(linea);
+                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro()) && grupoGasto.equals(item.getGrupoGasto())).findAny().orElse(null);
+//                Validar la existencia del Driver en periodo a Cargar
+                String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
+                Tipo tipoGrupoGasto = listaGrupoGasto.stream().filter(item -> grupoGasto.equals(item.getCodigo())).findAny().orElse(null);
+                CentroDriver linea = new CentroDriver(periodo,codigoCentro,nombreCentro,tipoGrupoGasto,codigoDriver,nombreDriver, true);
+                if (entidad != null  && driver!=null) {
+                    listaCargar.add(linea);
+                } else {
+                    linea.setFlagCargar(false);
+                }
+                lista.add(linea);
             }
             //cerramos el libro
             f.close();
@@ -250,7 +253,7 @@ public class CargarControlador implements Initializable {
     }
     
     void crearReporteLOG(){
-        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROBOLSAS_DRIVER.log";
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROOBJETOS_DRIVER.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");

@@ -170,7 +170,7 @@ public class CargarControlador implements Initializable {
     private List<CentroDriver> leerArchivo(String rutaArchivo) {
         List<CentroDriver> lista = new ArrayList();
         List<CentroDriver> lstEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI");
-        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"CECO");
         List<String> lstCentroBolsa = centroDAO.listarCodigosCentrosBolsasPeriodo(periodoSeleccionado);
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
