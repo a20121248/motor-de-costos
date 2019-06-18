@@ -104,6 +104,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     boolean tablaEstaActualizada;
     String titulo1, titulo2;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
@@ -114,6 +115,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         bancaDAO = new BancaDAO();
         centroDriverDAO = new CentroDriverDAO();
         this.menuControlador = menuControlador;
+        this.titulo = "Driver";
     }
     
     @Override
@@ -265,13 +267,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAsignarDriverObjetoAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a Objetos de Costos", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
             return;
         }
         
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a Objetos de Costos", "Por favor seleccione una entidad.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_EMPTY);
             return;
         }
         if (!entidadSeleccionada.getCodigoDriver().equals("Sin driver asignado")) {
@@ -286,13 +288,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar Driver", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
             return;
         }
         
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar Driver", "Por favor seleccione una entidad.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_DELETE_EMPTY);
             return;
         }
         

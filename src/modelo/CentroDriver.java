@@ -23,6 +23,7 @@ public class CentroDriver {
     
     private BooleanProperty flagCargar;
     
+//    Listar Centros
     public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
@@ -31,6 +32,15 @@ public class CentroDriver {
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
     }
     
+//    Cargar Centros
+    public CentroDriver(int periodo, String codigoCentro, String nombreCentro, String codigoDriver, String nombreDriver, boolean flagCargar) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.nombreCentro = new SimpleStringProperty(nombreCentro);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.nombreDriver = new SimpleStringProperty(nombreDriver);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
 //    Listar Centros Objetos 
     public CentroDriver(int periodo, String codigoCentro, String nombreCentro, Tipo grupoGasto, String codigoDriver, String nombreDriver) {
         this.periodo = new SimpleIntegerProperty(periodo);

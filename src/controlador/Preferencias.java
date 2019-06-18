@@ -44,7 +44,6 @@ public class Preferencias {
         prefs.put(ParametroSID, sid);
         prefs.put(ParametroUsuario, usuario);
         prefs.put(ParametroContrasenha, contrasenha);
-        prefs.put(ParametroRutaLogs, contrasenha);
     }
     public void guardarParametrosLog(String rutaLogs){
         prefs.put(ParametroRutaLogs, rutaLogs);

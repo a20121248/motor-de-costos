@@ -350,6 +350,27 @@ public class DriverDAO {
         }
         return lista;
     }
+    
+    public List<String> listarCodigosDriverObjetosPeriodo(int periodo, int repartoTipo, String tipoDriver) {
+        String queryStr = String.format("" +
+                "SELECT DISTINCT A.driver_codigo driver_codigo\n" +
+                "  FROM driver_obco_lineas A\n" +
+                "  JOIN drivers B ON B.codigo=A.driver_codigo\n" +
+                " WHERE A.periodo=%d AND B.driver_tipo_codigo='%s' AND B.reparto_tipo=%d\n" +
+                " ORDER BY A.driver_codigo",
+                periodo,tipoDriver, repartoTipo);
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("driver_codigo");
+                lista.add(codigo);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public String obtenerCodigoDriver(String codigoEntidad, int periodo) {
        String queryStr = String.format("" +
                "SELECT driver_codigo\n" +

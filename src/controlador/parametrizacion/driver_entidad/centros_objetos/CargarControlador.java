@@ -164,7 +164,7 @@ public class CargarControlador implements Initializable {
         TipoDAO tipoDAO = new TipoDAO();
         List<CentroDriver> lista = new ArrayList();
         List<CentroDriver> lstEntidades = centroDAO.listarCentrosObjetosConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1);
-        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"OBCO");
+        List<String> lstDrivers = driverDAO.listarCodigosDriverObjetosPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"OBCO");
         List<Tipo> listaGrupoGasto = tipoDAO.listarGrupoGastos();
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
@@ -177,7 +177,7 @@ public class CargarControlador implements Initializable {
             Cell celda = null;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CENTRO","NOMBRE CENTRO","GRUPO GASTO","CODIGO DRIVER","NOMBRE DRIVER")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -202,7 +202,7 @@ public class CargarControlador implements Initializable {
                     return null;
                 }
 //                Validar la existencia de la llave Cuenta-Partida-Centro
-                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro()) && grupoGasto.equals(item.getGrupoGasto())).findAny().orElse(null);
+                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro()) && grupoGasto.equals(item.getGrupoGasto().getCodigo())).findAny().orElse(null);
 //                Validar la existencia del Driver en periodo a Cargar
                 String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
                 Tipo tipoGrupoGasto = listaGrupoGasto.stream().filter(item -> grupoGasto.equals(item.getCodigo())).findAny().orElse(null);
@@ -240,7 +240,7 @@ public class CargarControlador implements Initializable {
             if(listaCargar.isEmpty()){
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             }else{
-                centroDriverDAO.insertarListaAsignacionesDriverBolsa(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
+                centroDriverDAO.insertarListaAsignacionesDriverObjeto(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
@@ -260,11 +260,11 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((CentroDriver item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a ("+ item.getCodigoCuenta()+ "," +item.getCodigoPartida()+ "," +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a ("+ item.getCodigoCuenta()+ "," +item.getCodigoPartida()+ "," +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigoDriver()+ " a ("+ item.getCodigoCuenta()+ "," +item.getCodigoPartida()+ "," +item.getCodigoCentro()+")"+ " en "+titulo+", debido a que no existe algún valor en su respectivo catálogo" );
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+titulo+", debido a que no existe algún valor en su respectivo catálogo" );
                 findError = true;
             }
         });
