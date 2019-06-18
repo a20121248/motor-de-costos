@@ -61,6 +61,10 @@ public class EditarControlador implements Initializable {
                 lblTitulo.setText("Editar Grupo de Productos");
                 lnkObjetos.setText("Productos");
                 break;
+            case "SCA":
+                lblTitulo.setText("Editar Grupo de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                break;
             default:
                 break;
         }

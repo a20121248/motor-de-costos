@@ -92,19 +92,14 @@ public class PrincipalControlador implements Initializable {
     @FXML void btnCentrosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
-
-    @FXML void btnOficinasAction(ActionEvent event) {
-        menuControlador.objetoTipo = "OFI";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
-    }
-    
-    @FXML void btnBancasAction(ActionEvent event) {
-        menuControlador.objetoTipo = "BAN";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
-    }
     
     @FXML void btnProductosAction(ActionEvent event) {
         menuControlador.objetoTipo = "PRO";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    }
+    
+    @FXML void btnSubCanalAction(ActionEvent event) {
+        menuControlador.objetoTipo = "SCA";
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     

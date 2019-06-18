@@ -59,6 +59,10 @@ public class CrearControlador implements Initializable {
                 lblTitulo.setText("Crear Grupo de Productos");
                 lnkObjetos.setText("Productos");
                 break;
+            case "SCA":
+                lblTitulo.setText("Crear Grupo de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                break;
             default:
                 break;
         }

@@ -76,6 +76,12 @@ public class ListarControlador implements Initializable {
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
                 break;
+            case "SCA":
+                lblTitulo.setText("Subcanales");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                break;
             default:
                 break;
         }

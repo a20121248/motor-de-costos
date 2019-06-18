@@ -91,6 +91,11 @@ public class CargarControlador implements Initializable {
                 lnkObjetos.setText("Productos");
                 objetoNombre = "Producto";
                 break;
+            case "SCA":
+                lblTitulo.setText("Cargar Subcanal");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre = "Subcanal";
+                break;
             default:
                 break;
         }

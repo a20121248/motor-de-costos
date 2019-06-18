@@ -68,6 +68,14 @@ public class PrincipalControlador implements Initializable {
                 txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Productos.");
                 txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Productos para un periodo.");
                 break;
+            case "SCA":
+                lblTitulo.setText("Sub - Canales");
+                lnkObjetos.setText("Sub - Canales");
+                txtCatalogo.setText("- Esta sección permite la creación, edición y eliminación de Productos.");
+                txtAsociacion.setText("- Esta sección permite asociar un Producto a un periodo.");
+                txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Productos.");
+                txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Productos para un periodo.");
+                break;
             default:
                 break;
         }

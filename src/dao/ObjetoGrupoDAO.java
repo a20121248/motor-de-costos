@@ -33,6 +33,9 @@ public class ObjetoGrupoDAO {
             case "PRO":
                 prefixTableName = "PRODUCTO";
                 break;
+            case "SCA":
+                prefixTableName = "SUBCANAL";
+                break;
         }
     }
     

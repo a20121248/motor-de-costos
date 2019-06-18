@@ -70,6 +70,10 @@ public class ListarControlador implements Initializable {
                 lblTitulo.setText("Grupos de Productos");
                 lnkObjetos.setText("Productos");
                 break;
+            case "SCA":
+                lblTitulo.setText("Grupos de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                break;
             default:
                 break;
         }

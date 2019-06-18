@@ -98,6 +98,12 @@ public class CargarControlador implements Initializable {
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
                 break;
+            case "SCA":
+                lblTitulo.setText("Cargar Subcanales");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                break;
             default:
                 break;
         }

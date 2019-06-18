@@ -68,6 +68,12 @@ public class EditarControlador implements Initializable {
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
                 break;
+            case "SCA":
+                lblTitulo.setText("Editar Subcanal");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                break;
             default:
                 break;
         }
