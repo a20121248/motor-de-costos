@@ -10,6 +10,7 @@ import dao.PlanDeCuentaDAO;
 import dao.ProductoDAO;
 import dao.ObjetoGrupoDAO;
 import dao.PartidaDAO;
+import dao.SubcanalDAO;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -51,6 +52,7 @@ public class BuscarEntidadControlador implements Initializable {
     OficinaDAO oficinaDAO;
     BancaDAO bancaDAO;
     ProductoDAO productoDAO;
+    SubcanalDAO subcanalDAO;
     ObjetoGrupoDAO objetoGrupoDAO;
     MenuControlador menuControlador;
     ObjetoControladorInterfaz objetoControlador;
@@ -73,6 +75,7 @@ public class BuscarEntidadControlador implements Initializable {
         bancaDAO = new BancaDAO();
         oficinaDAO = new OficinaDAO();
         productoDAO = new ProductoDAO();
+        subcanalDAO = new SubcanalDAO();
         if (menuControlador.objetoTipo != null)
             objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
         lstTipos = menuControlador.lstEntidadTipos;
@@ -113,6 +116,10 @@ public class BuscarEntidadControlador implements Initializable {
                     if (periodoSeleccionado==-1) lista = productoDAO.listarMaestro(menuControlador.codigos);
                     else lista = productoDAO.listar(periodoSeleccionado);
                     break;
+                case "SCA": // Subcanal
+                    if (periodoSeleccionado==-1) lista = subcanalDAO.listarMaestro(menuControlador.codigos);
+                    else lista = subcanalDAO.listar(periodoSeleccionado);
+                    break;
                 case "GOFI": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
                     break;
@@ -122,7 +129,9 @@ public class BuscarEntidadControlador implements Initializable {
                 case "GPRO": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
                     break;
-
+                case "GSCA": // Grupo de Productos
+                    lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
+                    break;         
                 default:
                     lista = null;
             }

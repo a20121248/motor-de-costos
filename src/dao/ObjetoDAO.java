@@ -16,6 +16,7 @@ import modelo.CargarObjetoPeriodoLinea;
 import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 
 public class ObjetoDAO {
     String prefixTableName;
@@ -31,6 +32,9 @@ public class ObjetoDAO {
                 break;
             case "PRO":
                 prefixTableName = "PRODUCTO";
+                break;
+            case "SCA":
+                prefixTableName = "SUBCANAL";
                 break;
         }
     }
@@ -75,6 +79,9 @@ public class ObjetoDAO {
                     case "PRODUCTO":
                         lista.add(new Producto(codigo, nombre, null, 0, null, null));
                         break;
+                    case "SUBCANAL":
+                        lista.add(new Subcanal(codigo, nombre, null, 0, null, null));
+                        break;
                 }
             }
         } catch (SQLException ex) {
@@ -112,6 +119,9 @@ public class ObjetoDAO {
                     case "PRODUCTO":
                         lista.add(new Producto(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion));
                         break;
+                    case "SUBCANAL":
+                        lista.add(new Subcanal(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion));
+                        break;
                 }
             }
         } catch (SQLException | ParseException ex) {
@@ -145,6 +155,9 @@ public class ObjetoDAO {
                         break;
                     case "PRODUCTO":
                         lista.add(new Producto(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion));
+                        break;
+                    case "SUBCANAL":
+                        lista.add(new Subcanal(codigo, nombre, null, 0, fechaCreacion, fechaActualizacion));
                         break;
                 }
             }
@@ -212,9 +225,9 @@ public class ObjetoDAO {
     public int insertarObjeto(String codigo, String nombre) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO %sS(CODIGO,NOMBRE,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                "VALUES ('%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                prefixTableName,codigo,nombre,fechaStr,fechaStr);
+                "INSERT INTO %sS(CODIGO,NOMBRE,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                prefixTableName,codigo,nombre,1,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
