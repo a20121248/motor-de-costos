@@ -7,6 +7,7 @@ import dao.BancaDAO;
 import dao.DriverDAO;
 import dao.OficinaDAO;
 import dao.ProductoDAO;
+import dao.SubcanalDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -63,12 +65,10 @@ public class EditarControlador implements Initializable {
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     @FXML private TableView<DriverObjetoLinea> tabDetalleDriver;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoBanca;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreBanca;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoOficina;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreOficina;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoProducto;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreProducto;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoSubcanal;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreSubcanal;
     @FXML private TableColumn<DriverObjetoLinea, Double> tabcolPorcentajeDestino;   
     @FXML private Label lblNumeroRegistros;
     @FXML private Label lblSuma;
@@ -83,13 +83,14 @@ public class EditarControlador implements Initializable {
     BancaDAO bancaDAO;
     OficinaDAO oficinaDAO;
     ProductoDAO productoDAO;
+    SubcanalDAO subcanalDAO;
     int numeroRegistros;
     int periodoSeleccionado;
     final int anhoSeleccionado;
     final int mesSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_OBJETO_EDITAR.getControlador());
-    String titulo1, titulo2;
+    String titulo, titulo2;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -98,6 +99,7 @@ public class EditarControlador implements Initializable {
         bancaDAO = new BancaDAO();
         oficinaDAO = new OficinaDAO();
         productoDAO = new ProductoDAO();
+        subcanalDAO = new SubcanalDAO();
         periodoSeleccionado = menuControlador.periodoSeleccionado;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
@@ -105,15 +107,16 @@ public class EditarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Objetos de Costos";
+        titulo = " Driver - Objetos de Costos";
         titulo2 = "Objeto de Costos";
         if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Objetos de Beneficio";
+            titulo = "Driver - Objetos de Beneficio";
             titulo2 = "Objeto de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDrivers.setText("Drivers - " + titulo1);
-            lblEntidades.setText(titulo1 + " a distribuir");
+            lblTitulo.setText(titulo);
+            lnkDrivers.setText(titulo);
+            lblEntidades.setText(titulo + " a distribuir");
         }
+        
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
@@ -130,19 +133,15 @@ public class EditarControlador implements Initializable {
         });
         // formato tabla 2
         tabDetalleDriver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoBanca.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreBanca.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoOficina.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreOficina.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolCodigoProducto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolPorcentajeDestino.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolCodigoBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().codigoProperty());
-        tabcolNombreBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().nombreProperty());
-        tabcolCodigoOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().codigoProperty());
-        tabcolNombreOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().nombreProperty());
         tabcolCodigoProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().codigoProperty());
         tabcolNombreProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().nombreProperty());
+        tabcolCodigoSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().codigoProperty());
+        tabcolNombreSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().nombreProperty());
         tabcolPorcentajeDestino.setCellValueFactory(cellData -> cellData.getValue().porcentajeProperty().asObject());
         tabcolPorcentajeDestino.setCellFactory(column -> {
                 return new TableCell<DriverObjetoLinea, Double>() {
@@ -215,11 +214,12 @@ public class EditarControlador implements Initializable {
     }
     
     private List<DriverObjetoLinea> leerArchivo(String rutaArchivo) {
-        List<Banca> listaBancas = bancaDAO.listar(periodoSeleccionado);
-        List<Oficina> listaOficinas = oficinaDAO.listar(periodoSeleccionado);
         List<Producto> listaProductos = productoDAO.listar(periodoSeleccionado);
+        List<Subcanal> listaSubcanal = subcanalDAO.listar(periodoSeleccionado);
         List<DriverObjetoLinea> lista = new ArrayList();
         double porAcumulado = 0;
+        boolean archivoEstaBien = true;
+        String mensaje = null;
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -231,50 +231,25 @@ public class EditarControlador implements Initializable {
             Cell celda = null;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            List<String> listaCabecera = new ArrayList(Arrays.asList("CODIGO OFICINA","NOMBRE OFICINA","CODIGO BANCA","NOMBRE BANCA","CODIGO PRODUCTO","NOMBRE PRODUCTO","PORCENTAJE"));
-            int numFilaCabecera = 1;
-            boolean archivoEstaBien = true;
-            String mensaje = "Detalle cargado correctamente.";
-            while (filas.hasNext() && archivoEstaBien) {
-                /*for (int i = 0; i < numFilasOmitir; i++) {
-                    filas.next();
-                }*/
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO PRODUCTO","NOMBRE PRODUCTO","CODIGO SUBCANAL","NOMBRE SUBCANAL","PORCENTAJE")))) {
+                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                return null;
+            }
+            while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
-                
-                // valido la cabecera
-                if (fila.getRowNum() == numFilaCabecera - 1) {
-                    List<String> listaCabeceraLeida = new ArrayList();
-                    while (celdas.hasNext()) {
-                        celda = celdas.next();
-                        listaCabeceraLeida.add(celda.getStringCellValue());
-                    }
-                    if (!listaCabecera.equals(listaCabeceraLeida)) {
-                        menuControlador.navegador.mensajeInformativo("Lectura de archivo Excel", "El archivo seleccionado no es el correcto.");
-                        tabDetalleDriver.getItems().clear();
-                        txtRuta.setText("");
-                        archivoEstaBien = false;
-                    }
-                    continue;
-                }
-                
-                // Codigo Oficina
-                celda = celdas.next();
-                celda.setCellType(CellType.STRING);
-                String codigoOficina = celda.getStringCellValue();
-                // Nombre Oficina
-                celda = celdas.next();
-                // Codigo Banca
-                celda = celdas.next();
-                celda.setCellType(CellType.STRING);
-                String codigoBanca = celda.getStringCellValue();
-                // Nombre Banca
-                celda = celdas.next();
+
                 // Codigo Producto
                 celda = celdas.next();
                 celda.setCellType(CellType.STRING);
                 String codigoProducto = celda.getStringCellValue();
                 // Nombre Producto
+                celda = celdas.next();
+                // Codigo Subcanal
+                celda = celdas.next();
+                celda.setCellType(CellType.STRING);
+                String codigoBanca = celda.getStringCellValue();
+                // Nombre Subcanal
                 celda = celdas.next();
                 // Porcentaje
                 celda = celdas.next();
@@ -283,28 +258,20 @@ public class EditarControlador implements Initializable {
                 
                 porAcumulado += porcentaje;
                 
-                // busco la banca
-                Banca banca = listaBancas.stream().filter(item -> codigoBanca.equals(item.getCodigo())).findAny().orElse(null);
-                if (banca==null) {
-                    archivoEstaBien = false;
-                    mensaje = "No se encontró a la Banca con código " + codigoBanca + ".";
-                    break;
-                }
-                // busco la oficina
-                Oficina oficina = listaOficinas.stream().filter(item -> codigoOficina.equals(item.getCodigo())).findAny().orElse(null);
-                if (oficina==null) {
-                    archivoEstaBien = false;
-                    mensaje = "No se encontró a la Oficina con código " + codigoOficina + ".";
-                    break;
-                }
                 // busco el producto
                 Producto producto = listaProductos.stream().filter(item -> codigoProducto.equals(item.getCodigo())).findAny().orElse(null);
                 if (producto==null) {
-                    archivoEstaBien = false;
                     mensaje = "No se encontró al Producto con código " + codigoProducto + ".";
+                    lista.clear();
                     break;
-                }                
-                DriverObjetoLinea linea = new DriverObjetoLinea(banca, oficina, producto, porcentaje, null, null);
+                }
+                Subcanal subcanal = listaSubcanal.stream().filter(item -> codigoBanca.equals(item.getCodigo())).findAny().orElse(null);
+                if (subcanal==null) {
+                    mensaje = "No se encontró al Subcanal con código " + codigoProducto + ".";
+                    lista.clear();
+                    break;
+                }
+                DriverObjetoLinea linea = new DriverObjetoLinea( producto, subcanal, porcentaje, null, null);
                 lista.add(linea);
             }
             //cerramos el libro
@@ -346,6 +313,7 @@ public class EditarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "No se pudo guardar el driver.");
         } else {
             menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "Driver guardado correctamente.");
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_OBJETO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_LISTAR);
         }            
         // fin

@@ -19,6 +19,7 @@ import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 
 public class DriverDAO {
     DriverLineaDAO driverLineaDAO; 
@@ -47,29 +48,56 @@ public class DriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
+//    public List<DriverObjetoLinea> obtenerDriverObjetoLinea(int periodo, String codigo) {
+//        String queryStr = String.format("" +
+//                "SELECT A.oficina_codigo,B.nombre oficina_nombre,A.banca_codigo,C.nombre banca_nombre,A.producto_codigo,D.nombre producto_nombre,A.porcentaje\n" +
+//                "  FROM driver_obco_lineas A\n" +
+//                "  JOIN oficinas B ON A.oficina_codigo=B.codigo\n" +
+//                "  JOIN bancas C ON A.banca_codigo=C.codigo\n" +
+//                "  JOIN productos D ON A.producto_codigo=D.codigo" +
+//                " WHERE A.periodo=%d AND A.driver_codigo='%s'",
+//                periodo,codigo);
+//        List<DriverObjetoLinea> lista = new ArrayList();
+//        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+//            while(rs.next()) {
+//                String oficinaCodigo = rs.getString("oficina_codigo");
+//                String oficinaNombre = rs.getString("oficina_nombre");
+//                String bancaCodigo = rs.getString("banca_codigo");
+//                String bancaNombre = rs.getString("banca_nombre");
+//                String productoCodigo = rs.getString("producto_codigo");
+//                String productoNombre = rs.getString("producto_nombre");
+//                double porcentaje = rs.getDouble("porcentaje");
+//                Oficina oficina = new Oficina(oficinaCodigo,oficinaNombre,null,0,null,null);
+//                Banca banca = new Banca(bancaCodigo,bancaNombre,null,0,null,null);
+//                Producto producto = new Producto(productoCodigo,productoNombre,null,0,null,null);
+//                DriverObjetoLinea item = new DriverObjetoLinea(banca,oficina,producto,porcentaje,null,null);
+//                lista.add(item);
+//            }
+//        } catch (SQLException ex) {
+//            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return lista;
+//    }
+    
     public List<DriverObjetoLinea> obtenerDriverObjetoLinea(int periodo, String codigo) {
         String queryStr = String.format("" +
-                "SELECT A.oficina_codigo,B.nombre oficina_nombre,A.banca_codigo,C.nombre banca_nombre,A.producto_codigo,D.nombre producto_nombre,A.porcentaje\n" +
-                "  FROM driver_obco_lineas A\n" +
-                "  JOIN oficinas B ON A.oficina_codigo=B.codigo\n" +
-                "  JOIN bancas C ON A.banca_codigo=C.codigo\n" +
-                "  JOIN productos D ON A.producto_codigo=D.codigo" +
+                "SELECT A.producto_codigo,B.nombre producto_nombre,A.subcanal_codigo, C.nombre subcanal_nombre,A.porcentaje\n" +
+                "  FROM driver_objeto_lineas A\n" +
+                "  JOIN productos B ON A.producto_codigo=B.codigo" +
+                "  JOIN subcanals C ON A.subcanal_codigo=C.codigo\n" +
                 " WHERE A.periodo=%d AND A.driver_codigo='%s'",
                 periodo,codigo);
         List<DriverObjetoLinea> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String oficinaCodigo = rs.getString("oficina_codigo");
-                String oficinaNombre = rs.getString("oficina_nombre");
-                String bancaCodigo = rs.getString("banca_codigo");
-                String bancaNombre = rs.getString("banca_nombre");
                 String productoCodigo = rs.getString("producto_codigo");
                 String productoNombre = rs.getString("producto_nombre");
+                String subcanalCodigo = rs.getString("subcanal_codigo");
+                String subcanalNombre = rs.getString("subcanal_nombre");
                 double porcentaje = rs.getDouble("porcentaje");
-                Oficina oficina = new Oficina(oficinaCodigo,oficinaNombre,null,0,null,null);
-                Banca banca = new Banca(bancaCodigo,bancaNombre,null,0,null,null);
                 Producto producto = new Producto(productoCodigo,productoNombre,null,0,null,null);
-                DriverObjetoLinea item = new DriverObjetoLinea(banca,oficina,producto,porcentaje,null,null);
+                Subcanal subcanal = new Subcanal(subcanalCodigo, subcanalNombre, null, 0, null, null);
+                DriverObjetoLinea item = new DriverObjetoLinea(producto,subcanal,porcentaje,null,null);
                 lista.add(item);
             }
         } catch (SQLException ex) {
@@ -277,7 +305,7 @@ public class DriverDAO {
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
                 "  FROM drivers A\n" +
-                "  JOIN driver_obco_lineas C ON C.driver_codigo=A.codigo\n" +
+                "  JOIN driver_objeto_lineas C ON C.driver_codigo=A.codigo\n" +
                 " WHERE C.periodo=%d AND A.driver_tipo_codigo='OBCO' AND reparto_tipo=%d\n" +
                 " ORDER BY A.codigo",
                 periodo,repartoTipo);

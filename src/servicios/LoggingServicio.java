@@ -241,5 +241,17 @@ public class LoggingServicio {
 //        agregarSeparadorArchivo('=', 100);
 //        return findError;
 //    }
+    
+     public void generarReporteLOG(String logName, StringBuilder msj){
+//           logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_OBJETOS.log";
+           crearArchivo(logName);
+           agregarSeparadorArchivo('=', 100);
+           agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+           agregarSeparadorArchivo('=', 100);
+           agregarLineaArchivo(msj.toString());
+           agregarSeparadorArchivo('=', 100);
+           agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+           agregarSeparadorArchivo('=', 100);
+    }
 }
 

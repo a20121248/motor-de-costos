@@ -794,7 +794,6 @@ public class Navegador {
                 alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
                 break;
             default:    
-
                 alert.setTitle(titulo);
                 alert.setContentText(contenido);
         }

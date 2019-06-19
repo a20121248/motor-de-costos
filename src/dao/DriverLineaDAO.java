@@ -34,9 +34,17 @@ public class DriverLineaDAO {
         productoDAO = new ProductoDAO();
     }
     
+//    public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo) {
+//        String queryStr = String.format("" +
+//                "DELETE FROM driver_obco_lineas\n" +
+//                " WHERE driver_codigo='%s' AND periodo=%d",
+//                driverCodigo,
+//                periodo);
+//        ConexionBD.agregarBatch(queryStr);
+//    }
     public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo) {
         String queryStr = String.format("" +
-                "DELETE FROM driver_obco_lineas\n" +
+                "DELETE FROM driver_objeto_lineas\n" +
                 " WHERE driver_codigo='%s' AND periodo=%d",
                 driverCodigo,
                 periodo);
@@ -69,6 +77,30 @@ public class DriverLineaDAO {
         }
     }
 
+//    public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
+//        ConexionBD.crearStatement();
+//        ConexionBD.tamanhoBatchMax = 10000;
+//        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+//        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+//        for (DriverObjetoLinea item: listaDriverObjetoLinea) {
+//            String queryStr = String.format(Locale.US, "" +
+//                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+//                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                    driverCodigo,
+//                    item.getBanca().getCodigo(),
+//                    item.getOficina().getCodigo(),
+//                    item.getProducto().getCodigo(),
+//                    periodo,
+//                    item.getPorcentaje(),
+//                    fechaStr,
+//                    fechaStr);
+//            ConexionBD.agregarBatch(queryStr);
+//        }
+//        // los posibles registros que no se hayan ejecutado
+//        ConexionBD.ejecutarBatch();
+//        ConexionBD.cerrarStatement();
+//    }
+    
     public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 10000;
@@ -76,12 +108,11 @@ public class DriverLineaDAO {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
-                    item.getBanca().getCodigo(),
-                    item.getOficina().getCodigo(),
                     item.getProducto().getCodigo(),
+                    item.getSubcanal().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
                     fechaStr,
@@ -93,17 +124,34 @@ public class DriverLineaDAO {
         ConexionBD.cerrarStatement();
     }
     
+//    public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
+//        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+//        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+//        for (DriverObjetoLinea item: listaDriverObjetoLinea) {
+//            String queryStr = String.format(Locale.US, "" +
+//                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+//                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                    driverCodigo,
+//                    item.getBanca().getCodigo(),
+//                    item.getOficina().getCodigo(),
+//                    item.getProducto().getCodigo(),
+//                    periodo,
+//                    item.getPorcentaje(),
+//                    fechaStr,
+//                    fechaStr);
+//            ConexionBD.agregarBatch(queryStr);
+//        }
+//    }
     public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
         borrarListaDriverObjetoLinea(driverCodigo, periodo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
-                    item.getBanca().getCodigo(),
-                    item.getOficina().getCodigo(),
                     item.getProducto().getCodigo(),
+                    item.getSubcanal().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
                     fechaStr,

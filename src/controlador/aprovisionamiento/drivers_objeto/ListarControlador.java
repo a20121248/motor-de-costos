@@ -34,7 +34,7 @@ public class ListarControlador implements Initializable {
     @FXML private JFXButton btnBuscarPeriodo;
     
     @FXML private JFXButton btnCargar;
-    @FXML private JFXButton btnCrear;
+//    @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnEditar;
     @FXML private JFXButton btnEliminar;
     
@@ -46,12 +46,10 @@ public class ListarControlador implements Initializable {
     
     @FXML private Label lblEntidades;
     @FXML private TableView<DriverObjetoLinea> tabDetalleDriver;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoBanca;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreBanca;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoOficina;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreOficina;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoProducto;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreProducto;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoSubcanal;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreSubcanal;
     @FXML private TableColumn<DriverObjetoLinea, Double> tabcolPorcentajeDestino;
     
     // Variables de la aplicacion
@@ -60,7 +58,7 @@ public class ListarControlador implements Initializable {
     public MenuControlador menuControlador;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_OBJETO_LISTAR.getControlador());
-    String titulo1;
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
@@ -69,12 +67,12 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Objetos de Costos";
+        titulo = " Driver - Objetos de Costos";
         if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Objetos de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDrivers.setText("Drivers - " + titulo1);
-            lblEntidades.setText(titulo1 + " a distribuir");
+            titulo = "Driver - Objetos de Beneficio";
+            lblTitulo.setText(titulo);
+            lnkDrivers.setText(titulo);
+            lblEntidades.setText(titulo + " a distribuir");
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -104,20 +102,16 @@ public class ListarControlador implements Initializable {
         
         // tabla 2: dimensiones
         tabDetalleDriver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoBanca.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreBanca.setMaxWidth(1f * Integer.MAX_VALUE * 19);
-        tabcolCodigoOficina.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreOficina.setMaxWidth(1f * Integer.MAX_VALUE * 19);
         tabcolCodigoProducto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 19);
-        tabcolPorcentajeDestino.setMaxWidth(1f * Integer.MAX_VALUE * 13);        
+        tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 35);
+        tabcolCodigoSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 35);
+        tabcolPorcentajeDestino.setMaxWidth(1f * Integer.MAX_VALUE * 10);        
         // tabla 2: formato
-        tabcolCodigoBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().codigoProperty());
-        tabcolNombreBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().nombreProperty());
-        tabcolCodigoOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().codigoProperty());
-        tabcolNombreOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().nombreProperty());
         tabcolCodigoProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().codigoProperty());
         tabcolNombreProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().nombreProperty());
+        tabcolCodigoSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().codigoProperty());
+        tabcolNombreSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().nombreProperty());
         tabcolPorcentajeDestino.setCellValueFactory(cellData -> cellData.getValue().porcentajeProperty().asObject());
         
         // tabla 2: evento de click
@@ -159,14 +153,14 @@ public class ListarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_CARGAR);
     }
     
-    @FXML void btnCrearAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_CREAR);
-    }
+//    @FXML void btnCrearAction(ActionEvent event) {
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_CREAR);
+//    }
     
     @FXML void btnEditarAction(ActionEvent event) {
         DriverObjeto driverObjeto = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (driverObjeto == null) {
-            menuControlador.navegador.mensajeInformativo("Editar Driver - " + titulo1, "Por favor seleccione un Driver.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY);
             return;
         }
         menuControlador.objeto = driverObjeto;
@@ -177,16 +171,17 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         DriverObjeto item = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Driver - " + titulo1, "Por favor seleccione un Driver.");
+            menuControlador.navegador.mensajeInformativo("Eliminar Driver - " + titulo, "Por favor seleccione un Driver.");
             return;
         }
-        if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo1, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
+        if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
             return;
         }
         if (driverDAO.eliminarDriverObjeto(item.getCodigo()) == -1) {
-            menuControlador.navegador.mensajeError("Eliminar Driver - " + titulo1, "No se pudo eliminar el Driver pues está siendo utilizado en otros módulos.\nPara eliminarlo, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
+            menuControlador.navegador.mensajeError("Eliminar Driver - " + titulo, "No se pudo eliminar el Driver pues está siendo utilizado en otros módulos.\nPara eliminarlo, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
             return;
         }
+        menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_OBJETO_LISTAR.getDireccion());
         List<DriverObjeto> lista = driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         tabDetalleDriver.getItems().clear();

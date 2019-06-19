@@ -94,11 +94,11 @@
                <children>
                   <TableView fx:id="tabDetalleDriver" layoutX="24.0" layoutY="-22.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                     <columns>
-                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="75.0" styleClass="center" text="CÓDIGO PRODUCTO" />
-                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="75.0" styleClass="left" text="NOMBRE PRODUCTO" />
-                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="75.0" styleClass="center" text="CÓDIGO SUBCANAL" />
-                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="75.0" styleClass="left" text="NOMBRE SUBCANAL" />
-                        <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="75.0" styleClass="center" text="PORCENTAJE (%)" />
+                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="110.0" styleClass="center" text="CÓDIGO PRODUCTO" />
+                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="119.0" styleClass="left" text="NOMBRE PRODUCTO" />
+                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="130.0" styleClass="center" text="CÓDIGO SUBCANAL" />
+                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="138.0" styleClass="left" text="NOMBRE SUBCANAL" />
+                        <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="120.0" styleClass="center" text="PORCENTAJE (%)" />
                     </columns>
                   </TableView>
                   <Label fx:id="lblEntidades" layoutX="29.0" layoutY="12.0" text="Objetos de Costos a distribuir" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
@@ -112,11 +112,6 @@
       </SplitPane>
       <HBox alignment="TOP_RIGHT" layoutX="122.0" layoutY="183.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PLUS" />
-               </graphic>
-            </JFXButton>
             <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
