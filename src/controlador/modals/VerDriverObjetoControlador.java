@@ -19,12 +19,10 @@ public class VerDriverObjetoControlador implements Initializable {
     @FXML private TextArea txtDescripcion;
     
     @FXML private TableView<DriverObjetoLinea> tabLista;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoOficina;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreOficina;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoBanca;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreBanca;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoProducto;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreProducto;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolCodigoSubcanal;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolNombreSubcanal;
     @FXML private TableColumn<DriverObjetoLinea, Double> tabcolPorcentaje;
     
     @FXML private Label lblNumeroRegistros;
@@ -46,21 +44,17 @@ public class VerDriverObjetoControlador implements Initializable {
         tabLista.getItems().setAll(driver.getListaDriverObjetoLinea());
         lblNumeroRegistros.setText("Número de registros: " + driver.getListaDriverObjetoLinea().size());
         // tabla: formato
-        tabcolCodigoOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().codigoProperty());
-        tabcolNombreOficina.setCellValueFactory(cellData -> cellData.getValue().getOficina().nombreProperty());
-        tabcolCodigoBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().codigoProperty());
-        tabcolNombreBanca.setCellValueFactory(cellData -> cellData.getValue().getBanca().nombreProperty());
         tabcolCodigoProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().codigoProperty());
         tabcolNombreProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().nombreProperty());
+        tabcolCodigoSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().codigoProperty());
+        tabcolNombreSubcanal.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().nombreProperty());
         tabcolPorcentaje.setCellValueFactory(cellData -> cellData.getValue().porcentajeProperty().asObject());
         // tabla: dimensiones
         tabLista.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoOficina.setMaxWidth(1f * Integer.MAX_VALUE * 14);
-        tabcolNombreOficina.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoBanca.setMaxWidth(1f * Integer.MAX_VALUE * 14);
-        tabcolNombreBanca.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoProducto.setMaxWidth(1f * Integer.MAX_VALUE * 14);
-        tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolPorcentaje.setMaxWidth(1f * Integer.MAX_VALUE * 13);
+        tabcolCodigoProducto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 25);
+        tabcolCodigoSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombreSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 25);
+        tabcolPorcentaje.setMaxWidth(1f * Integer.MAX_VALUE * 20);
     }    
 }

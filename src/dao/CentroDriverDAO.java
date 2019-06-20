@@ -28,7 +28,7 @@ public class CentroDriverDAO {
     
     public int borrarAsignacionDriverObjeto(String centroCodigo, String grupoGasto, int periodo) {
         String queryStr = String.format("" +
-                "DELETE FROM bolsa_driver \n" +
+                "DELETE FROM objeto_driver \n" +
                 " WHERE centro_codigo='%s' AND grupo_gasto='%s' AND periodo=%d",
                 centroCodigo, grupoGasto,
                 periodo);

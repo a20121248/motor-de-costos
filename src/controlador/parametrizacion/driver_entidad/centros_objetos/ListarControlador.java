@@ -389,24 +389,15 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         try {
             String driverCodigo = entidad.getCodigoDriver();
             String driverNombre = entidad.getNombreDriver();
-            DriverCentro driverCentro = null;
-            List<DriverLinea> lstDriverLinea;
             DriverObjeto driverObjeto = null;
             List<DriverObjetoLinea> lstDriverObjetoLinea;
             // asumimos que es del primer repartoTipo
-            lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoSeleccionado, driverCodigo, menuControlador.repartoTipo);
-            if (lstDriverLinea.isEmpty()) {
-                lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo);
-                driverObjeto = new DriverObjeto(driverCodigo,driverNombre,null,null,lstDriverObjetoLinea,null,null);
+            lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo);
+            driverObjeto = new DriverObjeto(driverCodigo,driverNombre,null,null,lstDriverObjetoLinea,null,null);
                 
-                fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_VER_DRIVER_OBJETO.getVista()));
-                fxmlLoader.setController(new VerDriverObjetoControlador(menuControlador, driverObjeto));
-            } else {
-                driverCentro = new DriverCentro(driverCodigo,driverNombre,null,null,lstDriverLinea,null,null);
-                
-                fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_VER_DRIVER_CENTRO.getVista()));
-                fxmlLoader.setController(new VerDriverCentroControlador(menuControlador, driverCentro));
-            }
+            fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_VER_DRIVER_OBJETO.getVista()));
+            fxmlLoader.setController(new VerDriverObjetoControlador(menuControlador, driverObjeto));
+            
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
             Stage stage = new Stage();

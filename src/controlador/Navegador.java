@@ -513,79 +513,79 @@ public class Navegador {
             "/vista/parametrizacion/objetos/Principal.fxml",
             "controlador.parametrizacion.objetos.PrincipalControlador",
             "Productos",
-            "Inicio/Parametrización/Productos"
+            "Inicio/Parametrización/Objetos"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Listar.fxml",
             "controlador.parametrizacion.objetos.maestro.ListarControlador",
             "Catálogo de Productos",
-            "Inicio/Parametrización/Productos/Catálogo"
+            "Inicio/Parametrización/Objetos/Asociación/Catálogo"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_CREAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Crear.fxml",
             "controlador.parametrizacion.objetos.maestro.CrearControlador",
             "Crear Producto",
-            "Inicio/Parametrización/Productos/Catálogo/Crear"
+            "Inicio/Parametrización/Objetos/Asociación/Catálogo/Crear"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Editar.fxml",
             "controlador.parametrizacion.objetos.maestro.EditarControlador",
             "Editar Producto",
-            "Inicio/Parametrización/Productos/Catálogo/Editar"
+            "Inicio/Parametrización/Objetos/Asociación/Catálogo/Editar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_MAESTRO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/maestro/Cargar.fxml",
             "controlador.parametrizacion.objetos.maestro.CargarControlador",
             "Cargar Productos",
-            "Inicio/Parametrización/Productos/Catálogo/Cargar"
+            "Inicio/Parametrización/Objetos/Asociación/Catálogo/Cargar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_ASIGNAR_PERIODO = new RutaArchivos(
             "/vista/parametrizacion/objetos/periodo/Listar.fxml",
             "controlador.parametrizacion.objetos.periodo.ListarControlador",
             "Asociar Productos a un periodo",
-            "Inicio/Parametrización/Productos/Asociación"
+            "Inicio/Parametrización/Objetos/Asociación"
     );
     public static final RutaArchivos RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/periodo/Cargar.fxml",
             "controlador.parametrizacion.objetos.periodo.CargarControlador",
             "Cargar asociaciones de Productos a un periodo",
-            "Inicio/Parametrización/Productos/Asociación/Cargar"
+            "Inicio/Parametrización/Objetos/Asociación/Cargar"
     );    
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_LISTAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Listar.fxml",
             "controlador.parametrizacion.objetos.grupos.ListarControlador",
             "Catálogo de Grupos de Productos",
-            "Inicio/Parametrización/Productos/Grupos"
+            "Inicio/Parametrización/Objetos/Jerarquía/Grupos"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_CREAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Crear.fxml",
             "controlador.parametrizacion.objetos.grupos.CrearControlador",
             "Crear Grupo de Productos",
-            "Inicio/Parametrización/Productos/Grupos/Crear"
+            "Inicio/Parametrización/Objetos/Jerarquía/Grupos/Crear"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_EDITAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Editar.fxml",
             "controlador.parametrizacion.objetos.grupos.EditarControlador",
             "Editar Grupo de Productos",
-            "Inicio/Parametrización/Productos/Grupos/Editar"
+            "Inicio/Parametrización/Objetos/Jerarquía/Grupos/Editar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_GRUPOS_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/grupos/Cargar.fxml",
             "controlador.parametrizacion.objetos.grupos.CargarControlador",
             "Cargar Grupos de Productos",
-            "Inicio/Parametrización/Productos/Grupos/Cargar"
+            "Inicio/Parametrización/Objetos/Jerarquía/Grupos/Cargar"
     );
     public static final RutaArchivos RUTAS_OBJETOS_JERARQUIA = new RutaArchivos(
             "/vista/parametrizacion/objetos/jerarquia/Listar.fxml",
             "controlador.parametrizacion.objetos.jerarquia.ListarControlador",
             "Jerarquia de Productos",
-            "Inicio/Parametrización/Productos/Jerarquía"
+            "Inicio/Parametrización/Objetos/Jerarquía"
     );
     public static final RutaArchivos RUTAS_OBJETOS_JERARQUIA_CARGAR = new RutaArchivos(
             "/vista/parametrizacion/objetos/jerarquia/Cargar.fxml",
             "controlador.parametrizacion.objetos.jerarquia.CargarControlador",
             "Cargar Jerarquía de Productos",
-            "Inicio/Parametrización/Productos/Jerarquía/Cargar"
+            "Inicio/Parametrización/Objetos/Jerarquía/Cargar"
     );
     // --------------------- BANCAS ----------------------
     public static final RutaArchivos RUTAS_BANCAS_PRINCIPAL = new RutaArchivos(
@@ -1005,6 +1005,23 @@ public class Navegador {
         } catch(IOException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             LOGGER.log(Level.SEVERE,e.getMessage());
         }
-        menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), rutas.getDireccion());
+        if(rutas.getDireccion().contains("Inicio/Parametrización/Objetos/")){
+            String obj = null;
+            switch(menuControlador.objetoTipo){
+                case "SCA":
+                    obj = "Subcanales";
+                    break;
+                case "PRO":
+                    obj = "Productos";
+                    break;
+                default:
+                    obj = "objetos";
+                    break;
+            }
+            String ruta = rutas.getDireccion().replace("/Objetos/", "/"+obj+"/");
+            menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), ruta);
+        }else{
+            menuControlador.Log.cambioVistaLog(LOGGER,menuControlador.usuario.getUsername(), rutas.getDireccion());
+        }
     }
 }
