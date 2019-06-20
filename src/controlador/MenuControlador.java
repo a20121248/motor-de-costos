@@ -253,7 +253,7 @@ public class MenuControlador implements Initializable {
     }
     
     public boolean patronCodigoCuenta(String codigo){
-        Pattern str = Pattern.compile("[0-9]{2}.[0-9]{1}.[0-9]{1}.[0-9]{2}.[A-Z0-9]{2}.[0-9]{2}");
+        Pattern str = Pattern.compile("[0-9]{2}.[0-9]{1}.[0-9]{1}.[A-Z0-9]{2}.[A-Z0-9]{2}.[0-9]{2}");
         return str.matcher(codigo).matches();
     }
     

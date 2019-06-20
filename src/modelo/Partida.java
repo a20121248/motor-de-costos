@@ -101,10 +101,11 @@ public class Partida extends EntidadDistribucion{
         this.grupoGasto.set(grupoGasto);
     }
     
+    @Override
     public boolean getFlagCargar() {
         return flagCargar.get();
     }
-
+    @Override
     public void setFlagCargar(boolean nivel) {
         this.flagCargar.set(nivel);
     }
