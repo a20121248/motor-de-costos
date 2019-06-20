@@ -165,7 +165,7 @@ public class CargarControlador implements Initializable {
                 CuentaContable linea = new CuentaContable(codigo,nombre,null,atribuible,tipoGasto, claseGasto,0,null,null,true);
                 boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
-                if(cuenta == null && !ptrCodigo){
+                if(cuenta == null & ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {

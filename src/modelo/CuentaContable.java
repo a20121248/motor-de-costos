@@ -32,7 +32,7 @@ public class CuentaContable extends EntidadDistribucion {
         this.grupo = grupo;
     }
     
-    public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+    public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
@@ -190,12 +190,13 @@ public class CuentaContable extends EntidadDistribucion {
     public void setClaseGasto(String claseGasto) {
         this.claseGasto.set(claseGasto);
     }
-
+@Override
     public boolean getFlagCargar(){
         return flagCargar.get();
     }
     
-    public void setFlagCargar(Boolean flagCargar){
+@Override    
+    public void setFlagCargar(boolean flagCargar){
         this.flagCargar.set(flagCargar);
     }
 }

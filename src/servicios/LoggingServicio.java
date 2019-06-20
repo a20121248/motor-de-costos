@@ -172,6 +172,7 @@ public class LoggingServicio {
         try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
              BufferedWriter bw = new BufferedWriter(fw);) {
             bw.write(linea + System.lineSeparator());
+            bw.close();
         } catch (IOException ex) {
             Logger.getLogger(LogServicio.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -182,6 +183,7 @@ public class LoggingServicio {
         try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
              BufferedWriter bw = new BufferedWriter(fw);) {
             bw.write((new SimpleDateFormat("yyyy/MM/dd HH:mm:ss - ").format(new Date())) + linea + System.lineSeparator());
+            bw.close();
         } catch (IOException ex) {
             Logger.getLogger(LogServicio.class.getName()).log(Level.SEVERE, null, ex);
         }
