@@ -16,6 +16,7 @@ import dao.CentroDriverDAO;
 import dao.DriverDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProductoDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -52,6 +54,7 @@ import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 import servicios.DriverServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
@@ -86,6 +89,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     DriverDAO driverDAO;
@@ -305,7 +309,26 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
         
         centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(),periodoSeleccionado);
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de (" + entidadSeleccionada.getCodigoCentro()+ ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(tabListar,"AsignarCentrosObjetosDriver",null);
+                descargaFile.descargarTablaAsignarCentroDriver(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -409,6 +432,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
         }
         centroDriverDAO.asignarDriverObjeto(entidadSeleccionada.getCodigoCentro(),entidadSeleccionada.getGrupoGasto().getCodigo(), driver.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a (" + entidadSeleccionada.getCodigoCentro() + ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
 

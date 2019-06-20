@@ -10,6 +10,7 @@ import controlador.modals.VerDriverObjetoControlador;
 import dao.CentroDAO;
 import dao.CentroDriverDAO;
 import dao.DriverDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -45,6 +47,7 @@ import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 import servicios.DriverServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
@@ -79,6 +82,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
+    @FXML private JFXButton btnDescargar;
+
+    
     
     // Variables de la aplicacion
     DriverDAO driverDAO;
@@ -94,12 +100,14 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     boolean tablaEstaActualizada;
     String titulo1, titulo2;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
         centroDAO = new CentroDAO();
         centroDriverDAO = new CentroDriverDAO();
         this.menuControlador = menuControlador;
+        this.titulo = "Asignar Centros Bolsas";
     }
     
     @Override
@@ -256,8 +264,26 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
         
         centroDriverDAO.borrarAsignacionBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(tabListar,"AsignarCentrosBolsasDriver",null);
+                descargaFile.descargarTablaAsignarCentroDriver(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {

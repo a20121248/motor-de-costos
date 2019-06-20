@@ -217,7 +217,7 @@ public class ListarControlador implements Initializable {
                 File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
                 if(directorioSeleccionado != null){
                     descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
-                    descargaFile.descargarTablaDriverCECO(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                    descargaFile.descargarTablaDriverCentros(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
                     menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
                 }else{
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
