@@ -4,6 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.DriverDAO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -18,8 +20,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.DirectoryChooser;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -37,6 +41,7 @@ public class ListarControlador implements Initializable {
 //    @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnEditar;
     @FXML private JFXButton btnEliminar;
+    @FXML private JFXButton btnDescargar;
     
     @FXML private TableView<DriverObjeto> tabListaDrivers;
     @FXML private TableColumn<DriverObjeto, String> tabcolCodigo;
@@ -185,5 +190,23 @@ public class ListarControlador implements Initializable {
         List<DriverObjeto> lista = driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         tabDetalleDriver.getItems().clear();
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListaDrivers.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(tabListaDrivers,"DriversObjetos");
+                descargaFile.descargarTablaDriverObjetos(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
     }
 }
