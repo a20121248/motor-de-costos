@@ -27,7 +27,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import modelo.CargarObjetoLinea;
 import modelo.Partida;
 import modelo.Tipo;
 import org.apache.poi.ss.usermodel.Cell;
@@ -158,7 +157,8 @@ public class CargarControlador implements Initializable {
                 Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null);       
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 Partida linea = new Partida(codigo,nombre,null,tipoGrupoGasto,0,null,null,true);
-                if(cuenta == null && tipoGrupoGasto != null){
+                boolean ptrCodigo = menuControlador.patronCodigoPartida(codigo);
+                if(cuenta == null && tipoGrupoGasto != null && !ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {

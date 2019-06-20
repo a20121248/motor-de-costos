@@ -914,6 +914,10 @@ public class Navegador {
                 alert.setTitle("Crear "+ titulo);
                 alert.setContentText("El código de " + titulo + " ya existe. No se pudo crear el item.");
                 break;
+            case "CREATE_ITEM_PATTERN":
+                alert.setTitle("Crear "+ titulo);
+                alert.setContentText("El código de " + titulo + " no cumple con el patrón establecido.");
+                break;
             case "CREATE_SUCCESS":
                 alert.setTitle("Crear "+ titulo);
                 alert.setContentText(titulo +" creado correctamente.");

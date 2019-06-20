@@ -83,7 +83,11 @@ public class CrearControlador implements Initializable {
         String atribuible = cmbAtribuible.getValue().toString();
         String tipoGasto = cmbTipoGasto.getValue().toString();
         String claseGasto = cmbClaseGasto.getValue().toString();
-
+        boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
+        if (!ptrCodigo) {
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_PATTERN);
+            return;
+        }
         if (lstCodigos.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;

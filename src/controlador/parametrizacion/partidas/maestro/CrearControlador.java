@@ -91,6 +91,10 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
+        if (!menuControlador.patronCodigoPartida(codigo)) {
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_PATTERN);
+            return;
+        }
         if (lstCodigos.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;

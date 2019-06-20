@@ -162,6 +162,10 @@ public class CrearControlador implements Initializable {
         String atribuible = cmbAtribuible.getValue().toString();
         String tipoGasto = cmbTipoGasto.getValue().toString();
         String claseGasto = cmbClaseGasto.getValue().toString();
+        if (!menuControlador.patronCodigoCentro(codigo)) {
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_PATTERN);
+            return;
+        }
         if (lstCentrosCodigo.contains(codigo)) {
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;

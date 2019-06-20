@@ -97,6 +97,7 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_CREATE_ITEM_EXIST = "CREATE_ITEM_EXIST";
     public final String MENSAJE_CREATE_SUCCESS = "CREATE_SUCCESS";
     public final String MENSAJE_CREATE_ERROR = "CREATE_ERROR";
+    public final String MENSAJE_CREATE_ITEM_PATTERN = "CREATE_ITEM_PATTERN";
     public final String MENSAJE_EDIT_ITEM_WITHOUT_ALLOCATE = "EDIT_ITEM_WITHOUT_ALLOCATE";
     
     public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD, String rutaLog) throws IOException {
