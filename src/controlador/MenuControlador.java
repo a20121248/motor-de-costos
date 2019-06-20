@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -243,5 +244,20 @@ public class MenuControlador implements Initializable {
     
     public void setVista(Node node) {
         spnContenido.getChildren().setAll(node);
+    }
+    
+    public boolean patronCodigoPartida(String codigo){
+        Pattern str = Pattern.compile("[A-Z]{2}[0-9]{2}");
+        return str.matcher(codigo).matches();
+    }
+    
+    public boolean patronCodigoCuenta(String codigo){
+        Pattern str = Pattern.compile("[0-9]{2}.[0-9]{1}.[0-9]{1}.[0-9]{2}.[A-Z0-9]{2}.[0-9]{2}");
+        return str.matcher(codigo).matches();
+    }
+    
+    public boolean patronCodigoCentro(String codigo){
+        Pattern str = Pattern.compile("[0-9]{2}.[A-Z0-9]{2}.[A-Z0-9]{2}");
+        return str.matcher(codigo).matches();
     }
 }
