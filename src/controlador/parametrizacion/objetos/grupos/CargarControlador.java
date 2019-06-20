@@ -119,6 +119,9 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
+    @FXML void lnkJerarquiaAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA);
+    }
     @FXML void lnkGruposAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }

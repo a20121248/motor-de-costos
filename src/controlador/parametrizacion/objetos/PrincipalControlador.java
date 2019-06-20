@@ -47,34 +47,34 @@ public class PrincipalControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Oficinas");
                 lnkObjetos.setText("Oficinas");
-                txtCatalogo.setText("- Esta sección permite la creación, edición y eliminación de Oficinas.");
+                
                 txtAsociacion.setText("- Esta sección permite asociar una Oficina a un periodo.");
-                txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Oficinas.");
+                
                 txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Oficinas para un periodo.");
                 break;
             case "BAN":
                 lblTitulo.setText("Bancas");
                 lnkObjetos.setText("Bancas");
-                txtCatalogo.setText("- Esta sección permite la creación, edición y eliminación de Bancas.");
+                
                 txtAsociacion.setText("- Esta sección permite asociar una Banca a un periodo.");
-                txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Bancas.");
+                
                 txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Bancas para un periodo.");
                 break;
             case "PRO":
                 lblTitulo.setText("Productos");
                 lnkObjetos.setText("Productos");
-                txtCatalogo.setText("- Esta sección permite la creación, edición y eliminación de Productos.");
+                
                 txtAsociacion.setText("- Esta sección permite asociar un Producto a un periodo.");
-                txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Productos.");
+                
                 txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Productos para un periodo.");
                 break;
             case "SCA":
                 lblTitulo.setText("Sub - Canales");
                 lnkObjetos.setText("Sub - Canales");
-                txtCatalogo.setText("- Esta sección permite la creación, edición y eliminación de Productos.");
-                txtAsociacion.setText("- Esta sección permite asociar un Producto a un periodo.");
-                txtGrupos.setText("- Esta sección permite la creación, edición y eliminación de un Grupo de Productos.");
-                txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Productos para un periodo.");
+                
+                txtAsociacion.setText("- Esta sección permite asociar un Subcanal a un periodo.");
+                
+                txtJerarquia.setText("- Esta sección permite crear una estructura jerárquica de Subcanales para un periodo.");
                 break;
             default:
                 break;
@@ -93,16 +93,9 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
-    @FXML void btnCatalogoAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
-    }
     
     @FXML void btnAsignacionAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
-    }
-    
-    @FXML void btnGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
     
     @FXML void btnJerarquiaAction(ActionEvent event) {

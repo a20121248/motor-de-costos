@@ -51,6 +51,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAsignar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnAgrupacion;
 
     @FXML private TextField txtBuscar;
     @FXML private TableView<Grupo> tabListar;
@@ -242,6 +243,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR);
+    }
+    
+    @FXML void btnAgrupacionAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {

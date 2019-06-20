@@ -209,6 +209,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR);
     }
     
+    @FXML void btnCatalogoAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
+    }
+    
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
         buscarPeriodo(periodoSeleccionado, true);
     }
