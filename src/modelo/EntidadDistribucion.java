@@ -87,7 +87,7 @@ public class EntidadDistribucion {
     }
     
     public Tipo getTipoCentro() {
-        return tipoCentro.get();
+        return this.tipoCentro.get();
     }
 
     public void setTipoCentro(Tipo tipoCentro) {

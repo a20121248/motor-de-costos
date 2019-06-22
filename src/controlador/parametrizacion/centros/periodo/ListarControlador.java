@@ -149,7 +149,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getTipo().getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
@@ -236,7 +236,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Centro> lista = centroDAO.listarPeriodo(periodo,menuControlador.repartoTipo);
+        List<Centro> lista = centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");

@@ -292,8 +292,8 @@ public class PlanDeCuentaDAO {
     public int verificarObjetoPlanCuentaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM grupo_plan_de_cuenta\n" +
-                " WHERE plan_de_cuenta_codigo='%s' AND periodo=%d",
+                "  FROM partida_cuenta_contable\n" +
+                " WHERE cuenta_contable_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {

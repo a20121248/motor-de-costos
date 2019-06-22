@@ -734,10 +734,14 @@ public class Navegador {
     public boolean validarFilaNormal(Row fila, List<String> lista) {
         Iterator<Cell> celdas = fila.cellIterator();
         List<String> listaLeida = new ArrayList();
-        while (celdas.hasNext()) {            
-            Cell celda = celdas.next();
-            celda.setCellType(CellType.STRING);
-            listaLeida.add(celda.getStringCellValue());
+        if (fila.getPhysicalNumberOfCells() == lista.size()){
+            while (celdas.hasNext()) {            
+                Cell celda = celdas.next();
+                celda.setCellType(CellType.STRING);
+                listaLeida.add(celda.getStringCellValue());
+            }
+        }else{
+            return false;
         }
         return listaLeida.subList(0, lista.size()).equals(lista);
     }

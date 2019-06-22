@@ -65,7 +65,7 @@ public class ListarControlador implements Initializable {
     public ListarControlador(MenuControlador menuControlador) {
         detalleGastoDAO = new DetalleGastoDAO();
         this.menuControlador = menuControlador;
-        this.titulo = "Balancete";
+        this.titulo = "Detalle de Gasto";
     }
     
     @Override

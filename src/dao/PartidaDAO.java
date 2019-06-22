@@ -45,7 +45,7 @@ public class PartidaDAO {
     
     public void insertarListaObjeto(List<Partida> lista, int repartoTipo) {
         ConexionBD.crearStatement();
-        lista.stream().filter(item -> item.getFlagCargar()).map((item) -> {
+        for (Partida item:lista){
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
             String grupoGasto = item.getGrupoGasto().getCodigo();
@@ -53,12 +53,12 @@ public class PartidaDAO {
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format("" +
                     "INSERT INTO PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "VALUES ('%s',q'[%s]','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigo,nombre,grupoGasto,repartoTipo,fechaStr,fechaStr);
-            return queryStr;
-        }).forEachOrdered((queryStr) -> {
+//            System.out.println(queryStr+";");
             ConexionBD.agregarBatch(queryStr);
-        });
+            
+        }
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }

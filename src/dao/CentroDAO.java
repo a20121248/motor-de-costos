@@ -260,7 +260,7 @@ public class CentroDAO {
                 "  FROM centros A\n" +
                 "  JOIN centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
                 "  JOIN centro_lineas C ON A.codigo=C.centro_codigo\n" +
-                " WHERE C.periodo=%d AND A.reparto_tipo=%d\n AND c.iteracion = -1 OR C.iteracion = -2" +
+                " WHERE C.periodo=%d AND A.reparto_tipo=%d\n AND (c.iteracion = -1 OR C.iteracion = -2)" +
                 " GROUP BY A.codigo,A.nombre," +
                 "          B.codigo,B.nombre",
                 periodo,repartoTipo);

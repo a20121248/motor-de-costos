@@ -74,6 +74,7 @@ public class CargarControlador implements Initializable {
         partidaDAO = new PartidaDAO();
         tipoDAO = new TipoDAO();
         lstCodigos = partidaDAO.listarCodigos();
+        this.titulo = "Partida";
     }
     
     @Override
@@ -156,9 +157,16 @@ public class CargarControlador implements Initializable {
                 
                 Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null);       
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
-                Partida linea = new Partida(codigo,nombre,null,tipoGrupoGasto,0,null,null,true);
+                Partida linea;
+                if(tipoGrupoGasto == null){
+                    Tipo gg = new Tipo("NN","NN");
+                    linea = new Partida(codigo,nombre,null,gg,0,null,null,true);
+                }else {
+                    linea = new Partida(codigo,nombre,null,tipoGrupoGasto,0,null,null,true);
+                }
+                
                 boolean ptrCodigo = menuControlador.patronCodigoPartida(codigo);
-                if(cuenta == null && tipoGrupoGasto != null && !ptrCodigo){
+                if(cuenta == null && tipoGrupoGasto != null && ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {

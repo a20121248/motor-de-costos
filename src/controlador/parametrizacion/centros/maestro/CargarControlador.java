@@ -199,7 +199,7 @@ public class CargarControlador implements Initializable {
                 Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa,atribuible,tipoGasto, claseGasto, null,null,true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
-                if(cuenta == null && !ptrCodigo){
+                if(cuenta == null && ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                 }else {

@@ -248,7 +248,7 @@ public class MenuControlador implements Initializable {
     }
     
     public boolean patronCodigoPartida(String codigo){
-        Pattern str = Pattern.compile("[A-Z]{2}[0-9]{2}");
+        Pattern str = Pattern.compile("[A-Z0-9]{4}");
         return str.matcher(codigo).matches();
     }
     
