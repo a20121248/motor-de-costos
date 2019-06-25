@@ -11,34 +11,116 @@ public class ReportingDAO {
     public ReportingDAO() {
         this.connection = new ConnectionDB();
     }
-
-    public ResultSet dataReporteCuentaCentro(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
-                "SELECT B.codigo CENTRO_CODIGO,\n" +
-                "       B.nombre CENTRO_NOMBRE,\n" +
-                "       C.codigo GRUPO_CODIGO,\n" +
-                "       C.nombre GRUPO_NOMBRE,\n" +
-                "       E.codigo CUENTA_CONTABLE_CODIGO,\n" +
-                "       E.nombre CUENTA_CONTABLE_NOMBRE,\n" +
-                "       CASE WHEN G.saldo_grupo=0 THEN 0\n" +
-                "            ELSE A.saldo*F.saldo/G.saldo_grupo\n" +
-                "       END SALDO" +
-                "  FROM centro_lineas A\n" +
-                "  JOIN centros B ON A.centro_codigo=B.codigo\n" +
-                "  JOIN grupos C ON A.entidad_origen_codigo=C.codigo\n" +
-                "  JOIN grupo_plan_de_cuenta D ON C.codigo=D.grupo_codigo\n" +
-                "  JOIN plan_de_cuentas E ON D.plan_de_cuenta_codigo=E.codigo\n" +
-                "  JOIN plan_de_cuenta_lineas F ON E.codigo=F.plan_de_cuenta_codigo\n" +
-                "  JOIN (SELECT A.codigo,SUM(C.saldo) saldo_grupo FROM grupos A JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo JOIN plan_de_cuenta_lineas C ON B.plan_de_cuenta_codigo=C.plan_de_cuenta_codigo WHERE B.periodo=%d AND C.periodo=%d GROUP BY A.codigo) G ON C.codigo=G.codigo\n" +
-                " WHERE A.iteracion=0\n" +
-                "   AND A.periodo=%d\n" +
-                "   AND B.reparto_tipo=%d\n" +
-                "   AND D.periodo=%d\n" +
-                "   AND F.periodo=%d",
-            periodo,periodo,periodo,repartoTipo,periodo,periodo);
+    
+    
+//    public ResultSet dataReporteCuentaCentro(int periodo, int repartoTipo) {
+//        String queryStr = String.format("" +
+//                "SELECT B.codigo CENTRO_CODIGO,\n" +
+//                "       B.nombre CENTRO_NOMBRE,\n" +
+//                "       C.codigo GRUPO_CODIGO,\n" +
+//                "       C.nombre GRUPO_NOMBRE,\n" +
+//                "       E.codigo CUENTA_CONTABLE_CODIGO,\n" +
+//                "       E.nombre CUENTA_CONTABLE_NOMBRE,\n" +
+//                "       CASE WHEN G.saldo_grupo=0 THEN 0\n" +
+//                "            ELSE A.saldo*F.saldo/G.saldo_grupo\n" +
+//                "       END SALDO" +
+//                "  FROM centro_lineas A\n" +
+//                "  JOIN centros B ON A.centro_codigo=B.codigo\n" +
+//                "  JOIN grupos C ON A.entidad_origen_codigo=C.codigo\n" +
+//                "  JOIN grupo_plan_de_cuenta D ON C.codigo=D.grupo_codigo\n" +
+//                "  JOIN plan_de_cuentas E ON D.plan_de_cuenta_codigo=E.codigo\n" +
+//                "  JOIN plan_de_cuenta_lineas F ON E.codigo=F.plan_de_cuenta_codigo\n" +
+//                "  JOIN (SELECT A.codigo,SUM(C.saldo) saldo_grupo FROM grupos A JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo JOIN plan_de_cuenta_lineas C ON B.plan_de_cuenta_codigo=C.plan_de_cuenta_codigo WHERE B.periodo=%d AND C.periodo=%d GROUP BY A.codigo) G ON C.codigo=G.codigo\n" +
+//                " WHERE A.iteracion=0\n" +
+//                "   AND A.periodo=%d\n" +
+//                "   AND B.reparto_tipo=%d\n" +
+//                "   AND D.periodo=%d\n" +
+//                "   AND F.periodo=%d",
+//            periodo,periodo,periodo,repartoTipo,periodo,periodo);
+//        return ConexionBD.ejecutarQuery(queryStr);
+//    }
+    
+    public ResultSet dataReporteCuentaPartidaCentroBolsa(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+
+                "select a.periodo PERIODO,\n" +
+                "      A.centro_codigo CODIGO_CENTRO,\n" +
+                "      E.nombre NOMBRE_CENTRO,\n" +
+                "      B.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "      H.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "      B.partida_codigo CODIGO_PARTIDA,\n" +
+                "      D.nombre NOMBRE_PARTIDA,\n" +
+                "      A.saldo SALDO,\n" +
+                "      A.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "      F.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "      B.driver_codigo CODIGO_DRIVER,\n" +
+                "      G.nombre NOMBRE_DRIVER,\n" +
+                "      CASE  \n" +
+                "        when A.iteracion=0 then 'BOLSA'\n" +
+                "        ELSE 'DIRECTO'\n" +
+                "      END TIPO_CECO      \n" +
+                "FROM centro_lineas A \n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo\n" +
+                "join driver_lineas C on C.entidad_destino_codigo = a.centro_codigo\n" +
+                "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
+                "join centros E ON E.codigo = A.centro_codigo\n" +
+                "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
+                "join drivers G ON G.codigo = B.driver_codigo\n" +
+                "JOIN plan_de_cuentas H ON H.codigo = B.cuenta_contable_codigo\n" +
+                "where A.periodo = %d and a.iteracion = 0\n" +
+                "UNION\n" +
+                "SELECT A.periodo PERIODO,\n" +
+                "       a.centro_codigo CODIGO_CENTRO,\n" +
+                "       d.nombre NOMBRE_CENTRO,\n" +
+                "       a.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "       b.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "       a.partida_codigo CODIGO_PARTIDA,\n" +
+                "       c.nombre NOMBRE_PARTIDA,\n" +
+                "       a.saldo SALDO,\n" +
+                "       '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "       '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "       '-' CODIGO_DRIVER_ORIGEN,\n" +
+                "       '-' NOMBRE_DRIVER_ORIGEN,\n" +
+                "       CASE  \n" +
+                "        when d.es_bolsa = 'NO' then 'DIRECTO'\n" +
+                "        ELSE 'BOLSA'\n" +
+                "      END TIPO_CECO  \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "ORDER BY CODIGO_CENTRO",
+                periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
+    public ResultSet dataReporteCuentaPartidaCentroPropio(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+ 
+                "SELECT A.periodo PERIODO,\n" +
+                "       a.centro_codigo CODIGO_CENTRO,\n" +
+                "       d.nombre NOMBRE_CENTRO,\n" +
+                "       a.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "       b.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "       a.partida_codigo CODIGO_PARTIDA,\n" +
+                "       c.nombre NOMBRE_PARTIDA,\n" +
+                "       a.saldo SALDO,\n" +
+                "       '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "       '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "       '-' CODIGO_DRIVER_ORIGEN,\n" +
+                "       '-' NOMBRE_DRIVER_ORIGEN,\n" +
+                "       CASE  \n" +
+                "        when d.es_bolsa = 'NO' then 'DIRECTO'\n" +
+                "        ELSE 'BOLSA'\n" +
+                "      END TIPO_CECO  \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "order by a.cuenta_contable_codigo, a.partida_codigo, a.centro_codigo",
+                periodo);
+        return ConexionBD.ejecutarQuery(queryStr);
+    }
     public ResultSet dataReporteGastoPropioAsignado(int periodo, int repartoTipo) {
         String queryStr;
         queryStr = "TRUNCATE TABLE JMD_REP_GRUPO_SALDO";

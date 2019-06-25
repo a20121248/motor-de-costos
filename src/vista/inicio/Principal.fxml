@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -48,7 +48,7 @@
                      <items>
                         <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="496.0" spacing="60.0">
                            <children>
-                              <JFXRadioButton fx:id="rbGasto" text="GASTOS ADMINISTRATIVOS Y OPERATIVOS">
+                              <JFXRadioButton fx:id="rbGasto" text="GASTOS">
                                  <HBox.margin>
                                     <Insets left="15.0" />
                                  </HBox.margin>
@@ -56,7 +56,7 @@
                                     <ToggleGroup fx:id="tgTipo" />
                                  </toggleGroup>
                               </JFXRadioButton>
-                              <JFXRadioButton fx:id="rbIngreso" text="INGRESOS OPERATIVOS" toggleGroup="$tgTipo" />
+                              <JFXRadioButton fx:id="rbIngreso" text="PRESUPUESTO" toggleGroup="$tgTipo" />
                            </children>
                            <opaqueInsets>
                               <Insets />
@@ -73,8 +73,8 @@
                      <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <TextArea layoutX="127.0" layoutY="17.0" prefHeight="90.0" prefWidth="171.0" text="Se toman todas las cuentas contables de gastos del Balancete, es decir, los Gastos Administrativos (cód. 45) y los Gastos Operativos (cód. 44)." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                              <JFXButton fx:id="btnInputBalancete" layoutX="46.0" layoutY="64.0" onAction="#btnInputBalanceteAction" text="Balancete" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
+                              <TextArea layoutX="127.0" layoutY="17.0" prefHeight="90.0" prefWidth="171.0" text="XXXXXX&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                              <JFXButton fx:id="btnInputBalancete" layoutX="46.0" layoutY="64.0" onAction="#btnInputBalanceteAction" text="Detalle de Gasto" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -96,7 +96,7 @@
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <TextArea layoutX="127.0" layoutY="17.0" prefHeight="90.0" prefWidth="171.0" text="Con el objetivo de reducir el número de cuentas contables, estas se clasficarán según su naturaleza y se crearán las Agrupaciones, a las cuales luego se les creará un criterio de asignación para colocar los gastos en sus respectivos Centros de Costos." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                              <TextArea layoutX="127.0" layoutY="17.0" prefHeight="90.0" prefWidth="171.0" text="XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                               <JFXButton fx:id="btnF1Grupos" layoutX="46.0" layoutY="64.0" onAction="#btnF1GruposAction" text="Grupos" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
@@ -123,7 +123,7 @@
                                                 <FontAwesomeIconView glyphName="BARS" />
                                              </graphic>
                                           </JFXButton>
-                                          <TextArea layoutX="109.0" layoutY="18.0" prefHeight="90.0" prefWidth="171.0" text="Cuentas Contables de Gasto Administrativo con su Agrupación" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                          <TextArea layoutX="109.0" layoutY="18.0" prefHeight="90.0" prefWidth="171.0" text="XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                        </children>
                                     </AnchorPane>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
@@ -137,7 +137,7 @@
                                                 <FontAwesomeIconView glyphName="BARS" />
                                              </graphic>
                                           </JFXButton>
-                                          <TextArea layoutX="147.0" layoutY="-34.0" prefHeight="90.0" prefWidth="171.0" text="Cuentas Contables de Gasto Operativo con su Agrupación" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                          <TextArea layoutX="147.0" layoutY="-34.0" prefHeight="90.0" prefWidth="171.0" text="XXXX&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                        </children>
                                     </AnchorPane>
                                 </items>

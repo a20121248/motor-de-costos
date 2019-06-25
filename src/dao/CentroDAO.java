@@ -595,6 +595,64 @@ public class CentroDAO {
         return lista;
     }
     
+    public List<CentroDriver> listarCuentaPartidaCentroBolsaConDriverDistribuir(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+            "SELECT C.cuenta_contable_codigo cuenta_contable_codigo,\n" +
+            "       C.partida_codigo partida_codigo,\n" +
+            "       C.centro_codigo centro_codigo,\n" +
+            "       NVL(B.saldo,0) saldo,\n" +
+            "       C.driver_codigo driver_codigo,\n" +
+            "       B.grupo_gasto grupo_gasto\n" +
+            "  FROM centros A\n" +
+            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
+            "  LEFT JOIN bolsa_driver C ON A.codigo=C.centro_codigo AND B.periodo=C.periodo\n" +
+            "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
+            "  JOIN plan_de_cuentas F on F.codigo = C.cuenta_contable_codigo\n" +
+            "  JOIN partidas G on  G.codigo = C.partida_codigo AND g.grupo_gasto = b.grupo_gasto\n" +
+            " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND a.es_bolsa = 'SI'\n",
+            periodo,repartoTipo);
+        List<CentroDriver> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCuenta = rs.getString("cuenta_contable_codigo");
+                String codigoPartida = rs.getString("partida_codigo");
+                String codigoCentro = rs.getString("centro_codigo");
+                double saldo = rs.getDouble("saldo");
+                String driverCodigo = rs.getString("driver_codigo");
+                String grupoGasto = rs.getString("grupo_gasto");
+                CentroDriver item = new CentroDriver(periodo, codigoCuenta, codigoPartida, codigoCentro, driverCodigo,saldo,new Tipo(grupoGasto,""));
+                lista.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    
+    public int enumerarListaCentroBolsaSinDriver(int periodo, int repartoTipo){
+        int count = 0;
+        String queryStr = String.format("" +
+            "SELECT count(1) COUNT\n" +
+            "  FROM centros A\n" +
+            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
+            "  JOIN partida_cuenta_contable E ON E.es_bolsa = 'SI'\n" +
+            "  JOIN plan_de_cuentas F on F.codigo = E.cuenta_contable_codigo\n" +
+            "  JOIN partidas G on G.codigo = E.partida_codigo and B.periodo=E.periodo\n" +
+            "  LEFT JOIN bolsa_driver C ON A.codigo=C.centro_codigo AND E.periodo=C.periodo AND e.partida_codigo = C.partida_codigo\n" +
+            "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
+            " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND a.es_bolsa = 'SI' AND c.driver_codigo IS NULL AND b.iteracion = -2\n",
+            periodo,repartoTipo);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                count = rs.getInt("COUNT");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return count;
+    }
+    
     public List<Centro> listarCentrosNombresConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
         String queryStr = String.format("" +
             "SELECT A.codigo,\n" +
@@ -750,6 +808,15 @@ public class CentroDAO {
                 "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES('%s',%d,%d,%.8f,'%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 centroCodigo, periodo, iteracion, saldo, entidadOrigenCodigo, fechaStr, fechaStr);
+        ConexionBD.agregarBatch(queryStr);
+    }
+    
+    public void insertarDistribucionBatchConGrupoGasto(String centroCodigo, int periodo, int iteracion, double saldo, String entidadOrigenCodigo, String grupoGasto) {
+        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+        String queryStr = String.format(Locale.US, "" +
+                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES('%s',%d,%d,%.8f,'%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                centroCodigo, periodo, iteracion, saldo, entidadOrigenCodigo, grupoGasto, fechaStr, fechaStr);
         ConexionBD.agregarBatch(queryStr);
     }
     public String convertirPalabraAbreviatura(String palabra){

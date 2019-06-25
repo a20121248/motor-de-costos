@@ -72,7 +72,6 @@ public class PrincipalControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     DriverDAO driverDAO;
     DriverServicio driverServicio;
-    GrupoDAO grupoDAO;
     CentroDAO centroDAO;
     ProductoDAO productoDAO;
     BancaDAO bancaDAO;
@@ -92,7 +91,6 @@ public class PrincipalControlador implements Initializable {
         planDeCuentaDAO = new PlanDeCuentaDAO();
         driverDAO = new DriverDAO();
         driverServicio = new DriverServicio();
-        grupoDAO = new GrupoDAO();
         centroDAO = new CentroDAO();
         productoDAO = new ProductoDAO();
         bancaDAO = new BancaDAO();
@@ -231,7 +229,7 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 1", "La fase se está ejecutando actualmente.");
             return;
         }
-        int cantSinDriver = grupoDAO.cantObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
+        int cantSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
         if (cantSinDriver!=0) {
             if (cantSinDriver==1) 
                 menuControlador.navegador.mensajeError("Fase 1", "Existe 1 Grupo de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");

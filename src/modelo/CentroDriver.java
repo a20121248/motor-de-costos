@@ -1,9 +1,11 @@
 package modelo;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,6 +21,7 @@ public class CentroDriver {
     private StringProperty nombreCentro;
     private StringProperty codigoDriver;
     private StringProperty nombreDriver;
+    private DoubleProperty saldo;
     private ObjectProperty<Tipo> grupoGasto;
     
     private BooleanProperty flagCargar;
@@ -87,6 +90,16 @@ public class CentroDriver {
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.nombreDriver = new SimpleStringProperty(nombreDriver);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
+    
+    public CentroDriver(int periodo, String codigoCuenta, String codigoPartida, String codigoCentro, String codigoDriver, double saldo, Tipo grupoGasto) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
+        this.codigoPartida = new SimpleStringProperty(codigoPartida);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.saldo = new SimpleDoubleProperty(saldo);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
     }
     
     public IntegerProperty periodoProperty() {
@@ -215,5 +228,17 @@ public class CentroDriver {
 
     public void setGrupoGasto(Tipo grupoGasto) {
         this.grupoGasto.set(grupoGasto);
+    }
+    
+    public DoubleProperty saldoProperty(){
+        return this.saldo;
+    }
+    
+    public void setSaldo(double saldo){
+        this.saldo.set(saldo);
+    }
+    
+    public double getSaldo(){
+        return this.saldo.get();
     }
 }

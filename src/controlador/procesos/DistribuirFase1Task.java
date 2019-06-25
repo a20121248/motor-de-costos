@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
+import modelo.CentroDriver;
 import modelo.DriverLinea;
 import modelo.EntidadDistribucion;
 import modelo.Grupo;
@@ -59,16 +60,16 @@ public class DistribuirFase1Task extends Task {
     public Void call() {        
         principalControlador.ejecutandoFase1 = true;
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
-        List<Grupo> lista = grupoDAO.listar(periodo,"",principalControlador.menuControlador.repartoTipo);
+        List<CentroDriver> lista = centroDAO.listarCuentaPartidaCentroBolsaConDriverDistribuir(periodo,principalControlador.menuControlador.repartoTipo);
         final int max = lista.size();
         updateProgress(0, max+1);
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 1000;
         for (int i = 1; i <= max; ++i) {
             // inicio logica
-            EntidadDistribucion entidadOrigen = lista.get(i-1);
-            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, entidadOrigen.getDriver().getCodigo(), principalControlador.menuControlador.repartoTipo);
-            distribucionServicio.distribuirEntidad(entidadOrigen, lstDriverLinea, periodo, iteracion);
+            CentroDriver entidadOrigen = lista.get(i-1);
+            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, entidadOrigen.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+            distribucionServicio.distribuirCentrosBolsas(entidadOrigen, lstDriverLinea, periodo, iteracion);
             principalControlador.piTotal.setProgress(i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(i*progresoTotal/(max+1));
             // fin logica
@@ -86,16 +87,7 @@ public class DistribuirFase1Task extends Task {
             reporteNombre = "Reporte 01 - Cuentas Contables a Centros de Costos";
             rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
             reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            
             principalControlador.lblMensajeFase1.setVisible(false);
-        } else {
-            principalControlador.lblMensajeFase1Ingresos.setVisible(true);
-            
-            reporteNombre = "Reporte 01 - Cuentas Contables a Centros de Beneficio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            
-            principalControlador.lblMensajeFase1Ingresos.setVisible(false);
         }
         // Fin generar reportes
         principalControlador.ejecutoFase1 = true;

@@ -933,7 +933,11 @@ public class Navegador {
             case "EDIT_ITEM_WITHOUT_ALLOCATE":
                 alert.setTitle("Editar "+ titulo);
                 alert.setContentText("No se puede editar item " + titulo +", pues no ha sido asignado previamente.");
-                break;    
+                break;
+            case "PHASE1_BOLSAS_WITHOUT_DRIVERS":
+                alert.setTitle("FASE 1");
+                alert.setContentText("Existe(n) " + titulo +"Centros Bolsas sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros Bolsas tengan un Driver.");
+                break; 
             default:
                 alert.setTitle(titulo);
                 alert.setContentText(contenido);
