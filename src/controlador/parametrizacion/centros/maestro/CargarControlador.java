@@ -254,7 +254,7 @@ public class CargarControlador implements Initializable {
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_CARGAR.getDireccion());
             }
             else{
                 menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");

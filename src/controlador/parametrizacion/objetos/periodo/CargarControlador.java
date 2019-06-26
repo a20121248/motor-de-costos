@@ -8,8 +8,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,6 +48,8 @@ public class CargarControlador implements Initializable {
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
+    @FXML private JFXButton btnDescargarLog;
+
     
     @FXML private TableView<CargarObjetoPeriodoLinea> tabListar;
     @FXML private TableColumn<CargarObjetoPeriodoLinea, Integer> tabcolPeriodo;
@@ -64,6 +68,10 @@ public class CargarControlador implements Initializable {
     int mesSeleccionado;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getControlador());
+    String  titulo;
+    List<CargarObjetoPeriodoLinea> listaCargar = new ArrayList() ;
+    String logName;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -80,21 +88,25 @@ public class CargarControlador implements Initializable {
                 lblTitulo.setText("Cargar Oficinas");
                 lnkObjetos.setText("Oficinas");
                 objetoNombre = "Oficina";
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre = "Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre = "Producto";
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Subcanal");
                 lnkObjetos.setText("Subcanales");
                 objetoNombre = "Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -158,6 +170,7 @@ public class CargarControlador implements Initializable {
     
     private List<CargarObjetoPeriodoLinea> leerArchivo(String rutaArchivo) {
         List<CargarObjetoPeriodoLinea> lista = new ArrayList();
+        List<String> listaCodigos = objetoDAO.listarCodigos();
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -169,38 +182,35 @@ public class CargarControlador implements Initializable {
             Cell celda = null;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE"));
-            int numFilaCabecera = 1;
-            boolean archivoEstaBien = true;
-            while (filas.hasNext() && archivoEstaBien) {
-                /*for (int i = 0; i < numFilasOmitir; i++) {
-                    filas.next();
-                }*/
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
+                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                return null;
+            }
+            
+            while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
-                
-                // valido la cabecera
-                if (fila.getRowNum() == numFilaCabecera - 1) {
-                    List<String> listaCabeceraLeida = new ArrayList();
-                    while (celdas.hasNext()) {
-                        celda = celdas.next();
-                        listaCabeceraLeida.add(celda.getStringCellValue());
-                    }
-                    if (!listaCabecera.equals(listaCabeceraLeida)) {
-                        menuControlador.navegador.mensajeInformativo("Lectura de archivo Excel", "El archivo seleccionado no es el correcto.");
-                        tabListar.getItems().clear();
-                        txtRuta.setText("");                        
-                        archivoEstaBien = false;
-                    }
-                    continue;
-                }
                 
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
-
+                
+                if(periodo != periodoSeleccionado){
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
+                    lista.clear();
+                    txtRuta.setText("");
+                    return null;
+                }
                 CargarObjetoPeriodoLinea linea = new CargarObjetoPeriodoLinea(periodo,codigo,nombre);
+                String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                if (cuenta != null) {
+                    listaCargar.add(linea);
+                    listaCodigos.removeIf(x -> x.equals(linea.getCodigo()));
+                } else {
+                    // >>>agregar linea para log sobre el error
+                    linea.setFlagCargar(false);                 
+                }
                 lista.add(linea);
             }
             //cerramos el libro
@@ -212,23 +222,52 @@ public class CargarControlador implements Initializable {
         return lista;
     }
     
+    @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
+    }
+    
     @FXML void btnSubirAction(ActionEvent event) {
-        List<CargarObjetoPeriodoLinea> lista = tabListar.getItems();
-        if(lista.isEmpty())
-        {
-            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+        }else {
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+            }else{
+                objetoDAO.insertarListaObjetoPeriodo(periodoSeleccionado,listaCargar);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
+            }
         }
-        else{
-            objetoDAO.insertarListaObjetoPeriodo(periodoSeleccionado,lista);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre + "s asignados correctamente.");
-            menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
-        }
-        objetoDAO.insertarListaObjetoPeriodo(periodoSeleccionado,lista);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre + "s asignados correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_"+titulo+".log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en" + titulo+"en Catálogo.");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

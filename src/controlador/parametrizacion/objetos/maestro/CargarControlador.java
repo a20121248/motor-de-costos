@@ -34,6 +34,7 @@ import modelo.Banca;
 import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -69,7 +70,10 @@ public class CargarControlador implements Initializable {
     String objetoNombre1,objetoNombre2;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<EntidadDistribucion> listaCargar = new ArrayList();
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getControlador());
+    String titulo;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -85,24 +89,28 @@ public class CargarControlador implements Initializable {
                 lnkObjetos.setText("Oficinas");
                 objetoNombre1 = "Oficina";
                 objetoNombre2 = "la Oficina";
+                this.titulo = "Oficina";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre1 = "Banca";
                 objetoNombre2 = "la Banca";
+                this.titulo = "Banca";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
+                this.titulo = "Producto";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Subcanales");
                 lnkObjetos.setText("Subcanales");
                 objetoNombre1 = "Subcanal";
                 objetoNombre2 = "el Subcanal";
+                this.titulo = "Subcanal";
                 break;
             default:
                 break;
@@ -170,17 +178,10 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar " + objetoNombre1 + "s", msj);
+                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
             
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_" + objetoNombre1.toUpperCase() + "S.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
@@ -198,6 +199,9 @@ public class CargarControlador implements Initializable {
                     case "PRO":
                         lstPrevisualizar.add(new Producto(codigo, nombre, null, 0, null, null));
                         break;
+                    case "SCA":
+                        lstPrevisualizar.add(new Subcanal(codigo, nombre, null, 0, null, null));
+                        break;
                 }
             }
             //cerramos el libro
@@ -209,18 +213,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -228,26 +221,50 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
+        findError = false;
         List<EntidadDistribucion> lista = tabListar.getItems();
         if(lista.isEmpty())
         {
-            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
         }
         else{
             for (EntidadDistribucion item: lista) {
                 if (lstCodigos.contains(item.getCodigo())) {
-                    logServicio.agregarLineaArchivo(String.format("No se pudo crear %s porque el código %s ya existe.",objetoNombre2,item.getCodigo()));
                     item.setFlagCargar(false);
                 } else {
-                    logServicio.agregarLineaArchivo(String.format("Se creó %s con código %s.",objetoNombre2,item.getCodigo()));
                     item.setFlagCargar(true);
                 }
             }
             objetoDAO.insertarListaObjeto(lista);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre1 + "s subidos correctamente.");
+            crearReporteLOG(lista);
+            if(findError == true){
+                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+            }else {
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+            }
             btnDescargarLog.setVisible(true);
-            LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %ss.",menuControlador.usuario.getUsername(),objetoNombre1));
         }
         
+    }
+    
+    void crearReporteLOG(List<EntidadDistribucion> lista){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_"+this.titulo+"_CATALOGO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        lista.forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getDireccion());
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }
