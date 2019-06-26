@@ -99,7 +99,7 @@ public class ReportingServicio {
             // Cabecera de la tabla
             int rowNum = 0;
             List<String> listaCabecera;
-            listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CENTRO","NOMBRE_CENTRO","CODIGO_CUENTA_CONTABLE","NOMBRE_CUENTA_CONTABLE","CODIGO_PARTIDA","NOMBRE_PARTIDA","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER","TIPO_CECO"));
+            listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CENTRO","NOMBRE_CENTRO","CODIGO_CUENTA_CONTABLE","NOMBRE_CUENTA_CONTABLE","CODIGO_PARTIDA","NOMBRE_PARTIDA","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER","ASIGNACION"));
             
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
@@ -120,7 +120,7 @@ public class ReportingServicio {
                 String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
                 String codigoDriver = rs.getString("CODIGO_DRIVER");
                 String nombreDriver = rs.getString("NOMBRE_DRIVER");
-                String tipoCentro = rs.getString("TIPO_CECO");
+                String tipoCentro = rs.getString("ASIGNACION");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
@@ -164,7 +164,7 @@ public class ReportingServicio {
             
             // Cabecera de la tabla
             int rowNum = 0;
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CECO_CODIGO","CECO_NOMBRE","CECO_NIVEL","CECO_TIPO","ITERACION","TIPO_GASTO_CODIGO","TIPO_ENTIDAD","CODIGO_ENTIDAD","NOMBRE_ENTIDAD","CECO_ASIGNADO_NIVEL","CUENTA_CONTABLE_CODIGO","CUENTA_CONTABLE_NOMBRE","GASTO"));
+            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CENTRO","NOMBRE_CENTRO","NIVEL_CENTRO","TIPO_CENTRO","ITERACION","TIPO_GASTO_CODIGO","TIPO_ENTIDAD","CODIGO_ENTIDAD","NOMBRE_ENTIDAD","CECO_ASIGNADO_NIVEL","CUENTA_CONTABLE_CODIGO","CUENTA_CONTABLE_NOMBRE","GASTO"));
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             
@@ -536,5 +536,8 @@ public class ReportingServicio {
         } catch (IOException | SQLException ex) {
             LOGGER.log(Level.INFO,ex.getMessage());
         }
+    }
+    
+    public void crearReporteTrazabilidad(){
     }
 }

@@ -163,8 +163,8 @@ public class CargarControlador implements Initializable {
         if (archivoSeleccionado != null) {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             List<CargarObjetoPeriodoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
-            tabListar.getItems().setAll(lista);
-            lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
+            if(lista!=null)tabListar.getItems().setAll(lista);
+            lblNumeroRegistros.setText("Número de registros leídos: " + tabListar.getItems().size());
         }
     }
     
@@ -182,8 +182,9 @@ public class CargarControlador implements Initializable {
             Cell celda = null;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                f.close();
                 return null;
             }
             

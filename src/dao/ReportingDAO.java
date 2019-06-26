@@ -57,7 +57,7 @@ public class ReportingDAO {
                 "      CASE  \n" +
                 "        when A.iteracion=0 then 'BOLSA'\n" +
                 "        ELSE 'DIRECTO'\n" +
-                "      END TIPO_CECO      \n" +
+                "      END ASIGNACION      \n" +
                 "FROM centro_lineas A \n" +
                 "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo\n" +
                 "join driver_lineas C on C.entidad_destino_codigo = a.centro_codigo\n" +
@@ -83,7 +83,7 @@ public class ReportingDAO {
                 "       CASE  \n" +
                 "        when d.es_bolsa = 'NO' then 'DIRECTO'\n" +
                 "        ELSE 'BOLSA'\n" +
-                "      END TIPO_CECO  \n" +
+                "      END ASIGNACION  \n" +
                 "FROM cuenta_partida_centro A\n" +
                 "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
                 "join partidas C ON c.codigo = A.partida_codigo\n" +

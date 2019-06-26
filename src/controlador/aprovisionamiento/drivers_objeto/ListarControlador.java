@@ -104,6 +104,9 @@ public class ListarControlador implements Initializable {
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
+        List<DriverObjeto> lista = driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        tabListaDrivers.getItems().setAll(lista);
+        lblNumeroRegistros.setText("Número de registros: " + lista.size());
         
         // tabla 2: dimensiones
         tabDetalleDriver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

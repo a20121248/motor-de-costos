@@ -31,10 +31,8 @@ public class DriverDAO {
     public int eliminarDriverObjeto(String codigo) {
         String queryStr;
         
-        queryStr = String.format("DELETE FROM driver_obco_lineas WHERE driver_codigo='%s'",codigo);
+        queryStr = String.format("DELETE FROM driver_objetos_lineas WHERE driver_codigo='%s'",codigo);
         ConexionBD.ejecutar(queryStr);
-        
-        queryStr = String.format("DELETE FROM drivers WHERE codigo='%s'",codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     

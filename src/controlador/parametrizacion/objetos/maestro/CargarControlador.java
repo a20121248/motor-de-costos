@@ -179,6 +179,7 @@ public class CargarControlador implements Initializable {
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
                 menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                f.close();
                 return null;
             }
             

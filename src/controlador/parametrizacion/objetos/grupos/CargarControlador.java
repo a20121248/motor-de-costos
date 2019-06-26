@@ -67,6 +67,8 @@ public class CargarControlador implements Initializable {
     public MenuControlador menuControlador;
     List<String> lstCodigos;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_GRUPOS_CARGAR.getControlador());
+    String titulo;
+    boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -80,18 +82,22 @@ public class CargarControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Cargar Grupos de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Grupos de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Grupos de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Grupos de Subcanales");
                 lnkObjetos.setText("Subcanales");
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -192,18 +198,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -211,6 +206,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
+        findError = false;
         List<Grupo> lista = tabListar.getItems();
         if(lista.isEmpty())
         {
