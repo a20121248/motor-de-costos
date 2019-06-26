@@ -438,4 +438,6 @@ public class ReportingDAO {
         
         return ConexionBD.ejecutarQuery("SELECT * FROM TP_OFICINAS_OC_2");
     }
+    
+    
 }

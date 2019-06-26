@@ -40,7 +40,8 @@ public class CentroDAO {
             "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
             " WHERE A.reparto_tipo=%d AND A.nivel%s%d\n" +
             "   AND B.periodo=%d\n" +
-            "   AND C.entidad_origen_codigo IS NULL",repartoTipo,operador,nivel,periodo);
+            "   AND C.entidad_origen_codigo IS NULL\n" +
+            "   AND B.iteracion =-2",repartoTipo,operador,nivel,periodo);
         ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         int cnt = 0;
         try {
@@ -653,35 +654,67 @@ public class CentroDAO {
         return count;
     }
     
-    public List<Centro> listarCentrosNombresConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
-        String queryStr = String.format("" +
-            "SELECT A.codigo,\n" +
-            "       A.nombre,\n" +
-            "       SUM(B.saldo) saldo,\n" +
-            "       COALESCE(C.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
-            "       COALESCE(D.nombre,'Sin driver asignado') driver_nombre\n" +
-            "  FROM centros A\n" +
-            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
-            "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
-            " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND A.es_bolsa='NO'\n",
-            periodo,repartoTipo);
-        if (!tipo.equals("-")) queryStr += String.format("   AND A.centro_tipo_codigo='%s'\n",tipo);
-        if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
-        queryStr += " GROUP BY A.codigo,A.nombre,C.driver_codigo,D.nombre\n" +
-                    " ORDER BY A.codigo";
-        List<Centro> lista = new ArrayList();
+//    public List<Centro> listarCentrosNombresConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
+//        String queryStr = String.format("" +
+//            "SELECT A.codigo,\n" +
+//            "       A.nombre,\n" +
+//            "       SUM(B.saldo) saldo,\n" +
+//            "       COALESCE(C.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
+//            "       COALESCE(D.nombre,'Sin driver asignado') driver_nombre\n" +
+//            "  FROM centros A\n" +
+//            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
+//            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
+//            "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
+//            " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND A.es_bolsa='NO'\n",
+//            periodo,repartoTipo);
+//        if (!tipo.equals("-")) queryStr += String.format("   AND A.centro_tipo_codigo='%s'\n",tipo);
+//        if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
+//        queryStr += " GROUP BY A.codigo,A.nombre,C.driver_codigo,D.nombre\n" +
+//                    " ORDER BY A.codigo";
+//        List<Centro> lista = new ArrayList();
+//        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+//            while(rs.next()) {
+//                String codigo = rs.getString("codigo");
+//                String nombre = rs.getString("nombre");
+//                double saldo = rs.getDouble("saldo");
+//                String driverCodigo = rs.getString("driver_codigo");
+//                String driverNombre = rs.getString("driver_nombre");
+//                
+//                Centro centro = new Centro(codigo,nombre,0,null,saldo,null,null,null);
+//                centro.setDriver(new Driver(driverCodigo, driverNombre, null, null, null, null));
+//                lista.add(centro);
+//            }
+//        } catch (SQLException ex) {
+//            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return lista;
+//    }
+    public List<CentroDriver> listarCentrosNombresConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
+        String queryStr = String.format(""+
+                "select a.centro_codigo centro_codigo,\n" +
+                "        SUM(A.saldo) saldo,\n" +
+                "        a.grupo_gasto grupo_gasto,\n" +
+                "        c.driver_codigo driver_codigo \n" +
+                "from centro_lineas A \n" +
+                "join centros B on b.codigo = a.centro_codigo\n" +
+                "join entidad_origen_driver C on c.entidad_origen_codigo = a.centro_codigo\n" +
+                "join drivers D on d.codigo = c.driver_codigo\n" +
+                "where A. periodo = %d and (a.iteracion >=0 or (a.iteracion =-1 and b.es_bolsa = 'NO')) \n",
+                periodo);
+        if (!tipo.equals("-")) queryStr += String.format("   AND b.centro_tipo_codigo='%s'\n",tipo);
+        if (nivel>0) queryStr += String.format("   AND b.nivel=%d\n",nivel);
+        queryStr += " group by a.centro_codigo,a.grupo_gasto, c.driver_codigo\n" +
+                    " order by a.centro_codigo";
+        List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String codigo = rs.getString("codigo");
-                String nombre = rs.getString("nombre");
+                String centroCodigo = rs.getString("centro_codigo");
                 double saldo = rs.getDouble("saldo");
+                String grupoGasto = rs.getString("grupo_gasto");
                 String driverCodigo = rs.getString("driver_codigo");
-                String driverNombre = rs.getString("driver_nombre");
                 
-                Centro centro = new Centro(codigo,nombre,0,null,saldo,null,null,null);
-                centro.setDriver(new Driver(driverCodigo, driverNombre, null, null, null, null));
-                lista.add(centro);
+                CentroDriver centroDriver = new CentroDriver(periodo, centroCodigo,driverCodigo,saldo,new Tipo(grupoGasto,""));
+                lista.add(centroDriver);
             }
         } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -768,8 +801,27 @@ public class CentroDAO {
                 "SELECT COUNT(1) cnt\n" +
                 "  FROM centros A\n" +
                 "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-                " WHERE B.periodo=%d AND B.iteracion=-1\n" +
-                "   AND A.nivel!=0 AND A.reparto_tipo=%d",
+                " WHERE B.periodo=%d AND B.iteracion=-2\n" +
+                "   AND A.nivel>0 AND A.reparto_tipo=%d",
+                periodo, repartoTipo);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                cnt = rs.getInt("cnt");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cnt;
+    }
+    
+    public int maxNivelCascada(int periodo, int repartoTipo) {
+        int cnt = 0;
+        String queryStr = String.format("" +
+                "SELECT max(A.Nivel) cnt\n" +
+                "  FROM centros A\n" +
+                "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
+                " WHERE B.periodo=%d AND B.iteracion=-2\n" +
+                "   AND A.nivel>0 AND A.reparto_tipo=%d",
                 periodo, repartoTipo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

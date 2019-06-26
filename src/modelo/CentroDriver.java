@@ -102,6 +102,14 @@ public class CentroDriver {
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
     }
     
+    public CentroDriver(int periodo, String codigoCentro, String codigoDriver, double saldo, Tipo grupoGasto) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.saldo = new SimpleDoubleProperty(saldo);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
+    }
+    
     public IntegerProperty periodoProperty() {
         return periodo;
     }

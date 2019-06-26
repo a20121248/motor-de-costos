@@ -25,13 +25,13 @@ public class DistribucionServicio {
         objetoDAO = new ObjetoDAO("");
     }
 
-    public void distribuirEntidadCascada(EntidadDistribucion entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion) {
-        double saldo = entidad.getSaldoAcumulado();
+    public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel) {
+        double saldo = entidad.getSaldo();
         // obtengo la lista de centros de niveles superiores
         List<DriverLinea> listaDriverLineaSigNiveles = new ArrayList();
-        if (iteracion>=1 && iteracion<=5) {
+        if (iteracion>=1 && iteracion<maxNivel) {
             listaDriverLineaSigNiveles = lstDriverLinea.stream().filter(item -> iteracion < ((Centro)item.getEntidadDistribucionDestino()).getNivel() || 0 == ((Centro)item.getEntidadDistribucionDestino()).getNivel()).collect(Collectors.toList());
-        } else if (iteracion==6) {
+        } else if (iteracion==maxNivel) {
             listaDriverLineaSigNiveles = lstDriverLinea.stream().filter(item -> 0 == ((Centro)item.getEntidadDistribucionDestino()).getNivel()).collect(Collectors.toList());
         }
         double totalSigNiveles = listaDriverLineaSigNiveles.stream().mapToDouble(f -> f.getPorcentaje()).sum();
@@ -39,7 +39,8 @@ public class DistribucionServicio {
             double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
             EntidadDistribucion entidadDestino = item.getEntidadDistribucionDestino();
             if (entidadDestino != null) {
-                centroDAO.insertarDistribucionBatch(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigo());
+                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
+                //Funcion para trazabilidad
             }
         });
     }

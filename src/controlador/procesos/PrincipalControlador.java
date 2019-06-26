@@ -360,7 +360,7 @@ public class PrincipalControlador implements Initializable {
                 menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
                 return;
             }
-            int cantSinDriver = centroDAO.cantObjetosSinDriver(menuControlador.repartoTipo, "!=", 0, periodoSeleccionado);
+            int cantSinDriver = centroDAO.cantObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
             if (cantSinDriver!=0) {
                 menuControlador.navegador.mensajeError("Fase 2", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
                 return;
@@ -376,32 +376,32 @@ public class PrincipalControlador implements Initializable {
             }
             ejecutarFase2Costos(periodo);
         } else {
-            /*if (!principalControlador.ejecutoFase2) {
-                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Por favor, primero ejecute la Fase " + (fase-1));
-                return null;
-            }
-            int cantSinDriver = centroDAO.cantObjetosSinDriver(principalControlador.menuControlador.repartoTipo, "=", 0, periodo);
-            if (cantSinDriver!=0) {
-                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
-                return null;
-            }*/
-
-            if (!ejecutoFase1) {
-                menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
-                return;
-            }
-            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo);
-            if (fechaEjecucion != null) {
-                String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
-                        "¿Está seguro que desea reprocesar la fase %d?",
-                        (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
-                        (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
-                        2);
-                if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;            
-                //pbFase3.setProgress(0);
-                //piFase3.setProgress(0);
-            }
-            ejecutarFase2Ingresos(periodo);
+//            /*if (!principalControlador.ejecutoFase2) {
+//                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Por favor, primero ejecute la Fase " + (fase-1));
+//                return null;
+//            }
+//            int cantSinDriver = centroDAO.cantObjetosSinDriver(principalControlador.menuControlador.repartoTipo, "=", 0, periodo);
+//            if (cantSinDriver!=0) {
+//                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
+//                return null;
+//            }*/
+//
+//            if (!ejecutoFase1) {
+//                menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
+//                return;
+//            }
+//            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo);
+//            if (fechaEjecucion != null) {
+//                String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
+//                        "¿Está seguro que desea reprocesar la fase %d?",
+//                        (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
+//                        (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
+//                        2);
+//                if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;            
+//                //pbFase3.setProgress(0);
+//                //piFase3.setProgress(0);
+//            }
+//            ejecutarFase2Ingresos(periodo);
         }
     }    
    

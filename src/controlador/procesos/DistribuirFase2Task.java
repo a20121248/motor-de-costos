@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
 import modelo.Centro;
+import modelo.CentroDriver;
 import modelo.DriverLinea;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
@@ -48,16 +49,17 @@ public class DistribuirFase2Task extends Task {
         principalControlador.pbTotal.setProgress(progresoTotal);
         
         int numCentros = centroDAO.numeroCentrosCascada(periodo, principalControlador.menuControlador.repartoTipo);
+        int maxNivel  =  centroDAO.maxNivelCascada(periodo, principalControlador.menuControlador.repartoTipo);
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
         updateProgress(centroI, numCentros+1);
-        for (int iter=1; iter<=6; ++iter) {
-            List<Centro> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
-            for (Centro centro: lstNivelI) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, centro.getDriver().getCodigo(), principalControlador.menuControlador.repartoTipo);
-                distribucionServicio.distribuirEntidadCascada(centro, lstDriverLinea, periodo, iter);
+        for (int iter=1; iter<=maxNivel; ++iter) {
+            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
+            for (CentroDriver centro: lstNivelI) {
+                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, centro.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+                distribucionServicio.distribuirEntidadCascada(centro, lstDriverLinea, periodo, iter,maxNivel);
                 principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(numCentros+1));
                 principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(numCentros+1));
                 // fin logica
