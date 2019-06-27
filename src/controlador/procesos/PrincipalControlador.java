@@ -309,7 +309,26 @@ public class PrincipalControlador implements Initializable {
         if (ejecutandoFase1 || ejecutandoFase2 || ejecutandoFase3) {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE TOTAL", "La FASE TOTAL se está ejecutando actualmente.");
             return;
-        }        
+        }
+        int cantBolsasSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
+        int cantCentrosSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        int cantCentroObjetosSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        if (cantBolsasSinDriver != 0 && cantCentrosSinDriver !=0 && cantCentroObjetosSinDriver !=0){
+            String msj = null;
+            if (cantBolsasSinDriver != 0) msj+= "\n- Existen  "+ cantBolsasSinDriver + " Centros Bolsas sin driver asignado.";
+            if (cantCentrosSinDriver != 0) msj+= "\n- Existen  "+ cantCentrosSinDriver + " Centros sin driver asignado.";
+            if (cantCentroObjetosSinDriver != 0) msj+= "\n- Existen  "+ cantCentroObjetosSinDriver + " Centros para Objetos de Costos sin driver asignado.";
+            menuControlador.navegador.mensajeError("FASE TOTAL", msj + "\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver. ");
+            return;
+        }
+        
+        Date fechaEjecucion1 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 1, menuControlador.repartoTipo);
+        Date fechaEjecucion2 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 2, menuControlador.repartoTipo);
+        Date fechaEjecucion3 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 3, menuControlador.repartoTipo);
+        if(fechaEjecucion1!=null &&fechaEjecucion2!=null && fechaEjecucion3!=null){
+            String mensaje = "Existe ejecución previa. \n¿Está seguro que desea reprocesar?";
+            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE TOTAL", mensaje)) return;
+        }
         if (menuControlador.repartoTipo == 1) {
             ejecutarFase1(periodoSeleccionado);
             ejecutarFase2(periodoSeleccionado);
