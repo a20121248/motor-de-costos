@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
 import modelo.Centro;
+import modelo.CentroDriver;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
 import servicios.DistribucionServicio;
@@ -62,7 +63,7 @@ public class DistribuirFase3Task extends Task {
         principalControlador.pbTotal.setProgress(progresoTotal*(fase-1));
         
         //List<Centro> lista = centroDAO.listarCentros(periodo, 0);
-        List<Centro> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, 0);
+        List<CentroDriver> lista = centroDAO.listarCentrosObjetosNombresConDriver(periodo, principalControlador.menuControlador.repartoTipo);
         //driverServicio.agregarDrivers(lista, periodo);
         
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
@@ -72,20 +73,9 @@ public class DistribuirFase3Task extends Task {
         ConexionBD.tamanhoBatchMax = 1000;
         for (int i = 1; i <= max; ++i) {
             // inicio logica
-            EntidadDistribucion entidadOrigen = lista.get(i-1);
-            //String driverCodigo = driverDAO.obtenerCodigoDriver(entidadOrigen.getCodigo(), periodo);
-            //DriverObjeto driver = new DriverObjeto(driverCodigo, "", "", null, null, null, null);
-            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getDriver().getCodigo());
-            //driver.setListaDriverObjetoLinea(listaDriverObjetoLinea);
-            //entidadOrigen.setDriver(driver);
-            if (!entidadOrigen.getDriver().getNombre().equals("Sin driver asignado")) {
-                String oficinaCodigo = centroDAO.obtenerCodigoOficina(entidadOrigen.getCodigo());
-                if (oficinaCodigo == null) {
-                    distribucionServicio.distribuirEntidadObjetos(entidadOrigen, listaDriverObjetoLinea, periodo, principalControlador.menuControlador.repartoTipo);
-                } else {
-                    distribucionServicio.distribuirEntidadObjetosOficina(entidadOrigen, listaDriverObjetoLinea, periodo, oficinaCodigo, principalControlador.menuControlador.repartoTipo);
-                }
-            }
+            CentroDriver entidadOrigen = lista.get(i-1);
+            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
+            distribucionServicio.distribuirEntidadObjetos(entidadOrigen, listaDriverObjetoLinea, periodo, principalControlador.menuControlador.repartoTipo);
             principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             // fin logica
@@ -100,13 +90,13 @@ public class DistribuirFase3Task extends Task {
             // Generar reportes
             principalControlador.lblMensajeFase3.setVisible(true);
             
-            reporteNombre = "Reporte 04 - Objetos de Costos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            
-            reporteNombre = "Reporte 05 - Gastos Administrativos y Operativos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteObjetosGastoAdmOpe(periodo, rutaOrigen,principalControlador.menuControlador.repartoTipo);
+//            reporteNombre = "Reporte 04 - Objetos de Costos";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//            
+//            reporteNombre = "Reporte 05 - Gastos Administrativos y Operativos";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteObjetosGastoAdmOpe(periodo, rutaOrigen,principalControlador.menuControlador.repartoTipo);
 
             principalControlador.lblMensajeFase3.setVisible(false);
             // Fin generar reportes

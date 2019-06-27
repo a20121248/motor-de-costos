@@ -14,6 +14,7 @@ import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 
 public class DistribucionServicio {
     CentroDAO centroDAO;
@@ -67,34 +68,33 @@ public class DistribucionServicio {
         });
     }
     
-    public void distribuirEntidadObjetos(EntidadDistribucion entidad, List<DriverObjetoLinea> lstDriverObjetoLinea, int periodo, int repartoTipo) {
-        double saldo = entidad.getSaldoAcumulado();
+    public void distribuirEntidadObjetos(CentroDriver entidad, List<DriverObjetoLinea> lstDriverObjetoLinea, int periodo, int repartoTipo) {
+        double saldo = entidad.getSaldo();
         lstDriverObjetoLinea.forEach((item) -> {
             double saldoDestino = saldo*item.getPorcentaje()/100.0;
-            Oficina oficina = item.getOficina();
-            Banca banca = item.getBanca();
             Producto producto = item.getProducto();
-            if (oficina!=null && banca!=null && producto!=null) {
-                objetoDAO.insertarDistribucionBatch(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino, repartoTipo);
+            Subcanal subcanal = item.getSubcanal();
+            if (producto!=null) {
+                objetoDAO.insertarDistribucionBatchObjetos(producto.getCodigo(),subcanal.getCodigo(), periodo, entidad.getCodigoCentro(), entidad.getCodigoDriver(),entidad.getGrupoGasto().getCodigo(), saldoDestino, repartoTipo);
                 //objetoDAO.insertarDistribucion(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino);
             }
         });
     }
     
-    public void distribuirEntidadObjetosOficina(EntidadDistribucion entidad, List<DriverObjetoLinea> lstDriverObjetoLinea, int periodo, String oficinaCodigo, int repartoTipo) {
-        double saldo = entidad.getSaldoAcumulado();
-        // obtengo la lista de objetos pero filtrada
-        List<DriverObjetoLinea> listaFiltradaOficina = lstDriverObjetoLinea.stream().filter(item -> oficinaCodigo.equals(item.getOficina().getCodigo())).collect(Collectors.toList());
-        double totalSigNiveles = listaFiltradaOficina.stream().mapToDouble(f -> f.getPorcentaje()).sum();
-        listaFiltradaOficina.forEach((item) -> {
-            double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
-            Oficina oficina = item.getOficina();
-            Banca banca = item.getBanca();
-            Producto producto = item.getProducto();
-            if (oficina!=null && banca!=null && producto!=null) {
-                objetoDAO.insertarDistribucionBatch(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino, repartoTipo);
-                //objetoDAO.insertarDistribucion(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino);
-            }
-        });
-    }
+//    public void distribuirEntidadObjetosOficina(EntidadDistribucion entidad, List<DriverObjetoLinea> lstDriverObjetoLinea, int periodo, String oficinaCodigo, int repartoTipo) {
+//        double saldo = entidad.getSaldoAcumulado();
+//        // obtengo la lista de objetos pero filtrada
+//        List<DriverObjetoLinea> listaFiltradaOficina = lstDriverObjetoLinea.stream().filter(item -> oficinaCodigo.equals(item.getOficina().getCodigo())).collect(Collectors.toList());
+//        double totalSigNiveles = listaFiltradaOficina.stream().mapToDouble(f -> f.getPorcentaje()).sum();
+//        listaFiltradaOficina.forEach((item) -> {
+//            double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
+//            Oficina oficina = item.getOficina();
+//            Banca banca = item.getBanca();
+//            Producto producto = item.getProducto();
+//            if (oficina!=null && banca!=null && producto!=null) {
+//                objetoDAO.insertarDistribucionBatchObjetos(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino, repartoTipo);
+//                //objetoDAO.insertarDistribucion(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino);
+//            }
+//        });
+//    }
 }
