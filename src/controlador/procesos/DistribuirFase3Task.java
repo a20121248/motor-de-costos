@@ -94,9 +94,9 @@ public class DistribuirFase3Task extends Task {
 //            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
 //            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
 //            
-//            reporteNombre = "Reporte 05 - Gastos Administrativos y Operativos";
-//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-//            reportingServicio.crearReporteObjetosGastoAdmOpe(periodo, rutaOrigen,principalControlador.menuControlador.repartoTipo);
+            reporteNombre = "Reporte 04 - Objetos de Costos";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+            reportingServicio.crearReporteObjetosCostos(periodo, rutaOrigen,principalControlador.menuControlador.repartoTipo);
 
             principalControlador.lblMensajeFase3.setVisible(false);
             // Fin generar reportes
@@ -106,22 +106,22 @@ public class DistribuirFase3Task extends Task {
             principalControlador.pbTotal.setProgress(1);
         } else {
             // Generar reportes
-            principalControlador.lblMensajeFase2Ingresos.setVisible(true);
-            
-            reporteNombre = "Reporte 02 - Objetos de Beneficio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            
-            reporteNombre = "Reporte 03 - Gastos de Operaciones de Cambio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteGastosOperacionesDeCambio(periodo, rutaOrigen);
-
-            principalControlador.lblMensajeFase2Ingresos.setVisible(false);
-            // Fin generar reportes
-            principalControlador.ejecutoFase2 = true;
-            principalControlador.ejecutandoFase2 = false;
-            principalControlador.piTotal.setProgress(1);
-            principalControlador.pbTotal.setProgress(1);
+//            principalControlador.lblMensajeFase2Ingresos.setVisible(true);
+//            
+//            reporteNombre = "Reporte 02 - Objetos de Beneficio";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//            
+//            reporteNombre = "Reporte 03 - Gastos de Operaciones de Cambio";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteGastosOperacionesDeCambio(periodo, rutaOrigen);
+//
+//            principalControlador.lblMensajeFase2Ingresos.setVisible(false);
+//            // Fin generar reportes
+//            principalControlador.ejecutoFase2 = true;
+//            principalControlador.ejecutandoFase2 = false;
+//            principalControlador.piTotal.setProgress(1);
+//            principalControlador.pbTotal.setProgress(1);
         }
 
         updateProgress(max+1, max+1);

@@ -436,12 +436,27 @@ public class ReportingDAO {
         ConexionBD.ejecutar(query);
     }
     
-    public ResultSet dataReporteObjetosGastoAdmOpe(String tableName) {
-        String queryStr;
-        if (tableName.equals("JMD_REP_ADM_OPE_OBCO_F"))
-            queryStr = String.format("SELECT * FROM %s ORDER BY OFICINA_CODIGO,BANCA_CODIGO,PRODUCTO_CODIGO,CECO_ORIGEN_CODIGO",tableName);
-        else
-            queryStr = String.format("SELECT * FROM %s ORDER BY CENTRO_NIVEL,CENTRO_CODIGO",tableName);
+    public ResultSet dataReporteObjetosCostos(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+
+                "SELECT  A.periodo PERIODO,\n" +
+                "        A.producto_codigo CODIGO_PRODUCTO,\n" +
+                "        b.nombre NOMBRE_PRODUCTO,\n" +
+                "        a.subcanal_codigo CODIGO_SUBCANAL,\n" +
+                "        c.nombre NOMBRE_SUBCANAL,\n" +
+                "        e.nombre GRUPO_GASTO,\n" +
+                "        a.saldo SALDO,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        d.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "        a.driver_codigo CODIGO_DRIVER,\n" +
+                "        f.nombre NOMBRE_DRIVER\n" +
+                "FROM objeto_lineas A\n" +
+                "JOIN productos B ON b.codigo = a.producto_codigo\n" +
+                "JOIN subcanals C ON c.codigo = a.subcanal_codigo\n" +
+                "JOIN centros D ON d.codigo = a.entidad_origen_codigo\n" +
+                "join grupo_gastos E ON e.codigo = a.grupo_gasto\n" +
+                "JOIN drivers F ON f.codigo = a.driver_codigo\n" +
+                "WHERE A.PERIODO = 201906",
+                periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     

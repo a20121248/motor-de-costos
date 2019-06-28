@@ -410,69 +410,51 @@ public class ReportingServicio {
         }
     }
     
-    public void crearReporteObjetosGastoAdmOpe(int periodo, String ruta, int repartoTipo) {
-        try {            
+    public void crearReporteObjetosCostos(int periodo, String ruta, int repartoTipo) {
+        try {
             SXSSFWorkbook wb = new SXSSFWorkbook(-1);
-            SXSSFSheet sh;
-            int rowNum;
-            List<String> listaCabecera;
-            CellStyle headerCellStyle = cabeceraEstilo(wb);
-            CellStyle numberCellStyle = decimalEstilo(wb);
-            ResultSet rs;
-            // crea las tablas intermedias
-            reportingDAO.dataReporteObjetosGastoAdmOpeBorrarTablas();
-            reportingDAO.dataReporteObjetosGastoAdmOpeLlenarTablas(periodo, repartoTipo);
-            //HOJA
-            sh = wb.createSheet("REPORTE");            
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
             // Cabecera de la tabla
-            rowNum = 0;
-            listaCabecera = new ArrayList(Arrays.asList("PERIODO","OFICINA_CODIGO","OFICINA_NOMBRE","BANCA_CODIGO","BANCA_NOMBRE","PRODUCTO_CODIGO","PRODUCTO_NOMBRE","GASTOS_OPERATIVOS","GASTOS_ADMINISTRATIVOS","GASTOS_TOTALES","CECO_ORIGEN_CODIGO","CECO_ORIGEN_NOMBRE","DRIVER_CODIGO","DRIVER_NOMBRE"));
-            crearCabecera(listaCabecera, sh, rowNum, headerCellStyle);            
+            int rowNum = 0;
+            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_PRODUCTO","NOMBRE_PRODUCTO","CODIGO_SUBCANAL","NOMBRE_SUBCANAL","GRUPO_GASTO","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER"));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             // Contenido de la tabla en la fila rowNum+1
-            ++rowNum;
-            rs = reportingDAO.dataReporteObjetosGastoAdmOpe("JMD_REP_ADM_OPE_OBCO_F");
+            CellStyle decimalCellStyle = decimalEstilo(wb);
+            ResultSet rs = reportingDAO.dataReporteObjetosCostos(periodo, repartoTipo);
             while(rs.next()) {
-                String oficinaCodigo = rs.getString("OFICINA_CODIGO");
-                String oficinaNombre = rs.getString("OFICINA_NOMBRE");
-                String bancaCodigo = rs.getString("BANCA_CODIGO");
-                String bancaNombre = rs.getString("BANCA_NOMBRE");
-                String productoCodigo = rs.getString("PRODUCTO_CODIGO");
-                String productoNombre = rs.getString("PRODUCTO_NOMBRE");
-                double gastosOperativos = rs.getDouble("GASTOS_OPERATIVOS");
-                double gastosAdministrativos = rs.getDouble("GASTOS_ADMINISTRATIVOS");
-                double gastosTotales = rs.getDouble("GASTOS_TOTALES");
-                String cecoOrigenCodigo = rs.getString("CECO_ORIGEN_CODIGO");
-                String cecoOrigenNombre = rs.getString("CECO_ORIGEN_NOMBRE");
-                String driverCodigo = rs.getString("DRIVER_CODIGO");
-                String driverNombre = rs.getString("DRIVER_NOMBRE");
+                int periodoReporte = rs.getInt("PERIODO");
+                String codigoProducto = rs.getString("CODIGO_PRODUCTO");
+                String nombreProducto = rs.getString("NOMBRE_PRODUCTO");
+                String codigoSubcanal = rs.getString("CODIGO_SUBCANAL");
+                String nombreSubcanal = rs.getString("NOMBRE_SUBCANAL");
+                String grupoGasto = rs.getString("GRUPO_GASTO");
+                double saldo = rs.getDouble("SALDO");
+                String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
+                String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
+                String codigoDriver = rs.getString("CODIGO_DRIVER");
+                String nombreDriver = rs.getString("NOMBRE_DRIVER");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
-                row.createCell(idxColumn++).setCellValue(periodo);
-                row.createCell(idxColumn++).setCellValue(oficinaCodigo);
+                row.createCell(idxColumn++).setCellValue(periodoReporte);
+                row.createCell(idxColumn++).setCellValue(codigoProducto);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(oficinaNombre);
-                row.createCell(idxColumn++).setCellValue(bancaCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreProducto);
+                row.createCell(idxColumn++).setCellValue(codigoSubcanal);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(bancaNombre);
-                row.createCell(idxColumn++).setCellValue(productoCodigo);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(productoNombre);
+                row.createCell(idxColumn++).setCellValue(nombreSubcanal);
+                row.createCell(idxColumn++).setCellValue(grupoGasto);
                 sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosOperativos);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosAdministrativos);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosTotales);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                row.createCell(idxColumn++).setCellValue(cecoOrigenCodigo);
+                row.createCell(idxColumn).setCellValue(saldo);
+                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(cecoOrigenNombre);
-                row.createCell(idxColumn++).setCellValue(driverCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(codigoDriver);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(driverNombre);
+                row.createCell(idxColumn++).setCellValue(nombreDriver);
                 
                if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
             }

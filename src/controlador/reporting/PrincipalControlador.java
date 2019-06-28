@@ -219,7 +219,7 @@ public class PrincipalControlador implements Initializable {
         String rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
         if (!archivoExiste(rutaOrigen)) {
             if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                reportingServicio.crearReporteObjetosGastoAdmOpe(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                reportingServicio.crearReporteObjetosCostos(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
             } else {
                 return;
             }
