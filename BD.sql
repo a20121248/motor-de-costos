@@ -782,4 +782,4 @@ CREATE TABLE OBJETO_LINEAS
 
 INSERT INTO CENTRO_TIPOS (CODIGO, NOMBRE, DESCRIPCION, FECHA_CREACION, FECHA_ACTUALIZACION) VALUES ('G', 'Oficinas', 'Centros de costos correspondientes a los gastos de Oficina', TO_DATE('01/01/18', 'DD/MM/RR'), TO_DATE('01/01/18', 'DD/MM/RR'));
 
-UPDATE CENTRO_TIPOS SET NOMBRE = 'Bolsas', DESCRIPCION = 'Centros de costos correspondientes a los Centros Bolsas.' WHERE CODIGO = "C";
+UPDATE CENTRO_TIPOS SET NOMBRE = 'Bolsas', DESCRIPCION = 'Centros de costos correspondientes a los Centros Bolsas.' WHERE CODIGO = 'C';
