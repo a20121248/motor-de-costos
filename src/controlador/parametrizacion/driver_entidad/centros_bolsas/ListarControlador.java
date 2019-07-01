@@ -161,7 +161,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // Tabla: Buscar
-        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI");
+        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado);
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {

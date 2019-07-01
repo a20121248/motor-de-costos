@@ -571,7 +571,6 @@ public class CentroDAO {
 //            System.out.println(e.getMessage());
 //        }
 //    }
-    
     public List<CentroDriver> listarCuentaPartidaCentroBolsaConDriver(int periodo, String tipo, int repartoTipo, int nivel, String esBolsa) {
         String queryStr = String.format("" +
             "SELECT E.cuenta_contable_codigo cuenta_contable_codigo,\n" +
@@ -596,6 +595,45 @@ public class CentroDAO {
         if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
         queryStr += " GROUP BY E.cuenta_contable_codigo,F.nombre, E.partida_codigo,G.nombre, A.codigo,A.nombre,C.driver_codigo,D.nombre\n" +
                     " ORDER BY E.cuenta_contable_codigo,E.partida_codigo,A.codigo";
+        List<CentroDriver> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCuenta = rs.getString("cuenta_contable_codigo");
+                String nombreCuenta = rs.getString("cuenta_contable_nombre");
+                String codigoPartida = rs.getString("partida_codigo");
+                String nombrePartida = rs.getString("partida_nombre");
+                String codigoCentro = rs.getString("centro_codigo");
+                String nombreCentro = rs.getString("centro_nombre");
+//                double saldo = rs.getDouble("saldo");
+                String driverCodigo = rs.getString("driver_codigo");
+                String driverNombre = rs.getString("driver_nombre");
+                CentroDriver item = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, driverCodigo, driverNombre);
+                lista.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    //Por evaluar
+    public List<CentroDriver> listarCuentaPartidaCentroBolsaConDriverDirecta(int periodo) {
+        String queryStr = String.format("" +
+            "SELECT  a.cuenta_contable_codigo cuenta_contable_codigo,\n" +
+            "        B.NOMBRE cuenta_contable_nombre,\n" +
+            "        A.PARTIDA_CODIGO partida_codigo,\n" +
+            "        C.NOMBRE partida_nombre,\n" +
+            "        A.CENTRO_CODIGO centro_codigo,\n" +
+            "        D.NOMBRE centro_nombre,\n" +
+            "        A.DRIVER_CODIGO driver_codigo,\n" +
+            "        E.NOMBRE driver_nombre\n" +
+            "FROM bolsa_driver A\n" +
+            "JOIN plan_de_cuentas B ON B.CODIGO = A.CUENTA_CONTABLE_CODIGO\n" +
+            "JOIN PARTIDAS C ON C.CODIGO = A.PARTIDA_CODIGO\n" +
+            "JOIN CENTROS D ON  D.CODIGO = A.CENTRO_CODIGO\n" +
+            "JOIN DRIVERS E ON E.CODIGO = A.DRIVER_CODIGO\n" +
+            "WHERE A.PERIODO = %d",
+            periodo);
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
