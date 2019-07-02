@@ -144,8 +144,8 @@ public class ReportingDAO {
                 "      k.nombre TIPO_GASTO,\n" +
                 "      A.saldo SALDO     \n" +
                 "FROM centro_lineas A \n" +
-                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo\n" +
-                "join driver_lineas C on C.entidad_destino_codigo = a.centro_codigo\n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo= b.driver_codigo and C.entidad_destino_codigo = a.centro_codigo AND C.PERIODO = B.PERIODO AND A.PERIODO = C.PERIODO\n" +
                 "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
                 "join centros E ON E.codigo = A.centro_codigo\n" +
                 "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
@@ -154,7 +154,7 @@ public class ReportingDAO {
                 "JOIN centro_tipos I on e.centro_tipo_codigo = i.codigo\n" +
                 "JOIN centro_tipos J on e.centro_tipo_codigo = j.codigo\n" +
                 "JOIN grupo_gastos K on k.codigo = a.grupo_gasto\n" +
-                "where A.periodo = 201906 and a.iteracion = 0\n" +
+                "where A.periodo = %d and a.iteracion = 0" +
                 "UNION\n" +
                 "SELECT  A.periodo PERIODO,\n" +
                 "        a.centro_codigo CODIGO_CENTRO,\n" +
@@ -181,7 +181,7 @@ public class ReportingDAO {
                 "join centros D ON d.codigo = A.centro_codigo\n" +
                 "JOIN centro_tipos E ON E.codigo = d.centro_tipo_codigo\n" +
                 "JOIN grupo_gastos F ON F.codigo = c.grupo_gasto\n" +
-                "WHERE a.periodo = 201906 and d.es_bolsa = 'NO'\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
                 "UNION\n" +
                 "select  a.periodo PERIODO,\n" +
                 "        a.centro_codigo CODIGO_CENTRO,\n" +
@@ -203,7 +203,7 @@ public class ReportingDAO {
                 "        g.nombre TIPO_GASTO,\n" +
                 "        a.saldo SALDO\n" +
                 "FROM CENTRO_LINEAS A\n" +
-                "JOIN ENTIDAD_ORIGEN_DRIVER B ON A.entidad_origen_codigo = B.entidad_origen_codigo\n" +
+                "JOIN ENTIDAD_ORIGEN_DRIVER B ON A.entidad_origen_codigo = B.entidad_origen_codigo AND A.PERIODO = B.PERIODO\n" +
                 "JOIN CENTROS C ON c.codigo = a.centro_codigo\n" +
                 "JOIN CENTROS D ON d.codigo = b.entidad_origen_codigo\n" +
                 "JOIN centro_tipos E ON e.codigo = c.centro_tipo_codigo\n" +
@@ -212,33 +212,85 @@ public class ReportingDAO {
                 "join drivers H ON H.codigo = b.driver_codigo\n" +
                 "WHERE A.PERIODO = %d\n" +
                 "ORDER BY CODIGO_CENTRO" 
-                ,periodo,repartoTipo);
+                ,periodo,periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
     public ResultSet dataReporteCascada(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "SELECT A.CODIGO CECO_CODIGO,\n" +
-                "       A.NOMBRE CECO_NOMBRE,\n" +
-                "       CASE WHEN A.nivel=0 THEN 999\n" +
-                "            ELSE A.nivel\n" +
-                "       END NIVEL_DUMMY,\n" +
-                "       'NIVEL '||TO_CHAR(A.nivel) CECO_NIVEL,\n" +
-                "       C.NOMBRE CECO_TIPO,\n" +
-                "       B.ITERACION,\n" +
-                "       B.SALDO,\n" +
-                "       B.ENTIDAD_ORIGEN_CODIGO,\n" +
-                "       COALESCE(E.nombre,F.nombre) ENTIDAD_ORIGEN_NOMBRE,\n" +
-                "       D.DRIVER_CODIGO\n" +
-                "  FROM centros A\n" +
-                "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-                "  JOIN centro_tipos C ON A.centro_tipo_codigo=C.codigo\n" +
-                "  LEFT JOIN entidad_origen_driver D ON A.codigo=D.entidad_origen_codigo AND B.periodo=D.periodo\n" +
-                "  LEFT JOIN grupos E ON B.entidad_origen_codigo=E.codigo\n" +
-                "  LEFT JOIN centros F ON B.entidad_origen_codigo=F.codigo\n" +
-                " WHERE B.periodo=%d AND A.reparto_tipo=%d AND B.iteracion!=-1\n" +
-                " ORDER BY NIVEL_DUMMY,A.codigo,B.iteracion,B.entidad_origen_codigo",
-                periodo,repartoTipo);
+                "SELECT a.centro_codigo CODIGO_CENTRO,\n" +
+                "        E.nombre NOMBRE_CENTRO,\n" +
+                "        case  when E.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(E.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        I.NOMBRE TIPO_CENTRO,\n" +
+                "        CASE  WHEN A.ITERACION = 0 THEN 'PROPIO'\n" +
+                "        END ITERACION,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        F.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
+                "        B.DRIVER_CODIGO  CODIGO_DRIVER,\n" +
+                "        G.NOMBRE NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO\n" +
+                "FROM centro_lineas A \n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo= b.driver_codigo and C.entidad_destino_codigo = a.centro_codigo AND C.PERIODO = B.PERIODO AND A.PERIODO = C.PERIODO\n" +
+                "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
+                "join centros E ON E.codigo = A.centro_codigo\n" +
+                "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
+                "join drivers G ON G.codigo = B.driver_codigo\n" +
+                "JOIN plan_de_cuentas H ON H.codigo = B.cuenta_contable_codigo\n" +
+                "JOIN centro_tipos I on e.centro_tipo_codigo = i.codigo\n" +
+                "JOIN centro_tipos J on e.centro_tipo_codigo = j.codigo\n" +
+                "JOIN grupo_gastos K on k.codigo = a.grupo_gasto\n" +
+                "where A.periodo = %d and a.iteracion = 0\n" +
+                "GROUP BY a.centro_codigo, e.nombre, e.nivel, i.nombre, a.iteracion, a.entidad_origen_codigo, f.nombre, b.driver_codigo, g.nombre\n" +
+                "UNION\n" +
+                "SELECT  A.CENTRO_CODIGO CODIGO_CENTRO,\n" +
+                "        D.NOMBRE NOMBRE_CENTRO,\n" +
+                "        case  when D.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(D.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        E.NOMBRE TIPO_CENTRO,\n" +
+                "        'PROPIO' ITERACION,\n" +
+                "        '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "        '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "        '-' CODIGO_DRIVER,\n" +
+                "        '-' NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO\n" +
+                "        \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "JOIN centro_tipos E ON E.codigo = d.centro_tipo_codigo\n" +
+                "JOIN grupo_gastos F ON F.codigo = c.grupo_gasto\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "GROUP BY A.CENTRO_CODIGO, D.NOMBRE,D.NIVEL,E.NOMBRE\n" +
+                "union\n" +
+                "select  a.centro_codigo CODIGO_CENTRO,\n" +
+                "        c.nombre NOMBRE_CENTRO,\n" +
+                "        case  when C.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(C.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        E.NOMBRE TIPO_CENTRO,\n" +
+                "        CASE  WHEN A.ITERACION > 0 THEN 'CENTRO NIVEL ' ||TO_CHAR(A.ITERACION)\n" +
+                "              WHEN A.ITERACION <= 0 THEN 'PROPIO'\n" +
+                "        END ITERACION,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        D.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
+                "        B.DRIVER_CODIGO  CODIGO_DRIVER,\n" +
+                "        H.NOMBRE NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO       \n" +
+                "FROM CENTRO_LINEAS A\n" +
+                "JOIN ENTIDAD_ORIGEN_DRIVER B ON A.entidad_origen_codigo = B.entidad_origen_codigo AND A.PERIODO = B.PERIODO\n" +
+                "JOIN CENTROS C ON c.codigo = a.centro_codigo\n" +
+                "JOIN CENTROS D ON d.codigo = b.entidad_origen_codigo\n" +
+                "JOIN centro_tipos E ON e.codigo = c.centro_tipo_codigo\n" +
+                "join drivers H ON H.codigo = b.driver_codigo\n" +
+                "WHERE A.PERIODO = %d\n" +
+                "GROUP BY A.CENTRO_CODIGO, C.NOMBRE, C.NIVEL, a.iteracion, e.nombre,a.entidad_origen_codigo, d.nombre, b.driver_codigo,h.nombre \n" +
+                "ORDER BY NIVEL_CENTRO,CODIGO_CENTRO,ITERACION,CODIGO_CENTRO_ORIGEN",
+                periodo,periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     

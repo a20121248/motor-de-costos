@@ -291,7 +291,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         for (DriverCentro driver: tabListar.getItems()) {
             StringBuilder sbMsj = new StringBuilder("");
-            List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(),sbMsj);
+            List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado,sbMsj);
             String msj = "";
 //            if (!esPrimerItem) {
 //                for (int i=0; i < 100; ++i) msj+="-";msj += "\n";

@@ -275,7 +275,7 @@ public class ReportingServicio {
             
             // Cabecera de la tabla
             int rowNum = 0;
-            List<String> listaCabecera = new ArrayList(Arrays.asList("CECO","CECO_NIVEL","CECO_TIPO","ITERACION","SALDO"));
+            List<String> listaCabecera = new ArrayList(Arrays.asList("CENTRO","CENTRO_NIVEL","TIPO_CENTRO","ITERACION","SALDO"));
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             
@@ -283,20 +283,20 @@ public class ReportingServicio {
             CellStyle numberCellStyle = ReportingServicio.this.decimalEstilo(wb);
             ResultSet rs = reportingDAO.dataReporteCascada(periodo, repartoTipo);
             while(rs.next()) {
-                String cecoCodigo = rs.getString("CECO_CODIGO");
-                String cecoNombre = rs.getString("CECO_NOMBRE");
-                String cecoNivel = rs.getString("CECO_NIVEL");
-                String cecoTipo = rs.getString("CECO_TIPO");
-                int iteracion = rs.getInt("ITERACION");
+                String cecoCodigo = rs.getString("CODIGO_CENTRO");
+                String cecoNombre = rs.getString("NOMBRE_CENTRO");
+                String cecoNivel = rs.getString("NIVEL_CENTRO");
+                String cecoTipo = rs.getString("TIPO_CENTRO");
+                String iteracion = rs.getString("ITERACION");
                 double saldo = rs.getDouble("SALDO");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
                 sh.setColumnWidth(idxColumn, 8000);
                 row.createCell(idxColumn++).setCellValue(cecoCodigo + " - " + cecoNombre);
-                row.createCell(idxColumn++).setCellValue(cecoNivel);
+                row.createCell(idxColumn++).setCellValue(cecoNivel.equals("NIVEL 999") ? "-":cecoNivel);
                 row.createCell(idxColumn++).setCellValue(cecoTipo);
-                row.createCell(idxColumn++).setCellValue(iteracion == 0 ? "CUENTAS CONTABLES" : "CECOS NIVEL " + iteracion);
+                row.createCell(idxColumn++).setCellValue(iteracion);
                 sh.setColumnWidth(idxColumn, 5000);
                 row.createCell(idxColumn).setCellValue(saldo);
                 row.getCell(idxColumn++).setCellStyle(numberCellStyle);

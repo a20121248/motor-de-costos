@@ -721,7 +721,7 @@ public class CentroDAO {
                 "        c.driver_codigo driver_codigo \n" +
                 "from centro_lineas A \n" +
                 "join centros B on b.codigo = a.centro_codigo\n" +
-                "join entidad_origen_driver C on c.entidad_origen_codigo = a.centro_codigo\n" +
+                "join entidad_origen_driver C on c.entidad_origen_codigo = a.centro_codigo and a.periodo = c.periodo\n" +
                 "join drivers D on d.codigo = c.driver_codigo\n" +
                 "where A. periodo = %d and (a.iteracion >=0 or (a.iteracion =-1 and b.es_bolsa = 'NO')) \n",
                 periodo);
@@ -754,7 +754,7 @@ public class CentroDAO {
                 "        c.driver_codigo driver_codigo\n" +
                 "from centro_lineas A\n" +
                 "join centros B on b.codigo = a.centro_codigo\n" +
-                "join objeto_driver C on c.centro_codigo = a.centro_codigo and A.grupo_gasto = c.grupo_gasto\n" +
+                "join objeto_driver C on c.centro_codigo = a.centro_codigo and A.grupo_gasto = c.grupo_gasto and A.periodo = c.periodo\n" +
                 "join drivers D on d.codigo = c.driver_codigo\n" +
                 "where A. periodo = %d and a.iteracion >=-1\n" +
                 "group by a.centro_codigo,a.grupo_gasto, c.driver_codigo\n" +

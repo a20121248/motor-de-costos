@@ -79,10 +79,10 @@ public class DistribuirFase2Task extends Task {
         rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
         reportingServicio.crearReporteGastoPropioAsignado(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
 
-//        reporteNombre = "Reporte 03 - Cascada de Staff";
-//        rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-//        reportingServicio.crearReporteCascada(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-//        
+        reporteNombre = "Reporte 03 - Cascada de Staff";
+        rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+        reportingServicio.crearReporteCascada(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+        
         principalControlador.lblMensajeFase2.setVisible(false);
         // Fin generar reportes
         principalControlador.ejecutoFase2 = true;

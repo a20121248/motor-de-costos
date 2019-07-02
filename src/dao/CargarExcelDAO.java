@@ -23,18 +23,19 @@ public class CargarExcelDAO {
         ConexionBD.ejecutar(queryStr);
     }
 
-    public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, StringBuilder msj) {
+    public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, int periodo, StringBuilder msj) {
 //        TO DO: Validar que centro este asignado al periodo
         String queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 CECO_CODIGO,\n" +
-                "       NVL((B.nombre),'NO') CECO_EXISTE,\n" +
+                "       NVL((C.nombre),'NO') CECO_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
                 "  FROM CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN centros_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO\n" +
+                "  LEFT JOIN centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = %d\n" +
                 "  LEFT JOIN centros C ON A.CODIGO_1=C.CODIGO AND B.CENTRO_CODIGO = C.CODIGO\n" +
                 " WHERE DRIVER_CODIGO='%s'\n"+
-                " ORDER BY a.excel_fila", driverCodigo);
+                " GROUP BY a.excel_fila,a.codigo_1, c.nombre,a.porcentaje\n" +
+                " ORDER BY a.excel_fila", periodo,driverCodigo);
         List<DriverLinea> lista = new ArrayList();
         boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -73,7 +74,7 @@ public class CargarExcelDAO {
         return lista;
     }
     
-    public List<DriverObjetoLinea> obtenerListaObjetoLinea(String driverCodigo, StringBuilder msj) {
+    public List<DriverObjetoLinea> obtenerListaObjetoLinea(String driverCodigo, int periodo, StringBuilder msj) {
         String queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 PRODUCTO_CODIGO,\n" +
@@ -82,13 +83,13 @@ public class CargarExcelDAO {
                 "       NVL((E.nombre),'NO') SUBCANAL_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
                 "  FROM CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN producto_lineas B ON  A.CODIGO_1 = B.PRODUCTO_CODIGO\n" +
+                "  LEFT JOIN producto_lineas B ON  A.CODIGO_1 = B.PRODUCTO_CODIGO AND b.periodo = %d\n" +
                 "  LEFT JOIN productos C ON A.CODIGO_1=C.CODIGO AND b.producto_codigo = c.codigo\n" +
-                "  LEFT JOIN subcanal_lineas D ON A.CODIGO_2 = D.SUBCANAL_CODIGO\n" +
+                "  LEFT JOIN subcanal_lineas D ON A.CODIGO_2 = D.SUBCANAL_CODIGO AND d.periodo = %d\n" +
                 "  LEFT JOIN subcanals E ON A.CODIGO_2=E.CODIGO AND d.subcanal_codigo = e.codigo\n" +
                 " WHERE DRIVER_CODIGO='%s'\n"+
                 " ORDER BY a.excel_fila"
-                , driverCodigo);
+                ,periodo ,periodo, driverCodigo);
         List<DriverObjetoLinea> lista = new ArrayList();
         boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

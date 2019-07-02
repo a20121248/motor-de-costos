@@ -300,7 +300,7 @@ public class CargarControlador implements Initializable {
         ConexionBD.tamanhoBatchMax = 10000;
         for (DriverObjeto driver: tabListar.getItems()) {
             
-            List<DriverObjetoLinea> lista = cargarExcelDAO.obtenerListaObjetoLinea(driver.getCodigo(),mensaje);
+            List<DriverObjetoLinea> lista = cargarExcelDAO.obtenerListaObjetoLinea(driver.getCodigo(),periodoSeleccionado,mensaje);
             String msj = "";
             if (!esPrimerItem) {
                 for (int i=0; i < 100; ++i) msj+="-";msj += "\n";

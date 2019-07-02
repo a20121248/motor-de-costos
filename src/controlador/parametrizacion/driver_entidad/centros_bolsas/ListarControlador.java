@@ -204,7 +204,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CentroDriver> listaEntidades = new ArrayList();
-        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1,"SI"));
+        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado));
         if (listaEntidades.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
