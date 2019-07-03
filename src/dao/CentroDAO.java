@@ -146,6 +146,19 @@ public class CentroDAO {
         return lista;
     }
     
+    public int obtenerNivelCentro(String codigoCentro){
+        String queryStr = String.format("Select nivel from centros where codigo='%s'", codigoCentro);
+        int nivel = -9999;
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                nivel = rs.getInt("nivel");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nivel;
+    }
+    
     public int eliminarObjetoPeriodo(String codigo, int periodo) {
         String queryStr = String.format("DELETE FROM centro_lineas WHERE centro_codigo='%s' AND periodo=%d",codigo,periodo);
         return ConexionBD.ejecutar(queryStr);

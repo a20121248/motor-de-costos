@@ -2,6 +2,7 @@ package servicios;
 
 import dao.CentroDAO;
 import dao.ObjetoDAO;
+import dao.TrazaDAO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -15,15 +16,18 @@ import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
 import modelo.Subcanal;
+import modelo.Traza;
 
 public class DistribucionServicio {
     CentroDAO centroDAO;
     ObjetoDAO objetoDAO;
+    TrazaDAO trazaDAO;
     final static Logger LOGGER = Logger.getLogger("controlador.servicios.DistribucionServicio");
     
     public DistribucionServicio() {
         centroDAO = new CentroDAO();
         objetoDAO = new ObjetoDAO("");
+        trazaDAO = new TrazaDAO();
     }
 
     public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel) {

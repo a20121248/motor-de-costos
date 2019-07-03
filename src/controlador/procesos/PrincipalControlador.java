@@ -10,6 +10,7 @@ import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProcesosDAO;
 import dao.ProductoDAO;
+import dao.TrazaDAO;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -77,6 +78,7 @@ public class PrincipalControlador implements Initializable {
     BancaDAO bancaDAO;
     ObjetoDAO objetoDAO;
     ProcesosDAO procesosDAO;
+    TrazaDAO trazaDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
@@ -96,6 +98,7 @@ public class PrincipalControlador implements Initializable {
         bancaDAO = new BancaDAO();
         objetoDAO = new ObjetoDAO("");
         procesosDAO = new ProcesosDAO();
+        trazaDAO = new TrazaDAO();
         distribucionServicio = new DistribucionServicio();
         executor = Executors.newSingleThreadExecutor();
         if (menuControlador.repartoTipo == 1) {
@@ -399,6 +402,7 @@ public class PrincipalControlador implements Initializable {
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 1, menuControlador.repartoTipo);
         objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
         //pbFase2.setProgress(0);
         //piFase2.setProgress(0);
         ejecutoFase2 = false;
