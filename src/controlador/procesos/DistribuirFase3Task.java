@@ -71,7 +71,7 @@ public class DistribuirFase3Task extends Task {
         
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
         final int max = lista.size();
-        updateProgress(0, 2*max+1);
+        updateProgress(0, max+1);
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 1000;
         for (int i = 1; i <= max; ++i) {
@@ -79,25 +79,25 @@ public class DistribuirFase3Task extends Task {
             CentroDriver entidadOrigen = lista.get(i-1);
             List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
             distribucionServicio.distribuirEntidadObjetos(entidadOrigen, listaDriverObjetoLinea, periodo, principalControlador.menuControlador.repartoTipo);
-            principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
-            principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
+            principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
+            principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             // fin logica
-            updateProgress(i, 2*max+1);
+            updateProgress(i, max+1);
         }
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
         
-        for (int i = 1; i <= max; ++i) {
-            // inicio logica
-            CentroDriver entidadOrigen = lista.get(i-1);
-            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
-            trazabilidadServicio.ingresarPorcentajesObjetos(entidadOrigen, listaDriverObjetoLinea, periodo);
-            principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
-            principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
-            // fin logica
-            updateProgress(i, 2*max+1);
-        }
+//        for (int i = 1; i <= max; ++i) {
+//            // inicio logica
+//            CentroDriver entidadOrigen = lista.get(i-1);
+//            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
+//            trazabilidadServicio.ingresarPorcentajesObjetos(entidadOrigen, listaDriverObjetoLinea, periodo);
+//            principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
+//            principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
+//            // fin logica
+//            updateProgress(i, 2*max+1);
+//        }
         
         String reporteNombre,rutaOrigen;
 

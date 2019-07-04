@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -49,6 +49,11 @@
             </HBox>
          </children>
       </AnchorPane>
+      <JFXButton fx:id="btnGenerarTraza" layoutX="599.0" layoutY="120.0" onAction="#btnGenerarTrazaAction" styleClass="btn" text="GenerarTraza" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
+         </graphic>
+      </JFXButton>
       <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
       <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
       <Spinner fx:id="spAnho" layoutX="232.0" layoutY="120.0" prefWidth="74" AnchorPane.topAnchor="120.0">

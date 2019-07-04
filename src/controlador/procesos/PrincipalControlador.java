@@ -33,6 +33,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
+import servicios.TrazabilidadServicio;
 
 public class PrincipalControlador implements Initializable {
     @FXML private Hyperlink lnkInicio;
@@ -82,6 +83,7 @@ public class PrincipalControlador implements Initializable {
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
+    TrazabilidadServicio trazabilidadServicio;
     int periodoSeleccionado;
     final ExecutorService executor;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_MODULO_PROCESOS.getControlador());
@@ -100,6 +102,7 @@ public class PrincipalControlador implements Initializable {
         procesosDAO = new ProcesosDAO();
         trazaDAO = new TrazaDAO();
         distribucionServicio = new DistribucionServicio();
+        trazabilidadServicio = new TrazabilidadServicio();
         executor = Executors.newSingleThreadExecutor();
         if (menuControlador.repartoTipo == 1) {
             this.progreso = 0.3333;
@@ -225,6 +228,10 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void lnkProcesosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PROCESOS);
+    }
+    
+    @FXML void btnGenerarTrazaAction(ActionEvent event) {
+        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
     }
     
     @FXML void btnFase1Action(ActionEvent event) {

@@ -59,9 +59,27 @@ public class TrazaDAO {
     public List<String> listarCodigoCentrosDestinoPorNivel(int nivelCentroDestino, int periodo){
         List<String> lstCodigos = new ArrayList();
         String queryStr = String.format(""
-                + "SELECT centro_destino_codigo "
+                + "SELECT distinct centro_destino_codigo "
                 + "FROM traza_cascada "
-                + "WHERE periodo = %d AND  nivel = %d "
+                + "WHERE periodo = %d AND  centro_destino_nivel = %d "
+                + "order by centro_destino_codigo",
+                periodo, nivelCentroDestino);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lstCodigos.add(rs.getString("centro_destino_codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lstCodigos;
+    }
+    
+    public List<String> listarCodigoCentrosDestinoMenoresNivel(int nivelCentroDestino, int periodo){
+        List<String> lstCodigos = new ArrayList();
+        String queryStr = String.format(""
+                + "SELECT distinct centro_destino_codigo "
+                + "FROM traza_cascada "
+                + "WHERE periodo = %d AND  centro_origen_nivel < %d and centro_destino_nivel!=0"
                 + "order by centro_destino_codigo",
                 periodo, nivelCentroDestino);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -102,5 +120,79 @@ public class TrazaDAO {
         }
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
+    }
+    
+    public int contarItems(int periodo){
+        int cnt = 0;
+        String queryStr = String.format(""+
+                "select count(*) CNT\n" +
+                "from (select  distinct centro_destino_codigo,producto_codigo,subcanal_codigo \n" +
+                "        from  Traza_cascada \n" +
+                "       where  PERIODO = %d)",
+                periodo);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                cnt = rs.getInt("CNT");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cnt;
+    }
+    
+    public List<Traza> listarCentrosDestino(String centroOrigen, int periodo){
+        List<Traza> lstCentros = new ArrayList();
+        String queryStr = String.format(""+ 
+                "SELECT  centro_origen_codigo,\n" +
+                "        centro_origen_nivel,\n" +
+                "        centro_destino_codigo,\n" +
+                "        centro_destino_nivel,\n" +
+                "        porcentaje\n" +
+                "        \n" +
+                "FROM traza_cascada\n" +
+                "WHERE periodo = %d and centro_origen_codigo = '%s'",
+                periodo,centroOrigen);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCentroOrigen = rs.getString("centro_origen_codigo");
+                int nivelCentroOrigen = rs.getInt("centro_origen_nivel");
+                String codigoCentroDestino = rs.getString("centro_destino_codigo");
+                int nivelCentroDestino = rs.getInt("centro_destino_nivel");
+                double porcentaje = rs.getDouble("porcentaje");
+                Traza item = new Traza(codigoCentroOrigen, nivelCentroOrigen, codigoCentroDestino, nivelCentroDestino, porcentaje);
+                lstCentros.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lstCentros;
+    }
+    
+    public List<Traza> listarCentros(int periodo){
+        List<Traza> lstCentros = new ArrayList();
+        String queryStr = String.format(""+ 
+                "select distinct centro_destino_codigo,\n" +
+                "                producto_codigo,\n" +
+                "                subcanal_codigo,\n" +
+                "                case when centro_destino_nivel=0 then 900\n" +
+                "                    else centro_destino_nivel\n" +
+                "                end centro_destino_nivel\n" +
+                "from traza_cascada\n" +
+                "where periodo = %d\n" +
+                "order by centro_destino_nivel, centro_destino_codigo,producto_codigo,subcanal_codigo",
+                periodo);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCentroDestino = rs.getString("centro_destino_codigo");
+                String codigoProducto = rs.getString("producto_codigo");
+                String codigoSubcanal = rs.getString("subcanal_codigo");
+                int nivelCentroDestino = rs.getInt("centro_destino_nivel");
+                Traza item = new Traza(codigoCentroDestino, codigoProducto, codigoSubcanal, nivelCentroDestino);
+                lstCentros.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lstCentros;
     }
 }
