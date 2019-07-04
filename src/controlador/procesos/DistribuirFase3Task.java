@@ -88,16 +88,7 @@ public class DistribuirFase3Task extends Task {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
         
-//        for (int i = 1; i <= max; ++i) {
-//            // inicio logica
-//            CentroDriver entidadOrigen = lista.get(i-1);
-//            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
-//            trazabilidadServicio.ingresarPorcentajesObjetos(entidadOrigen, listaDriverObjetoLinea, periodo);
-//            principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
-//            principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(2*max+1));
-//            // fin logica
-//            updateProgress(i, 2*max+1);
-//        }
+        trazabilidadServicio.ingresarPorcentajesObjetos(periodo);
         
         String reporteNombre,rutaOrigen;
 

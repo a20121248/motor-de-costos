@@ -13,6 +13,7 @@ public class Traza {
     private String codigoProducto;
     private String codigoSubcanal;
     private double porcentaje;
+    private String grupoGasto;
     
     public Traza(String codigoOrigen, int nivelOrigen, String codigoDestino, int nivelDestino, double porcentaje){
         this.codigoCentroOrigen = codigoOrigen;
@@ -22,6 +23,14 @@ public class Traza {
         this.porcentaje = porcentaje;
     }
     
+    public Traza(String codigoOrigen, String codigoProducto, String codigoSubcanal, String grupoGasto, double porcentaje){
+        this.codigoCentroOrigen = codigoOrigen;
+        this.codigoProducto = codigoProducto;
+        this.codigoSubcanal = codigoSubcanal;
+        this.grupoGasto = grupoGasto;
+        this.porcentaje = porcentaje;
+    }
+//    
     public Traza(String codigoOrigen, int nivelOrigen,String codigoDestino, String codigoProducto, String codigoSubcanal, int nivelDestino, double porcentaje){
         this.codigoCentroOrigen = codigoOrigen;
         this.nivelCentroOrigen = nivelOrigen;
@@ -32,11 +41,13 @@ public class Traza {
         this.porcentaje = porcentaje;
     }
     
-    public Traza(String codigoDestino, String codigoProducto, String codigoSubcanal,int nivelDestino){
+//    Listar los destinos
+    public Traza(String codigoDestino, String codigoProducto, String codigoSubcanal,int nivelDestino, String grupoGasto){
         this.codigoCentroDestino = codigoDestino;
         this.codigoProducto = codigoProducto;
         this.codigoSubcanal = codigoSubcanal;
         this.nivelCentroDestino = nivelDestino;
+        this.grupoGasto = grupoGasto;
     }
     
     public void setCodigoCentroOrigen(String origen){
@@ -69,6 +80,14 @@ public class Traza {
     
     public String getCodigoSubcanal(){
         return this.codigoSubcanal;
+    }
+    
+    public void setGrupoGasto(String codigo){
+       this.grupoGasto = codigo;
+    }
+    
+    public String getGrupoGasto(){
+        return this.grupoGasto;
     }
     
     public void setNivelCentroOrigen(int nivel){

@@ -42,21 +42,13 @@ public class TrazabilidadServicio {
         trazaDAO.insertarPorcentajeDistribucionCentros(lista, periodo);
     }
     
-    public void ingresarPorcentajesObjetos(CentroDriver centroDriver, List<DriverObjetoLinea> lstDriverLinea, int periodo) {
-        List<Traza> lista = new ArrayList();
-        
-        for(DriverObjetoLinea item:lstDriverLinea){
-            double porcentaje = item.getPorcentaje()/100.0;
-            Traza traza = new Traza(centroDriver.getCodigoCentro(),0,"-",item.getProducto().getCodigo(),item.getSubcanal().getCodigo(),999,porcentaje);
-            lista.add(traza);
-        }
-        lista.add(new Traza(centroDriver.getCodigoCentro(), 0, centroDriver.getCodigoCentro(), "-","-", 0, 1.0));
-        trazaDAO.insertarPorcentajeDistribucionObjetos(lista, periodo);
+    public void ingresarPorcentajesObjetos(int periodo) {
+        trazaDAO.insertarPorcentajeDistribucionObjetos(periodo);
     }
     
     public void generarMatriz(int periodo, int repartoTipo){
-        double [][] porcentajes;
-        List<Traza> listaDestinos = trazaDAO.listarCentros(periodo);
+        double [][] porcentajesCascada;
+        List<Traza> listaCentrosDestinos = trazaDAO.listarDestinos(periodo,"!=");
         Date fase1 = procesosDAO.obtenerFechaEjecucion(periodo, 1, repartoTipo);
         Date fase2 = procesosDAO.obtenerFechaEjecucion(periodo, 2, repartoTipo);
         Date fase3 = procesosDAO.obtenerFechaEjecucion(periodo, 3, repartoTipo);
@@ -66,26 +58,26 @@ public class TrazabilidadServicio {
         }
         int maxNumerosDestinos = trazaDAO.contarItems(periodo);
         int maxNivelCascada = centroDAO.maxNivelCascada(periodo,repartoTipo);
-        porcentajes = new double[maxNumerosDestinos][maxNumerosDestinos];
+        porcentajesCascada = new double[listaCentrosDestinos.size()][listaCentrosDestinos.size()];
         
         for(int iter = 1;iter<=maxNivelCascada;iter++ ){
             List <String> centros = trazaDAO.listarCodigoCentrosDestinoPorNivel(iter, periodo);
             for(String codigoCentroOrigen:centros){
                 List<Traza>  centrosDestino = trazaDAO.listarCentrosDestino(codigoCentroOrigen, periodo);
-                Traza trazaOrigen = listaDestinos.stream().filter(item ->codigoCentroOrigen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
-                int indexOrigen = listaDestinos.indexOf(trazaOrigen);
+                Traza trazaOrigen = listaCentrosDestinos.stream().filter(item ->codigoCentroOrigen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                int indexOrigen = listaCentrosDestinos.indexOf(trazaOrigen);
                 for(Traza finales:centrosDestino){
-                    Traza trazaDestino = listaDestinos.stream().filter(item ->finales.getCodigoCentroDestino().equals(item.getCodigoCentroDestino())).findAny().orElse(null);   
-                    int indexDestino = listaDestinos.indexOf(trazaDestino);
-                    porcentajes[indexDestino][indexOrigen] = finales.getPorcentaje(); 
+                    Traza trazaDestino = listaCentrosDestinos.stream().filter(item ->finales.getCodigoCentroDestino().equals(item.getCodigoCentroDestino())).findAny().orElse(null);   
+                    int indexDestino = listaCentrosDestinos.indexOf(trazaDestino);
+                    porcentajesCascada[indexDestino][indexOrigen] = finales.getPorcentaje(); 
                     if(iter==maxNivelCascada){
-                        porcentajes[indexDestino][indexDestino] = 1.0;
+                        porcentajesCascada[indexDestino][indexDestino] = 1.0;
                     }
                 }
             }
         }
         
-        for (double[] porcentaje : porcentajes) {
+        for (double[] porcentaje : porcentajesCascada) {
             for (int y = 0; y < porcentaje.length; y++) {
                 System.out.print(porcentaje[y]+"\t,");
             }
@@ -106,33 +98,64 @@ public class TrazabilidadServicio {
                 centrosNivelAnterior = trazaDAO.listarCodigoCentrosDestinoPorNivel(maxNivelCascada, periodo);
                 centros = trazaDAO.listarCodigoCentrosDestinoPorNivel(0, periodo);
                 centrosNivelMenores = trazaDAO.listarCodigoCentrosDestinoMenoresNivel(maxNivelCascada, periodo);
-            }
-            
+            }            
             for(String centro: centros){
-                Traza traza = listaDestinos.stream().filter(item ->centro.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
-                int index = listaDestinos.indexOf(traza);
+                Traza traza = listaCentrosDestinos.stream().filter(item ->centro.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                int index = listaCentrosDestinos.indexOf(traza);
                 for(String origen: centrosNivelMenores){
-                    Traza trazaOrigen = listaDestinos.stream().filter(item ->origen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
-                    int indexOrigen = listaDestinos.indexOf(trazaOrigen);
+                    Traza trazaOrigen = listaCentrosDestinos.stream().filter(item ->origen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                    int indexOrigen = listaCentrosDestinos.indexOf(trazaOrigen);
                     for(String nivelAnterior: centrosNivelAnterior){
-                        Traza trazaNivelAnterior = listaDestinos.stream().filter(item ->nivelAnterior.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
-                        int indexNivelAnterior = listaDestinos.indexOf(trazaNivelAnterior);
-                        porcentajes[index][indexOrigen]+=porcentajes[index][indexNivelAnterior]*porcentajes[indexNivelAnterior][indexOrigen];
+                        Traza trazaNivelAnterior = listaCentrosDestinos.stream().filter(item ->nivelAnterior.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                        int indexNivelAnterior = listaCentrosDestinos.indexOf(trazaNivelAnterior);
+                        porcentajesCascada[index][indexOrigen]+=porcentajesCascada[index][indexNivelAnterior]*porcentajesCascada[indexNivelAnterior][indexOrigen];
                     }
                 }
             }     
         }
-        
 
-//        for(int i = 2; i< maxNumerosDestinos;i++){
-//            for(int j=i-2;j>=0;j--){
-//                for(int k = i-1;k>j;k--){
-//                    porcentajes[i][j]+= porcentajes[i][k]*porcentajes[k][j];
-//                }
-//            }
-//        }
+        for (double[] porcentaje : porcentajesCascada) {
+            for (int y = 0; y < porcentaje.length; y++) {
+                System.out.print(porcentaje[y]+"\t,");
+            }
+            System.out.println();           
+        }
         
-        for (double[] porcentaje : porcentajes) {
+        List<Traza> listaObjetosDestinos = trazaDAO.listarDestinos(periodo,"=");
+        double [][] porcentajesObjetos = new double[listaObjetosDestinos.size()][listaCentrosDestinos.size()];
+        List <String> centrosOrigenDirecto = trazaDAO.listarCodigoCentrosDestinoPorNivel(0, periodo);
+        for(String codigoCentroOrigen:centrosOrigenDirecto){
+            List<Traza>  objetosDestino = trazaDAO.listarObjetosDestino(codigoCentroOrigen, periodo);
+            Traza trazaOrigen = listaCentrosDestinos.stream().filter(item ->codigoCentroOrigen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+            int indexOrigen = listaCentrosDestinos.indexOf(trazaOrigen);
+            for(Traza objeto:objetosDestino){
+                Traza trazaDestino = listaObjetosDestinos.stream().filter(item ->objeto.getCodigoProducto().equals(item.getCodigoProducto()) && objeto.getCodigoSubcanal().equals(item.getCodigoSubcanal()) && objeto.getGrupoGasto().equals(item.getGrupoGasto())).findAny().orElse(null);   
+                int indexDestino = listaObjetosDestinos.indexOf(trazaDestino);
+                porcentajesObjetos[indexDestino][indexOrigen] = objeto.getPorcentaje(); 
+            }
+        }
+        
+        for (double[] porcentaje : porcentajesObjetos) {
+            for (int y = 0; y < porcentaje.length; y++) {
+                System.out.print(porcentaje[y]+"\t,");
+            }
+            System.out.println();           
+        }
+        List<String> centrosCascada = trazaDAO.listarCodigoCentrosDestinoMenoresNivel(maxNivelCascada+1, periodo);
+        for (Traza destino: listaObjetosDestinos){
+            int indexDestino = listaObjetosDestinos.indexOf(destino);
+            for(String codigoCentroOrigen: centrosCascada){
+                Traza centroOrigen = listaCentrosDestinos.stream().filter(item ->codigoCentroOrigen.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                int indexOrigen = listaCentrosDestinos.indexOf(centroOrigen);
+                for(String codigoCentroDirecto:centrosOrigenDirecto){
+                    Traza centroDirecto = listaCentrosDestinos.stream().filter(item ->codigoCentroDirecto.equals(item.getCodigoCentroDestino())).findAny().orElse(null);
+                    int indexDirecto = listaCentrosDestinos.indexOf(centroDirecto);
+                    porcentajesObjetos[indexDestino][indexOrigen] += porcentajesObjetos[indexDestino][indexDirecto]*porcentajesCascada[indexDirecto][indexOrigen] ;
+                }
+            }
+        }
+        
+        for (double[] porcentaje : porcentajesObjetos) {
             for (int y = 0; y < porcentaje.length; y++) {
                 System.out.print(porcentaje[y]+"\t,");
             }
