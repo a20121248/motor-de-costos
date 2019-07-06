@@ -225,4 +225,25 @@ public class TrazaDAO {
         }
         return lstCentros;
     }
+
+    public void insertarListaObjetosPorcentajesGlobales(List<Traza> lista, int periodo) {
+        ConexionBD.crearStatement();
+        for (Traza item: lista){
+            String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+            String queryStr = String.format(Locale.US, "" +
+                "INSERT INTO TRAZA(centro_origen_codigo,producto_codigo,subcanal_codigo,grupo_gasto,porcentaje,periodo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES( '%s', '%s', '%s', '%s', %.8f,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                item.getCodigoCentroOrigen(),
+                item.getCodigoProducto(),
+                item.getCodigoSubcanal(),
+                item.getGrupoGasto(),
+                item.getPorcentaje(),
+                periodo,
+                fechaStr,
+                fechaStr);
+            ConexionBD.agregarBatch(queryStr);
+        }
+        ConexionBD.ejecutarBatch();
+        ConexionBD.cerrarStatement();
+    }
 }

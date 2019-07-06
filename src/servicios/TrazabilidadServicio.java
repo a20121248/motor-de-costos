@@ -76,13 +76,6 @@ public class TrazabilidadServicio {
                 }
             }
         }
-        
-        for (double[] porcentaje : porcentajesCascada) {
-            for (int y = 0; y < porcentaje.length; y++) {
-                System.out.print(porcentaje[y]+"\t,");
-            }
-            System.out.println();           
-        }
         System.out.println();
 //        Proceso de calculo de la traza
         
@@ -114,13 +107,6 @@ public class TrazabilidadServicio {
             }     
         }
 
-        for (double[] porcentaje : porcentajesCascada) {
-            for (int y = 0; y < porcentaje.length; y++) {
-                System.out.print(porcentaje[y]+"\t,");
-            }
-            System.out.println();           
-        }
-        
         List<Traza> listaObjetosDestinos = trazaDAO.listarDestinos(periodo,"=");
         double [][] porcentajesObjetos = new double[listaObjetosDestinos.size()][listaCentrosDestinos.size()];
         List <String> centrosOrigenDirecto = trazaDAO.listarCodigoCentrosDestinoPorNivel(0, periodo);
@@ -134,13 +120,7 @@ public class TrazabilidadServicio {
                 porcentajesObjetos[indexDestino][indexOrigen] = objeto.getPorcentaje(); 
             }
         }
-        
-        for (double[] porcentaje : porcentajesObjetos) {
-            for (int y = 0; y < porcentaje.length; y++) {
-                System.out.print(porcentaje[y]+"\t,");
-            }
-            System.out.println();           
-        }
+
         List<String> centrosCascada = trazaDAO.listarCodigoCentrosDestinoMenoresNivel(maxNivelCascada+1, periodo);
         for (Traza destino: listaObjetosDestinos){
             int indexDestino = listaObjetosDestinos.indexOf(destino);
@@ -154,12 +134,18 @@ public class TrazabilidadServicio {
                 }
             }
         }
-        
-        for (double[] porcentaje : porcentajesObjetos) {
-            for (int y = 0; y < porcentaje.length; y++) {
-                System.out.print(porcentaje[y]+"\t,");
+        System.out.println("terminado");
+        guardarDatosMatriz(porcentajesObjetos, listaCentrosDestinos, listaObjetosDestinos, periodo);
+    }
+    
+    public void guardarDatosMatriz(double [][] porcentajes, List<Traza> indexCentrosOrigen, List<Traza> indexObjetosDestino, int periodo){
+        for (int x = 0; x <indexObjetosDestino.size(); x++ ) {
+            List <Traza> listaTraza = new ArrayList();
+            for (int y = 0; y < indexCentrosOrigen.size(); y++) {
+                Traza unidad = new Traza(indexCentrosOrigen.get(y).getCodigoCentroDestino(),indexObjetosDestino.get(x).getCodigoProducto(),indexObjetosDestino.get(x).getCodigoSubcanal(),indexObjetosDestino.get(x).getGrupoGasto(),porcentajes[x][y]);
+                listaTraza.add(unidad);
             }
-            System.out.println();           
+            trazaDAO.insertarListaObjetosPorcentajesGlobales(listaTraza,periodo);          
         }
     }
 }

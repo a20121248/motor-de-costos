@@ -50,6 +50,7 @@ public class Traza {
         this.grupoGasto = grupoGasto;
     }
     
+    
     public void setCodigoCentroOrigen(String origen){
         this.codigoCentroOrigen = origen;
     }
