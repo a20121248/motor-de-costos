@@ -4,6 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.ObjetoGrupoDAO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -19,7 +21,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import modelo.Grupo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -42,6 +46,7 @@ public class ListarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnAtras;
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     ObjetoGrupoDAO objetoGrupoDAO;
@@ -49,6 +54,7 @@ public class ListarControlador implements Initializable {
     FilteredList<Grupo> filteredData;
     SortedList<Grupo> sortedData;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -61,18 +67,22 @@ public class ListarControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Grupos de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Grupos de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Grupos de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Grupos de Subcanales");
                 lnkObjetos.setText("Subcanales");
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -124,6 +134,24 @@ public class ListarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
     
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(titulo+"-Grupos", tabListar);
+                descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo,Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
+    }
+    
     @FXML void btnCrearAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_CREAR);
     }
@@ -151,6 +179,7 @@ public class ListarControlador implements Initializable {
             menuControlador.navegador.mensajeError("Eliminar Grupo", "No se pudo eliminar el Grupo pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
             return;
         }
+        menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarObjetos(-1)), p -> true);
         sortedData = new SortedList(filteredData);

@@ -37,6 +37,7 @@ public class CrearControlador implements Initializable {
     List<String> lstCodigos;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_CREAR.getControlador());
+    String titulo;
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -50,18 +51,22 @@ public class CrearControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Crear Grupo de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Crear Grupo de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Crear Grupo de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Crear Grupo de Subcanales");
                 lnkObjetos.setText("Subcanales");
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -102,6 +107,7 @@ public class CrearControlador implements Initializable {
         }
         if (objetoGrupoDAO.insertarObjeto(codigo,nombre,nivel)==1) {
             menuControlador.navegador.mensajeInformativo("Crear Grupo", "Grupo creado correctamente.");
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_OBJETOS_GRUPOS_CREAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
         } else {
             menuControlador.navegador.mensajeError("Crear Grupo", "No se puede crear el Grupo.");

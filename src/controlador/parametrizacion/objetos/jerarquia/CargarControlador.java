@@ -9,8 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -58,7 +60,8 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Grupo, Integer> tabcolNivelPadre;
     @FXML private Label lblNumeroRegistros;
     
-    @FXML private Button btnAtras;
+    @FXML private JFXButton btnDescargarLog;
+    @FXML private JFXButton btnAtras;
     @FXML private Button btnSubir;
     
     // Variables de la aplicacion
@@ -68,10 +71,14 @@ public class CargarControlador implements Initializable {
     final int anhoSeleccionado;
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR.getControlador());
-
+    List<Grupo> listaCargar  = new ArrayList();
+    String titulo;
+    boolean findError;
+    String logName;
+    
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
-        objetoGrupoDAO = new ObjetoGrupoDAO();
+        objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
@@ -83,18 +90,22 @@ public class CargarControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Cargar Jerarquía de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Jerarquía de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Jerarquía de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Jerarquía de Subcanales");
                 lnkObjetos.setText("Subcanales");
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -125,6 +136,7 @@ public class CargarControlador implements Initializable {
             if (!oldValue.equals(newValue))
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        btnDescargarLog.setVisible(false);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -159,9 +171,17 @@ public class CargarControlador implements Initializable {
         if (archivoSeleccionado != null) {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             List<Grupo> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
-            tabListar.getItems().setAll(lista);
-            lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
+            if (lista != null) {
+                tabListar.getItems().setAll(lista);
+                lblNumeroRegistros.setText("Número de registros: " + lista.size());
+            } else {
+                txtRuta.setText("");
+            }
         }
+    }
+    
+    @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     private List<Grupo> leerArchivo(String rutaArchivo) {
@@ -175,36 +195,20 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila;
             Cell celda;
-            //int numFilasOmitir = 2
-            //Estructura de la cabecera
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE","NIVEL","CODIGO PADRE","NOMBRE PADRE","NIVEL PADRE"));
-            int numFilaCabecera = 1;
-            boolean archivoEstaBien = true;
-            while (filas.hasNext() && archivoEstaBien) {
-                /*for (int i = 0; i < numFilasOmitir; i++) {
-                    filas.next();
-                }*/
+
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE","NIVEL","CODIGO PADRE","NOMBRE PADRE","NIVEL PADRE")))) {
+                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                return null;
+            }
+            while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 
-                // valido la cabecera
-                if (fila.getRowNum() == numFilaCabecera - 1) {
-                    List<String> listaCabeceraLeida = new ArrayList();
-                    while (celdas.hasNext()) {
-                        celda = celdas.next();
-                        listaCabeceraLeida.add(celda.getStringCellValue());
-                    }
-                    if (!listaCabecera.equals(listaCabeceraLeida)) {
-                        menuControlador.navegador.mensajeInformativo("Lectura de archivo Excel", "El archivo seleccionado no es el correcto.");
-                        tabListar.getItems().clear();
-                        txtRuta.setText("");                        
-                        archivoEstaBien = false;
-                    }
-                    continue;
-                }
-                
                 // leemos una fila completa                
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                if(periodo == 0){
+                    break;
+                }
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
@@ -215,11 +219,20 @@ public class CargarControlador implements Initializable {
                 Grupo itemPadre = new Grupo(codigoPadre, nombrePadre, null, 0, null, null, null);
                 itemPadre.setNivel(nivelPadre);
 
-                Grupo item = new Grupo(codigo, nombre, null, 0, null, null, null);
-                item.setNivel(nivel);
+                Grupo itemHijo = new Grupo(codigo, nombre, null, 0, null, null, null);
+                itemHijo.setNivel(nivel);
                 
-                item.setGrupoPadre(itemPadre);
-                lista.add(item);
+                itemHijo.setGrupoPadre(itemPadre);
+                List<String> lstCodigo = objetoGrupoDAO.listarCodigoObjetos(nivel);
+                String itemObjeto = lstCodigo.stream().filter(item ->codigoPadre.equals(item)).findAny().orElse(null);;
+                if(itemObjeto != null){
+                    listaCargar.add(itemHijo);
+                    itemHijo.setFlagCargar(true);                    
+                }else {
+                    itemHijo.setFlagCargar(false);
+//                    listaError.add(linea);
+                }
+                lista.add(itemHijo);
             }
             //cerramos el libro
             f.close();
@@ -235,21 +248,43 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
-        List<Grupo> lista = tabListar.getItems();
-        if(lista.isEmpty())
-        {
-            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+        }else {
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+            }else{
+                objetoGrupoDAO.insertarListaAsignacion(periodoSeleccionado, menuControlador.objetoTipo, listaCargar);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
+            }
         }
-        else{
-            objetoGrupoDAO.insertarListaAsignacion(periodoSeleccionado, menuControlador.objetoTipo, lista);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Asignaciones subidas correctamente.");
-            menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA);
-        }
-        
-        /*for (CargarCentroLinea cargarCentroLinea : lista) {
-            //planDeCuentaDAO.insertarSaldo(cargarBalanceteLinea);
-            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Centros de Costos subidos correctamente.");
-            Navegador.cambiarVista(Navegador.RUTAS_CENTROS_LISTAR);
-        }*/
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_JERARQUIA_"+titulo+".log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Catálogo.");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

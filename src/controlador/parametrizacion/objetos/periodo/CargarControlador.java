@@ -57,7 +57,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<CargarObjetoPeriodoLinea, String> tabcolNombre;
     @FXML private Label lblNumeroRegistros;
     
-    @FXML private JFXButton btnCancelar;
+    @FXML private JFXButton btnAtras;
     @FXML private JFXButton btnSubir;
     
     // Variables de la aplicacion
@@ -83,6 +83,7 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        btnDescargarLog.setVisible(false);
         switch (menuControlador.objetoTipo) {
             case "OFI":
                 lblTitulo.setText("Cargar Oficinas");
@@ -132,7 +133,7 @@ public class CargarControlador implements Initializable {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
-        });
+        });     
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -247,7 +248,7 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    @FXML void btnCancelarAction(ActionEvent event) {
+    @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
     }
     
@@ -260,7 +261,7 @@ public class CargarControlador implements Initializable {
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }
             else{
                 menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en" + titulo+"en Catálogo.");

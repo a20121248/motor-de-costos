@@ -89,28 +89,28 @@ public class CargarControlador implements Initializable {
                 lnkObjetos.setText("Oficinas");
                 objetoNombre1 = "Oficina";
                 objetoNombre2 = "la Oficina";
-                this.titulo = "Oficina";
+                this.titulo = "Oficinass";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre1 = "Banca";
                 objetoNombre2 = "la Banca";
-                this.titulo = "Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
-                this.titulo = "Producto";
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Subcanales");
                 lnkObjetos.setText("Subcanales");
                 objetoNombre1 = "Subcanal";
                 objetoNombre2 = "el Subcanal";
-                this.titulo = "Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -122,6 +122,7 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        btnDescargarLog.setVisible(false);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -257,7 +258,7 @@ public class CargarControlador implements Initializable {
         lista.forEach((item)->{
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getDireccion());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }
             else{
                 menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");

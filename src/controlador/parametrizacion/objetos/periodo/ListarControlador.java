@@ -6,6 +6,7 @@ import controlador.ObjetoControladorInterfaz;
 import controlador.Navegador;
 import controlador.modals.BuscarEntidadControlador;
 import dao.ObjetoDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -29,12 +30,14 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.DriverCentro;
 import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
@@ -59,6 +62,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnAtras;
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     FXMLLoader fxmlLoader;
@@ -70,6 +74,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -83,21 +88,25 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 lblTitulo.setText("Oficinas");
                 lnkObjetos.setText("Oficinas");
                 objetoNombre = "Oficina";
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre = "Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre = "Producto";
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Subcanales");
                 lnkObjetos.setText("Subcanales");
                 objetoNombre = "Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -201,6 +210,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
                 
         objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }
     
@@ -229,6 +239,24 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tablaEstaActualizada = true;
     }
     
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(titulo, tabListar);
+                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
+    }
+    
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
@@ -236,6 +264,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }
 

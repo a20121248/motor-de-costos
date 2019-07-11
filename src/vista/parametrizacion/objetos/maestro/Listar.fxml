@@ -109,5 +109,10 @@
             <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="220.0" layoutY="575.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

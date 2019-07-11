@@ -59,8 +59,8 @@ public class ReportingDAO {
                 "        ELSE 'DIRECTO'\n" +
                 "      END ASIGNACION      \n" +
                 "FROM centro_lineas A \n" +
-                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo\n" +
-                "join driver_lineas C on C.entidad_destino_codigo = a.centro_codigo\n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo = b.driver_codigo AND C.entidad_destino_codigo = a.centro_codigo AND C.periodo = a.periodo\n" +
                 "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
                 "join centros E ON E.codigo = A.centro_codigo\n" +
                 "join centros F ON F.codigo = a.entidad_origen_codigo\n" +

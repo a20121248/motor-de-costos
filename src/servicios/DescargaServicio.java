@@ -4,6 +4,9 @@ import dao.DriverDAO;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javafx.scene.control.TableView;
 import javafx.stage.DirectoryChooser;
@@ -52,6 +55,8 @@ public class DescargaServicio {
     }
     
     public void descargarTabla(String periodo, String ruta) throws IOException{
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
+        String fechaStr = formatterLogFile.format(new Date());
         if(ruta == null){
             FILE_PATH = "";
         }else{
@@ -67,7 +72,7 @@ public class DescargaServicio {
         if(periodo != null){
                 row.createCell(0).setCellValue("Periodo");
                 k = 1;
-                FILE_PATH=FILE_PATH+"/"+periodo+"_";
+                FILE_PATH=FILE_PATH+"/"+periodo+"_"+fechaStr+"_";
         }
         else{
             FILE_PATH=FILE_PATH+"/";
@@ -101,6 +106,8 @@ public class DescargaServicio {
     }
     
     public void descargarTablaDriverCentros(String periodo, int reparto, String ruta) throws IOException{
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
+        String fechaStr = formatterLogFile.format(new Date());
         if(ruta == null){
             FILE_PATH = "";
         }else{
@@ -120,7 +127,7 @@ public class DescargaServicio {
         rowCECO.createCell(3).setCellValue("Nombre_CECO");
         rowCECO.createCell(4).setCellValue("Porcentaje");
         
-        FILE_PATH=FILE_PATH+"/"+periodo+"_";
+        FILE_PATH=FILE_PATH+"/"+periodo+"_"+fechaStr+"_";
         for (int j = 0; j < tablaDriver.getColumns().size(); j++) {
             rowDrivers.createCell(j+k).setCellValue(tablaDriver.getColumns().get(j).getText());
         }
@@ -160,6 +167,8 @@ public class DescargaServicio {
     }
     
     public void descargarTablaDriverObjetos(String periodo, int reparto, String ruta) throws IOException{
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
+        String fechaStr = formatterLogFile.format(new Date());
         if(ruta == null){
             FILE_PATH = "";
         }else{
@@ -181,7 +190,7 @@ public class DescargaServicio {
         rowObjetos.createCell(5).setCellValue("Nombre_Subcanal");
         rowObjetos.createCell(6).setCellValue("Porcentaje");
         
-        FILE_PATH=FILE_PATH+"/"+periodo+"_";
+        FILE_PATH=FILE_PATH+"/"+periodo+"_"+fechaStr+"_";
         for (int j = 0; j < tablaDriver.getColumns().size(); j++) {
             rowDrivers.createCell(j+k).setCellValue(tablaDriver.getColumns().get(j).getText());
         }
@@ -222,6 +231,8 @@ public class DescargaServicio {
     }
     
     public void descargarTablaAsignarCentroDriver(String periodo, String ruta) throws IOException{
+        Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
+        String fechaStr = formatterLogFile.format(new Date());
         if(ruta == null){
             FILE_PATH = "";
         }else{
@@ -237,7 +248,7 @@ public class DescargaServicio {
         if(periodo != null){
                 row.createCell(0).setCellValue("Periodo");
                 k = 1;
-                FILE_PATH=FILE_PATH+"/"+periodo+"_";
+                FILE_PATH=FILE_PATH+"/"+periodo+"_"+fechaStr+"_";
         }
         else{
             FILE_PATH=FILE_PATH+"/";
