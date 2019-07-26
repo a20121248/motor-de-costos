@@ -246,4 +246,11 @@ public class TrazaDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
+    
+    public void borrarTrazaPeriodo(int periodo){
+        String queryStr = String.format(Locale.US, "" +
+                "DELETE FROM traza WHERE periodo = %d ",
+                periodo);
+        ConexionBD.ejecutar(queryStr);
+    }
 }
