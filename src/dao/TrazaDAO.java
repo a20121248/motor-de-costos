@@ -92,6 +92,24 @@ public class TrazaDAO {
         return lstCodigos;
     }
     
+    public List<String> listarCodigoCentrosOrigenMayorNivel(int nivelCentroOrigen, int nivel, int periodo){
+        List<String> lstCodigos = new ArrayList();
+        String queryStr = String.format(""
+                + "SELECT distinct centro_origen_codigo "
+                + "FROM traza_cascada "
+                + "WHERE periodo = %d AND centro_origen_nivel >%d   and centro_origen_nivel < %d "
+                + "order by centro_origen_codigo",
+                periodo, nivelCentroOrigen, nivel);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lstCodigos.add(rs.getString("centro_origen_codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lstCodigos;
+    }
+    
     public void borrarTrazaCascadaPeriodo(int periodo){
         String queryStr = String.format(Locale.US, "" +
                 "DELETE FROM traza_cascada WHERE periodo = %d ",
