@@ -92,14 +92,17 @@ public class TrazaDAO {
         return lstCodigos;
     }
     
-    public List<String> listarCodigoCentrosOrigenMayorNivel(int nivelCentroOrigen, int nivel, int periodo){
+    public List<String> listarCodigoCentrosOrigenMayorNivel(int nivelCentroOrigen, int nivel, int periodo, boolean centroObjeto){
         List<String> lstCodigos = new ArrayList();
         String queryStr = String.format(""
                 + "SELECT distinct centro_origen_codigo "
                 + "FROM traza_cascada "
-                + "WHERE periodo = %d AND centro_origen_nivel >%d   and centro_origen_nivel < %d "
-                + "order by centro_origen_codigo",
+                + "WHERE periodo = %d AND centro_origen_nivel >%d   and centro_origen_nivel < %d ",
                 periodo, nivelCentroOrigen, nivel);
+        if(centroObjeto==true){
+            queryStr+="or centro_origen_nivel = 0 ";
+        }
+        queryStr+="order by centro_origen_codigo";
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
                 lstCodigos.add(rs.getString("centro_origen_codigo"));
