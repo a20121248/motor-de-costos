@@ -72,8 +72,8 @@ public class SeguridadDAO {
         String queryStr = String.format("" +
                 "SELECT A.usuario,A.contrasenha,A.nombres,A.apellidos,\n" +
                 "       B.codigo,B.nombre,B.descripcion\n" +
-                "  FROM seguridad_usuarios A\n" +
-                "  JOIN seguridad_roles B ON A.rol_codigo=B.codigo\n" +
+                "  FROM MS_seguridad_usuarios A\n" +
+                "  JOIN MS_seguridad_roles B ON A.rol_codigo=B.codigo\n" +
                 " WHERE usuario='%s'",usuarioCodigo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
