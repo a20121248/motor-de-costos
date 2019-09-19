@@ -19,7 +19,7 @@ public class TipoDAO {
     }
 
     public List<Tipo> listarCentroNiveles() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_niveles order by nombre";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_niveles order by nombre";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -36,7 +36,7 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarCentroTipos() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_tipos";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_tipos";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -76,7 +76,7 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarEntidadTipos() {
-        String queryStr = "SELECT CODIGO,NOMBRE FROM ENTIDAD_TIPOS";
+        String queryStr = "SELECT CODIGO,NOMBRE FROM MS_ENTIDAD_TIPOS";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -92,7 +92,7 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarGrupoGastos() {
-        String queryStr = "SELECT CODIGO,NOMBRE FROM GRUPO_GASTOS";
+        String queryStr = "SELECT CODIGO,NOMBRE FROM MS_GRUPO_GASTOS";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
