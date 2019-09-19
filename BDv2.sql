@@ -29,39 +29,39 @@ DROP TABLE PACIFICO_DEV.CENTRO_TIPOS CASCADE CONSTRAINTS;
 DROP TABLE PACIFICO_DEV.CENTROS CASCADE CONSTRAINTS;
 DROP TABLE PACIFICO_DEV.CENTRO_LINEAS CASCADE CONSTRAINTS;
 
-DROP TABLE CUENTA_PARTIDA_CENTRO CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.CUENTA_PARTIDA_CENTRO CASCADE CONSTRAINTS;
 
-DROP TABLE ENTIDAD_TIPOS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.ENTIDAD_TIPOS CASCADE CONSTRAINTS;
 
-DROP TABLE PRODUCTOS CASCADE CONSTRAINTS;
-DROP TABLE PRODUCTO_LINEAS CASCADE CONSTRAINTS;
-DROP TABLE PRODUCTO_GRUPOS CASCADE CONSTRAINTS;
-DROP TABLE SUBCANALS CASCADE CONSTRAINTS;
-DROP TABLE SUBCANAL_LINEAS CASCADE CONSTRAINTS;
-DROP TABLE SUBCANAL_GRUPOS CASCADE CONSTRAINTS;
-DROP TABLE JERARQUIA CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.PRODUCTOS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.PRODUCTO_LINEAS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.PRODUCTO_GRUPOS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.SUBCANALS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.SUBCANAL_LINEAS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.SUBCANAL_GRUPOS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.JERARQUIA CASCADE CONSTRAINTS;
 
-DROP TABLE DRIVER_TIPOS CASCADE CONSTRAINTS;
-DROP TABLE DRIVERS CASCADE CONSTRAINTS;
-DROP TABLE DRIVER_LINEAS CASCADE CONSTRAINTS;
-DROP TABLE DRIVER_OBJETO_LINEAS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.DRIVER_TIPOS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.DRIVERS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.DRIVER_LINEAS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.DRIVER_OBJETO_LINEAS CASCADE CONSTRAINTS;
 
 
-DROP TABLE BOLSA_DRIVER CASCADE CONSTRAINTS;
-DROP TABLE ENTIDAD_ORIGEN_DRIVER CASCADE CONSTRAINTS;
-DROP TABLE OBJETO_DRIVER CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.BOLSA_DRIVER CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.ENTIDAD_ORIGEN_DRIVER CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.OBJETO_DRIVER CASCADE CONSTRAINTS;
 
-DROP TABLE EJECUCIONES CASCADE CONSTRAINTS;
-DROP TABLE OBJETO_LINEAS CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.EJECUCIONES CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.OBJETO_LINEAS CASCADE CONSTRAINTS;
 
-DROP TABLE TRAZA CASCADE CONSTRAINTS;
-DROP TABLE TRAZA_CASCADA CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.TRAZA CASCADE CONSTRAINTS;
+DROP TABLE PACIFICO_DEV.TRAZA_CASCADA CASCADE CONSTRAINTS;
 
 
 ---------------------------------------------------------------------------------
 -------------- SEGURIDAD ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE SEGURIDAD_PERMISOS (
+CREATE TABLE PACIFICO_DEV.SEGURIDAD_PERMISOS (
   codigo VARCHAR2(50) NOT NULL,
   nombre VARCHAR2(150) NOT NULL,
   descripcion VARCHAR2(150),
@@ -131,7 +131,7 @@ INSERT INTO PACIFICO_DEV.seguridad_permisos(codigo,nombre,descripcion) VALUES('P
 INSERT INTO PACIFICO_DEV.seguridad_permisos(codigo,nombre,descripcion) VALUES('REP_DESCARGAR','REPORTING - DESCARGAR','');
 COMMIT;
 ----------------------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE seguridad_roles (
+CREATE TABLE PACIFICO_DEV.seguridad_roles (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(150) NOT NULL,
   descripcion VARCHAR2(150),
@@ -143,7 +143,7 @@ INSERT INTO PACIFICO_DEV.seguridad_roles(codigo,nombre,descripcion) VALUES('ADM'
 INSERT INTO PACIFICO_DEV.seguridad_roles(codigo,nombre,descripcion) VALUES('USR','Usuario','Rol con permisos de lectura.');
 COMMIT;
 -------------------------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE seguridad_permiso_rol (
+CREATE TABLE PACIFICO_DEV.seguridad_permiso_rol (
   permiso_codigo VARCHAR2(50) NOT NULL,
   rol_codigo VARCHAR2(10) NOT NULL,
   CONSTRAINT seguridad_permiso_rol_1_fk FOREIGN KEY(permiso_codigo) REFERENCES seguridad_permisos(codigo),
@@ -218,7 +218,7 @@ INSERT INTO PACIFICO_DEV.seguridad_permiso_rol(permiso_codigo,rol_codigo) VALUES
 INSERT INTO PACIFICO_DEV.seguridad_permiso_rol(permiso_codigo,rol_codigo) VALUES('REP_VER','USR');
 COMMIT;
 -----------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE seguridad_usuarios (
+CREATE TABLE PACIFICO_DEV.seguridad_usuarios (
   usuario VARCHAR2(100) NOT NULL,
   contrasenha VARCHAR2(200) NOT NULL,
   nombres VARCHAR2(100),
@@ -234,7 +234,7 @@ COMMIT;
 -----------------------------------------------------------------------------------------------------------------------------------------
 -------------- CUENTAS CONTABLES ---------------------------------------------------------
 ------------------------------------------------------------------------------------------
-CREATE TABLE plan_de_cuentas (
+CREATE TABLE PACIFICO_DEV.plan_de_cuentas (
   codigo VARCHAR2(15) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   esta_activo NUMBER(1) NULL,
@@ -247,7 +247,7 @@ CREATE TABLE plan_de_cuentas (
   CONSTRAINT plan_de_cuentas_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE plan_de_cuenta_lineas (
+CREATE TABLE PACIFICO_DEV.plan_de_cuenta_lineas (
   plan_de_cuenta_codigo VARCHAR2(15) NOT NULL,
   periodo NUMBER(6) NOT NULL,
   saldo NUMBER(35,8) NOT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE plan_de_cuenta_lineas (
 ---------------------------------------------------------------------------------
 -------------- PARTIDAS ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE GRUPO_GASTOS (
+CREATE TABLE PACIFICO_DEV.GRUPO_GASTOS (
   CODIGO VARCHAR2(8 BYTE) NOT NULL ,
   NOMBRE VARCHAR2(100 BYTE) NOT NULL ,
   DESCRIPCION VARCHAR2(100 BYTE),
@@ -273,7 +273,7 @@ INSERT INTO PACIFICO_DEV.GRUPO_GASTOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,
 INSERT INTO PACIFICO_DEV.GRUPO_GASTOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('GO','GASTO DE OPERACIONES','GASTO DE OPERACIONES',NULL,NULL);
 COMMIT;
 
- CREATE TABLE PARTIDAS
+ CREATE TABLE PACIFICO_DEV.PARTIDAS
     ( CODIGO VARCHAR2(6 BYTE) NOT NULL ,
   NOMBRE VARCHAR2(100 BYTE) NOT NULL ,
   REPARTO_TIPO NUMBER(1,0) NOT NULL ,
@@ -281,7 +281,7 @@ COMMIT;
   FECHA_ACTUALIZACION DATE,
   GRUPO_GASTO CHAR(2 BYTE) NOT NULL
  );
- CREATE TABLE PARTIDA_LINEAS
+ CREATE TABLE PACIFICO_DEV.PARTIDA_LINEAS
    (  PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
   PERIODO NUMBER(6,0) NOT NULL ,
   SALDO NUMBER(35,8) NOT NULL ,
@@ -292,7 +292,7 @@ COMMIT;
 -------------- PARTIDAS - CUENTA CONTABLE ---------------------------------------------------------
 ---------------------------------------------------------------------------------
 
-CREATE TABLE PARTIDA_CUENTA_CONTABLE
+CREATE TABLE PACIFICO_DEV.PARTIDA_CUENTA_CONTABLE
    (  PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
   CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PERIODO NUMBER(6,0),
@@ -304,7 +304,7 @@ CREATE TABLE PARTIDA_CUENTA_CONTABLE
 ---------------------------------------------------------------------------------
 -------------- CENTROS ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE centro_niveles (
+CREATE TABLE PACIFICO_DEV.centro_niveles (
   codigo VARCHAR2(8) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(150) NULL,
@@ -325,7 +325,7 @@ INSERT INTO PACIFICO_DEV.CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION
 
 COMMIT;
 ------------------------------------------------------------------------------------------
-CREATE TABLE centro_tipos (
+CREATE TABLE PACIFICO_DEV.centro_tipos (
   codigo VARCHAR2(8) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(150) NULL,
@@ -343,7 +343,7 @@ INSERT INTO PACIFICO_DEV.CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,
 INSERT INTO PACIFICO_DEV.CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('F','LINEAS DE NEGOCIO','CENTROS DE COSTOS OBJETO LINEA DE NEGOCIO.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
 INSERT INTO PACIFICO_DEV.CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('G', 'OFICINAS', 'Centros de costos correspondientes a los gastos de Oficina', TO_DATE('01/01/18', 'DD/MM/RR'), TO_DATE('01/01/18', 'DD/MM/RR'));
 ------------------------------------------------------------------------------------------
-CREATE TABLE centros (
+CREATE TABLE PACIFICO_DEV.centros (
   codigo VARCHAR2(8) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   esta_activo NUMBER(1) NULL,
@@ -360,7 +360,7 @@ CREATE TABLE centros (
   CONSTRAINT centros_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE centro_lineas (
+CREATE TABLE PACIFICO_DEV.centro_lineas (
   centro_codigo VARCHAR2(8) NOT NULL,
   periodo NUMBER(6) NOT NULL,
   iteracion NUMBER(10) NOT NULL,
@@ -374,7 +374,7 @@ CREATE TABLE centro_lineas (
 ---------------------------------------------------------------------------------
 -------------- CUENTA - PARTIDA - CENTRO ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE CUENTA_PARTIDA_CENTRO
+CREATE TABLE PACIFICO_DEV.CUENTA_PARTIDA_CENTRO
    (  CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
   CENTRO_CODIGO VARCHAR2(8 BYTE) NOT NULL ,
@@ -389,25 +389,25 @@ CREATE TABLE CUENTA_PARTIDA_CENTRO
 -------------- ENTIDAD TIPOS ---------------------------------------------------------
 ---------------------------------------------------------------------------------
 
-CREATE TABLE entidad_tipos (
+CREATE TABLE PACIFICO_DEV.entidad_tipos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(150) NULL,
   CONSTRAINT entidad_tipos_pk PRIMARY KEY(codigo)
 );
 
-INSERT INTO entidad_tipos(codigo,nombre) VALUES('-','Todos');
-INSERT INTO entidad_tipos(codigo,nombre) VALUES('CTA','Cuenta Contable');
-INSERT INTO entidad_tipos(codigo,nombre) VALUES('PART','Partida');
-INSERT INTO entidad_tipos(codigo,nombre) VALUES('CECO','Centro de Costos');
-INSERT INTO entidad_tipos(codigo,nombre) VALUES('PRO','Producto');
-INSERT INTO entidad_tipos(codigo,nombre) VALUES ('SCA', 'Subcanal');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES('-','Todos');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES('CTA','Cuenta Contable');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES('PART','Partida');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES('CECO','Centro de Costos');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES('PRO','Producto');
+INSERT INTO PACIFICO_DEV.entidad_tipos(codigo,nombre) VALUES ('SCA', 'Subcanal');
 COMMIT;
 
 ---------------------------------------------------------------------------------
 -------------- OBJETOS DE COSTO  ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE productos (
+CREATE TABLE PACIFICO_DEV.productos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   esta_activo NUMBER(1) NULL,
@@ -416,7 +416,7 @@ CREATE TABLE productos (
   CONSTRAINT productos_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE producto_lineas (
+CREATE TABLE PACIFICO_DEV.producto_lineas (
   producto_codigo VARCHAR2(10) NOT NULL,
   periodo NUMBER(6) NOT NULL,
   fecha_creacion DATE,
@@ -424,7 +424,7 @@ CREATE TABLE producto_lineas (
   CONSTRAINT producto_lineas_pk PRIMARY KEY(producto_codigo,periodo)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE producto_grupos (
+CREATE TABLE PACIFICO_DEV.producto_grupos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   nivel NUMBER(2) NOT NULL,
@@ -434,7 +434,7 @@ CREATE TABLE producto_grupos (
   CONSTRAINT producto_grupos_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE SUBCANALS
+CREATE TABLE PACIFICO_DEV.SUBCANALS
 ( CODIGO VARCHAR2(10 BYTE) NOT NULL ,
   NOMBRE VARCHAR2(100 BYTE) NOT NULL ,
   ESTA_ACTIVO NUMBER(1,0),
@@ -442,14 +442,14 @@ CREATE TABLE SUBCANALS
   FECHA_ACTUALIZACION DATE
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE SUBCANAL_LINEAS
+CREATE TABLE PACIFICO_DEV.SUBCANAL_LINEAS
 ( SUBCANAL_CODIGO VARCHAR2(10 BYTE) NOT NULL,
   PERIODO NUMBER(6,0) NOT NULL ,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE SUBCANAL_GRUPOS
+CREATE TABLE PACIFICO_DEV.SUBCANAL_GRUPOS
   ( CODIGO VARCHAR2(10 BYTE) NOT NULL ,
  NOMBRE VARCHAR2(100 BYTE) NOT NULL ,
  NIVEL NUMBER(2,0) NOT NULL ,
@@ -459,7 +459,7 @@ CREATE TABLE SUBCANAL_GRUPOS
  CONSTRAINT producto_grupos_pk PRIMARY KEY(CODIGO)
 );
 ------------------------------------------------------------------------------------------
-CREATE TABLE jerarquia (
+CREATE TABLE PACIFICO_DEV.jerarquia (
   periodo NUMBER(6) NOT NULL,
   entidad_codigo VARCHAR2(10) NOT NULL,
   entidad_tipo VARCHAR2(10) NOT NULL,
@@ -471,17 +471,17 @@ CREATE TABLE jerarquia (
 -------------- DRIVER   ---------------------------------------------------------
 ---------------------------------------------------------------------------------
 
-CREATE TABLE driver_tipos (
+CREATE TABLE PACIFICO_DEV.driver_tipos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(200) NULL,
   CONSTRAINT driver_tipo_pk PRIMARY KEY (codigo)
 );
-INSERT INTO driver_tipos(codigo,nombre,descripcion) VALUES('CECO','Centros de Costos',null);
-INSERT INTO driver_tipos(codigo,nombre,descripcion) VALUES('OBCO','Objetos de Costos',null);
+INSERT INTO PACIFICO_DEV.driver_tipos(codigo,nombre,descripcion) VALUES('CECO','Centros de Costos',null);
+INSERT INTO PACIFICO_DEV.driver_tipos(codigo,nombre,descripcion) VALUES('OBCO','Objetos de Costos',null);
 COMMIT;
 ------------------------------------------------------------------------------------------
-CREATE TABLE drivers (
+CREATE TABLE PACIFICO_DEV.drivers (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NULL,
   driver_tipo_codigo VARCHAR2(10),
@@ -493,7 +493,7 @@ CREATE TABLE drivers (
 );
 
 -------------- DRIVER - CENTRO DE COSTOS   ---------------------------------------------------------
-CREATE TABLE driver_lineas (
+CREATE TABLE PACIFICO_DEV.driver_lineas (
   driver_codigo VARCHAR2(10) NOT NULL,
   entidad_destino_codigo VARCHAR2(10) NOT NULL,
   periodo NUMBER(6) NOT NULL,
@@ -504,7 +504,7 @@ CREATE TABLE driver_lineas (
   CONSTRAINT driver_lineas_1_fk FOREIGN KEY(driver_codigo) REFERENCES drivers(codigo)
 );
 -------------- DRIVER - OBJETOS DE COSTOS   ---------------------------------------------------------
-CREATE TABLE DRIVER_OBJETO_LINEAS
+CREATE TABLE PACIFICO_DEV.DRIVER_OBJETO_LINEAS
    (  DRIVER_CODIGO VARCHAR2(10 BYTE) NOT NULL,
   PRODUCTO_CODIGO VARCHAR2(10 BYTE) NOT NULL,
   SUBCANAL_CODIGO VARCHAR2(10 BYTE) NOT NULL,
@@ -514,7 +514,7 @@ CREATE TABLE DRIVER_OBJETO_LINEAS
   FECHA_ACTUALIZACION DATE
 );
 
-CREATE TABLE CARGAR_HOJA_DRIVER (
+CREATE TABLE PACIFICO_DEV.CARGAR_HOJA_DRIVER (
   EXCEL_FILA NUMBER(6) NOT NULL,
   DRIVER_CODIGO VARCHAR2(10) NOT NULL,
   CODIGO_1 VARCHAR2(10) NOT NULL,
@@ -526,7 +526,7 @@ CREATE TABLE CARGAR_HOJA_DRIVER (
 ---------------------------------------------------------------------------------
 -------------- ASIGNACION DRIVER A CENTROS  ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE BOLSA_DRIVER
+CREATE TABLE PACIFICO_DEV.BOLSA_DRIVER
    (  DRIVER_CODIGO VARCHAR2(10 BYTE) NOT NULL ,
   CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
@@ -536,7 +536,7 @@ CREATE TABLE BOLSA_DRIVER
   FECHA_ACTUALIZACION DATE
 );
 
-CREATE TABLE entidad_origen_driver (
+CREATE TABLE PACIFICO_DEV.entidad_origen_driver (
   entidad_origen_codigo VARCHAR2(10) NOT NULL,
   driver_codigo VARCHAR2(10) NOT NULL,
   periodo NUMBER(6) NOT NULL,
@@ -545,7 +545,7 @@ CREATE TABLE entidad_origen_driver (
   CONSTRAINT entidad_origen_driver_pk PRIMARY KEY(entidad_origen_codigo,driver_codigo,periodo)
 );
 
-CREATE TABLE OBJETO_DRIVER
+CREATE TABLE PACIFICO_DEV.OBJETO_DRIVER
  (
     CENTRO_CODIGO VARCHAR2(8) NOT NULL,
     GRUPO_GASTO VARCHAR2(2) NOT NULL,
@@ -557,7 +557,7 @@ CREATE TABLE OBJETO_DRIVER
 ---------------------------------------------------------------------------------
 -------------- EJECUCION  ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE ejecuciones (
+CREATE TABLE PACIFICO_DEV.ejecuciones (
   periodo NUMBER(6) NOT NULL,
   fase NUMBER(10) NOT NULL,
   reparto_tipo NUMBER(1) NOT NULL,
@@ -565,7 +565,7 @@ CREATE TABLE ejecuciones (
   fecha_fin DATE NULL
 );
 
-CREATE TABLE OBJETO_LINEAS
+CREATE TABLE PACIFICO_DEV.OBJETO_LINEAS
 (
   SUBCANAL_CODIGO VARCHAR2(10 BYTE) NOT NULL,
   PRODUCTO_CODIGO VARCHAR2(10 BYTE) NOT NULL,
@@ -581,7 +581,7 @@ CREATE TABLE OBJETO_LINEAS
 ---------------------------------------------------------------------------------
 -------------- TRAZA  ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE TRAZA_CASCADA
+CREATE TABLE PACIFICO_DEV.TRAZA_CASCADA
 (
   CENTRO_ORIGEN_CODIGO VARCHAR2(8 BYTE) NOT NULL,
   CENTRO_DESTINO_CODIGO VARCHAR2(8 BYTE) NOT NULL,
@@ -596,7 +596,7 @@ CREATE TABLE TRAZA_CASCADA
   GRUPO_GASTO VARCHAR2(2 BYTE)
 );
 
-CREATE TABLE TRAZA
+CREATE TABLE PACIFICO_DEV.TRAZA
 (
   CENTRO_ORIGEN_CODIGO VARCHAR2(8 BYTE) NOT NULL,
   PRODUCTO_CODIGO VARCHAR2(10 BYTE),
