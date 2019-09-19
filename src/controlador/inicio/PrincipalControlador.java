@@ -75,7 +75,7 @@ public class PrincipalControlador implements Initializable {
                             menuControlador.repartoTipo = 1;
                             menuControlador.apHeader.getStyleClass().remove("ingresos");
                             menuControlador.apSidebar.getStyleClass().remove("ingresos");
-                        } else if (opcion.equals("PRESUPUESTOS")) {
+                        } else if (opcion.equals("PRESUPUESTO")) {
                             menuControlador.repartoTipo = 2;
                             menuControlador.apHeader.getStyleClass().add("ingresos");
                             menuControlador.apSidebar.getStyleClass().add("ingresos");
