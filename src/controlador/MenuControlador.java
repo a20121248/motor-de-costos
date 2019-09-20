@@ -63,7 +63,7 @@ public class MenuControlador implements Initializable {
     public boolean verCostos;
     final static Logger LOGGER = Logger.getLogger("controlador.MenuControlador");
     public LoggingServicio Log;
-    public Mensaje mensaje;
+    public Mensaje mensaje = new Mensaje();
     // =========================================================
     // *************************** MENSAJES*********************
     // =========================================================

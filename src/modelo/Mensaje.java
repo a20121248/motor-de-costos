@@ -75,4 +75,67 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void create_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("No se pudo crear " + titulo +".");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void create_success(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText(titulo +" creado correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void create_pattern_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("El código de " + titulo + " no cumple con el patrón establecido.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void create_exist_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("El código de " + titulo + " ya existe. No se pudo crear el item.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_header_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Cargar " + titulo);
+        alert.setContentText("La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_empty(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Subir información");
+        alert.setContentText("No hay información.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_allCharged_now(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Subida de información " + titulo);
+        alert.setContentText("Toda La información ya está cargada.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_success_with_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Subida de información " + titulo);
+        alert.setContentText(titulo + " subidas. Se presentaron algunos errores. \nPara mayor información Descargar LOG.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_success(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Subir información");
+        alert.setContentText("La información se subió correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

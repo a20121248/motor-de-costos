@@ -854,14 +854,7 @@ public class Navegador {
                 alert.setTitle("Cargar " + titulo);
                 alert.setContentText("La cabecera de la hoja no es la correcta.\nNo se puede cargar el archivo.");
                 break;
-            case "UPLOAD_SUCCESS_ERROR":
-                alert.setTitle("Subida de información " + titulo);
-                alert.setContentText(titulo + " subidas. Se presentaron algunos errores. \nPara mayor información Descargar LOG.");
-                break;
-            case "UPLOAD_ALLCHARGED_YET":
-                alert.setTitle("Subida de información " + titulo);
-                alert.setContentText("Toda La información ya está cargada.");
-                break;
+
             case "UPLOAD_ITEM_DONTEXIST":
                 alert.setTitle("Subida de información " + titulo);
                 alert.setContentText("Los items no existen en su respectivo Catálogo");
@@ -903,22 +896,6 @@ public class Navegador {
                 alert.setContentText("Por favor seleccione item.");
                 break;
             
-            case "CREATE_ITEM_EXIST":
-                alert.setTitle("Crear "+ titulo);
-                alert.setContentText("El código de " + titulo + " ya existe. No se pudo crear el item.");
-                break;
-            case "CREATE_ITEM_PATTERN":
-                alert.setTitle("Crear "+ titulo);
-                alert.setContentText("El código de " + titulo + " no cumple con el patrón establecido.");
-                break;
-            case "CREATE_SUCCESS":
-                alert.setTitle("Crear "+ titulo);
-                alert.setContentText(titulo +" creado correctamente.");
-                break;
-            case "CREATE_ERROR":
-                alert.setTitle("Crear "+ titulo);
-                alert.setContentText("Error. No se pudo crear " + titulo);
-                break;
             case "EDIT_ITEM_WITHOUT_ALLOCATE":
                 alert.setTitle("Editar "+ titulo);
                 alert.setContentText("No se puede editar item " + titulo +", pues no ha sido asignado previamente.");
