@@ -37,14 +37,14 @@ public class PlanDeCuentaDAO {
     public List<CuentaContable> listarMaestro(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {
-            queryStr = String.format("SELECT codigo,nombre FROM plan_de_cuentas WHERE esta_activo=1 AND reparto_tipo=%d ORDER BY codigo",repartoTipo);
+            queryStr = String.format("SELECT codigo,nombre FROM MS_plan_de_cuentas WHERE esta_activo=1  ORDER BY codigo");
         } else {
             queryStr = String.format(""+
                     "SELECT codigo,nombre\n" +
-                    "  FROM plan_de_cuentas\n" +
-                    " WHERE esta_activo=1 AND codigo NOT IN (%s) AND reparto_tipo=%d\n" +
+                    "  FROM MS_plan_de_cuentas\n" +
+                    " WHERE esta_activo=1 AND codigo NOT IN (%s)\n" +
                     " ORDER BY codigo",
-                    codigos,repartoTipo);
+                    codigos);
         }
         List<CuentaContable> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -61,7 +61,7 @@ public class PlanDeCuentaDAO {
     }
 
     public List<String> listarCodigos() {
-        String queryStr = String.format("SELECT CODIGO FROM PLAN_DE_CUENTAS");
+        String queryStr = String.format("SELECT CODIGO FROM MS_PLAN_DE_CUENTAS");
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -102,7 +102,7 @@ public class PlanDeCuentaDAO {
         tipoGasto = convertirPalabraAbreviatura(tipoGasto);
         claseGasto = convertirPalabraAbreviatura(claseGasto);
         String queryStr = String.format("" +
-                "UPDATE plan_de_cuentas\n" +
+                "UPDATE MS_plan_de_cuentas\n" +
                 "   SET nombre='%s',\n"+
                 "       atribuible = '%s',\n" +
                 "       tipo = '%s',\n" +
@@ -118,18 +118,18 @@ public class PlanDeCuentaDAO {
         claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,%d,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,repartoTipo,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
+                "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s',%d,0,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,1,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public void insertarObjetoCuentaPeriodo(String codigo, int periodo) {
+    public void insertarObjetoCuentaPeriodo(String codigo, int periodo, int repartoTipo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES('%s',%d,0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,fechaStr,fechaStr);
+                "INSERT INTO MS_plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES('%s',%d,0,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,periodo,repartoTipo,fechaStr,fechaStr);
         ConexionBD.ejecutar(queryStr);
     }
 
@@ -198,19 +198,17 @@ public class PlanDeCuentaDAO {
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion,\n" +
                 "       SUM(COALESCE(B.saldo,0)) saldo\n" +
-                "  FROM plan_de_cuentas A\n" +
-                "  JOIN plan_de_cuenta_lineas B ON B.plan_de_cuenta_codigo=A.codigo\n" +
-                " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d\n",
+                "  FROM MS_plan_de_cuentas A\n" +
+                "  JOIN MS_plan_de_cuenta_lineas B ON B.plan_de_cuenta_codigo=A.codigo\n" +
+                " WHERE A.esta_activo=1 AND B.periodo=%d AND B.reparto_tipo=%d\n",
                 periodo,repartoTipo);
-        switch(tipoGasto) {
-            case "Administrativo":
-                queryStr += "\n   AND SUBSTR(A.codigo,0,2)='45'";
-                break;
-            case "Operativo":
-                queryStr += "\n   AND SUBSTR(A.codigo,0,2)='44'";
-        }
-        queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
+        if(repartoTipo == 2) {
+            queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                     "\n ORDER BY A.codigo";
+        }else {
+            queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
+                    "\n ORDER BY A.codigo";
+        }
         List<CuentaContable> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -237,8 +235,8 @@ public class PlanDeCuentaDAO {
                 "       A.clase,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
-                "  FROM plan_de_cuentas A\n" +
-                " WHERE A.reparto_tipo=%d AND A.esta_activo=1\n" +
+                "  FROM MS_plan_de_cuentas A\n" +
+                " WHERE A.esta_activo=1\n" +
                 " ORDER BY A.codigo",repartoTipo);
         List<CuentaContable> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -283,7 +281,7 @@ public class PlanDeCuentaDAO {
 
     public void eliminarObjetoCuentaPeriodo(String codigo, int periodo) {
         String queryStr = String.format("" +
-                "DELETE FROM plan_de_cuenta_lineas\n" +
+                "DELETE FROM MS_plan_de_cuenta_lineas\n" +
                 " WHERE plan_de_cuenta_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         ConexionBD.ejecutar(queryStr);
@@ -292,7 +290,7 @@ public class PlanDeCuentaDAO {
     public int verificarObjetoPlanCuentaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM partida_cuenta_contable\n" +
+                "  FROM MS_partida_cuenta_contable\n" +
                 " WHERE cuenta_contable_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         int cont=-1;
@@ -310,7 +308,7 @@ public class PlanDeCuentaDAO {
     public int verificarObjetoPlanCuentaLineas(String codigo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM plan_de_cuenta_lineas\n" +
+                "  FROM MS_plan_de_cuenta_lineas\n" +
                 " WHERE plan_de_cuenta_codigo='%s'",
                 codigo);
         int cont=-1;
