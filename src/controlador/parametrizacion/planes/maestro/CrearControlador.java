@@ -85,19 +85,19 @@ public class CrearControlador implements Initializable {
         String claseGasto = cmbClaseGasto.getValue().toString();
         boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
         if (!ptrCodigo) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_PATTERN);
+            menuControlador.mensaje.create_pattern_error(titulo);
             return;
         }
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
+            menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
         if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo,atribuible, tipoGasto, claseGasto)==1) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
+            menuControlador.mensaje.create_success(titulo);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
+            menuControlador.mensaje.create_error(titulo);
         }
     }
     
