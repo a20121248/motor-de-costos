@@ -85,6 +85,16 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        if (menuControlador.repartoTipo == 2) {
+//            lblTipoGasto.setVisible(false);
+            cmbMes.setVisible(false);
+            // Periodo seleccionado
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            // Periodo seleccionado
+            periodoSeleccionado = menuControlador.periodo;
+        }
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
@@ -98,12 +108,16 @@ public class CargarControlador implements Initializable {
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+               if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                
             }
         });
         btnDescargarLog.setVisible(false);
