@@ -23,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import modelo.Mensaje;
 import modelo.Tipo;
 import modelo.Usuario;
 import servicios.LoggingServicio;
@@ -62,7 +63,7 @@ public class MenuControlador implements Initializable {
     public boolean verCostos;
     final static Logger LOGGER = Logger.getLogger("controlador.MenuControlador");
     public LoggingServicio Log;
-    
+    public Mensaje mensaje;
     // =========================================================
     // *************************** MENSAJES*********************
     // =========================================================

@@ -874,17 +874,17 @@ public class Navegador {
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("Por favor seleccione item");
                 break;
-            case "DELETE_SELECTED":
-                alert.setTitle("Eliminar " + titulo);
-                alert.setContentText("Por favor seleccione "+ titulo);
-                break;
             case "DELETE_REFRESH":
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
                 break;
-            case "DELETE_ITEM":
+            case "DELETE_ITEM_PERIODO":
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText("No se pudo eliminar "+ titulo +" item del Periodo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
+                break;
+            case "DELETE_ITEM_MAESTRO":
+                alert.setTitle("Eliminar " + titulo);
+                alert.setContentText("No se pudo eliminar "+ titulo +" item del Catálogo. Está siendo utilizada en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizada.");
                 break;
             case "DELETE_SUCCESS":
                 alert.setTitle("Eliminar " + titulo);
@@ -902,18 +902,7 @@ public class Navegador {
                 alert.setTitle("Agregar "+ titulo);
                 alert.setContentText("Por favor seleccione item.");
                 break;
-            case "EDIT_EMPTY":
-                alert.setTitle("Editar "+ titulo);
-                alert.setContentText("Por favor seleccione item.");
-                break;
-            case "EDIT_SUCCESS":
-                alert.setTitle("Editar "+ titulo);
-                alert.setContentText(titulo +" editada correctamente.");
-                break;
-            case "EDIT_ERROR":
-                alert.setTitle("Editar "+ titulo);
-                alert.setContentText("No se pudo editar " + titulo +".");
-                break;
+            
             case "CREATE_ITEM_EXIST":
                 alert.setTitle("Crear "+ titulo);
                 alert.setContentText("El código de " + titulo + " ya existe. No se pudo crear el item.");
@@ -957,18 +946,12 @@ public class Navegador {
                 alert.setTitle("Guardar LOG");
                 alert.setContentText("Descarga completa.");
                 break;
-            case "DOWNLOAD_CANCELED":
-                alert.setTitle("Descargar información");
-                alert.setContentText("Descarga Cancelada");
-                break;
+
             case "SELECT_ENTITY":
                 alert.setTitle("Seleccionar entidad");
                 alert.setContentText("No seleccionó ninguna entidad.");
                 break;
-            case "DOWNLOAD_EMPTY":
-                alert.setTitle("Descargar información");
-                alert.setContentText("No hay información");
-                break;
+            
             case "UPLOAD_ERROR_PERIODO":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");
