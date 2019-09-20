@@ -86,8 +86,6 @@
       </Spinner>
       <Label layoutX="452.0" layoutY="174.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
       <TextField fx:id="txtBuscar" layoutX="494.0" layoutY="202.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
-      <Label fx:id="lblTipoGasto" layoutX="60.0" layoutY="189.0" text="Tipo de gasto:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="164.0" />
-      <ComboBox fx:id="cmbTipoGasto" layoutX="146.0" layoutY="185.0" prefWidth="170.0" AnchorPane.leftAnchor="135.0" AnchorPane.topAnchor="160.0" />
       <HBox alignment="TOP_RIGHT" layoutX="121.0" layoutY="177.0" prefHeight="25.0" prefWidth="350.0" spacing="12.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
             <JFXButton fx:id="btnAgregar" onAction="#btnAgregarAction" styleClass="btn" text="Agregar">
