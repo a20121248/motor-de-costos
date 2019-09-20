@@ -147,9 +147,9 @@ public class PlanDeCuentaDAO {
             claseGasto = convertirPalabraAbreviatura(claseGasto);
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                    "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
                     "VALUES ('%s','%s',%d,%d,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,repartoTipo,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
+                    codigo,nombre,1,0,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();

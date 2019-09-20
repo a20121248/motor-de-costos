@@ -61,12 +61,14 @@ public class CargarControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
     List<CuentaContable> listaCargar = new ArrayList() ;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getControlador());
     String titulo;
     Boolean findError;
+    List<StringBuilder> sbMsj = new ArrayList();
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -144,11 +146,13 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
-                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
             
             while (filas.hasNext()) {
+                StringBuilder msj = new StringBuilder("");
+                logDetails = "";
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 // leemos una fila completa
@@ -168,10 +172,18 @@ public class CargarControlador implements Initializable {
                 if(cuenta == null & ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s a %s. Debido a que ya existe en Catálogo.\n",linea.getCodigo(),titulo);
                 }else {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\n", linea.getCodigo(),titulo);
+                    if(cuenta!= null){
+                        logDetails +=String.format("- Ya existe en Catálogo.\n");
+                    }else {
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\n");
+                    }
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
+                sbMsj.add(msj.insert(0, logDetails));
                 lista.add(linea);
             }
             //cerramos el libro
@@ -194,17 +206,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else{
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ALLCHARGED_YET);
+                menuControlador.mensaje.upload_allCharged_now(titulo);
             }else{
                 planDeCuentaDAO.insertarListaObjetoCuenta(listaCargar, menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error(titulo);
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }
@@ -212,18 +224,19 @@ public class CargarControlador implements Initializable {
     }
     
     void crearReporteLOG(){
+//        StringBuilder sbMsj = new StringBuilder("");
+        int i = 0;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTACONTABLE_CATALOGO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
+            menuControlador.Log.agregarLineaArchivo(sbMsj.get(tabListar.getItems().indexOf(item)).toString());
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
                 findError = true;
             }
         });
