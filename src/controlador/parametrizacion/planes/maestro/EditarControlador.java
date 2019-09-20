@@ -88,11 +88,11 @@ public class EditarControlador implements Initializable {
         String tipoGasto = cmbTipoGasto.getValue().toString();
         String claseGasto = cmbClaseGasto.getValue().toString();
         if (planDeCuentaDAO.actualizarObjeto(codigo,nombre, atribuible, tipoGasto,claseGasto)==1) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+            menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     
