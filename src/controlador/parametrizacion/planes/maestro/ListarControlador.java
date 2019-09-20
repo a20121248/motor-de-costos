@@ -41,9 +41,9 @@ public class ListarControlador implements Initializable {
     @FXML private JFXButton btnEliminar;
     @FXML private JFXButton btnCargar;
     
-    @FXML private Label lblTipoGasto;
-    @FXML private ComboBox<String> cmbTipoGasto;
-    @FXML private JFXButton btnBuscar;
+//    @FXML private Label lblTipoGasto;
+//    @FXML private ComboBox<String> cmbTipoGasto;
+//    @FXML private JFXButton btnBuscar;
     
     @FXML private TextField txtBuscar;
     @FXML private TableView<CuentaContable> tabListar;
@@ -76,14 +76,8 @@ public class ListarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Ocultar para Ingresos Operativos
         if (menuControlador.repartoTipo == 2) {
-            lblTipoGasto.setVisible(false);
-            cmbTipoGasto.setVisible(false);
-            btnBuscar.setVisible(false);
+
         }
-        // Combo para Tipo de Gasto
-        List<String> lstTipoGasto = new ArrayList(Arrays.asList("Todos","Administrativo","Operativo"));
-        cmbTipoGasto.getItems().addAll(lstTipoGasto);
-        cmbTipoGasto.getSelectionModel().select(0);
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -97,43 +91,10 @@ public class ListarControlador implements Initializable {
         tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
         tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
-        /*tabcolEstado.setCellValueFactory(cellData -> cellData.getValue().estaActivaProperty());
-        tabcolEstado.setCellFactory(column -> {
-            return new TableCell<CuentaContable, Boolean>() {
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        if (item) {
-                            setText("ACTIVA");
-                            setTextFill(Color.GREEN);
-                        } else {
-                            setText("INACTIVA");
-                            setTextFill(Color.RED);
-                        }
-                    }
-                }
-            };
-        });*/
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
-                boolean cond;
-                switch (cmbTipoGasto.getValue()) {
-                    case "Administrativo":
-                        cond = item.getCodigo().substring(0,2).equals("45");
-                        break;
-                    case "Operativo":
-                        cond = item.getCodigo().substring(0,2).equals("44");
-                        break;
-                    default:
-                        cond = true;
-                }
-                if (!cond) return false;
                 if (newValue == null || newValue.isEmpty()) return true;
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
@@ -174,7 +135,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         CuentaContable item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY );
+            menuControlador.mensaje.edit_empty_error(titulo);
         }
         menuControlador.objeto = item;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_EDITAR);
@@ -183,7 +144,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         CuentaContable item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Cuenta Contable", "¿Está seguro de eliminar la Cuenta Contable " + item.getCodigo() + "?")) {
@@ -197,10 +158,10 @@ public class ListarControlador implements Initializable {
             sortedData = new SortedList(filteredData);
             tabListar.setItems(sortedData);
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
+            menuControlador.mensaje.delete_success(titulo);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
         }else{
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
+            menuControlador.mensaje.delete_item_maestro_error(titulo);
         }
     }
     
@@ -219,10 +180,10 @@ public class ListarControlador implements Initializable {
                 descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
@@ -231,16 +192,6 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnBuscarAction(ActionEvent event) {
-        filteredData.setPredicate(item -> {
-            switch (cmbTipoGasto.getValue()) {
-                case "Administrativo":
-                    return item.getCodigo().substring(0,2).equals("45");
-                case "Operativo":
-                    return item.getCodigo().substring(0,2).equals("44");
-                default:
-                    return true;
-            }
-        });
         txtBuscar.setText("");
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
     }
