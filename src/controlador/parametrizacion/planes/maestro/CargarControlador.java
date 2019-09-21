@@ -68,7 +68,6 @@ public class CargarControlador implements Initializable {
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getControlador());
     String titulo;
     Boolean findError;
-    List<StringBuilder> sbMsj = new ArrayList();
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -135,6 +134,7 @@ public class CargarControlador implements Initializable {
     private List<CuentaContable> leerArchivo(String rutaArchivo) {
         List<CuentaContable> lista = new ArrayList();
         List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
+        logDetails = "";
 //        List<CuentaContable> listaError = new ArrayList();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
@@ -151,8 +151,7 @@ public class CargarControlador implements Initializable {
             }
             
             while (filas.hasNext()) {
-                StringBuilder msj = new StringBuilder("");
-                logDetails = "";
+                
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 // leemos una fila completa
@@ -172,18 +171,17 @@ public class CargarControlador implements Initializable {
                 if(cuenta == null & ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
-                    logDetails +=String.format("Se agregó item %s a %s. Debido a que ya existe en Catálogo.\n",linea.getCodigo(),titulo);
+                    logDetails +=String.format("Se agregó item %s a %s. Debido a que ya existe en Catálogo.\r\n",linea.getCodigo(),titulo);
                 }else {
-                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\n", linea.getCodigo(),titulo);
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
                     if(cuenta!= null){
-                        logDetails +=String.format("- Ya existe en Catálogo.\n");
+                        logDetails +=String.format("- Ya existe en Catálogo.\r\n");
                     }else {
-                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\n");
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
                     }
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
-                sbMsj.add(msj.insert(0, logDetails));
                 lista.add(linea);
             }
             //cerramos el libro
@@ -232,7 +230,6 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
-            menuControlador.Log.agregarLineaArchivo(sbMsj.get(tabListar.getItems().indexOf(item)).toString());
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
             }
@@ -240,6 +237,7 @@ public class CargarControlador implements Initializable {
                 findError = true;
             }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
