@@ -87,10 +87,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Ocultar para Ingresos Operativos
-        System.out.println(menuControlador.repartoTipo);
         if (menuControlador.repartoTipo == 2) {
-//            lblTipoGasto.setVisible(false);
             cmbMes.setVisible(false);
             // Periodo seleccionado
             periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
@@ -159,7 +156,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
+            menuControlador.mensaje.add_refresh_error(titulo);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CTA".equals(item.getCodigo())).findFirst().orElse(null);
@@ -223,7 +220,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,null,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
+            menuControlador.mensaje.show_table_empty(titulo);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());

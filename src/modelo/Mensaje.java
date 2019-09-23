@@ -138,4 +138,26 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void upload_periodo_fail_error(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Subir información");
+        alert.setContentText("Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void add_refresh_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Agregar " + titulo);
+        alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void show_table_empty(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Consulta "+ titulo);
+        alert.setContentText("No existen "+ titulo+ " para el periodo seleccionado.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
 }

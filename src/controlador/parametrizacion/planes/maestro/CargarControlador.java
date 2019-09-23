@@ -171,7 +171,7 @@ public class CargarControlador implements Initializable {
                 if(cuenta == null & ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
-                    logDetails +=String.format("Se agregó item %s a %s. Debido a que ya existe en Catálogo.\r\n",linea.getCodigo(),titulo);
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
                 }else {
                     logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
                     if(cuenta!= null){
@@ -222,8 +222,6 @@ public class CargarControlador implements Initializable {
     }
     
     void crearReporteLOG(){
-//        StringBuilder sbMsj = new StringBuilder("");
-        int i = 0;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTACONTABLE_CATALOGO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);

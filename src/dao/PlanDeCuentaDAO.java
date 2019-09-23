@@ -158,12 +158,12 @@ public class PlanDeCuentaDAO {
 
     public int borrarListaObjetoCuentaPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM plan_de_cuenta_lineas A\n" +
+                "DELETE FROM MS_plan_de_cuenta_lineas A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
-                "                 FROM plan_de_cuentas B\n" +
+                "                 FROM MS_plan_de_cuentas B\n" +
                 "                WHERE A.plan_de_cuenta_codigo=B.codigo\n" +
                 "                  AND A.periodo=%d\n" +
-                "                  AND B.reparto_tipo=%d)",
+                "                  AND A.reparto_tipo=%d)",
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -178,11 +178,12 @@ public class PlanDeCuentaDAO {
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%d',%d,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO MS_plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%d',%d,%d,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
                     codigo,
                     periodo,
                     0,
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
@@ -203,6 +204,7 @@ public class PlanDeCuentaDAO {
                 " WHERE A.esta_activo=1 AND B.periodo=%d AND B.reparto_tipo=%d\n",
                 periodo,repartoTipo);
         if(repartoTipo == 2) {
+            // Modificar el group by para presupuesto
             queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                     "\n ORDER BY A.codigo";
         }else {
@@ -263,17 +265,9 @@ public class PlanDeCuentaDAO {
         return lista;
     }
 
-    public int eliminarObjetoGrupo(String codigo) {
-        String queryStr = String.format("" +
-                "DELETE FROM grupos\n" +
-                " WHERE codigo='%s'",
-                codigo);
-        return ConexionBD.ejecutar(queryStr);
-    }
-
     public int eliminarObjetoCuenta(String codigo) {
         String queryStr = String.format("" +
-                "DELETE FROM plan_de_cuentas\n" +
+                "DELETE FROM MS_plan_de_cuentas\n" +
                 " WHERE codigo='%s'",
                 codigo);
         return ConexionBD.ejecutar(queryStr);
