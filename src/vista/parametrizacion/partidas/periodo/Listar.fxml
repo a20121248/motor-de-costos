@@ -114,8 +114,6 @@
             </JFXButton>
          </children>
       </HBox>
-      <Label fx:id="lblTipoGasto" layoutX="66.0" layoutY="179.0" text="Tipo de gasto:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="164.0" />
-      <ComboBox fx:id="cmbTipoGasto" layoutX="152.0" layoutY="175.0" prefWidth="170.0" AnchorPane.leftAnchor="135.0" AnchorPane.topAnchor="160.0" />
       <JFXButton fx:id="btnDescargar" layoutX="190.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
          <graphic>
             <FontAwesomeIconView glyphName="DOWNLOAD" />

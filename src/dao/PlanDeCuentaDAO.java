@@ -490,6 +490,51 @@ public class PlanDeCuentaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
+    public void insertarCuentasGrupo(int periodo, List<CargarGrupoCuentaLinea> lista, int repartoTipo) {
+        borrarCuentasGrupo(periodo,repartoTipo);
+        ConexionBD.crearStatement();
+        for (CargarGrupoCuentaLinea item: lista) {
+            String codigoGrupo = item.getCodigoAgrupacion();
+            String codigoCuenta = item.getCodigoPlanDeCuenta();
+            String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+
+            // inserto una linea dummy
+            String queryStr = String.format(Locale.US, "" +
+                "INSERT INTO grupo_plan_de_cuenta(grupo_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigoGrupo,
+                    codigoCuenta,
+                    periodo,
+                    fechaStr,
+                    fechaStr);
+            ConexionBD.agregarBatch(queryStr);
+        }
+        ConexionBD.ejecutarBatch();
+        ConexionBD.cerrarStatement();
+    }
+
+    public List<Tipo> listarGrupos(int periodo) {
+        String queryStr = String.format("" +
+                "SELECT DISTINCT A.codigo,\n" +
+                "       A.nombre\n" +
+                "  FROM grupos A\n" +
+                "  JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo\n" +
+                " WHERE A.esta_activo=1 AND B.periodo=%d",
+                periodo);
+        List<Tipo> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while (rs.next()) {
+                String codigo = rs.getString("codigo");
+                String nombre = rs.getString("nombre");
+                Tipo tipo = new Tipo(codigo,nombre,null);
+                lista.add(tipo);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+
     public List<Grupo> listarGruposNombres(int periodo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +

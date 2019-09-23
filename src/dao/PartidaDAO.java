@@ -25,7 +25,7 @@ import modelo.Tipo;
 public class PartidaDAO {
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT codigo FROM partidas")) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT codigo FROM MS_partidas")) {
             while(rs.next()) lista.add(rs.getString("codigo"));
         } catch (SQLException ex) {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -71,17 +71,10 @@ public class PartidaDAO {
                 "       SUM(COALESCE(B.saldo,0)) saldo,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
-                "  FROM partidas A\n" +
-                "  JOIN partida_lineas B ON B.partida_codigo=A.codigo\n" +
-                " WHERE  B.periodo=%d AND A.reparto_tipo=%d\n",
+                "  FROM MS_partidas A\n" +
+                "  JOIN MS_partida_lineas B ON B.partida_codigo=A.codigo\n" +
+                " WHERE  B.periodo=%d AND B.reparto_tipo=%d\n",
                 periodo,repartoTipo);
-        switch(tipoGasto) {
-            case "Administrativo":
-                queryStr += "   AND SUBSTR(A.codigo,0,2)='45'";
-                break;
-            case "Operativo":
-                queryStr += "   AND SUBSTR(A.codigo,0,2)='44'";
-        }
         queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                     "\n ORDER BY A.codigo";
         List<Partida> lista = new ArrayList();
@@ -158,8 +151,7 @@ public class PartidaDAO {
                 "       grupo_gasto,\n" +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
-                "  FROM partidas\n" +
-                " WHERE reparto_tipo=%d\n" +
+                "  FROM MS_partidas\n" +
                 " ORDER BY codigo",repartoTipo);
         } else {
             queryStr = String.format("" +
@@ -168,8 +160,8 @@ public class PartidaDAO {
                 "       grupo_gasto,\n" +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
-                "  FROM partidas\n" +
-                " WHERE codigo NOT IN (%s) AND reparto_tipo=%d\n" +
+                "  FROM MS_partidas\n" +
+                " WHERE codigo NOT IN (%s)\n" +
                 " ORDER BY codigo",codigos,repartoTipo);
         }
         List<Tipo> listaGrupoGastos = tipoDAO.listarGrupoGastos();
@@ -247,7 +239,7 @@ public class PartidaDAO {
     public int verificarObjetoPartidaPeriodoAsignacion(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM partida_cuenta_contable\n" +
+                "  FROM MS_partida_cuenta_contable\n" +
                 " WHERE partida_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         int cont=-1;
@@ -282,9 +274,9 @@ public class PartidaDAO {
     public int insertarObjeto(String codigo, String nombre, String grupoGasto, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO partidas(codigo,nombre,grupo_gasto, reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,grupoGasto,repartoTipo,fechaStr,fechaStr);
+                "INSERT INTO MS_partidas(codigo,nombre,grupo_gasto, reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%s',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,grupoGasto,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -366,16 +358,16 @@ public class PartidaDAO {
 //    }
     
     public int eliminarObjetoPeriodo(String codigo, int periodo) {
-        String queryStr = String.format("DELETE FROM partida_lineas WHERE partida_codigo='%s' AND periodo=%d",codigo,periodo);
+        String queryStr = String.format("DELETE FROM MS_partida_lineas WHERE partida_codigo='%s' AND periodo=%d",codigo,periodo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarObjetoPeriodo(String codigo, int periodo) {
+    public int insertarObjetoPeriodo(String codigo, int periodo,int repartoTipo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format(""+
-                "INSERT INTO partida_lineas(partida_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion) "+
-                "VALUES('%s',%d,0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,fechaStr,fechaStr);
+                "INSERT INTO MS_partida_lineas(partida_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion) "+
+                "VALUES('%s',%d,0,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,periodo,repartoTipo,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
