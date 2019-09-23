@@ -94,10 +94,14 @@ public class EditarControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
-        partidaDAO.actualizarObjeto(codigo, nombre,grupoGasto);
-        menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
-        menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);
+        if (partidaDAO.actualizarObjeto(codigo, nombre,grupoGasto)==1) {
+            menuControlador.mensaje.edit_success(titulo);
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);
+        } else {
+            menuControlador.mensaje.edit_error(titulo);
+        }
+        
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {

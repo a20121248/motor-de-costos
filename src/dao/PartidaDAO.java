@@ -257,7 +257,7 @@ public class PartidaDAO {
     public int verificarObjetoPartida(String codigo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM partida_lineas\n" +
+                "  FROM MS_partida_lineas\n" +
                 " WHERE partida_codigo='%s'",
                 codigo);
         int cont=-1;
@@ -281,12 +281,12 @@ public class PartidaDAO {
     }
     
     public int actualizarObjeto(String codigo, String nombre, String grupoGasto) {
-        String queryStr = String.format("UPDATE partidas SET nombre='%s', grupo_gasto='%s' WHERE codigo='%s'",nombre,grupoGasto,codigo);
+        String queryStr = String.format("UPDATE MS_partidas SET nombre='%s', grupo_gasto='%s' WHERE codigo='%s'",nombre,grupoGasto,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     
     public int eliminarObjeto(String codigo) {
-        String queryStr = String.format("DELETE FROM partidas WHERE codigo='%s'",codigo);
+        String queryStr = String.format("DELETE FROM MS_partidas WHERE codigo='%s'",codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     

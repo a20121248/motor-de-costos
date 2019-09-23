@@ -136,6 +136,7 @@ public class ListarControlador implements Initializable {
         CuentaContable item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
             menuControlador.mensaje.edit_empty_error(titulo);
+            return;
         }
         menuControlador.objeto = item;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_EDITAR);

@@ -883,14 +883,6 @@ public class Navegador {
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText( titulo +" eliminado correctamente.");
                 break;
-            case "TABLE_EMPTY":
-                alert.setTitle("Consulta "+ titulo);
-                alert.setContentText("No existen "+ titulo+ " para el periodo seleccionado.");
-                break;
-            case "ADD_REFRESH":
-                alert.setTitle("Agregar "+ titulo);
-                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-                break;
             case "ADD_EMPTY":
                 alert.setTitle("Agregar "+ titulo);
                 alert.setContentText("Por favor seleccione item.");
