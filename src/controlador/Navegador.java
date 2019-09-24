@@ -874,10 +874,6 @@ public class Navegador {
             case "DELETE_SUCCESS":
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText( titulo +" eliminado correctamente.");
-                break;            
-            case "EDIT_ITEM_WITHOUT_ALLOCATE":
-                alert.setTitle("Editar "+ titulo);
-                alert.setContentText("No se puede editar item " + titulo +", pues no ha sido asignado previamente.");
                 break;
             case "PHASE1_BOLSAS_WITHOUT_DRIVERS":
                 alert.setTitle("FASE 1");

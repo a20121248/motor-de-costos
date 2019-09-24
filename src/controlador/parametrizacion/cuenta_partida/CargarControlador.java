@@ -71,8 +71,9 @@ public class CargarControlador implements Initializable {
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CUENTA_PARTIDA_CARGAR.getControlador());
     String titulo;
-    List<CargarCuentaPartidaLinea> listaCargar = new ArrayList() ;
+    List<CargarCuentaPartidaLinea> listaCargar;
     String logName;
+    String logDetails;
     Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
@@ -87,6 +88,12 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
+        }
         // tabla formato
         tabcolCodigoCuenta.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuenta.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
@@ -106,11 +113,13 @@ public class CargarControlador implements Initializable {
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         btnDescargarLog.setVisible(false);
     }
@@ -137,6 +146,14 @@ public class CargarControlador implements Initializable {
         file_chooser.setTitle("Abrir asignaciones");
         File archivoSeleccionado = file_chooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
+            if(menuControlador.repartoTipo == 2){
+                spAnho.setDisable(true);
+            }
+            else{
+                cmbMes.setDisable(true);
+                spAnho.setDisable(true);
+            }
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             List<CargarCuentaPartidaLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             tabListar.getItems().setAll(lista);
@@ -146,8 +163,10 @@ public class CargarControlador implements Initializable {
     
     private List<CargarCuentaPartidaLinea> leerArchivo(String rutaArchivo) {
         List<CargarCuentaPartidaLinea> lista = new ArrayList();
-        List<String> listaCodigosPartidaPeriodo = partidaDAO.listarCodigosPeriodo(periodoSeleccionado);
-        List<String> listaCodigosCuentaPeriodo = planDeCuentaDAO.listarCodigosPeriodo(periodoSeleccionado);
+        List<String> listaCodigosPartidaPeriodo = partidaDAO.listarCodigosPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
+        List<String> listaCodigosCuentaPeriodo = planDeCuentaDAO.listarCodigosPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
+        listaCargar = new ArrayList();
+        logDetails = "";
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -160,7 +179,7 @@ public class CargarControlador implements Initializable {
             //int numFilasOmitir = 2
             //Estructura de la cabecera
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA","BOLSA")))) {
-                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
             while (filas.hasNext()) {
@@ -190,10 +209,16 @@ public class CargarControlador implements Initializable {
                 if(partida!= null && cuenta!=null){
                     listaCargar.add(linea);
                     listaCodigosPartidaPeriodo.removeIf(x -> x.equals(linea.getCodigoPartida()));
+                    logDetails +=String.format("Se agregó Partida %s con Cuenta Contable %s en %s (Cuenta Contable - Partida) correctamente.\r\n",linea.getCodigoPartida(),linea.getCodigoCuentaContable(),titulo);
                 } else {
-                    // >>>agregar linea para log sobre el error
+                    logDetails +=String.format("No se agregó Partida %s con Cuenta Contable %s al periodo %d de %s Cuenta Contable - Partida. Debido a que existen los siguientes errores:\r\n", linea.getCodigoPartida(),linea.getCodigoCuentaContable(),periodoSeleccionado,titulo);
+                    if(partida == null){
+                        logDetails +=String.format("- El código de Partida no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", periodoSeleccionado);
+                    }
+                    if(cuenta == null){
+                        logDetails +=String.format("- El código de Cuenta Contable no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", periodoSeleccionado);
+                    }
                     linea.setFlagCargar(false);
-//                    listaError.add(linea);                    
                 }
                 lista.add(linea);
             }
@@ -209,17 +234,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else {
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+                menuControlador.mensaje.upload_allCharged_now(titulo);
             }else{
                 partidaDAO.insertarPartidasCuenta(periodoSeleccionado,listaCargar,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error(titulo);
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }
@@ -243,14 +268,13 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó Partida "+ item.getCodigoPartida()+ " con Cuenta Contable "+ item.getCodigoCuentaContable()+" en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoCuentaContable() +" con "+ item.getCodigoPartida(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigoPartida()+ " con "+item.getCodigoCuentaContable()+ " en "+titulo+"\n. Debido a que ya está asignado o no exista alguno de los items a asignar en su respectivo periodo.");
                 findError = true;
             }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);

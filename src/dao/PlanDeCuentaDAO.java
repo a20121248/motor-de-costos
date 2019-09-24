@@ -74,8 +74,8 @@ public class PlanDeCuentaDAO {
         return lista;
     }
     
-    public List<String> listarCodigosPeriodo(int periodo) {
-        String queryStr = String.format(String.format("SELECT plan_de_cuenta_codigo FROM PLAN_DE_CUENTA_LINEAS WHERE periodo=%d ", periodo));
+    public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format(String.format("SELECT plan_de_cuenta_codigo FROM MS_PLAN_DE_CUENTA_LINEAS WHERE periodo=%d and reparto_tipo=%d", periodo,repartoTipo));
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

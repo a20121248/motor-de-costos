@@ -146,6 +146,7 @@ public class CargarControlador implements Initializable {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
             if(menuControlador.repartoTipo == 2){
                 spAnho.setDisable(true);
             }

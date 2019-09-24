@@ -33,9 +33,9 @@ public class PartidaDAO {
         return lista;
     }
     
-    public List<String> listarCodigosPeriodo(int periodo) {
+    public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT partida_codigo FROM partida_lineas WHERE periodo=%d", periodo))) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT partida_codigo FROM MS_partida_lineas WHERE periodo=%d and reparto_tipo=%d", periodo,repartoTipo))) {
             while(rs.next()) lista.add(rs.getString("partida_codigo"));
         } catch (SQLException ex) {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -417,13 +417,14 @@ public class PartidaDAO {
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,es_bolsa,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d','%d','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO MS_partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,es_bolsa,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%d','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigoPartida,
                     codigoCuenta,
                     0,
                     periodo,
                     esBolsa,
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
@@ -434,12 +435,12 @@ public class PartidaDAO {
     
     public int borrarPartidasCuenta(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_cuenta_contable A\n" +
+                "DELETE FROM MS_partida_cuenta_contable A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
-                "                 FROM plan_de_cuentas B\n" +
-                "                WHERE A.cuenta_contable_codigo=B.codigo\n" +
+                "                 FROM MS_partidas B\n" +
+                "                WHERE A.partida_codigo=B.codigo\n" +
                 "                  AND A.periodo=%d\n" +
-                "                  AND B.reparto_tipo=%d)",
+                "                  AND A.reparto_tipo=%d)",
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
