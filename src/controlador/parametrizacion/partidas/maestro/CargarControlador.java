@@ -62,6 +62,7 @@ public class CargarControlador implements Initializable {
     TipoDAO tipoDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
     List<Partida> listaCargar = new ArrayList() ;
@@ -133,6 +134,7 @@ public class CargarControlador implements Initializable {
         List<Partida> lista = new ArrayList();
         List<String> listaCodigos = partidaDAO.listarCodigos();
         List<Tipo> listaGrupoGastos = tipoDAO.listarGrupoGastos();
+        logDetails = "";
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -143,7 +145,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","GRUPO GASTO")))) {
-                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
             
@@ -169,9 +171,16 @@ public class CargarControlador implements Initializable {
                 if(cuenta == null && tipoGrupoGasto != null && ptrCodigo){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
                 }else {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
+                    if(cuenta!= null){
+                        logDetails +=String.format("- Ya existe en Catálogo.\r\n");
+                    }else {
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
+                        if(tipoGrupoGasto == null) logDetails +=String.format("- El grupo de gasto asignado es no existe o está vacio.\r\n");
+                    }
                     linea.setFlagCargar(false);
-//                    listaError.add(linea);
                 }
                 lista.add(linea);
             }
@@ -195,17 +204,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else{
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ALLCHARGED_YET);
+                menuControlador.mensaje.upload_allCharged_now(titulo);
             }else{
                 partidaDAO.insertarListaObjeto(listaCargar, menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error(titulo);
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }
@@ -220,14 +229,13 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que ya está cargado.");
                 findError = true;
             }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
