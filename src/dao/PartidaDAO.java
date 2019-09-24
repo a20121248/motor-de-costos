@@ -52,9 +52,9 @@ public class PartidaDAO {
             
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format("" +
-                    "INSERT INTO PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s',q'[%s]','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,grupoGasto,repartoTipo,fechaStr,fechaStr);
+                    "INSERT INTO MS_PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s',q'[%s]','%s',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,grupoGasto,fechaStr,fechaStr);
 //            System.out.println(queryStr+";");
             ConexionBD.agregarBatch(queryStr);
             
