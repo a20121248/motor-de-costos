@@ -373,12 +373,12 @@ public class PartidaDAO {
     
     public int borrarListaObjetoPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_lineas A\n" +
+                "DELETE FROM MS_partida_lineas A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
-                "                 FROM partidas B\n" +
+                "                 FROM MS_partidas B\n" +
                 "                WHERE A.partida_codigo=B.codigo\n" +
                 "                  AND A.periodo=%d\n" +
-                "                  AND B.reparto_tipo=%d)",
+                "                  AND A.reparto_tipo=%d)",
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -391,9 +391,9 @@ public class PartidaDAO {
             int periodo = item.getPeriodo();
             String codigo = item.getCodigo();
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO partida_lineas(partida_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s',%d,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,0,fechaStr,fechaStr);
+                "INSERT INTO MS_partida_lineas(partida_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s',%d,'%d',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,periodo,0,repartoTipo,fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
