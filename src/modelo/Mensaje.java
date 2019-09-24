@@ -180,4 +180,11 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void update_item_without_allocate(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Actualizar "+ titulo);
+        alert.setContentText("No se puede actualizar item " + titulo +", pues no ha sido asignado previamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

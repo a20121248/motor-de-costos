@@ -56,9 +56,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
     
-    @FXML private Label lblTipoGasto;
-    @FXML private ComboBox<String> cmbTipoGasto;
-    
     @FXML private TextField txtBuscar;
     @FXML private TableView<Partida> tabListar;
     @FXML private TableColumn<Partida, String> tabcolCodigoCuenta;
@@ -95,36 +92,32 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public void initialize(URL url, ResourceBundle rb) {
         // Ocultar para Ingresos Operativos
         if (menuControlador.repartoTipo == 2) {
-            lblTipoGasto.setVisible(false);
-            cmbTipoGasto.setVisible(false);
+            cmbMes.setVisible(false);
+            // Periodo seleccionado
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            // Periodo seleccionado
+            periodoSeleccionado = menuControlador.periodo;
         }
-        // Combo para Tipo de Gasto
-        List<String> lstTipoGasto = new ArrayList(Arrays.asList("Todos","Administrativo","Operativo"));
-        cmbTipoGasto.getItems().addAll(lstTipoGasto);
-        cmbTipoGasto.getSelectionModel().select(tipoGasto);
-        cmbTipoGasto.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                tablaEstaActualizada = false;
-            }
-        });
+
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+               if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabcolCodigoCuenta.setCellValueFactory(cellData -> cellData.getValue().getCuentaContable().codigoProperty());
         tabcolNombreCuenta.setCellValueFactory(cellData -> cellData.getValue().getCuentaContable().nombreProperty());
@@ -140,7 +133,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolEsBolsa.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,null,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -173,40 +166,40 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     @FXML void btnEsBolsaAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPDATE_REFRESH);
+            menuControlador.mensaje.update_refresh_error(titulo);
             return;
         }
         
         partidaSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (partidaSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPDATE_EMPTY);
+            menuControlador.mensaje.update_empty(titulo);
             return;
         }
         if (partidaSeleccionada.getCuentaContable().getCodigo().equals("Sin CuentaContable asignada")){
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_ITEM_WITHOUT_ALLOCATE);
+            menuControlador.mensaje.update_item_without_allocate(titulo);
             return;
         }    
-        partidaDAO.actualizarCuentaPartidaBolsa(partidaSeleccionada, periodoSeleccionado);
-        String item = "modificó bolsa a "+partidaSeleccionada.getEsBolsa()+"de la asignación ("+partidaSeleccionada.getCuentaContable().getCodigo()+","+ partidaSeleccionada.getCodigo()+")";
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),item,periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
+        partidaDAO.actualizarCuentaPartidaBolsa(partidaSeleccionada, periodoSeleccionado,menuControlador.repartoTipo);
+        String item = " de la asignación Cuenta - Partida ("+partidaSeleccionada.getCuentaContable().getCodigo()+","+ partidaSeleccionada.getCodigo()+")";
+        menuControlador.Log.editarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),item,periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
         
     }
     
     @FXML void btnAsignarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
+            menuControlador.mensaje.add_refresh_error(titulo);
             return;
         }
         
         partidaSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (partidaSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_ADD_EMPTY);
+            menuControlador.mensaje.add_empty(titulo);
             return;
         }
         if (!partidaSeleccionada.getCuentaContable().getCodigo().equals("Sin CuentaContable asignada")) {
             if (menuControlador.navegador.mensajeConfirmar("Asignar Partida a Cuentas Contables", "La partida ya cuenta con Cuenta Contable asignada.\n¿Está seguro que desea reemplazar dicha Cuenta Contable?")) {
-                partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado);
+                partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
                 buscarCuentaContable();
             }
             return;
@@ -235,13 +228,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
+            menuControlador.mensaje.delete_refresh_error(titulo);
             return;
         }
         
         partidaSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (partidaSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         
@@ -251,7 +244,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar la Cuenta Contable " + partidaSeleccionada.getCuentaContable().getNombre() + "?"))
             return;
         
-        partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado);
+        partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),partidaSeleccionada.getCuentaContable().getCodigo()+ " a la Partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
@@ -266,7 +259,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,null,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_TABLE_EMPTY);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
@@ -303,10 +296,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         if (partidaSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_ADD_EMPTY);
+            menuControlador.mensaje.add_empty(titulo);
             return;
         }
-        partidaDAO.insertarPartidaCuenta(partidaSeleccionada.getCodigo(), entidad.getCodigo(), periodoSeleccionado);
+        partidaDAO.insertarPartidaCuenta(partidaSeleccionada.getCodigo(), entidad.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo()+ " a la partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }

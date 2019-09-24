@@ -186,12 +186,9 @@ public class PartidaDAO {
     
     //TOCHECK: partida_lineas tienen saldo???
     public List<Partida> listarPartidaConCuentaContable(int periodo, String tipoGasto, int repartoTipo) {
-//        actualizarSaldoCuentaPartida(periodo);
-
-        
+//        actualizarSaldoCuentaPartida(periodo);   
         String queryStr = String.format("" +
-                "SELECT "+
-                "       NVL(D.codigo,'Sin CuentaContable asignada') cuenta_contable_codigo,\n" +
+                "SELECT NVL(D.codigo,'Sin CuentaContable asignada') cuenta_contable_codigo,\n" +
                 "       NVL(D.nombre,'Sin CuentaContable asignada') cuenta_contable_nombre,\n" +
                 "       A.codigo partida_codigo,\n" +
                 "       A.nombre partida_nombre,\n" +
@@ -199,20 +196,12 @@ public class PartidaDAO {
                 "       NVL(C.es_bolsa,'-') es_bolsa,\n" +
                 "       A.fecha_creacion partida_fecha_creacion,\n" +
                 "       A.fecha_actualizacion partida_fecha_actualizacion\n" +
-                "  FROM partidas A\n" +
-                "  JOIN partida_lineas B ON A.codigo=B.partida_codigo AND B.periodo=%d\n" +
-                "  LEFT JOIN partida_cuenta_contable C ON A.codigo=C.partida_codigo AND C.periodo=%d\n" +
-                "  LEFT JOIN plan_de_cuentas D ON C.cuenta_contable_codigo=D.codigo\n" +
-                " WHERE A.reparto_tipo=%d",
-                periodo,periodo,repartoTipo);
-        switch(tipoGasto) {
-            case "Administrativo":
-                queryStr += "\n WHERE SUBSTR(A.codigo,0,2)='45'";
-                break;
-            case "Operativo":
-                queryStr += "\n WHERE SUBSTR(A.codigo,0,2)='44'";
-        }
-        queryStr += "\n ORDER BY partida_codigo,cuenta_contable_codigo";
+                "  FROM MS_partidas A\n" +
+                "  JOIN MS_partida_lineas B ON A.codigo=B.partida_codigo AND B.periodo=%d AND B.reparto_tipo=%d\n" +
+                "  LEFT JOIN MS_partida_cuenta_contable C ON A.codigo=C.partida_codigo AND C.periodo=B.periodo AND C.reparto_tipo = B.reparto_tipo\n" +
+                "  LEFT JOIN MS_plan_de_cuentas D ON C.cuenta_contable_codigo=D.codigo\n" +
+                " ORDER BY partida_codigo,cuenta_contable_codigo",
+                periodo,repartoTipo);
         List<Partida> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -400,17 +389,18 @@ public class PartidaDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public int insertarPartidaCuenta(String partidaCodigo, String cuentaContableCodigo, int periodo) {
+    public int insertarPartidaCuenta(String partidaCodigo, String cuentaContableCodigo, int periodo, int reparto_tipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
 //        Double saldo = leerSaldoPartida(partidaCodigo, periodo);
         String queryStr = String.format("" +
-                "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,es_bolsa, fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d','%.2f','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO MS_partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,es_bolsa,reparto_tipo, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%.2f','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     partidaCodigo,
                     cuentaContableCodigo,
                     periodo,
                     0.0,
                     "NO",
+                    reparto_tipo,
                     fechaStr,
                     fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -453,25 +443,35 @@ public class PartidaDAO {
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
-    public int borrarPartidaCuenta(String partidaCodigo,int periodo) {
+    public int borrarPartidaCuenta(String partidaCodigo,int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_cuenta_contable\n" +
-                " WHERE partida_codigo='%s' AND periodo=%d",
-                partidaCodigo,periodo);
+                "DELETE FROM MS_partida_cuenta_contable\n" +
+                " WHERE partida_codigo='%s' AND periodo=%d AND reparto_tipo = %d",
+                partidaCodigo,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int actualizarCuentaPartidaBolsa(Partida cuentaPartida , int periodo ){
+    public int actualizarCuentaPartidaBolsa(Partida cuentaPartida , int periodo, int repartoTipo){
         String estado=null;
-        if(cuentaPartida.getEsBolsa().equals("SI")) estado = "NO";
-        else if(cuentaPartida.getEsBolsa().equals("NO")) estado = "SI";
-        else if(cuentaPartida.getEsBolsa().equals("-")) estado = "NO";
+        switch (cuentaPartida.getEsBolsa()) {
+            case "SI":
+                estado = "NO";
+                break;
+            case "NO":
+                estado = "SI";
+                break;
+            case "-":
+                estado = "NO";
+                break;
+            default:
+                break;
+        }
         
         String queryStr = String.format("" +
-                "UPDATE partida_cuenta_contable\n"
+                "UPDATE MS_partida_cuenta_contable\n"
                 + " SET es_bolsa = '%s'" +
-                " WHERE partida_codigo='%s' AND cuenta_contable_codigo='%s' AND periodo=%d",
-                estado,cuentaPartida.getCodigo(),cuentaPartida.getCuentaContable().getCodigo(),periodo);
+                " WHERE partida_codigo='%s' AND cuenta_contable_codigo='%s' AND periodo=%d AND reparto_tipo=%d",
+                estado,cuentaPartida.getCodigo(),cuentaPartida.getCuentaContable().getCodigo(),periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
