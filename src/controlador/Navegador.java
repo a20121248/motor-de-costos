@@ -838,14 +838,6 @@ public class Navegador {
     public void mensajeInformativo(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         switch(contenido){
-            case "UPDATE_REFRESH":
-                alert.setTitle("Actualizar "+ titulo);
-                alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-                break;
-            case "UPDATE_EMPTY":
-                alert.setTitle("Actualizar "+ titulo);
-                alert.setContentText("Por favor seleccione item.");
-                break;
             case "UPLOAD":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText(titulo +  " asignados correctamente.");
@@ -882,12 +874,7 @@ public class Navegador {
             case "DELETE_SUCCESS":
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText( titulo +" eliminado correctamente.");
-                break;
-            case "ADD_EMPTY":
-                alert.setTitle("Agregar "+ titulo);
-                alert.setContentText("Por favor seleccione item.");
-                break;
-            
+                break;            
             case "EDIT_ITEM_WITHOUT_ALLOCATE":
                 alert.setTitle("Editar "+ titulo);
                 alert.setContentText("No se puede editar item " + titulo +", pues no ha sido asignado previamente.");

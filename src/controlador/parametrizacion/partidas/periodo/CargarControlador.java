@@ -65,7 +65,7 @@ public class CargarControlador implements Initializable {
     final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR.getControlador());
     String titulo;
-    List<CargarObjetoPeriodoLinea> listaCargar = new ArrayList() ;
+    List<CargarObjetoPeriodoLinea> listaCargar ;
     String logName;
     String logDetails;
     Boolean findError;
@@ -158,6 +158,7 @@ public class CargarControlador implements Initializable {
     private List<CargarObjetoPeriodoLinea> leerArchivo(String rutaArchivo) {
         List<CargarObjetoPeriodoLinea> lista = new ArrayList();
         List<String> listaCodigos = partidaDAO.listarCodigos();
+        listaCargar = new ArrayList();
         logDetails = "";
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);

@@ -164,6 +164,7 @@ public class CargarControlador implements Initializable {
         List<CargarObjetoPeriodoLinea> lista = new ArrayList();
 //        List<CargarObjetoPeriodoLinea> listaError = new ArrayList();
         List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
+        listaCargar = new ArrayList();
         logDetails = "";
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);

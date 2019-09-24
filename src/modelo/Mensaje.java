@@ -152,6 +152,13 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void add_empty(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Agregar "+ titulo);
+        alert.setContentText("Por favor seleccione item.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
     public void show_table_empty(String titulo){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Consulta "+ titulo);
@@ -159,5 +166,18 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
-    
+    public void update_refresh_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Actualizar "+ titulo);
+        alert.setContentText("Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void update_empty(String titulo){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Actualizar "+ titulo);
+        alert.setContentText("Por favor seleccione item.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }
