@@ -75,7 +75,7 @@ public class CentroDAO {
     }
     
     public List<String> listarCodigos() {
-        String queryStr = String.format("SELECT codigo FROM centros");
+        String queryStr = String.format("SELECT codigo FROM MS_centros");
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -183,9 +183,9 @@ public class CentroDAO {
         claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO centros(codigo,nombre,esta_activo,centro_tipo_codigo,nivel,centro_padre_codigo,reparto_tipo, es_bolsa, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
+                "INSERT INTO MS_centros(codigo,nombre,esta_activo,centro_tipo_codigo,nivel,centro_padre_codigo,reparto_tipo, es_bolsa, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
                 "VALUES ('%s','%s',%d,'%s',%d,'%s',%d,'%s','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,repartoTipo,es_bolsa, atribuible, tipoGasto, claseGasto, fechaStr, fechaStr);
+                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,0,es_bolsa, atribuible, tipoGasto, claseGasto, fechaStr, fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -292,10 +292,10 @@ public class CentroDAO {
                 "       B.codigo tipo_codigo,\n" +
                 "       B.nombre tipo_nombre,\n" +
                 "       SUM(COALESCE(C.saldo,0)) saldo\n" +
-                "  FROM centros A\n" +
-                "  JOIN centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
-                "  JOIN centro_lineas C ON A.codigo=C.centro_codigo\n" +
-                " WHERE C.periodo=%d AND A.reparto_tipo=%d\n AND (c.iteracion = -1 OR C.iteracion = -2)" +
+                "  FROM MS_centros A\n" +
+                "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
+                "  JOIN MS_centro_lineas C ON A.codigo=C.centro_codigo\n" +
+                " WHERE C.periodo=%d AND C.reparto_tipo=%d\n AND (c.iteracion = -1 OR C.iteracion = -2)" +
                 " GROUP BY A.codigo,A.nombre," +
                 "          B.codigo,B.nombre",
                 periodo,repartoTipo);
@@ -444,9 +444,9 @@ public class CentroDAO {
                 "       B.codigo tipo_codigo,\n" +
                 "       B.nombre tipo_nombre,\n" +
                 "       B.descripcion tipo_descripcion\n" +
-                "  FROM centros A\n" +
-                "  JOIN centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
-                " WHERE A.reparto_tipo=%d\n" +
+                "  FROM MS_centros A\n" +
+                "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
+//                " WHERE A.reparto_tipo=%d\n" +
                 " ORDER BY A.fecha_creacion",tipoReparto);
         List<Centro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

@@ -36,7 +36,7 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarCentroTipos() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_tipos";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_tipos ORDER BY CODIGO";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

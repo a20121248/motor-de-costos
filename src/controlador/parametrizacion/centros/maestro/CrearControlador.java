@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -60,11 +62,6 @@ public class CrearControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
-        }
-        
         ObservableList<Tipo> obsListaTipos;
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroTipos.subList(1, menuControlador.lstCentroTipos.size()));
@@ -79,12 +76,6 @@ public class CrearControlador implements Initializable {
                 return cmbTipo.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            cmbTipo.getSelectionModel().select(0);
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbTipo.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbTipo.setDisable(true);
-        }
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles.subList(1, menuControlador.lstCentroNiveles.size()));
         cmbNivel.setItems(obsListaTipos);
@@ -98,30 +89,40 @@ public class CrearControlador implements Initializable {
                 return cmbNivel.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            cmbNivel.getSelectionModel().select(2);
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbNivel.setDisable(true);
-        }
         
         cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
+        
+        cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+                cmbNivel.getSelectionModel().select(0);
+            }
+            if (newValue.getCodigo().equals("PROYECTO") || newValue.getCodigo().equals("FICTICIO")) {
+                cmbEsBolsa.getSelectionModel().select(0);
+                cmbTipo.getSelectionModel().clearSelection(99);
+            }
+        });
+        
         cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (cmbNivel.getValue().getCodigo().equals("-1")) {
+            if (newValue.getCodigo().equals("0")) {
                 cmbEsBolsa.getSelectionModel().select(1);
             } else {
                 cmbEsBolsa.getSelectionModel().select(0);
             }
         });
+        
         cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (cmbEsBolsa.getValue().toString().equals("SI")) {
-                cmbNivel.getSelectionModel().select(1);
+            if (newValue.equals("SI")) {
+                cmbNivel.getSelectionModel().select(0);
             }
         });
+        
         cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
         cmbAtribuible.getSelectionModel().select(0);
+        
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
         cmbTipoGasto.getSelectionModel().select(0);
+        
         cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
         cmbClaseGasto.getSelectionModel().select(0);
     }
@@ -147,12 +148,6 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void btnCrearAction(ActionEvent event) {
-        String titulo1 = "Centros de Costos";
-        String titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficios";
-            titulo2 = "Centro de Beneficio";
-        }
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String codigoGrupo = cmbTipo.getValue().getCodigo();
@@ -162,20 +157,24 @@ public class CrearControlador implements Initializable {
         String atribuible = cmbAtribuible.getValue().toString();
         String tipoGasto = cmbTipoGasto.getValue().toString();
         String claseGasto = cmbClaseGasto.getValue().toString();
-        if (!menuControlador.patronCodigoCentro(codigo)) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_PATTERN);
+        boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
+        if (!ptrCodigo) {
+            menuControlador.mensaje.create_pattern_error(titulo);
             return;
         }
         if (lstCentrosCodigo.contains(codigo)) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
+            menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
+        if(cecoPadreCodigo == null){
+            cecoPadreCodigo = "-";
+        }
         if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto)==1) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
+            menuControlador.mensaje.create_success(titulo);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
+            menuControlador.mensaje.create_error(titulo);
         }
     }
     
