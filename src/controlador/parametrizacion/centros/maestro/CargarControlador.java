@@ -74,6 +74,7 @@ public class CargarControlador implements Initializable {
     CentroDAO centroDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
     List<Centro> listaCargar = new ArrayList() ;
@@ -89,15 +90,7 @@ public class CargarControlador implements Initializable {
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            titulo1 = "Centros de Beneficio";
-            titulo2 = "Centro de Beneficio";
-            lblTitulo.setText("Cargar Centros de Beneficio");
-            lnkCentros.setText("Cargar Centros de Beneficio");
-        }
+    public void initialize(URL url, ResourceBundle rb) {    
         // tabla centros
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
@@ -164,6 +157,14 @@ public class CargarControlador implements Initializable {
     private List<Centro> leerArchivo(String rutaArchivo) {
         List<Centro> lista = new ArrayList();
         List<String> listaCodigos = centroDAO.listarCodigos();
+        List<Tipo> listaTipoCentro = menuControlador.lstCentroTipos;
+        logDetails = "";
+        List<String> grupoTipoBolsa = new ArrayList();
+        grupoTipoBolsa.add("BOLSA");
+        grupoTipoBolsa.add("OFICINA");
+        List<String> grupoTipoFicticio = new ArrayList();
+        grupoTipoFicticio.add("FICTICIO");
+        grupoTipoFicticio.add("PROYECTO");
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -174,7 +175,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
-                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
 
@@ -195,17 +196,73 @@ public class CargarControlador implements Initializable {
                 atribuible = centroDAO.convertirAbreviaturaPalabra(atribuible);
                 tipoGasto = centroDAO.convertirAbreviaturaPalabra(tipoGasto);
                 claseGasto = centroDAO.convertirAbreviaturaPalabra(claseGasto);
-
+                
                 Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa,atribuible,tipoGasto, claseGasto, null,null,true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                Tipo tipoCentro = listaTipoCentro.stream().filter(item ->codigoGrupo.equals(item.getCodigo())).findAny().orElse(null);
                 boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
-                if(cuenta == null && ptrCodigo){
+                String relación = "";
+                boolean relacionGrupoNivel = false;
+                if(tipoCentro != null){
+                    if(grupoTipoBolsa.contains(codigoGrupo)){
+                        if(nivel == 0){
+                            if(esBolsa.equals("SI"))relacionGrupoNivel = true;
+                            else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es BOLSA = SI.\r\n",codigoGrupo);
+                            }
+                        } else {
+                            relacionGrupoNivel = false;
+                            relación += String.format("- El grupo %s es NIVEL = 0.\r\n",codigoGrupo);
+                        }
+                    } else {
+                        if(grupoTipoFicticio.contains(codigoGrupo)){
+                            if(nivel == 99){
+                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
+                                else {
+                                    relacionGrupoNivel = false;
+                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
+                                }
+                            } else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es NIVEL = 99.\r\n",codigoGrupo);
+                            }
+                        } else {
+                            if(nivel>0 && nivel < 99){
+                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
+                                else {
+                                    relacionGrupoNivel = false;
+                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
+                                }
+                            } else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es NIVEL > 0 Y NIVEL < 99.\r\n",codigoGrupo);
+                            }
+                        }
+                    }
+                } else {
+                    relación += String.format("- El grupo %s asignado no está listado.\r\n",codigoGrupo);
+                }
+                
+                
+                if( cuenta == null && ptrCodigo && tipoCentro!= null &&relacionGrupoNivel){
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
                 }else {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
+                    if(cuenta!= null){
+                        logDetails +=String.format("- Ya existe en Catálogo.\r\n");
+                    }else {
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
+                        logDetails += relación;
+                    }
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
+                if(atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
+                if(tipoGasto == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
+                if(claseGasto == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
                 lista.add(linea);
             }
             //cerramos el libro
@@ -228,17 +285,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else{
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ALLCHARGED_YET);
+                menuControlador.mensaje.upload_allCharged_now(titulo);
             }else{
                 centroDAO.insertarListaObjeto(listaCargar, menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error(titulo);
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }        
@@ -253,14 +310,13 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
                 findError = true;
             }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);

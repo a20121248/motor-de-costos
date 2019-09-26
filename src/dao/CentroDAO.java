@@ -324,7 +324,7 @@ public class CentroDAO {
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
             String codigoGrupo = item.getTipo().getCodigo();
-            String centroPadreCodigo = "xxx";
+            String centroPadreCodigo = "-";
             int nivel = item.getNivel();
             String esBolsa = item.getEsBolsa();
             String atribuible = item.getAtribuible();
@@ -338,9 +338,9 @@ public class CentroDAO {
             
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO, es_bolsa, atribuible, tipo, clase,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "INSERT INTO MS_CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO, es_bolsa, atribuible, tipo, clase,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                     "VALUES ('%s','%s',%d,%d,'%s','%s',%d,'%s','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto,fechaStr,fechaStr);
+                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,0,esBolsa, atribuible, tipoGasto, claseGasto,fechaStr,fechaStr);
             return queryStr;
         }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);
