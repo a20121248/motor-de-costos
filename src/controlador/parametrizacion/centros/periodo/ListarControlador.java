@@ -85,19 +85,21 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         titulo = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            titulo = "Centro de Beneficio";
-            titulo2 = "Centro de Beneficio";
-        }
+        titulo2 = "Centro de Costos";        
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {        
+    public void initialize(URL url, ResourceBundle rb) {    
         if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
+//        if (menuControlador.repartoTipo == 2) {
+//            lblTitulo.setText("Centros de Beneficio");
+//            lnkCentros.setText("Centros de Beneficio");
+//        }
         
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -105,18 +107,18 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -175,7 +177,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
+            menuControlador.mensaje.add_refresh_error(titulo);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
@@ -199,13 +201,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
+            menuControlador.mensaje.delete_refresh_error(titulo);
             return;
         }
         
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
        
@@ -238,7 +240,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<Centro> lista = centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
+            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
@@ -254,14 +256,18 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             directory_chooser.setTitle("Directorio a Descargar:");
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
-                descargaFile = new DescargaServicio("CentrosDeCostos", tabListar);
+                if(menuControlador.repartoTipo ==1){
+                    descargaFile = new DescargaServicio("CentrosDeCostos", tabListar);
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
+                } else {
+                    /*generar descarga con todos las columnas por mes*/
+                }
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     

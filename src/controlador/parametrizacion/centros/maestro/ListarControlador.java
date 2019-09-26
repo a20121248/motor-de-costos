@@ -70,16 +70,12 @@ public class ListarControlador implements Initializable {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         titulo = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo = "Centro de Beneficio";
-        }
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
+
         }
         
         ObservableList<Tipo> obsListaTipos;
@@ -173,7 +169,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         Centro centro = tabListar.getSelectionModel().getSelectedItem();
         if (centro == null) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY );
+            menuControlador.mensaje.edit_empty_error(titulo);
             return;
         }
         menuControlador.objeto = centro;
@@ -183,7 +179,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         Centro centro = tabListar.getSelectionModel().getSelectedItem();
         if (centro == null) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo, "¿Está seguro de eliminar el " + titulo + " " + centro.getCodigo() + "?")) {
@@ -192,10 +188,10 @@ public class ListarControlador implements Initializable {
         if(centroDAO.verificarObjetoCentroLineas(centro.getCodigo()) == 0){
             centroDAO.eliminarObjetoCentro(centro.getCodigo());
             llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
+            menuControlador.mensaje.delete_success(titulo);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),centro.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
         }else{
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
+            menuControlador.mensaje.delete_item_maestro_error(titulo);
         }     
     }
     
@@ -214,10 +210,10 @@ public class ListarControlador implements Initializable {
                 descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     

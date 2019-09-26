@@ -99,7 +99,7 @@ public class CrearControlador implements Initializable {
             }
             if (newValue.getCodigo().equals("PROYECTO") || newValue.getCodigo().equals("FICTICIO")) {
                 cmbEsBolsa.getSelectionModel().select(0);
-                cmbTipo.getSelectionModel().clearSelection(99);
+                cmbNivel.getSelectionModel().select(99);
             }
         });
         
@@ -166,7 +166,7 @@ public class CrearControlador implements Initializable {
             menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
-        if(cecoPadreCodigo == null){
+        if(cecoPadreCodigo.equals("")){
             cecoPadreCodigo = "-";
         }
         if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto)==1) {

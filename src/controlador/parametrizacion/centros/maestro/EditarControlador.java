@@ -59,16 +59,11 @@ public class EditarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
-        if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
-        }
-        
         txtCodigo.setText(centro.getCodigo());
         txtNombre.setText(centro.getNombre());
         
         ObservableList<Tipo> obsListaTipos;
-        
+
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroTipos.subList(1, menuControlador.lstCentroTipos.size()));
         cmbTipo.setItems(obsListaTipos);
         cmbTipo.setConverter(new StringConverter<Tipo>() {
@@ -82,12 +77,6 @@ public class EditarControlador implements Initializable {
             }
         });
         cmbTipo.setValue(centro.getTipo());
-        if (menuControlador.repartoTipo == 1) {
-            cmbTipo.getSelectionModel().select(centro.getTipo());
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbTipo.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbTipo.setDisable(true);
-        }
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles.subList(1, menuControlador.lstCentroNiveles.size()));
         cmbNivel.setItems(obsListaTipos);
@@ -101,36 +90,42 @@ public class EditarControlador implements Initializable {
                 return cmbNivel.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            int nivel = centro.getNivel();
-            if (nivel == 0) {
-                cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            } else {
-                cmbNivel.getSelectionModel().select(centro.getNivel()-1);
-            }
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbNivel.setDisable(true);
-        }
+        cmbNivel.getSelectionModel().select(centro.getNivel());
+        
         cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
         cmbEsBolsa.getSelectionModel().select(centro.getEsBolsa());
+        
         cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
         cmbAtribuible.getSelectionModel().select(centro.getAtribuible());
+        
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
         cmbTipoGasto.getSelectionModel().select(centro.getTipoGasto());
+        
         cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
         cmbClaseGasto.getSelectionModel().select(centro.getClaseGasto());
         
+        cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+                cmbNivel.getSelectionModel().select(0);
+            }
+            if (newValue.getCodigo().equals("PROYECTO") || newValue.getCodigo().equals("FICTICIO")) {
+                cmbEsBolsa.getSelectionModel().select(0);
+                cmbNivel.getSelectionModel().select(99);
+            }
+        });
+        
         cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (cmbNivel.getValue().getCodigo().equals("-1")) {
+            if (newValue.getCodigo().equals("0")) {
                 cmbEsBolsa.getSelectionModel().select(1);
             } else {
                 cmbEsBolsa.getSelectionModel().select(0);
             }
         });
+        
         cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (cmbEsBolsa.getValue().toString().equals("SI")) {
-                cmbNivel.getSelectionModel().select(1);
+            if (newValue.equals("SI")) {
+                cmbNivel.getSelectionModel().select(0);
             }
         });
         
@@ -167,11 +162,11 @@ public class EditarControlador implements Initializable {
         String tipoGasto = cmbTipoGasto.getValue().toString();
         String claseGasto = cmbClaseGasto.getValue().toString();
         if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,esBolsa, atribuible,tipoGasto, claseGasto)==1) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+            menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     
