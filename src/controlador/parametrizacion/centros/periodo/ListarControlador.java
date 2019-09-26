@@ -6,6 +6,7 @@ import controlador.ObjetoControladorInterfaz;
 import controlador.Navegador;
 import controlador.modals.BuscarEntidadControlador;
 import dao.CentroDAO;
+import dao.DriverLineaDAO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -73,6 +74,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     // Variables de la aplicacion
     FXMLLoader fxmlLoader;
     CentroDAO centroDAO;
+    DriverLineaDAO driverLineaDAO;
     public MenuControlador menuControlador;
     FilteredList<Centro> filteredData;
     SortedList<Centro> sortedData;
@@ -84,6 +86,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
+        driverLineaDAO = new DriverLineaDAO();
         titulo = "Centros de Costos";
         titulo2 = "Centro de Costos";        
     }
@@ -213,9 +216,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + titulo2, "¿Está seguro de quitar el " + titulo2 + " " + item.getNombre() + "?"))
             return;        
-        // >>> Falta verificar existencia con Drivers(Aún por definir)
-        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado)==0){
-            centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+        
+        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
+            centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
@@ -277,7 +280,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        centroDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        centroDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }

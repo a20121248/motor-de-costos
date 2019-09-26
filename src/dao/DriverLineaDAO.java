@@ -59,6 +59,24 @@ public class DriverLineaDAO {
                 periodo);
         ConexionBD.agregarBatch(queryStr);
     }
+    
+    //    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoEnDriver(String codigo, int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM MS_driver_lineas\n" +
+                " WHERE ENTIDAD_DESTINO_CODIGO='%s' AND periodo = '%s' AND reparto_tipo='%d'",
+                codigo,periodo,repartoTipo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
 
     public void insertarListaDriverCentroLineaBatch(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea) {
         borrarListaDriverLinea(driverCodigo, periodo);

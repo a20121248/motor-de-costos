@@ -123,14 +123,14 @@ public class CentroDAO {
     public List<Centro> listarMaestro(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {
-            queryStr = String.format("SELECT codigo,nombre FROM centros WHERE esta_activo=1 AND reparto_tipo=%d ORDER BY codigo",repartoTipo);
+            queryStr = String.format("SELECT codigo,nombre FROM MS_centros WHERE esta_activo=1  ORDER BY codigo");
         } else {
             queryStr = String.format(""+
                     "SELECT codigo,nombre\n" +
-                    "  FROM centros\n" +
-                    " WHERE esta_activo=1 AND codigo NOT IN (%s) AND reparto_tipo=%d\n" +
+                    "  FROM MS_centros\n" +
+                    " WHERE esta_activo=1 AND codigo NOT IN (%s) \n" +
                     " ORDER BY codigo",
-                    codigos,repartoTipo);
+                    codigos);
         }
         List<Centro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -159,8 +159,8 @@ public class CentroDAO {
         return nivel;
     }
     
-    public int eliminarObjetoPeriodo(String codigo, int periodo) {
-        String queryStr = String.format("DELETE FROM centro_lineas WHERE centro_codigo='%s' AND periodo=%d",codigo,periodo);
+    public int eliminarObjetoPeriodo(String codigo, int periodo, int repartoTipo) {
+        String queryStr = String.format("DELETE FROM MS_centro_lineas WHERE centro_codigo='%s' AND periodo=%d AND reparto_tipo='%d'",codigo,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
 
@@ -189,12 +189,12 @@ public class CentroDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarObjetoPeriodo(String codigo, int periodo) {
+    public int insertarObjetoPeriodo(String codigo, int periodo, int repartoTipo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES('%s',%d,%d,%d,'%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,periodo,-2,0,"0","-",fechaStr,fechaStr);
+                "INSERT INTO MS_centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES('%s',%d,%d,%d,'%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,periodo,-2,0,"0","-",repartoTipo,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -353,7 +353,7 @@ public class CentroDAO {
     public int verificarObjetoEnDetalleGasto(String codigo, int periodo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM cuenta_partida_centro\n" +
+                "  FROM MS_cuenta_partida_centro\n" +
                 " WHERE centro_codigo='%s' AND periodo = '%s'",
                 codigo,periodo);
         int cont=-1;
