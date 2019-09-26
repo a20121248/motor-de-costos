@@ -170,7 +170,7 @@ public class CentroDAO {
         claseGasto = convertirPalabraAbreviatura(claseGasto);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "UPDATE centros\n" +
+                "UPDATE MS_centros\n" +
                 "   SET nombre='%s',centro_tipo_codigo='%s',nivel=%d,centro_padre_codigo='%s',es_bolsa='%s',atribuible='%s',tipo='%s',clase='%s',fecha_creacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
                 " WHERE codigo='%s'",
                 nombre,cecoTipoCodigo,nivel,cecoPadreCodigo,esBolsa, atribuible, tipoGasto, claseGasto,fechaStr,fechaStr,codigo);
