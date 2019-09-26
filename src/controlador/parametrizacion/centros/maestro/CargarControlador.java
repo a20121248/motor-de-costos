@@ -158,6 +158,7 @@ public class CargarControlador implements Initializable {
         List<Centro> lista = new ArrayList();
         List<String> listaCodigos = centroDAO.listarCodigos();
         List<Tipo> listaTipoCentro = menuControlador.lstCentroTipos;
+        listaCargar = new ArrayList();
         logDetails = "";
         List<String> grupoTipoBolsa = new ArrayList();
         grupoTipoBolsa.add("BOLSA");

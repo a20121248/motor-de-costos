@@ -134,6 +134,7 @@ public class CargarControlador implements Initializable {
         List<Partida> lista = new ArrayList();
         List<String> listaCodigos = partidaDAO.listarCodigos();
         List<Tipo> listaGrupoGastos = tipoDAO.listarGrupoGastos();
+        listaCargar = new ArrayList();
         logDetails = "";
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {

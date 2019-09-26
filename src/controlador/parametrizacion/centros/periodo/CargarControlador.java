@@ -71,6 +71,7 @@ public class CargarControlador implements Initializable {
     String  titulo;
     List<CargarObjetoPeriodoLinea> listaCargar = new ArrayList() ;
     String logName;
+    String logDetails;
     Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
@@ -85,6 +86,13 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
+        }
+        
         // tabla dimensiones
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
@@ -98,12 +106,14 @@ public class CargarControlador implements Initializable {
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         btnDescargarLog.setVisible(false);
@@ -131,6 +141,14 @@ public class CargarControlador implements Initializable {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
+            if(menuControlador.repartoTipo == 2){
+                spAnho.setDisable(true);
+            }
+            else{
+                cmbMes.setDisable(true);
+                spAnho.setDisable(true);
+            }
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             List<CargarObjetoPeriodoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             tabListar.getItems().setAll(lista);
@@ -142,6 +160,8 @@ public class CargarControlador implements Initializable {
         List<CargarObjetoPeriodoLinea> lista = new ArrayList();
 //        List<CargarObjetoPeriodoLinea> listaError = new ArrayList();
         List<String> listaCodigos = centroDAO.listarCodigos();
+        listaCargar = new ArrayList();
+        logDetails = "";
 
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
@@ -155,7 +175,7 @@ public class CargarControlador implements Initializable {
             //int numFilasOmitir = 2
             //Estructura de la cabecera
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
-                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
 
@@ -171,7 +191,7 @@ public class CargarControlador implements Initializable {
                 // Valida que los items del archivo tengan el periodo correcto 
                 // De no cumplirlo, cancela la previsualización.
                 if(periodo != periodoSeleccionado){
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
+                    menuControlador.mensaje.upload_periodo_fail_error();
                     lista.clear();
                     txtRuta.setText("");
                     break;
@@ -182,8 +202,12 @@ public class CargarControlador implements Initializable {
                 if (cuenta != null) {
                     listaCargar.add(linea);
                     listaCodigos.removeIf(x -> x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s al periodo %d de %s. \r\n",linea.getCodigo(),periodoSeleccionado,titulo);
                 } else {
-                    // >>>agregar linea para log sobre el error
+                    logDetails +=String.format("No se agregó item %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),periodoSeleccionado,titulo);
+                    if(cuenta == null){
+                        logDetails +=String.format("- No existe en Catálogo.\r\n");
+                    }
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);                    
                 }
@@ -209,17 +233,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else {
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+                menuControlador.mensaje.upload_allCharged_now(titulo);
             }else{
                 centroDAO.insertarListaObjetoPeriodo(listaCargar,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error(titulo);
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }
@@ -238,11 +262,9 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en" + titulo+"en Catálogo.");
                 findError = true;
             }
         });

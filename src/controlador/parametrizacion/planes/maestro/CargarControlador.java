@@ -134,6 +134,7 @@ public class CargarControlador implements Initializable {
     private List<CuentaContable> leerArchivo(String rutaArchivo) {
         List<CuentaContable> lista = new ArrayList();
         List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
+        listaCargar = new ArrayList();
         logDetails = "";
 //        List<CuentaContable> listaError = new ArrayList();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
