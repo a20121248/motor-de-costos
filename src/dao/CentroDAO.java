@@ -371,7 +371,7 @@ public class CentroDAO {
     public int verificarObjetoCentroLineas(String codigo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
-                "  FROM centro_lineas\n" +
+                "  FROM MS_centro_lineas\n" +
                 " WHERE centro_codigo='%s'",
                 codigo);
         int cont=-1;
@@ -423,7 +423,7 @@ public class CentroDAO {
     
     public int eliminarObjetoCentro(String codigo) {
         String queryStr = String.format("" +
-                "DELETE FROM centros\n" +
+                "DELETE FROM MS_centros\n" +
                 " WHERE codigo='%s'",
                 codigo);
         return ConexionBD.ejecutar(queryStr);
