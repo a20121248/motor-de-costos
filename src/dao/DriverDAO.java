@@ -223,11 +223,10 @@ public class DriverDAO {
     public int actualizarDriverCabecera(String codigo, String nombre, String descripcion, String driverTipoCodigo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
-                "UPDATE drivers\n" +
-                "   SET nombre='%s',descripcion='%s',driver_tipo_codigo='%s',fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
+                "UPDATE MS_drivers\n" +
+                "   SET nombre='%s',driver_tipo_codigo='%s',fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
                 " WHERE codigo='%s'",
                 nombre,
-                descripcion,
                 driverTipoCodigo,
                 fechaStr,
                 codigo);

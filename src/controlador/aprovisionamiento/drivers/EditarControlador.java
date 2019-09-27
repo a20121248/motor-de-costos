@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,7 +50,6 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
-    @FXML private TextArea txtareaDescripcion;
     
     @FXML private Label lblEntidades;
     @FXML private JFXButton btnAgregar;
@@ -90,12 +90,12 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     public void initialize(URL url, ResourceBundle rb) {
         titulo1 = "Centros de Costos";
         titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficio";
-            titulo2 = "Centro de Beneficio";
-            lblTitulo.setText(titulo + "  - " + titulo1);
-            lnkDrivers.setText(titulo + " - " + titulo1);
-            lblEntidades.setText(titulo1 + " a distribuir");
+        txtCodigo.setDisable(true);
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -103,12 +103,14 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         // tabla 1: dimensiones
@@ -155,7 +157,6 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
         // completar datos del driver seleccionado
         txtCodigo.setText(driver.getCodigo());
         txtNombre.setText(driver.getNombre());
-        txtareaDescripcion.setText(driver.getDescripcion());
         tabDetalleDriver.getItems().setAll(driver.getListaDriverLinea());
         lblNumeroRegistros.setText("Número de registros: " + numeroRegistros);
     }
@@ -180,9 +181,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void btnAgregarAction(ActionEvent event) {
         // repartoTipo seleccionado -> siempre será centro
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
-        if (menuControlador.repartoTipo == 2) {
-            tipoSeleccionado.setNombre(titulo2);
-        }
+        menuControlador.codigos = tabDetalleDriver.getItems().stream().map(i -> "'"+i.getEntidadDistribucionDestino().getCodigo()+"'").collect(Collectors.joining (","));
         try {
             fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
             BuscarEntidadControlador buscarEntidadControlador = new BuscarEntidadControlador(menuControlador, this, tipoSeleccionado, periodoSeleccionado, menuControlador.repartoTipo);
@@ -203,7 +202,7 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void btnQuitarAction(ActionEvent event) {
         DriverLinea item = tabDetalleDriver.getSelectionModel().getSelectedItem();            
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Seleccionar línea del driver", "No seleccionó ninguna línea del driver.");
+            menuControlador.mensaje.delete_selected_error(titulo);
         } else {
             porcentajeTotal -= item.getPorcentaje();
             lblSuma.setText(String.format("Suma: %.4f%%",porcentajeTotal));
@@ -216,23 +215,21 @@ public class EditarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnGuardarAction(ActionEvent event) {
         if (Math.abs(porcentajeTotal - 100) > 0.00001) {
-            menuControlador.navegador.mensajeError("Guardar Driver - " + titulo2, "Los porcentajes no suman 100%.\nNo se puede guardar el driver.");
+            menuControlador.mensaje.edit_porcent_error(titulo);
             return;
         }
-        
         // datos
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        String descripcion = txtareaDescripcion.getText();
         List<DriverLinea> lista = tabDetalleDriver.getItems();
         Date fecha = new Date();
-        DriverCentro driver = new DriverCentro(codigo, nombre, descripcion, null, lista, fecha, fecha);
+        DriverCentro driver = new DriverCentro(codigo, nombre, null, null, lista, fecha, fecha);
 
         // inicio mensaje informativo
-        if (driverDAO.actualizarDriverCentro(driver, periodoSeleccionado) != 1) {
-            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_EDIT_ERROR);
+        if (driverDAO.actualizarDriverCentro(driver, periodoSeleccionado, menuControlador.repartoTipo) != 1) {
+            menuControlador.mensaje.edit_error(titulo);
         } else {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+            menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_DRIVERS_CENTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
         }

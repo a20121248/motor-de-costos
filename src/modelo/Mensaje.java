@@ -82,6 +82,27 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void create_porcent_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("Los porcentajes de distribución deben sumar 100%.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void create_text_empty(String titulo,String titulo2){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("Por favor ingrese "+ titulo2 + "  para el "+ titulo +".");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void create_driver_centro_empty(String titulo, String titulo2){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Crear "+ titulo);
+        alert.setContentText("No se pudo crear " + titulo +". Por favor ingrese como mínimo un " + titulo2 + " a Distribuir.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
     public void create_success(String titulo){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Crear "+ titulo);
@@ -184,6 +205,13 @@ public class Mensaje {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Actualizar "+ titulo);
         alert.setContentText("No se puede actualizar item " + titulo +", pues no ha sido asignado previamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void edit_porcent_error(String titulo){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Editar "+ titulo);
+        alert.setContentText("Los porcentajes de distribución deben sumar 100%.");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
