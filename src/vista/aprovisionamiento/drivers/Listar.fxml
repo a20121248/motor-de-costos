@@ -63,7 +63,6 @@
                      <columns>
                         <TableColumn fx:id="tabcolCodigo" prefWidth="75.0" styleClass="center" text="CÓDIGO" />
                         <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
-                        <TableColumn fx:id="tabcolDescripcion" prefWidth="75.0" styleClass="left" text="DESCRIPCIÓN" />
                      </columns>
                   </TableView>
                   <Label layoutX="28.0" layoutY="15.0" text="Lista de drivers" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">

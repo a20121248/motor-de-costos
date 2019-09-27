@@ -102,7 +102,7 @@ public class BuscarEntidadControlador implements Initializable {
                     break;
                 case "CECO": // Centro de Costo
                     if (periodoSeleccionado==-1) lista = centroDAO.listarMaestro(menuControlador.codigos, repartoTipo);
-                    else lista = centroDAO.listar(periodoSeleccionado, repartoTipo);
+                    else lista = centroDAO.listar(menuControlador.codigos ,periodoSeleccionado, repartoTipo);
                     break;
                 case "BAN": // Banca
                     if (periodoSeleccionado==-1) lista = bancaDAO.listarMaestro(menuControlador.codigos);

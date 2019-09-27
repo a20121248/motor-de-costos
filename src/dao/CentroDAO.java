@@ -242,8 +242,10 @@ public class CentroDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public List<Centro> listar(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
+    public List<Centro> listar(String codigos,int periodo, int repartoTipo) {
+        String queryStr;
+        if (codigos.isEmpty()) {
+            queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
                 "       A.esta_activo,\n" +
@@ -255,13 +257,35 @@ public class CentroDAO {
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion,\n" +
                 "       SUM(COALESCE(C.saldo,0)) saldo\n" +
-                "  FROM centros A\n" +
-                "  JOIN centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
-                "  JOIN centro_lineas C ON A.codigo=C.centro_codigo\n" +
-                " WHERE C.periodo=%d AND A.reparto_tipo=%d\n" +
+                "  FROM MS_centros A\n" +
+                "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
+                "  JOIN MS_centro_lineas C ON A.codigo=C.centro_codigo\n" +
+                " WHERE C.periodo=%d AND C.reparto_tipo='%d' and A.nivel !=0\n" +
                 " GROUP BY A.codigo,A.nombre,A.esta_activo,A.nivel,A.centro_padre_codigo," +
                 "          B.codigo,B.nombre,B.descripcion,A.fecha_creacion,A.fecha_actualizacion",
                 periodo,repartoTipo);
+        } else {
+            queryStr = String.format("" +
+                "SELECT A.codigo,\n" +
+                "       A.nombre,\n" +
+                "       A.esta_activo,\n" +
+                "       A.nivel,\n" +
+                "       A.centro_padre_codigo,\n" +
+                "       B.codigo tipo_codigo,\n" +
+                "       B.nombre tipo_nombre,\n" +
+                "       B.descripcion tipo_descripcion,\n" +
+                "       A.fecha_creacion,\n" +
+                "       A.fecha_actualizacion,\n" +
+                "       SUM(COALESCE(C.saldo,0)) saldo\n" +
+                "  FROM MS_centros A\n" +
+                "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
+                "  JOIN MS_centro_lineas C ON A.codigo=C.centro_codigo\n" +
+                " WHERE C.periodo=%d AND C.reparto_tipo='%d' AND A.nivel !=0 AND A.codigo NOT IN (%s)\n" +
+                " GROUP BY A.codigo,A.nombre,A.esta_activo,A.nivel,A.centro_padre_codigo," +
+                "          B.codigo,B.nombre,B.descripcion,A.fecha_creacion,A.fecha_actualizacion",
+                periodo,repartoTipo,codigos);
+        }
+        
         List<Centro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

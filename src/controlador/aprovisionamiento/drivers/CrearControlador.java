@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,7 +49,7 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
-    @FXML private TextArea txtareaDescripcion;
+//    @FXML private TextArea txtareaDescripcion;
     
     @FXML private Label lblEntidades;
     @FXML private JFXButton btnAgregar;
@@ -66,6 +67,7 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     FXMLLoader fxmlLoader;
     public MenuControlador menuControlador;
     DriverDAO driverDAO;
+    List<String> lstCodigos;
     int numeroRegistros;
     int periodoSeleccionado;
     double porcentajeTotal;
@@ -76,6 +78,7 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         driverDAO = new DriverDAO();
+        lstCodigos = driverDAO.listarCodigos();
         numeroRegistros = 0;
         this.titulo = "Drivers";
     }
@@ -83,11 +86,11 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         titulo1 = "Centros de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDrivers.setText("Drivers - " + titulo1);
-            lblEntidades.setText(titulo1 + " a distribuir");
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         
         // codigo: setear las propiedades de la tabla agregar drivers, entre ellas el formato del porcentaje
@@ -119,16 +122,16 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -151,6 +154,7 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
         // repartoTipo seleccionado -> siempre será centro de costo
         //Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.get(2);
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
+        menuControlador.codigos = tabDetalleDriver.getItems().stream().map(i -> "'"+i.getEntidadDistribucionDestino().getCodigo()+"'").collect(Collectors.joining (","));
         try {
             fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
             BuscarEntidadControlador buscarEntidadControlador = new BuscarEntidadControlador(menuControlador, this, tipoSeleccionado, periodoSeleccionado, menuControlador.repartoTipo);
@@ -171,7 +175,7 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
     @FXML void btnQuitarAction(ActionEvent event) {
         DriverLinea item = tabDetalleDriver.getSelectionModel().getSelectedItem();            
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Seleccionar línea del driver", "No seleccionó ninguna línea del driver.");
+            menuControlador.mensaje.delete_selected_error(titulo);
         } else {
             porcentajeTotal -= item.getPorcentaje();
             lblSuma.setText(String.format("Suma: %.4f%%",porcentajeTotal));
@@ -185,49 +189,45 @@ public class CrearControlador implements Initializable,ObjetoControladorInterfaz
         // validar que se haya insertado el detalle
         List<DriverLinea> lstDriverLinea = tabDetalleDriver.getItems();
         if (lstDriverLinea == null || lstDriverLinea.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("Crear Driver", "Por favor ingrese como mínimo un Centro de Costo a Distribuir.");
+            menuControlador.mensaje.create_driver_centro_empty(titulo, titulo1);
             return;
         }        
         // validar suma 100%
         double porcTotal = lstDriverLinea.stream().mapToDouble(o -> o.getPorcentaje()).sum();
         if (Math.abs(porcTotal - 100) > 0.00001) {
-            menuControlador.navegador.mensajeError("Crear Driver", "Los porcentajes de distribución deben sumar 100%.");
+            menuControlador.mensaje.create_porcent_error(titulo);
             return;
         }
         // validar el codigo
         String codigo = txtCodigo.getText();
+        String codDriver = lstCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
         if (codigo.isEmpty()) {
-            // TODO: validar que el codigo no exista
-            menuControlador.navegador.mensajeInformativo("Crear Driver", "Por favor ingrese un código para el Driver.");
+            menuControlador.mensaje.create_text_empty(titulo, "código");
             return;
+        } else {
+            if(codDriver!=null) {
+                menuControlador.mensaje.create_exist_error(titulo);
+                return;
+            }
         }
         // validar el nombre
         String nombre = txtNombre.getText();
         if (nombre.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("Crear Driver", "Por favor ingrese un nombre para el Driver.");
+            menuControlador.mensaje.create_text_empty(titulo, "nombre");
             return;
         }
         // validar que se haya seleccionado el repartoTipo origen
-        String descripcion = txtareaDescripcion.getText();
-        if (descripcion.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("Crear Driver", "Por favor ingrese una descripción para el Driver.");
-            return;
-        }
+
         try {
             // creamos el driver
             Date fecha = new Date();
-            DriverCentro driver = new DriverCentro(codigo, nombre, descripcion, null, lstDriverLinea, fecha, fecha);
-            
-            // lo insertamos en la base de datos
-            int mesSeleccionado = cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            int anhoSeleccionado = spAnho.getValue();
-            int periodo = anhoSeleccionado*100 + mesSeleccionado;
-            // inicio mensaje informativo
-            if (driverDAO.insertarDriverCentro(driver, periodo,menuControlador.repartoTipo) != 1) {
-                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
+            DriverCentro driver = new DriverCentro(codigo, nombre, null, null, lstDriverLinea, fecha, fecha);
+
+            if (driverDAO.insertarDriverCentro(driver, periodoSeleccionado,menuControlador.repartoTipo) != 1) {
+                menuControlador.mensaje.create_error(titulo);
             } else {
-                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), codigo + " con " + driver.getListaDriverLinea().size() + " elementos ", periodo, Navegador.RUTAS_DRIVERS_CENTRO_CREAR.getDireccion());
+                menuControlador.mensaje.create_success(titulo);
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), codigo + " con " + driver.getListaDriverLinea().size() + " elementos ", periodoSeleccionado, Navegador.RUTAS_DRIVERS_CENTRO_CREAR.getDireccion());
                 menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
             }
         } catch(Exception e) {

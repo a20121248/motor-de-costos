@@ -124,9 +124,9 @@ public class DriverDAO {
     public List<DriverLinea> obtenerLstDriverLinea(int periodo, String driverCodigo, int repartoTipo) {
         String queryStr = String.format("" +
                 "  SELECT B.codigo,B.nombre,B.nivel,A.porcentaje\n" +
-                "    FROM driver_lineas A\n" +
-                "    JOIN centros B ON A.entidad_destino_codigo=B.codigo\n" +
-                "   WHERE A.periodo=%d AND A.driver_codigo='%s' AND B.reparto_tipo=%d\n"+
+                "    FROM MS_driver_lineas A\n" +
+                "    JOIN MS_centros B ON A.entidad_destino_codigo=B.codigo\n" +
+                "   WHERE A.periodo=%d AND A.driver_codigo='%s' AND A.reparto_tipo=%d\n"+
                 "ORDER BY A.driver_codigo, B.codigo",
                 periodo,driverCodigo,repartoTipo);
         List<DriverLinea> lista = new ArrayList();
@@ -182,16 +182,16 @@ public class DriverDAO {
     }
     
     public int insertarDriverObjeto(DriverObjeto driver, int periodo, int repartoTipo) {
-        int resultado = insertarDriverCabecera(driver.getCodigo(),driver.getNombre(),driver.getDescripcion(),"OBCO",repartoTipo);
+        int resultado = insertarDriverCabecera(driver.getCodigo(),driver.getNombre(),"OBCO",repartoTipo);
         if (resultado == -1) return resultado;
         driverLineaDAO.insertarListaDriverObjetoLineaBatch(driver.getCodigo(), periodo, driver.getListaDriverObjetoLinea());
         return resultado;
     }
     
-    public int actualizarListaDriverCentro(List<DriverCentro> lista, int periodo) {
+    public int actualizarListaDriverCentro(List<DriverCentro> lista, int periodo, int repartoTipo) {
         int resultado = 0;
         for (DriverCentro driverCentro: lista) {
-            actualizarDriverCentro(driverCentro, periodo);
+            actualizarDriverCentro(driverCentro, periodo, repartoTipo);
             ++resultado;
         }
         return resultado;
@@ -206,17 +206,17 @@ public class DriverDAO {
         return resultado;
     }
 
-    public int actualizarDriverCentro(DriverCentro driver, int periodo) {        
+    public int actualizarDriverCentro(DriverCentro driver, int periodo, int repartoTipo) {        
         int resultado = actualizarDriverCabecera(driver.getCodigo(),driver.getNombre(),driver.getDescripcion(),"CECO");
         if (resultado == -1) return resultado;
-        driverLineaDAO.insertarListaDriverLinea(driver.getCodigo(), periodo, driver.getListaDriverLinea());
+        driverLineaDAO.insertarListaDriverLinea(driver.getCodigo(), periodo, driver.getListaDriverLinea(), repartoTipo);
         return 1;
     }
 
     public int insertarDriverCentro(DriverCentro driver, int periodo, int repartoTipo) {        
-        int resultado = insertarDriverCabecera(driver.getCodigo(),driver.getNombre(),driver.getDescripcion(),"CECO",repartoTipo);
+        int resultado = insertarDriverCabecera(driver.getCodigo(),driver.getNombre(),"CECO",repartoTipo);
         if (resultado == -1) return resultado;
-        driverLineaDAO.insertarListaDriverLinea(driver.getCodigo(), periodo, driver.getListaDriverLinea());
+        driverLineaDAO.insertarListaDriverLinea(driver.getCodigo(), periodo, driver.getListaDriverLinea(), repartoTipo);
         return resultado;
     }
 
@@ -234,16 +234,15 @@ public class DriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarDriverCabecera(String codigo, String nombre, String descripcion, String driverTipoCodigo, int repartoTipo) {
+    public int insertarDriverCabecera(String codigo, String nombre, String driverTipoCodigo, int repartoTipo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO drivers(codigo,nombre,descripcion,driver_tipo_codigo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO MS_drivers(codigo,nombre,driver_tipo_codigo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 codigo,
                 nombre,
-                descripcion,
                 driverTipoCodigo,
-                repartoTipo,
+                0,
                 fechaStr,
                 fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -331,12 +330,11 @@ public class DriverDAO {
         String queryStr = String.format("" +
                 "SELECT DISTINCT A.codigo,\n" +
                 "       A.nombre,\n" +
-                "       A.descripcion,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
-                "  FROM drivers A\n" +
-                "  JOIN driver_lineas C ON C.driver_codigo=A.codigo\n" +
-                " WHERE C.periodo=%d AND A.driver_tipo_codigo='CECO' AND reparto_tipo=%d\n" +
+                "  FROM MS_drivers A\n" +
+                "  JOIN MS_driver_lineas C ON C.driver_codigo=A.codigo\n" +
+                " WHERE C.periodo=%d AND A.driver_tipo_codigo='CECO' AND C.reparto_tipo=%d\n" +
                 " ORDER BY A.codigo",
                 periodo,repartoTipo);
         List<DriverCentro> lista = new ArrayList();
@@ -344,12 +342,12 @@ public class DriverDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
-                String descripcion = rs.getString("descripcion");
+                
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
                 
                 //List<DriverLinea> listaDriverLinea = driverLineaDAO.obtenerListaDriverLinea(codigo, periodo);
-                DriverCentro driver = new DriverCentro(codigo, nombre, descripcion, null, null, fechaCreacion, fechaActualizacion);
+                DriverCentro driver = new DriverCentro(codigo, nombre, null, null, null, fechaCreacion, fechaActualizacion);
                 lista.add(driver);
             }
         } catch (SQLException | ParseException ex) {
@@ -413,5 +411,15 @@ public class DriverDAO {
             Logger.getLogger(ProductoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return codigoDriver;
+    }
+
+    public List<String> listarCodigos() {
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT codigo FROM MS_drivers")) {
+            while(rs.next()) lista.add(rs.getString("codigo"));
+        } catch (SQLException ex) {
+            Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
     }
 }
