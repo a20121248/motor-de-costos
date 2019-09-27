@@ -213,12 +213,12 @@ public class CentroDAO {
     
     public int borrarListaObjetoPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM centro_lineas A\n" +
+                "DELETE FROM MS_centro_lineas A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
-                "                 FROM centros B\n" +
+                "                 FROM MS_centros B\n" +
                 "                WHERE A.centro_codigo=B.codigo\n" +
                 "                  AND A.periodo=%d\n" +
-                "                  AND B.reparto_tipo=%d)",
+                "                  AND A.reparto_tipo=%d)",
                 periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -233,9 +233,9 @@ public class CentroDAO {
             
             // inserto una linea dummy
             String queryStr = String.format("" +
-                    "INSERT INTO centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES('%s',%d,%d,%d,'%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,periodo,-2,0,"0","-",fechaStr,fechaStr);
+                    "INSERT INTO MS_centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES('%s',%d,%d,%d,'%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,periodo,-2,0,"0","-",repartoTipo,fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
