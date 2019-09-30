@@ -241,9 +241,10 @@ CREATE TABLE PACIFICO_DEV.MS_plan_de_cuentas (
   nombre VARCHAR2(100) NOT NULL,
   esta_activo NUMBER(1) NULL,
   reparto_tipo NUMBER(1) NOT NULL,
-  atribuible CHAR(2 BYTE) NOT NULL ,
-  tipo CHAR(2 BYTE) NOT NULL ,
-  clase CHAR(2 BYTE) NOT NULL ,
+  niif17_atribuible CHAR(2 BYTE) NOT NULL ,
+  niif17_tipo CHAR(2 BYTE) NOT NULL ,
+  niif17_clase CHAR(2 BYTE) NOT NULL ,
+  tipo_gasto NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
   CONSTRAINT plan_de_cuentas_pk PRIMARY KEY(codigo)
@@ -282,7 +283,8 @@ COMMIT;
   REPARTO_TIPO NUMBER(1,0) NOT NULL ,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE,
-  GRUPO_GASTO CHAR(2 BYTE) NOT NULL
+  GRUPO_GASTO CHAR(2 BYTE) NOT NULL,
+  tipo_gasto NUMBER(1) NOT NULL
  );
  CREATE TABLE PACIFICO_DEV.MS_PARTIDA_LINEAS
    (  PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
@@ -453,9 +455,10 @@ CREATE TABLE PACIFICO_DEV.MS_centros (
   fecha_creacion DATE,
   fecha_actualizacion DATE,
   reparto_tipo NUMBER(1) NOT NULL,
-  ATRIBUIBLE CHAR(2) NOT NULL,
-  TIPO CHAR(2) NOT NULL,
-  CLASE CHAR(2) NOT NULL,
+  niif17_atribuible CHAR(2 BYTE) NOT NULL ,
+  niif17_tipo CHAR(2 BYTE) NOT NULL ,
+  niif17_clase CHAR(2 BYTE) NOT NULL ,
+  tipo_gasto NUMBER(1) NOT NULL,
   ES_BOLSA CHAR(2) NOT NULL,
   CONSTRAINT centros_pk PRIMARY KEY(codigo)
 );
@@ -468,6 +471,9 @@ CREATE TABLE PACIFICO_DEV.MS_centro_lineas (
   entidad_origen_codigo VARCHAR2(10) NOT NULL,
   grupo_gasto CHAR(2),
   reparto_tipo NUMBER(1) NOT NULL,
+  CUENTA_CONTABLE_ORIGEN_CODIGO VARCHAR2(15 BYTE) NOT NULL,
+  PARTIDA_ORIGEN_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
+  CENTRO_ORIGEN_CODIGO VARCHAR2(8) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE
 );
