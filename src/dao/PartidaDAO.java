@@ -49,12 +49,16 @@ public class PartidaDAO {
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
             String grupoGasto = item.getGrupoGasto().getCodigo();
+            String strTipoGasto = item.getTipoGasto();
+            int tipoGasto;
+            if(strTipoGasto.equals("DIRECTO")) tipoGasto = 1;
+            else tipoGasto = 0;
             
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format("" +
-                    "INSERT INTO MS_PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s',q'[%s]','%s',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,grupoGasto,fechaStr,fechaStr);
+                    "INSERT INTO MS_PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,TIPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s',q'[%s]','%s','%d',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,grupoGasto,tipoGasto,fechaStr,fechaStr);
 //            System.out.println(queryStr+";");
             ConexionBD.agregarBatch(queryStr);
             
@@ -149,6 +153,9 @@ public class PartidaDAO {
                 "SELECT codigo,\n" +
                 "       nombre,\n" +
                 "       grupo_gasto,\n" +
+                "       CASE WHEN tipo_gasto=0 then 'INDIRECTO'\n" +
+                "            WHEN tipo_gasto=1 then 'DIRECTO'\n" +
+                "       END tipo_gasto," +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
                 "  FROM MS_partidas\n" +
@@ -158,6 +165,9 @@ public class PartidaDAO {
                 "SELECT codigo,\n" +
                 "       nombre,\n" +
                 "       grupo_gasto,\n" +
+                "       CASE WHEN tipo_gasto=0 then 'INDIRECTO'\n" +
+                "            WHEN tipo_gasto=1 then 'DIRECTO'\n" +
+                "       END tipo_gasto," +
                 "       fecha_creacion,\n" +
                 "       fecha_actualizacion\n" +
                 "  FROM MS_partidas\n" +
@@ -171,11 +181,11 @@ public class PartidaDAO {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
                 String grupoGasto = rs.getString("grupo_gasto");
-//                grupoGasto = abrevituraPalabra(grupoGasto);
+                String tipoGasto = rs.getString("tipo_gasto");
                 Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null); 
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-                Partida item = new Partida(codigo, nombre, null, tipoGrupoGasto, 0, fechaCreacion, fechaActualizacion);
+                Partida item = new Partida(codigo, nombre, null, tipoGasto,tipoGrupoGasto, 0, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
@@ -260,17 +270,17 @@ public class PartidaDAO {
         return cont;
     }
     
-    public int insertarObjeto(String codigo, String nombre, String grupoGasto, int repartoTipo) {
+    public int insertarObjeto(String codigo, String nombre, String grupoGasto, int tipoGasto, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO MS_partidas(codigo,nombre,grupo_gasto, reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%s',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,grupoGasto,fechaStr,fechaStr);
+                "INSERT INTO MS_partidas(codigo,nombre,grupo_gasto,reparto_tipo,tipo_gasto,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%s',0,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,grupoGasto,tipoGasto,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int actualizarObjeto(String codigo, String nombre, String grupoGasto) {
-        String queryStr = String.format("UPDATE MS_partidas SET nombre='%s', grupo_gasto='%s' WHERE codigo='%s'",nombre,grupoGasto,codigo);
+    public int actualizarObjeto(String codigo, String nombre, String grupoGasto, int tipoGasto) {
+        String queryStr = String.format("UPDATE MS_partidas SET nombre='%s', grupo_gasto='%s', tipo_gasto='%d' WHERE codigo='%s'",nombre,grupoGasto,tipoGasto,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     

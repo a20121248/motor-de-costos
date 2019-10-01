@@ -47,6 +47,7 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Partida,String> tabcolCodigo;
     @FXML private TableColumn<Partida,String> tabcolNombre;
     @FXML private TableColumn<Partida,String> tabcolGrupoGasto;
+    @FXML private TableColumn<Partida, String> tabcolTipoGasto;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -75,11 +76,13 @@ public class ListarControlador implements Initializable {
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 70);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {

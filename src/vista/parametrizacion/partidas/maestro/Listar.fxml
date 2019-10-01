@@ -109,6 +109,7 @@
             <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
             <TableColumn fx:id="tabcolGrupoGasto" prefWidth="101.0" styleClass="left" text="GRUPO GASTO" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="77.0" styleClass="center" text="TIPO GASTO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
