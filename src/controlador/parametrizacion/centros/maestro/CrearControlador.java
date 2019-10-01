@@ -39,9 +39,10 @@ public class CrearControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
     @FXML private ComboBox cmbEsBolsa;
-    @FXML private ComboBox cmbAtribuible;
     @FXML private ComboBox cmbTipoGasto;
-    @FXML private ComboBox cmbClaseGasto;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Clase;
 
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
@@ -92,6 +93,10 @@ public class CrearControlador implements Initializable {
         
         cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
         
+        
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
+        
         cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
                 cmbEsBolsa.getSelectionModel().select(1);
@@ -117,14 +122,15 @@ public class CrearControlador implements Initializable {
             }
         });
         
-        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
-        cmbAtribuible.getSelectionModel().select(0);
         
-        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
-        cmbTipoGasto.getSelectionModel().select(0);
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(0);
         
-        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
-        cmbClaseGasto.getSelectionModel().select(0);
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(0);
+        
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(0);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -154,9 +160,10 @@ public class CrearControlador implements Initializable {
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
         String esBolsa = cmbEsBolsa.getValue().toString();
-        String atribuible = cmbAtribuible.getValue().toString();
-        String tipoGasto = cmbTipoGasto.getValue().toString();
-        String claseGasto = cmbClaseGasto.getValue().toString();
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
         boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
         if (!ptrCodigo) {
             menuControlador.mensaje.create_pattern_error(titulo);
@@ -169,7 +176,7 @@ public class CrearControlador implements Initializable {
         if(cecoPadreCodigo.equals("")){
             cecoPadreCodigo = "-";
         }
-        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa, atribuible, tipoGasto, claseGasto)==1) {
+        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase)==1) {
             menuControlador.mensaje.create_success(titulo);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);

@@ -52,7 +52,7 @@ public class MenuControlador implements Initializable {
     public String objetoTipo;
     final TipoDAO tipoDAO;
     public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos, lstGrupoGasto;
-    public List<String> lstEsBolsa, lstAtribuible, lstTipoGasto, lstClaseGasto;
+    public List<String> lstEsBolsa, lstNIIF17Atribuible, lstNIIF17Tipo, lstNIIF17Clase, lstTipoGasto;
     public String codigos;
     final Image img;
     public List<Integer> lstFases;
@@ -164,17 +164,21 @@ public class MenuControlador implements Initializable {
         lstEsBolsa.add("NO");
         lstEsBolsa.add("SI");
         
-        lstAtribuible = new ArrayList();
-        lstAtribuible.add("Atribuible");
-        lstAtribuible.add("No Atribuible");
-
         lstTipoGasto = new ArrayList();
-        lstTipoGasto.add("Adquisición");
-        lstTipoGasto.add("Mantenimiento");
+        lstTipoGasto.add("INDIRECTO");
+        lstTipoGasto.add("DIRECTO");
+        
+        lstNIIF17Atribuible = new ArrayList();
+        lstNIIF17Atribuible.add("Atribuible");
+        lstNIIF17Atribuible.add("No Atribuible");
 
-        lstClaseGasto = new ArrayList();
-        lstClaseGasto.add("Fijo");
-        lstClaseGasto.add("Variable");
+        lstNIIF17Tipo = new ArrayList();
+        lstNIIF17Tipo.add("Adquisición");
+        lstNIIF17Tipo.add("Mantenimiento");
+
+        lstNIIF17Clase = new ArrayList();
+        lstNIIF17Clase.add("Fijo");
+        lstNIIF17Clase.add("Variable");
         
         //Caracteristicas Partidas
 //        lstGrupoGasto = new ArrayList();

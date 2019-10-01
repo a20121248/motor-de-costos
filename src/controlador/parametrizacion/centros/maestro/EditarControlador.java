@@ -36,9 +36,10 @@ public class EditarControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
     @FXML private ComboBox cmbEsBolsa;
-    @FXML private ComboBox cmbAtribuible;
     @FXML private ComboBox cmbTipoGasto;
-    @FXML private ComboBox cmbClaseGasto;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Clase;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -95,14 +96,19 @@ public class EditarControlador implements Initializable {
         cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
         cmbEsBolsa.getSelectionModel().select(centro.getEsBolsa());
         
-        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
-        cmbAtribuible.getSelectionModel().select(centro.getAtribuible());
-        
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
-        cmbTipoGasto.getSelectionModel().select(centro.getTipoGasto());
+        if(centro.getTipoGasto().equals("DIRECTO")) cmbTipoGasto.getSelectionModel().select(1);
+        else cmbTipoGasto.getSelectionModel().select(0);
         
-        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
-        cmbClaseGasto.getSelectionModel().select(centro.getClaseGasto());
+        
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(centro.getNIIF17Atribuible());
+        
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(centro.getNIIF17Tipo());
+        
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(centro.getNIIF17Clase());
         
         cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
@@ -158,10 +164,11 @@ public class EditarControlador implements Initializable {
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
         String esBolsa = cmbEsBolsa.getValue().toString();
-        String atribuible = cmbAtribuible.getValue().toString();
-        String tipoGasto = cmbTipoGasto.getValue().toString();
-        String claseGasto = cmbClaseGasto.getValue().toString();
-        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,esBolsa, atribuible,tipoGasto, claseGasto)==1) {
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
+        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,esBolsa,tipoGasto,niif17Atribuible,niif17Tipo,niif17Clase)==1) {
             menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);

@@ -60,9 +60,10 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCodigoCentroPadre;
     @FXML private TableColumn<Centro, String> tabcolEsBolsa;
-    @FXML private TableColumn<Centro, String> tabcolAtribuible;
-    @FXML private TableColumn<Centro, String> tabcolTipo;
-    @FXML private TableColumn<Centro, String> tabcolClase;
+    @FXML private TableColumn<Centro, String> tabcolTipoGasto;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -94,14 +95,15 @@ public class CargarControlador implements Initializable {
         // tabla centros
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 29);
+        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 20);
         tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
-        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 8);
-        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
-        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -110,9 +112,10 @@ public class CargarControlador implements Initializable {
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);
         tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
-        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
-        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
-        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
         btnDescargarLog.setVisible(false);
     }    
     
@@ -175,7 +178,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","TIPO GASTO","NIIF17 ATRIBUIBLE","NIIF17 TIPO","NIIF17 CLASE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -190,15 +193,18 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String atribuible = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String tipoGasto = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String claseGasto = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Tipo = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Clase = celda.getStringCellValue();
                 
-                atribuible = centroDAO.convertirAbreviaturaPalabra(atribuible);
-                tipoGasto = centroDAO.convertirAbreviaturaPalabra(tipoGasto);
-                claseGasto = centroDAO.convertirAbreviaturaPalabra(claseGasto);
-                
-                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa,atribuible,tipoGasto, claseGasto, null,null,true);
+                niif17Atribuible = centroDAO.convertirAbreviaturaPalabra(niif17Atribuible);
+                niif17Tipo = centroDAO.convertirAbreviaturaPalabra(niif17Tipo);
+                niif17Clase = centroDAO.convertirAbreviaturaPalabra(niif17Clase);
+                String strTipoGasto;
+                if(tipoGasto == 1) strTipoGasto ="DIRECTO";
+                else strTipoGasto ="INDIRECTO";
+                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa, strTipoGasto,niif17Atribuible,niif17Tipo, niif17Clase, null,null,true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 Tipo tipoCentro = listaTipoCentro.stream().filter(item ->codigoGrupo.equals(item.getCodigo())).findAny().orElse(null);
                 boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
@@ -261,9 +267,9 @@ public class CargarControlador implements Initializable {
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
-                if(atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
-                if(tipoGasto == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
-                if(claseGasto == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
+                if(niif17Atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
+                if(niif17Tipo == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
+                if(niif17Clase == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
                 lista.add(linea);
             }
             //cerramos el libro

@@ -53,9 +53,10 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCentroPadre;
     @FXML private TableColumn<Centro, String> tabcolEsBolsa;
-    @FXML private TableColumn<Centro, String> tabcolAtribuible;
-    @FXML private TableColumn<Centro, String> tabcolTipo;
-    @FXML private TableColumn<Centro, String> tabcolClase;
+    @FXML private TableColumn<Centro, String> tabcolTipoGasto;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -111,23 +112,25 @@ public class ListarControlador implements Initializable {
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 29);
-        tabcolGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
-        tabcolCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 8);
-        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 4);
-        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 25);
+        tabcolGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
+        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
-        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
-        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
-        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
         // tabla completar items
         llenarTabla("-","-");
     }

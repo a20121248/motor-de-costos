@@ -81,14 +81,15 @@
       <TableView fx:id="tabListar" layoutX="56.0" layoutY="170.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="56.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="68.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="99.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolGrupo" styleClass="center" text="GRUPO" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="78.0" styleClass="center" text="NIVEL" />
-            <TableColumn fx:id="tabcolCentroPadre" styleClass="center" text="CECO PADRE" />
-            <TableColumn fx:id="tabcolEsBolsa" prefWidth="40.0" styleClass="center" text="BOLSA" />
-            <TableColumn fx:id="tabcolAtribuible" prefWidth="108.0" styleClass="center" text="ATRIBUIBLE" />
-            <TableColumn fx:id="tabcolTipo" prefWidth="77.0" styleClass="center" text="TIPO DE GASTO" />
-            <TableColumn fx:id="tabcolClase" prefWidth="91.0" styleClass="center" text="CLASE DE GASTO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="64.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolGrupo" prefWidth="58.0" styleClass="center" text="GRUPO" />
+            <TableColumn fx:id="tabcolNivel" prefWidth="56.0" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolCentroPadre" prefWidth="63.0" styleClass="center" text="CECO PADRE" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="62.0" styleClass="center" text="BOLSA" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="63.0" styleClass="center" text="TIPO GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="69.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="61.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="239.0" styleClass="center" text="NIIF17 CLASE" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
@@ -97,7 +98,6 @@
             <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
-      <HBox layoutX="56.0" layoutY="146.0" prefHeight="100.0" prefWidth="200.0" />
       <HBox alignment="TOP_RIGHT" layoutX="290.0" layoutY="158.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
             <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
