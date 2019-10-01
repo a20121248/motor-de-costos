@@ -233,9 +233,9 @@ public class CentroDAO {
             
             // inserto una linea dummy
             String queryStr = String.format("" +
-                    "INSERT INTO MS_centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES('%s',%d,%d,%d,'%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,periodo,-2,0,"0","-",repartoTipo,fechaStr,fechaStr);
+                    "INSERT INTO MS_centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,grupo_gasto,CUENTA_CONTABLE_ORIGEN_CODIGO, PARTIDA_ORIGEN_CODIGO, CENTRO_ORIGEN_CODIGO,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES('%s',%d,%d,%d,'%s','%s','%s','%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,periodo,-2,0,"0","-","-","-","-",repartoTipo,fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();

@@ -222,7 +222,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);
         }else{
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
         }
         
     }
