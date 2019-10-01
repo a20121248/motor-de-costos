@@ -49,11 +49,11 @@ public class CrearControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        //cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
         cmbAtribuible.getSelectionModel().select(0);
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
         cmbTipoGasto.getSelectionModel().select(0);
-        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        //cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
         cmbClaseGasto.getSelectionModel().select(0);
     }
     

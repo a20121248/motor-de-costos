@@ -30,7 +30,7 @@ public class DetalleGastoDAO {
     public DetalleGastoDAO() {
         connection = new ConnectionDB();
     }
-    public List<DetalleGasto> listar(int periodo, String tipoGasto, int repartoTipo) {
+    public List<DetalleGasto> listar(int periodo) {
         String queryStr = String.format("" +
                 "SELECT A.cuenta_contable_codigo cuenta_contable_codigo,\n" +
                 "       B.nombre cuenta_contable_nombre,\n" +
@@ -39,19 +39,12 @@ public class DetalleGastoDAO {
                 "       A.centro_codigo centro_codigo,\n" +
                 "       D.nombre centro_nombre,\n" +
                 "       SUM(COALESCE(A.saldo,0)) saldo\n" +
-                "  FROM cuenta_partida_centro A\n" +
-                "  JOIN plan_de_cuentas B ON B.codigo=A.cuenta_contable_codigo\n" +
-                "  JOIN partidas C ON C.codigo=A.partida_codigo\n" +
-                "  JOIN centros D ON D.codigo=A.centro_codigo\n" +
+                "  FROM ms_cuenta_partida_centro A\n" +
+                "  JOIN ms_plan_de_cuentas B ON B.codigo=A.cuenta_contable_codigo\n" +
+                "  JOIN ms_partidas C ON C.codigo=A.partida_codigo\n" +
+                "  JOIN ms_centros D ON D.codigo=A.centro_codigo\n" +
                 " WHERE A.periodo=%d\n",
-                periodo,repartoTipo);
-        switch(tipoGasto) {
-            case "Administrativo":
-                queryStr += "\n   AND SUBSTR(B.codigo,0,2)='45'";
-                break;
-            case "Operativo":
-                queryStr += "\n   AND SUBSTR(B.codigo,0,2)='44'";
-        }
+                periodo);
         queryStr += "\n GROUP BY A.cuenta_contable_codigo,B.nombre, A.partida_codigo, C.nombre, A.centro_codigo, D.nombre\n" +
                     "\n ORDER BY A.cuenta_contable_codigo,A.partida_codigo,A.centro_codigo";
         List<DetalleGasto> lista = new ArrayList();
@@ -73,16 +66,17 @@ public class DetalleGastoDAO {
         return lista;
     }
     
-    public List<String> listarCodigosCuenta_CuentaPartida(int periodo) {
-        String queryStr = String.format(""
-                + "SELECT   distinct(cuenta_contable_codigo)"
-                + "  FROM   PARTIDA_CUENTA_CONTABLE"
-                + " WHERE   periodo = '%d'  ",periodo);
+    public List<String> listarCodigosCuenta_CuentaPartida(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT DISTINCT(CUENTA_CONTABLE_CODIGO) CUENTA_CONTABLE_CODIGO\n" +
+                "  FROM MS_PARTIDA_CUENTA_CONTABLE\n" +
+                " WHERE PERIODO=%d\n" +
+                "   AND REPARTO_TIPO=%d", periodo, repartoTipo);
         List<String> lista = new ArrayList();
         
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String codigoCuentaContable = rs.getString("cuenta_contable_codigo");
+                String codigoCuentaContable = rs.getString("CUENTA_CONTABLE_CODIGO");
                 lista.add(codigoCuentaContable);
             }
         } catch (SQLException ex) {
@@ -124,7 +118,8 @@ public class DetalleGastoDAO {
             String codigoCuentaContable = item.getCodigoCuentaContable();
             String codigoPartida = item.getCodigoPartida();
             String codigoCentro = item.getCodigoCECO();
-            double saldo = item.getSaldo();
+            //double saldo = item.getSaldo();
+            double saldo = 0;
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format(Locale.US, "" +
                     "INSERT INTO cuenta_partida_centro(cuenta_contable_codigo, partida_codigo, centro_codigo, periodo, saldo, fecha_creacion, fecha_actualizacion)\n" +

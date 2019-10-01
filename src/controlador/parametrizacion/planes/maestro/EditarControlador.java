@@ -53,11 +53,11 @@ public class EditarControlador implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {        
         txtCodigo.setText(planDeCuenta.getCodigo());
         txtNombre.setText(planDeCuenta.getNombre());
-        cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
+        //cmbAtribuible.setItems(FXCollections.observableArrayList(menuControlador.lstAtribuible));
         cmbAtribuible.getSelectionModel().select(planDeCuenta.getAtribuible());
         cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
         cmbTipoGasto.getSelectionModel().select(planDeCuenta.getTipoGasto());
-        cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
+        //cmbClaseGasto.setItems(FXCollections.observableArrayList(menuControlador.lstClaseGasto));
         cmbClaseGasto.getSelectionModel().select(planDeCuenta.getClaseGasto());
     }
     

@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import javafx.event.EventType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -67,7 +68,18 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCECO;
     @FXML private TableColumn<DetalleGasto, String> tabcolNombreCECO;
-    @FXML private TableColumn<DetalleGasto, Double> tabcolSaldo;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto01;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto02;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto03;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto04;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto05;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto06;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto07;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto08;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto09;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto10;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto11;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto12;
     
     @FXML private Button btnCancelar;
     @FXML private Button btnSubir;
@@ -94,11 +106,27 @@ public class CargarControlador implements Initializable {
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
-        this.titulo = "Detalle de Gasto";
+        titulo = "Detalle de Gasto";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        if (menuControlador.repartoTipo == 1) {
+            tabListar.getColumns().remove(tabcolMonto02);
+            tabListar.getColumns().remove(tabcolMonto03);
+            tabListar.getColumns().remove(tabcolMonto04);
+            tabListar.getColumns().remove(tabcolMonto05);
+            tabListar.getColumns().remove(tabcolMonto06);
+            tabListar.getColumns().remove(tabcolMonto07);
+            tabListar.getColumns().remove(tabcolMonto08);
+            tabListar.getColumns().remove(tabcolMonto09);
+            tabListar.getColumns().remove(tabcolMonto10);
+            tabListar.getColumns().remove(tabcolMonto11);
+            tabListar.getColumns().remove(tabcolMonto12);
+        } else {
+            tabcolMonto01.setText("Monto");
+        }
+        /*
         // tabla dimensiones
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -168,6 +196,7 @@ public class CargarControlador implements Initializable {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
+        */
         btnDescargarLog.setVisible(false);
     }
     
@@ -194,47 +223,134 @@ public class CargarControlador implements Initializable {
     // Acción del botón con ícono de folder
     @FXML void btnCargarRutaAction(ActionEvent event) throws IOException{
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Abrir Balancete");
+        fileChooser.setTitle("Abrir archivo");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
             btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
-            List<DetalleGasto> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
+            
+            List<DetalleGasto> lista;
+            if (menuControlador.repartoTipo == 1) {
+                lista = leerArchivoReal(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
+            } else {
+                lista = leerArchivoPresupuesto(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
+            }
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
+                lblNumeroCheck.setText("Cantidad de registros a cargar: " + lista.size());
+                cmbMes.setDisable(true);
+                spAnho.setDisable(true);
             } else {
                 txtRuta.setText("");
+                cmbMes.setDisable(false);
+                spAnho.setDisable(false);
+                lblNumeroCheck.setText("Cantidad de registros a cargar: " + 0);
             }
-            
-//                lblNumeroCheck.setText("Cuentas contables a cargar: " + lista.size());
-//            cmbMes.setDisable(true);
-//            spAnho.setDisable(true);
-//            List<CargarBalanceteLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado);
-//            if (lista != null) {
-//                tabListar.getItems().setAll(lista);
-//                lblNumeroCheck.setText("Cuentas contables a cargar: " + lista.size());
-//            } else {
-//                txtRuta.setText("");
-//                cmbMes.setDisable(false);
-//                spAnho.setDisable(false);
-//            }
         }
     }
     
-    private List<DetalleGasto> leerArchivo(String rutaArchivo) {
+    private List<DetalleGasto> leerArchivoPresupuesto(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
         List<DetalleGasto> listaError = new ArrayList();
-        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado);
+        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
+        List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
         
-        List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado);
-        try    (FileInputStream f = new FileInputStream(rutaArchivo);
-                XSSFWorkbook wb = new XSSFWorkbook(f);){
-                XSSFSheet hoja = wb.getSheetAt(0);
-//            if (hoja == null) {
-//                menuControlador.navegador.mensajeError("Cargar Balancete", "No existen hojas. No se puede cargar el archivo.");
-//                return null;
-//            }
+        try (FileInputStream f = new FileInputStream(rutaArchivo);
+            XSSFWorkbook wb = new XSSFWorkbook(f);){
+            String hojaNombre = "Data_EPS_PPS";
+            XSSFSheet hoja = wb.getSheet(hojaNombre);
+            if (hoja == null) {
+                menuControlador.navegador.mensajeError("Cargar archivo", String.format("No existe la hoja '%s'. No se puede cargar el archivo.", hojaNombre));
+                return null;
+            }
+            Iterator<Row> filas = hoja.iterator();
+            Iterator<Cell> celdas;
+            Row fila;
+            Cell celda;
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("cod cta contable","codpartida","Cuenta","Partida","Codigo CCs","Nombre CCs","M_Enero 2020","M_Febrero 2020","M_Marzo 2020","M_Abril 2020","M_Mayo 2020","M_Junio 2020","M_Julio 2020","M_Agosto 2020","M_Septiembre 2020","M_Octubre 2020","M_Noviembre 2020","M_Diciembre 2020")))) {
+                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                return null;
+            }
+            
+            while (filas.hasNext()) {
+                fila = filas.next();
+                celdas = fila.cellIterator();
+                
+                // leemos una fila completa
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                if(periodo == 0){
+                    break;
+                }
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCECO = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCECO = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);
+                double saldo = Double.valueOf(celda.getStringCellValue());
+                
+                // Valida que los items del archivo tengan el periodo correcto
+                // De no cumplirlo, cancela la previsualización.
+                if(periodo != periodoSeleccionado){
+                    menuControlador.navegador.mensajeError(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
+                    lista.clear();
+                    listaError.clear();
+                    listacodigosCuentaPeriodo.clear();
+                    
+                    listaCentroPeriodo.clear();
+                    txtRuta.setText("");
+                    break;
+                }
+                DetalleGasto cuentaLeida = new DetalleGasto(periodo, codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCECO, nombreCECO, saldo, true);                
+                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable,periodoSeleccionado);
+                // Verifica que exista la cuenta para poder agregarla
+                String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
+                String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
+                String centro = listaCentroPeriodo.stream().filter(item -> codigoCECO.equals(item)).findAny().orElse(null);
+                if (cuenta != null && partida!=null && centro != null) {
+                    listaCargar.add(cuentaLeida);
+                } else {
+                    // >>>agregar linea para log sobre el error
+                    cuentaLeida.setEstado(false);
+                    listaError.add(cuentaLeida);                    
+                }
+                
+                lista.add(cuentaLeida);
+                listacodigosPartidaPeriodo.clear();
+            }
+            wb.close();
+            f.close();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        lblNumeroCheck.setText("Cuentas posibles a cargar: " + (lista.size()-listaError.size()));
+//
+//        if (listaCuentas.size() > 0) {
+//            lblNumeroWarning.setText("Cuentas contables pendientes: " + listaCuentas.size());
+//        }
+//        if (listaError.size() > 0) {
+//            lblNumeroError.setText("Cuentas contables no encontradas: " + listaError.size());
+//        }
+        return lista;
+    }
+    
+    private List<DetalleGasto> leerArchivoReal(String rutaArchivo, int repartoTipo) {
+        List<DetalleGasto> lista = new ArrayList();
+        List<DetalleGasto> listaError = new ArrayList();
+        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
+        
+        List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+            
+        try (FileInputStream f = new FileInputStream(rutaArchivo);
+            XSSFWorkbook wb = new XSSFWorkbook(f);){
+            String hojaNombre = "Data_EPS_PPS";
+            XSSFSheet hoja = wb.getSheet(hojaNombre);
+            if (hoja == null) {
+                menuControlador.navegador.mensajeError("Cargar archivo", String.format("No existe la hoja '%s'. No se puede cargar el archivo.", hojaNombre));
+                return null;
+            }
             Iterator<Row> filas = hoja.iterator();
             Iterator<Cell> celdas;
             Row fila;

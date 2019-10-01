@@ -37,9 +37,6 @@ public class ListarControlador implements Initializable {
     @FXML private Spinner<Integer> spAnho;
     @FXML private JFXButton btnBuscarPeriodo;
     @FXML private Label lblNumeroRegistros;
-
-    @FXML private Label lblTipoGasto;
-    @FXML private ComboBox<String> cmbTipoGasto;
     
     @FXML private TextField txtBuscar;
     @FXML private TableView<DetalleGasto> tabListar;
@@ -70,15 +67,6 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            lblTipoGasto.setVisible(false);
-            cmbTipoGasto.setVisible(false);
-        }
-        
-        // Combo para Tipo de Gasto
-        List<String> lstTipoGasto = new ArrayList(Arrays.asList("Todos","Administrativo","Operativo"));
-        cmbTipoGasto.getItems().addAll(lstTipoGasto);
-        cmbTipoGasto.getSelectionModel().select(0);
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
@@ -110,7 +98,7 @@ public class ListarControlador implements Initializable {
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
         tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoCECOProperty());
         tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreCECOProperty());
-        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
+        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().monto1Property().asObject());
         tabcolSaldo.setCellFactory(column -> {
                 return new TableCell<DetalleGasto, Double>() {
                 @Override
@@ -126,7 +114,7 @@ public class ListarControlador implements Initializable {
             };
         });
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -180,7 +168,7 @@ public class ListarControlador implements Initializable {
     }
 
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");

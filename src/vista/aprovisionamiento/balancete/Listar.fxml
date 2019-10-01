@@ -95,7 +95,5 @@
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
          </valueFactory>
       </Spinner>
-      <Label fx:id="lblTipoGasto" layoutX="70.0" layoutY="199.0" text="Tipo de gasto:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="164.0" />
-      <ComboBox fx:id="cmbTipoGasto" layoutX="156.0" layoutY="195.0" prefWidth="170.0" AnchorPane.leftAnchor="135.0" AnchorPane.topAnchor="160.0" />
    </children>
 </AnchorPane>
