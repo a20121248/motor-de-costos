@@ -47,7 +47,7 @@ public class ListarControlador implements Initializable {
     @FXML private TableView<DriverCentro> tabListaDrivers;
     @FXML private TableColumn<DriverCentro, String> tabcolCodigo;
     @FXML private TableColumn<DriverCentro, String> tabcolNombre;
-    @FXML private TableColumn<DriverCentro, String> tabcolDescripcion;
+//    @FXML private TableColumn<DriverCentro, String> tabcolDescripcion;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private Label lblEntidades;
@@ -70,18 +70,16 @@ public class ListarControlador implements Initializable {
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
         this.menuControlador = menuControlador;
+        titulo = "Driver";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
- 
-        
-        titulo = "Centros de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo = "Centros de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo);
-            lnkDriversCentro.setText("Drivers - " + titulo);
-            lblEntidades.setText(titulo + " a distribuir");
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo - menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -89,24 +87,24 @@ public class ListarControlador implements Initializable {
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // tabla 1
         tabListaDrivers.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 40);
-        tabcolDescripcion.setMaxWidth(1f * Integer.MAX_VALUE * 45);
+//        tabcolDescripcion.setMaxWidth(1f * Integer.MAX_VALUE * 45);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
+//        tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
         // tabla 2
         tabDetalleDriver.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigoDestino.setMaxWidth(1f * Integer.MAX_VALUE * 12);
@@ -169,7 +167,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         DriverCentro driver = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (driver == null) {
-            menuControlador.navegador.mensajeInformativo("Driver - " + titulo, menuControlador.MENSAJE_EDIT_EMPTY);
+            menuControlador.mensaje.edit_empty_error(titulo);
             return;
         }
         menuControlador.objeto = driver;

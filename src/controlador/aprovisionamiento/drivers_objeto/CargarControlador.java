@@ -291,7 +291,7 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         for (DriverObjeto driver: tabListar.getItems()) {
             if (driver.getEsNuevo()) {
-                driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), driver.getDescripcion(), "OBCO", menuControlador.repartoTipo);
+                driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), "OBCO", menuControlador.repartoTipo);
             }
         }
         boolean esPrimerItem = true;

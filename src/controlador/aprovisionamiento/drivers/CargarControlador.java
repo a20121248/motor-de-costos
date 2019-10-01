@@ -279,7 +279,7 @@ public class CargarControlador implements Initializable {
         boolean esPrimerItem = true;
         for (DriverCentro driver: tabListar.getItems()) {
             if (driver.getEsNuevo()) {
-                driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), driver.getDescripcion(), "CECO", menuControlador.repartoTipo);
+                driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), "CECO", menuControlador.repartoTipo);
             }
         }
         ConexionBD.crearStatement();
@@ -297,7 +297,7 @@ public class CargarControlador implements Initializable {
 //                for (int i=0; i < 100; ++i) msj+="-";msj += "\n";
 //            }
             if (lista != null) {
-                driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista);
+                driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
                 msj += String.format("Driver %s: Se cargó correctamente con %s items.\n",driver.getCodigo(),lista.size());
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getDireccion());
             } else {
