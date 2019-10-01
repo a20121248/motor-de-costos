@@ -48,9 +48,10 @@ public class CargarControlador implements Initializable {
     @FXML private TableView<CuentaContable> tabListar;
     @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
     @FXML private TableColumn<CuentaContable, String> tabcolNombre;
-    @FXML private TableColumn<CuentaContable, String> tabcolAtribuible;
-    @FXML private TableColumn<CuentaContable, String> tabcolTipo;
-    @FXML private TableColumn<CuentaContable, String> tabcolClase;
+    @FXML private TableColumn<CuentaContable, String> tabcolTipoGasto;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -81,16 +82,18 @@ public class CargarControlador implements Initializable {
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 45);
-        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
-        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
-        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17AtribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -146,7 +149,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","ATRIBUIBLE","TIPO GASTO","CLASE GASTO")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","TIPO GASTO","NIIF17 ATRIBUIBLE","NIIF17 TIPO","NIIF17 CLASE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -158,15 +161,19 @@ public class CargarControlador implements Initializable {
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String atribuible = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String tipoGasto = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String claseGasto = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Tipo = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Clase = celda.getStringCellValue();
 
-                atribuible = planDeCuentaDAO.convertirAbreviaturaPalabra(atribuible);
-                tipoGasto = planDeCuentaDAO.convertirAbreviaturaPalabra(tipoGasto);
-                claseGasto = planDeCuentaDAO.convertirAbreviaturaPalabra(claseGasto);
+                niif17Atribuible = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Atribuible);
+                niif17Tipo = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Tipo);
+                niif17Clase = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Clase);
+                String strTipoGasto;
+                if(tipoGasto == 1) strTipoGasto ="DIRECTO";
+                else strTipoGasto ="INDIRECTO";
                 
-                CuentaContable linea = new CuentaContable(codigo,nombre,null,atribuible,tipoGasto, claseGasto,0,null,null,true);
+                CuentaContable linea = new CuentaContable(codigo,nombre,null,strTipoGasto,niif17Atribuible,niif17Tipo, niif17Clase,0,null,null,true);
                 boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if(cuenta == null & ptrCodigo){

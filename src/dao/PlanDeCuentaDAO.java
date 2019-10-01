@@ -97,30 +97,31 @@ public class PlanDeCuentaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int actualizarObjeto(String codigo, String nombre, String atribuible, String tipoGasto, String claseGasto) {
-        atribuible = convertirPalabraAbreviatura(atribuible);
-        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
-        claseGasto = convertirPalabraAbreviatura(claseGasto);
+    public int actualizarObjeto(String codigo, String nombre, int tipoGasto,  String niif17Atribuible, String niif17Tipo, String niif17Clase) {
+        niif17Atribuible = convertirPalabraAbreviatura(niif17Atribuible);
+        niif17Tipo = convertirPalabraAbreviatura(niif17Tipo);
+        niif17Clase = convertirPalabraAbreviatura(niif17Clase);
         String queryStr = String.format("" +
                 "UPDATE MS_plan_de_cuentas\n" +
                 "   SET nombre='%s',\n"+
-                "       atribuible = '%s',\n" +
-                "       tipo = '%s',\n" +
-                "       clase = '%s'\n" +
+                "       tipo_gasto = '%d',\n" +
+                "       niif17_atribuible = '%s',\n" +
+                "       niif17_tipo = '%s',\n" +
+                "       niif17_clase = '%s'\n" +
                 " WHERE codigo='%s'",
-                nombre,atribuible,tipoGasto,claseGasto,codigo);
+                nombre,tipoGasto,niif17Atribuible,niif17Tipo,niif17Clase,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int insertarObjetoCuenta(String codigo, String nombre, int repartoTipo, String atribuible, String tipoGasto, String claseGasto) {
-        atribuible = convertirPalabraAbreviatura(atribuible);
-        tipoGasto = convertirPalabraAbreviatura(tipoGasto);
-        claseGasto = convertirPalabraAbreviatura(claseGasto);
+    public int insertarObjetoCuenta(String codigo, String nombre, int repartoTipo, int tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase) {
+        niif17Atribuible = convertirPalabraAbreviatura(niif17Atribuible);
+        niif17Tipo = convertirPalabraAbreviatura(niif17Tipo);
+        niif17Clase = convertirPalabraAbreviatura(niif17Clase);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-                "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,0,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
+                "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, tipo_gasto, niif17_atribuible, niif17_tipo, niif17_clase, fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s',%d,0,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,1, tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
 
@@ -138,18 +139,22 @@ public class PlanDeCuentaDAO {
         for(CuentaContable item: lista){
             String codigo = item.getCodigo();
             String nombre = item.getNombre();
-            String atribuible = item.getAtribuible();
-            String tipoGasto = item.getTipoGasto();
-            String claseGasto = item.getClaseGasto();
+            String strTipoGasto = item.getTipoGasto();
+            String niif17Atribuible = item.getNIIF17Atribuible();
+            String niif17Tipo = item.getNIIF17Tipo();
+            String niif17Clase = item.getNIIF17Clase();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-            atribuible = convertirPalabraAbreviatura(atribuible);
-            tipoGasto = convertirPalabraAbreviatura(tipoGasto);
-            claseGasto = convertirPalabraAbreviatura(claseGasto);
+            niif17Atribuible = convertirPalabraAbreviatura(niif17Atribuible);
+            niif17Tipo = convertirPalabraAbreviatura(niif17Tipo);
+            niif17Clase = convertirPalabraAbreviatura(niif17Clase);
+            int tipoGasto;
+            if(strTipoGasto.equals("DIRECTO")) tipoGasto = 1;
+            else tipoGasto = 0;
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo, atribuible, tipo, clase, fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,%d,'%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,0,atribuible, tipoGasto, claseGasto, fechaStr,fechaStr);
+                    "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo,tipo_gasto, niif17_atribuible, niif17_tipo, niif17_clase, fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s',%d,%d,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,1,0,tipoGasto,niif17Atribuible, niif17Tipo, niif17Clase, fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
@@ -232,9 +237,12 @@ public class PlanDeCuentaDAO {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
-                "       A.atribuible,\n" +
-                "       A.tipo,\n" +
-                "       A.clase,\n" +
+                "       CASE WHEN A.tipo_gasto=0 then 'INDIRECTO'\n" +
+                "            WHEN A.tipo_gasto=1 then 'DIRECTO'\n" +
+                "       END tipo_gasto,\n" +
+                "       A.niif17_atribuible,\n" +
+                "       A.niif17_tipo,\n" +
+                "       A.niif17_clase,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
                 "  FROM MS_plan_de_cuentas A\n" +
@@ -245,18 +253,19 @@ public class PlanDeCuentaDAO {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
-                String atribuible = rs.getString("atribuible");
-                String tipoGasto = rs.getString("tipo");
-                String claseGasto = rs.getString("clase");
+                String tipoGasto = rs.getString("tipo_gasto");
+                String niif17_atribuible = rs.getString("niif17_atribuible");
+                String niif17_tipo = rs.getString("niif17_tipo");
+                String niif17_clase = rs.getString("niif17_clase");
                 Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
                 Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
                 double saldo = 0;
                 
-                atribuible = convertirAbreviaturaPalabra(atribuible);
-                tipoGasto = convertirAbreviaturaPalabra(tipoGasto);
-                claseGasto = convertirAbreviaturaPalabra(claseGasto);
+                niif17_atribuible = convertirAbreviaturaPalabra(niif17_atribuible);
+                niif17_tipo = convertirAbreviaturaPalabra(niif17_tipo);
+                niif17_clase = convertirAbreviaturaPalabra(niif17_clase);
                 
-                CuentaContable item = new CuentaContable(codigo, nombre, null, atribuible, tipoGasto, claseGasto, saldo, fechaCreacion, fechaActualizacion);
+                CuentaContable item = new CuentaContable(codigo, nombre, null, tipoGasto, niif17_atribuible, niif17_tipo, niif17_clase, saldo, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
