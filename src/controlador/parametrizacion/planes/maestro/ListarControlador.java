@@ -50,9 +50,10 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
     @FXML private TableColumn<CuentaContable, String> tabcolNombre;
     @FXML private TableColumn<CuentaContable, Boolean> tabcolEstado;
-    @FXML private TableColumn<CuentaContable, String> tabcolAtribuible;
-    @FXML private TableColumn<CuentaContable, String> tabcolTipo;
-    @FXML private TableColumn<CuentaContable, String> tabcolClase;
+    @FXML private TableColumn<CuentaContable, String> tabcolTipoGasto;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
@@ -81,16 +82,18 @@ public class ListarControlador implements Initializable {
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 45);
-        tabcolAtribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolTipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolClase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         //tabcolEstado.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolAtribuible.setCellValueFactory(cellData -> cellData.getValue().atribuibleProperty());
-        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
-        tabcolClase.setCellValueFactory(cellData -> cellData.getValue().claseGastoProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17AtribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listarObjetoCuentas(menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -99,9 +102,10 @@ public class ListarControlador implements Initializable {
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getAtribuible().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getTipoGasto().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getClaseGasto().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNIIF17Atribuible().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNIIF17Tipo().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNIIF17Clase().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());

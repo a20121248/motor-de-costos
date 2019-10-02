@@ -16,9 +16,10 @@ public class CuentaContable extends EntidadDistribucion {
     private StringProperty codProducto;
     private StringProperty descripcionProducto;
     private BooleanProperty flagCargar;
-    private StringProperty atribuible;
     private StringProperty tipoGasto;
-    private StringProperty claseGasto;
+    private StringProperty niif17Atribuible;
+    private StringProperty niif17Tipo;
+    private StringProperty niif17Clase;
     // datos del saldo
     private Tipo grupo;
     
@@ -37,17 +38,19 @@ public class CuentaContable extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public CuentaContable(String codigo, String nombre, String descripcion, String atribuible, String tipoGasto, String claseGasto,  double saldo, Date fechaCreacion, Date fechaActualizacion) {
+    public CuentaContable(String codigo, String nombre, String descripcion, String tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase,  double saldo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
-        this.atribuible = new SimpleStringProperty(atribuible);
         this.tipoGasto = new SimpleStringProperty(tipoGasto);
-        this.claseGasto = new SimpleStringProperty(claseGasto);
+        this.niif17Atribuible = new SimpleStringProperty(niif17Atribuible);
+        this.niif17Tipo = new SimpleStringProperty(niif17Tipo);
+        this.niif17Clase = new SimpleStringProperty(niif17Clase);
     }
-    public CuentaContable(String codigo, String nombre, String descripcion, String atribuible, String tipoGasto, String claseGasto,  double saldo, Date fechaCreacion, Date fechaActualizacion, boolean  flagCargar) {
+    public CuentaContable(String codigo, String nombre, String descripcion, String tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase,  double saldo, Date fechaCreacion, Date fechaActualizacion, boolean  flagCargar) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
-        this.atribuible = new SimpleStringProperty(atribuible);
         this.tipoGasto = new SimpleStringProperty(tipoGasto);
-        this.claseGasto = new SimpleStringProperty(claseGasto);
+        this.niif17Atribuible = new SimpleStringProperty(niif17Atribuible);
+        this.niif17Tipo = new SimpleStringProperty(niif17Tipo);
+        this.niif17Clase = new SimpleStringProperty(niif17Clase);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     public Tipo getGrupo() {
@@ -155,18 +158,51 @@ public class CuentaContable extends EntidadDistribucion {
         this.descripcionProducto.set(descripcionProducto);
     }
 
-    public StringProperty atribuibleProperty() {
-        return this.atribuible;
+    public StringProperty NIIF17AtribuibleProperty() {
+        return this.niif17Atribuible;
     }
 
-    public String getAtribuible() {
-        return atribuible.get();
+    public String getNIIF17Atribuible() {
+        return niif17Atribuible.get();
     }
 
-    public void setAtribuible(String atribuible) {
-        this.atribuible.set(atribuible);
+    public void setNIIF17Atribuible(String atribuible) {
+        this.niif17Atribuible.set(atribuible);
     }
 
+    public StringProperty NIIF17TipoProperty() {
+        return this.niif17Tipo;
+    }
+
+    public String getNIIF17Tipo() {
+        return niif17Tipo.get();
+    }
+
+    public void setNIIF17Tipo(String tipoGasto) {
+        this.niif17Tipo.set(tipoGasto);
+    }
+
+    public StringProperty NIIF17ClaseProperty() {
+        return this.niif17Clase;
+    }
+
+    public String getNIIF17Clase() {
+        return niif17Clase.get();
+    }
+
+    public void setNIIF17Clase(String claseGasto) {
+        this.niif17Clase.set(claseGasto);
+    }
+@Override
+    public boolean getFlagCargar(){
+        return flagCargar.get();
+    }
+    
+@Override    
+    public void setFlagCargar(boolean flagCargar){
+        this.flagCargar.set(flagCargar);
+    }
+    
     public StringProperty tipoGastoProperty() {
         return this.tipoGasto;
     }
@@ -177,26 +213,5 @@ public class CuentaContable extends EntidadDistribucion {
 
     public void setTipoGasto(String tipoGasto) {
         this.tipoGasto.set(tipoGasto);
-    }
-
-    public StringProperty claseGastoProperty() {
-        return this.claseGasto;
-    }
-
-    public String getClaseGasto() {
-        return claseGasto.get();
-    }
-
-    public void setClaseGasto(String claseGasto) {
-        this.claseGasto.set(claseGasto);
-    }
-@Override
-    public boolean getFlagCargar(){
-        return flagCargar.get();
-    }
-    
-@Override    
-    public void setFlagCargar(boolean flagCargar){
-        this.flagCargar.set(flagCargar);
     }
 }

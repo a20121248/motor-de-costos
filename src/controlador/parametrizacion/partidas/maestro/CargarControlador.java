@@ -51,6 +51,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Partida, String> tabcolCodigo;
     @FXML private TableColumn<Partida, String> tabcolNombre;
     @FXML private TableColumn<Partida, String> tabcolGrupoGasto;
+    @FXML private TableColumn<Partida, String> tabcolTipoGasto;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -83,13 +84,15 @@ public class CargarControlador implements Initializable {
         // tabla dimensiones
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 70);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
 
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -145,7 +148,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","GRUPO GASTO")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","GRUPO GASTO", "TIPO GASTO")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -157,15 +160,19 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String grupoGasto = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
                 
                 Tipo tipoGrupoGasto = listaGrupoGastos.stream().filter(item ->grupoGasto.equals(item.getCodigo())).findAny().orElse(null);       
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                String strTipoGasto;
+                if(tipoGasto == 1) strTipoGasto ="DIRECTO";
+                else strTipoGasto ="INDIRECTO";
                 Partida linea;
                 if(tipoGrupoGasto == null){
                     Tipo gg = new Tipo("NN","NN");
-                    linea = new Partida(codigo,nombre,null,gg,0,null,null,true);
+                    linea = new Partida(codigo,nombre,null,gg,strTipoGasto,0,null,null,true);
                 }else {
-                    linea = new Partida(codigo,nombre,null,tipoGrupoGasto,0,null,null,true);
+                    linea = new Partida(codigo,nombre,null,tipoGrupoGasto,strTipoGasto,0,null,null,true);
                 }
                 
                 boolean ptrCodigo = menuControlador.patronCodigoPartida(codigo);

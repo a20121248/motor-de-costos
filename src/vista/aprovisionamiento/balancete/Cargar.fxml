@@ -84,26 +84,26 @@
             <String fx:value="small" />
          </styleClass>
       </JFXButton>
-      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
+      <TableView fx:id="tabListar" prefHeight="262.0" prefWidth="345.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigoCuentaContable" prefWidth="100.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
-            <TableColumn fx:id="tabcolNombreCuentaContable" prefWidth="100.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
-            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="100.0" styleClass="center" text="CÓDIGO PARTIDA" />
-            <TableColumn fx:id="tabcolNombrePartida" prefWidth="100.0" styleClass="left" text="NOMBRE PARTIDA" />
-            <TableColumn fx:id="tabcolCodigoCECO" prefWidth="100.0" styleClass="center" text="CÓDIGO CENTRO COSTO" />
-            <TableColumn fx:id="tabcolNombreCECO" prefWidth="100.0" styleClass="left" text="NOMBRE CENTRO COSTO" />
-            <TableColumn fx:id="tabcolMonto1" prefWidth="100.0" styleClass="right" text="MONTO" />
-            <TableColumn fx:id="tabcolMonto2" prefWidth="100.0" styleClass="right" text="FEBRERO" />
-            <TableColumn fx:id="tabcolMonto3" prefWidth="100.0" styleClass="right" text="MARZO" />
-            <TableColumn fx:id="tabcolMonto4" prefWidth="100.0" styleClass="right" text="ABRIL" />
-            <TableColumn fx:id="tabcolMonto5" prefWidth="100.0" styleClass="right" text="MAYO" />
-            <TableColumn fx:id="tabcolMonto6" prefWidth="100.0" styleClass="right" text="JUNIO" />
-            <TableColumn fx:id="tabcolMonto7" prefWidth="100.0" styleClass="right" text="JULIO" />
-            <TableColumn fx:id="tabcolMonto8" prefWidth="100.0" styleClass="right" text="AGOSTO" />
-            <TableColumn fx:id="tabcolMonto9" prefWidth="100.0" styleClass="right" text="SETIEMBRE" />
-            <TableColumn fx:id="tabcolMonto10" prefWidth="100.0" styleClass="right" text="OCTUBRE" />
-            <TableColumn fx:id="tabcolMonto11" prefWidth="100.0" styleClass="right" text="NOVIEMBRE" />
-            <TableColumn fx:id="tabcolMonto12" prefWidth="100.0" styleClass="right" text="DICIEMBRE" />
+            <TableColumn fx:id="tabcolCodigoCuentaContable" prefWidth="170.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolNombreCuentaContable" prefWidth="300.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="115.0" styleClass="center" text="CÓDIGO PARTIDA" />
+            <TableColumn fx:id="tabcolNombrePartida" prefWidth="300.0" styleClass="left" text="NOMBRE PARTIDA" />
+            <TableColumn fx:id="tabcolCodigoCECO" prefWidth="120.0" styleClass="center" text="CÓDIGO CENTRO" />
+            <TableColumn fx:id="tabcolNombreCECO" prefWidth="300.0" styleClass="left" text="NOMBRE CENTRO" />
+            <TableColumn fx:id="tabcolMonto01" prefWidth="100.0" styleClass="right" text="M. ENERO" />
+            <TableColumn fx:id="tabcolMonto02" prefWidth="100.0" styleClass="right" text="M. FEBRERO" />
+            <TableColumn fx:id="tabcolMonto03" prefWidth="100.0" styleClass="right" text="M. MARZO" />
+            <TableColumn fx:id="tabcolMonto04" prefWidth="100.0" styleClass="right" text="M. ABRIL" />
+            <TableColumn fx:id="tabcolMonto05" prefWidth="100.0" styleClass="right" text="M. MAYO" />
+            <TableColumn fx:id="tabcolMonto06" prefWidth="100.0" styleClass="right" text="M. JUNIO" />
+            <TableColumn fx:id="tabcolMonto07" prefWidth="100.0" styleClass="right" text="M. JULIO" />
+            <TableColumn fx:id="tabcolMonto08" prefWidth="100.0" styleClass="right" text="M. AGOSTO" />
+            <TableColumn fx:id="tabcolMonto09" prefWidth="100.0" styleClass="right" text="M. SETIEMBRE" />
+            <TableColumn fx:id="tabcolMonto10" prefWidth="100.0" styleClass="right" text="M. OCTUBRE" />
+            <TableColumn fx:id="tabcolMonto11" prefWidth="100.0" styleClass="right" text="M. NOVIEMBRE" />
+            <TableColumn fx:id="tabcolMonto12" prefWidth="100.0" styleClass="right" text="M. DICIEMBRE" />
             <TableColumn fx:id="tabcolEstado" prefWidth="100.0" styleClass="center" text="ESTADO" />
          </columns>
       </TableView>

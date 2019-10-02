@@ -24,19 +24,22 @@ public class Partida extends EntidadDistribucion{
     private BooleanProperty flagCargar;
     private StringProperty esBolsa;
     private Tipo cuentaContable;
+    private StringProperty tipoGasto;
     
     public Partida(String codigo, String nombre, String descripcion, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
     }
     
-    public Partida(String codigo, String nombre, String descripcion, Tipo grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
+    public Partida(String codigo, String nombre, String descripcion, String tipoGasto, Tipo grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
     }
     
-    public Partida(String codigo, String nombre, String descripcion, Tipo grupoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+    public Partida(String codigo, String nombre, String descripcion, Tipo grupoGasto, String tipoGasto, double saldoAcumulado, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
         super(codigo, nombre, descripcion, saldoAcumulado, fechaCreacion, fechaActualizacion, true);
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
@@ -120,5 +123,17 @@ public class Partida extends EntidadDistribucion{
 
     public void setEsBolsa(String esBolsa) {
         this.esBolsa.set(esBolsa);
+    }
+    
+    public StringProperty tipoGastoProperty() {
+        return this.tipoGasto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto.get();
+    }
+
+    public void setTipoGastoDirecto(String tipoGasto) {
+        this.tipoGasto.set(tipoGasto);
     }
 }

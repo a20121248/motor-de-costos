@@ -31,6 +31,7 @@ public class CrearControlador implements Initializable {
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
     @FXML private ComboBox<Tipo> cmbGrupoGasto;
+    @FXML private ComboBox cmbTipoGasto;
 
     
     @FXML private JFXButton btnGuardar;
@@ -65,6 +66,9 @@ public class CrearControlador implements Initializable {
             }
         });
         cmbGrupoGasto.getSelectionModel().select(0);
+        
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -91,6 +95,7 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
         boolean ptrCodigo = menuControlador.patronCodigoPartida(codigo);
         if (!ptrCodigo) {
             menuControlador.mensaje.create_pattern_error(titulo);
@@ -100,7 +105,7 @@ public class CrearControlador implements Initializable {
             menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
-        if (partidaDAO.insertarObjeto(codigo,nombre,grupoGasto, menuControlador.repartoTipo)==1) {
+        if (partidaDAO.insertarObjeto(codigo,nombre,grupoGasto,tipoGasto, menuControlador.repartoTipo)==1) {
             menuControlador.mensaje.create_success(titulo);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);

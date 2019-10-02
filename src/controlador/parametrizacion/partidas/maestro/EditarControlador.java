@@ -30,6 +30,7 @@ public class EditarControlador implements Initializable {
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
     @FXML private ComboBox<Tipo> cmbGrupoGasto;
+    @FXML private ComboBox cmbTipoGasto;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -68,6 +69,9 @@ public class EditarControlador implements Initializable {
             }
         });
         cmbGrupoGasto.getSelectionModel().select(partida.getGrupoGasto());
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        if(partida.getTipoGasto().equals("DIRECTO")) cmbTipoGasto.getSelectionModel().select(1);
+        else cmbTipoGasto.getSelectionModel().select(0);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -94,7 +98,8 @@ public class EditarControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String grupoGasto = cmbGrupoGasto.getValue().getCodigo();
-        if (partidaDAO.actualizarObjeto(codigo, nombre,grupoGasto)==1) {
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        if (partidaDAO.actualizarObjeto(codigo,nombre,grupoGasto,tipoGasto)==1) {
             menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PARTIDAS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_MAESTRO_LISTAR);

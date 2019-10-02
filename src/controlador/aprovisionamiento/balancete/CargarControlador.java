@@ -61,13 +61,12 @@ public class CargarControlador implements Initializable {
     @FXML private JFXButton btnDescargarLog;
     
     @FXML private TableView<DetalleGasto> tabListar;
-    @FXML private TableColumn<DetalleGasto, Boolean> tabcolEstado;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
     @FXML private TableColumn<DetalleGasto, String> tabcolNombreCuentaContable;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoPartida;
     @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
-    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCECO;
-    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCECO;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCentro;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCentro;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto01;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto02;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto03;
@@ -80,6 +79,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto10;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto11;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto12;
+    @FXML private TableColumn<DetalleGasto, Boolean> tabcolEstado;
     
     @FXML private Button btnCancelar;
     @FXML private Button btnSubir;
@@ -112,6 +112,7 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (menuControlador.repartoTipo == 1) {
+            tabcolMonto01.setText("MONTO");
             tabListar.getColumns().remove(tabcolMonto02);
             tabListar.getColumns().remove(tabcolMonto03);
             tabListar.getColumns().remove(tabcolMonto04);
@@ -123,8 +124,6 @@ public class CargarControlador implements Initializable {
             tabListar.getColumns().remove(tabcolMonto10);
             tabListar.getColumns().remove(tabcolMonto11);
             tabListar.getColumns().remove(tabcolMonto12);
-        } else {
-            tabcolMonto01.setText("Monto");
         }
         /*
         // tabla dimensiones
