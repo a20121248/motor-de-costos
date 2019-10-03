@@ -12,7 +12,6 @@ import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
 import dao.DetalleGastoDAO;
-import dao.PlanDeCuentaDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import modelo.AsignacionPartidaCuenta;
@@ -54,11 +54,12 @@ public class CargarControlador implements Initializable {
     @FXML private Hyperlink lnkBalancete;
     @FXML private Hyperlink lnkCargar;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
+    
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
-    @FXML private JFXButton btnDescargarLog;
     
     @FXML private TableView<DetalleGasto> tabListar;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
@@ -79,13 +80,12 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto10;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto11;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto12;
-    @FXML private TableColumn<DetalleGasto, Boolean> tabcolEstado;
     
-    @FXML private Button btnCancelar;
+    @FXML private JFXButton btnDescargarLog;
+    @FXML private Label lblNumeroRegistros;
+    
+    @FXML private Button btnAtras;
     @FXML private Button btnSubir;
-    @FXML private Label lblNumeroCheck;
-    @FXML private Label lblNumeroWarning;
-    @FXML private Label lblNumeroError;  
     
     List<DetalleGasto> listaCargar = new ArrayList() ;
 
@@ -93,25 +93,36 @@ public class CargarControlador implements Initializable {
     public DetalleGastoDAO detalleGastoDAO;
     CentroDAO centroDAO;
     int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
     String titulo;
     String logName;
     Boolean findError;
+    
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         detalleGastoDAO = new DetalleGastoDAO();
         centroDAO = new CentroDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
         titulo = "Detalle de Gasto";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    if (menuControlador.repartoTipo == 1)
+                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    else
+                        periodoSeleccionado = spAnho.getValue()*100;
+                }
+            });
+            
             tabcolMonto01.setText("MONTO");
             tabListar.getColumns().remove(tabcolMonto02);
             tabListar.getColumns().remove(tabcolMonto03);
@@ -124,79 +135,54 @@ public class CargarControlador implements Initializable {
             tabListar.getColumns().remove(tabcolMonto10);
             tabListar.getColumns().remove(tabcolMonto11);
             tabListar.getColumns().remove(tabcolMonto12);
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
         }
-        /*
-        // tabla dimensiones
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoCECO.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCECO.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolEstado.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        // meses
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+            }
+        });
+        btnDescargarLog.setVisible(false);
         // tabla formato
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
-        tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoCECOProperty());
-        tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreCECOProperty());
-        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoProperty().asObject());
-        tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<DetalleGasto, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(String.format("%,.2f", item));
-                    }
-                }
-            };
-        });
-//        Estado
-        tabcolEstado.setCellValueFactory(cellData -> cellData.getValue().estadoProperty());
-        tabcolEstado.setCellFactory(column -> {
-            return new TableCell<DetalleGasto, Boolean>() {
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        if (item) {
-                            setText("CORRECTO");
-                            setTextFill(Color.GREEN);
-                        } else {
-                            setText("INCORRECTO");
-                            setTextFill(Color.RED);
-                        }
-                    }
-                }
-            };
-        });
-        
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
-        });
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
-        });
-        */
-        btnDescargarLog.setVisible(false);
+        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
+        tabcolMonto01.setCellValueFactory(cellData -> cellData.getValue().monto01Property().asObject());
+        tabcolMonto01.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+        if (menuControlador.repartoTipo == 2) {
+            tabcolMonto02.setCellValueFactory(cellData -> cellData.getValue().monto02Property().asObject());
+            tabcolMonto03.setCellValueFactory(cellData -> cellData.getValue().monto03Property().asObject());
+            tabcolMonto04.setCellValueFactory(cellData -> cellData.getValue().monto04Property().asObject());
+            tabcolMonto05.setCellValueFactory(cellData -> cellData.getValue().monto05Property().asObject());
+            tabcolMonto06.setCellValueFactory(cellData -> cellData.getValue().monto06Property().asObject());
+            tabcolMonto07.setCellValueFactory(cellData -> cellData.getValue().monto07Property().asObject());
+            tabcolMonto08.setCellValueFactory(cellData -> cellData.getValue().monto08Property().asObject());
+            tabcolMonto09.setCellValueFactory(cellData -> cellData.getValue().monto09Property().asObject());
+            tabcolMonto10.setCellValueFactory(cellData -> cellData.getValue().monto10Property().asObject());
+            tabcolMonto11.setCellValueFactory(cellData -> cellData.getValue().monto11Property().asObject());
+            tabcolMonto12.setCellValueFactory(cellData -> cellData.getValue().monto12Property().asObject());
+            
+            tabcolMonto02.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto03.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto04.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto05.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto06.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto07.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto08.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto09.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto10.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto11.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+            tabcolMonto12.setCellFactory(column -> {return new TableCell<DetalleGasto, Double>() {@Override protected void updateItem(Double item, boolean empty) {super.updateItem(item, empty);if (item == null || empty) {setText(null);setStyle("");} else {setText(String.format("%,.2f", item));}}};});
+        }
     }
     
     // Acción de la pestaña 'Inicio'
@@ -230,28 +216,26 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getName());
             
             List<DetalleGasto> lista;
-            if (menuControlador.repartoTipo == 1) {
+            if (menuControlador.repartoTipo == 1)
                 lista = leerArchivoReal(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
-            } else {
+            else
                 lista = leerArchivoPresupuesto(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
-            }
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
-                lblNumeroCheck.setText("Cantidad de registros a cargar: " + lista.size());
-                cmbMes.setDisable(true);
+                lblNumeroRegistros.setText("Número de registros: " + lista.size());
+                if (menuControlador.repartoTipo == 1) cmbMes.setDisable(true);
                 spAnho.setDisable(true);
             } else {
                 txtRuta.setText("");
-                cmbMes.setDisable(false);
+                lblNumeroRegistros.setText("Número de registros: " + 0);
+                if (menuControlador.repartoTipo == 1) cmbMes.setDisable(false);
                 spAnho.setDisable(false);
-                lblNumeroCheck.setText("Cantidad de registros a cargar: " + 0);
             }
         }
     }
     
     private List<DetalleGasto> leerArchivoPresupuesto(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
-        List<DetalleGasto> listaError = new ArrayList();
         List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
         List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
         
@@ -276,72 +260,53 @@ public class CargarControlador implements Initializable {
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 
-                // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
-                if(periodo == 0){
-                    break;
-                }
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCECO = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCECO = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);
-                double saldo = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto02 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto03 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto04 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto05 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto06 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto07 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto08 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto09 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto10 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto11 = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto12 = Double.valueOf(celda.getStringCellValue());
                 
-                // Valida que los items del archivo tengan el periodo correcto
-                // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
-                    menuControlador.navegador.mensajeError(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
-                    lista.clear();
-                    listaError.clear();
-                    listacodigosCuentaPeriodo.clear();
-                    
-                    listaCentroPeriodo.clear();
-                    txtRuta.setText("");
-                    break;
-                }
-                DetalleGasto cuentaLeida = new DetalleGasto(periodo, codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCECO, nombreCECO, saldo, true);                
-                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable,periodoSeleccionado);
+                DetalleGasto cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, monto02, monto03, monto04, monto05, monto06, monto07, monto08, monto09, monto10, monto11, monto12, true);
+                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
                 String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listaCentroPeriodo.stream().filter(item -> codigoCECO.equals(item)).findAny().orElse(null);
+                String centro = listaCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 if (cuenta != null && partida!=null && centro != null) {
                     listaCargar.add(cuentaLeida);
                 } else {
                     // >>>agregar linea para log sobre el error
                     cuentaLeida.setEstado(false);
-                    listaError.add(cuentaLeida);                    
                 }
-                
                 lista.add(cuentaLeida);
-                listacodigosPartidaPeriodo.clear();
             }
             wb.close();
             f.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-        lblNumeroCheck.setText("Cuentas posibles a cargar: " + (lista.size()-listaError.size()));
-//
-//        if (listaCuentas.size() > 0) {
-//            lblNumeroWarning.setText("Cuentas contables pendientes: " + listaCuentas.size());
-//        }
-//        if (listaError.size() > 0) {
-//            lblNumeroError.setText("Cuentas contables no encontradas: " + listaError.size());
-//        }
+        lblNumeroRegistros.setText("Número de registros: " + lista.size());
         return lista;
     }
     
     private List<DetalleGasto> leerArchivoReal(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
-        List<DetalleGasto> listaError = new ArrayList();
         List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
-        
         List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
-            
+        
         try (FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(f);){
             String hojaNombre = "Data_EPS_PPS";
@@ -354,7 +319,7 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila;
             Cell celda;
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO COSTO","NOMBRE CENTRO COSTO","SALDO")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("cod cta contable","codpartida","Cuenta","Partida","Codigo CCs","Nombre CCs","M_Enero 2020","M_Febrero 2020","M_Marzo 2020","M_Abril 2020","M_Mayo 2020","M_Junio 2020","M_Julio 2020","M_Agosto 2020","M_Septiembre 2020","M_Octubre 2020","M_Noviembre 2020","M_Diciembre 2020")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -363,97 +328,56 @@ public class CargarControlador implements Initializable {
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 
-                // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
-                if(periodo == 0){
-                    break;
-                }
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCECO = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCECO = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);
-                double saldo = Double.valueOf(celda.getStringCellValue());
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
                 
-                // Valida que los items del archivo tengan el periodo correcto
-                // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
-                    menuControlador.navegador.mensajeError(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
-                    lista.clear();
-                    listaError.clear();
-                    listacodigosCuentaPeriodo.clear();
-                    
-                    listaCentroPeriodo.clear();
-                    txtRuta.setText("");
-                    break;
-                }
-                DetalleGasto cuentaLeida = new DetalleGasto(periodo, codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCECO, nombreCECO, saldo, true);                
-                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable,periodoSeleccionado);
+                DetalleGasto cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, true);
+                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
                 String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listaCentroPeriodo.stream().filter(item -> codigoCECO.equals(item)).findAny().orElse(null);
+                String centro = listaCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 if (cuenta != null && partida!=null && centro != null) {
                     listaCargar.add(cuentaLeida);
                 } else {
                     // >>>agregar linea para log sobre el error
                     cuentaLeida.setEstado(false);
-                    listaError.add(cuentaLeida);                    
                 }
-                
                 lista.add(cuentaLeida);
-                listacodigosPartidaPeriodo.clear();
             }
             wb.close();
             f.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-        lblNumeroCheck.setText("Cuentas posibles a cargar: " + (lista.size()-listaError.size()));
-//
-//        if (listaCuentas.size() > 0) {
-//            lblNumeroWarning.setText("Cuentas contables pendientes: " + listaCuentas.size());
-//        }
-//        if (listaError.size() > 0) {
-//            lblNumeroError.setText("Cuentas contables no encontradas: " + listaError.size());
-//        }
+        lblNumeroRegistros.setText("Número de registros: " + lista.size());
         return lista;
-    }
+    }    
     
     // Acción del botón 'Subir'
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         findError = false;
-        if(tabListar.getItems().isEmpty()){
+        if (tabListar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
-        }else {
-            if(listaCargar.isEmpty()){
+        } else {
+            if (listaCargar.isEmpty()){
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
-                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
+            } else {
+                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado, listaCargar, menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-                }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
-                }
-                btnDescargarLog.setVisible(true);
-            }else{
-                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado,listaCargar);
-                crearReporteLOG();
-                if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-                }else {
+                } else {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
                 }
                 btnDescargarLog.setVisible(true);
             }
         }        
-    }
-    
-    // Acción del botón 'Cancelar'
-    @FXML void btnCancelarAction(ActionEvent event) throws SQLException {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }
     
     void crearReporteLOG(){
@@ -464,11 +388,11 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getEstado()){
-                menuControlador.Log.agregarLineaArchivo("Se creó item ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCECO() + " ) en "+ titulo+" correctamente.");
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCECO() + " ) " , Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
+                menuControlador.Log.agregarLineaArchivo("Se creó item ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) en "+ titulo+" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) " , Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se creó item "+ " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCECO() + " ) " + " en Balancete, debido a que no existe en Cuentas Contables.");
+                menuControlador.Log.agregarLineaArchivo("No se creó item "+ " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) " + " en Balancete, debido a que no existe en Cuentas Contables.");
                 findError = true;
             }
         });
@@ -490,7 +414,8 @@ public class CargarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_LOG);
         }
     }
-    
+
+    // Acción del botón 'Cancelar'    
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }

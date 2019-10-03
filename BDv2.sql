@@ -500,16 +500,17 @@ COMMIT;
 ---------------------------------------------------------------------------------
 -------------- CUENTA - PARTIDA - CENTRO ---------------------------------------------------------
 ---------------------------------------------------------------------------------
-CREATE TABLE PACIFICO_DEV.MS_CUENTA_PARTIDA_CENTRO
-   (  CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
+CREATE TABLE PACIFICO_DEV.MS_CUENTA_PARTIDA_CENTRO (
+  CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PARTIDA_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
   CENTRO_CODIGO VARCHAR2(8 BYTE) NOT NULL ,
-  PERIODO NUMBER(6,0) NOT NULL ,
-  SALDO NUMBER(35,8) NOT NULL ,
+  PERIODO NUMBER(6,0) NOT NULL,
+  SALDO NUMBER(35,8) NOT NULL,
+  REPARTO_TIPO NUMBER(1) NOT NULL,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE,
-   CONSTRAINT CUENTA_PARTIDA_CENTRO_PK PRIMARY KEY (CUENTA_CONTABLE_CODIGO, PARTIDA_CODIGO, CENTRO_CODIGO,PERIODO)
- );
+  CONSTRAINT CUENTA_PARTIDA_CENTRO_PK PRIMARY KEY (CUENTA_CONTABLE_CODIGO, PARTIDA_CODIGO, CENTRO_CODIGO, REPARTO_TIPO, PERIODO)
+);
 
 ---------------------------------------------------------------------------------
 -------------- OBJETOS DE COSTO  ---------------------------------------------------------

@@ -10,9 +10,6 @@ import javafx.scene.control.Hyperlink;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.DetalleGastoDAO;
-import dao.PlanDeCuentaDAO;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -35,8 +32,8 @@ public class ListarControlador implements Initializable {
 
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
-    @FXML private Label lblNumeroRegistros;
+
+    @FXML private JFXButton btnCargar;
     
     @FXML private TextField txtBuscar;
     @FXML private TableView<DetalleGasto> tabListar;
@@ -44,11 +41,11 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, String> tabcolNombreCuentaContable;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoPartida;
     @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
-    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCECO;
-    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCECO;
-    @FXML private TableColumn<DetalleGasto, Double> tabcolSaldo;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCentro;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCentro;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto01;
     
-    @FXML private JFXButton btnCargar;
+    @FXML private Label lblNumeroRegistros;
     
     // Variables de la aplicacion
     DetalleGastoDAO detalleGastoDAO;
@@ -74,11 +71,13 @@ public class ListarControlador implements Initializable {
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
         // Periodo seleccionado
@@ -89,17 +88,17 @@ public class ListarControlador implements Initializable {
         tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoCECO.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCECO.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolMonto01.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
-        tabcolCodigoCECO.setCellValueFactory(cellData -> cellData.getValue().codigoCECOProperty());
-        tabcolNombreCECO.setCellValueFactory(cellData -> cellData.getValue().nombreCECOProperty());
-        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().monto1Property().asObject());
-        tabcolSaldo.setCellFactory(column -> {
+        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
+        tabcolMonto01.setCellValueFactory(cellData -> cellData.getValue().monto01Property().asObject());
+        tabcolMonto01.setCellFactory(column -> {
                 return new TableCell<DetalleGasto, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
@@ -114,7 +113,7 @@ public class ListarControlador implements Initializable {
             };
         });
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -123,8 +122,8 @@ public class ListarControlador implements Initializable {
                 else if (item.getNombreCuentaContable().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (item.getCodigoPartida().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombrePartida().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (item.getCodigoCECO().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getNombreCECO().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoCentro().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombreCentro().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
@@ -161,16 +160,11 @@ public class ListarControlador implements Initializable {
         menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_CARGAR);
     }
-    
-    // Acción del botón con ícono de lupa
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
 
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo);
+        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo, menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
