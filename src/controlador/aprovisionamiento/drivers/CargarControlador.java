@@ -303,7 +303,7 @@ public class CargarControlador implements Initializable {
                         findError = true;
                         msj += String.format("- Para el driver %s, los porcentajes de los centros suman %.4f. Debe sumar 100.00%%.\r\n",driver.getCodigo(),porcentaje);
                         logDetail += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\r\n",driver.getCodigo());
-                        logDetail += msj;
+                        logDetail += msj + "\r\n";
                     } else {
                         if (lista != null) {
                             ConexionBD.crearStatement();
@@ -311,12 +311,12 @@ public class CargarControlador implements Initializable {
                             driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
                             ConexionBD.ejecutarBatch();
                             ConexionBD.cerrarStatement();
-                            logDetail += String.format("Driver %s: Se cargó correctamente con %s items.\r\n",driver.getCodigo(),lista.size());
+                            logDetail += String.format("Driver %s: Se cargó correctamente con %s items.\r\n\r\n",driver.getCodigo(),lista.size());
                             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getDireccion());
                         } else {
                             findError = true;
                             logDetail += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\r\n",driver.getCodigo());
-                            logDetail += msj;
+                            logDetail += msj  + "\r\n";
                         }
                     }
                 }
