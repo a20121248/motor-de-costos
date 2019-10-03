@@ -144,7 +144,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Editar " + objetoNombre1, "Por favor seleccione un " + objetoNombre1);
+            menuControlador.mensaje.edit_empty_error(objetoNombre1);
             return;
         }
         menuControlador.objeto = item;
@@ -154,14 +154,16 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar " + objetoNombre1, "Por favor seleccione " + objetoNombre2 + " a eliminar.");
+            menuControlador.mensaje.delete_selected_error(objetoNombre1);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + objetoNombre1, "¿Está seguro de eliminar " + objetoNombre2 + " " + item.getCodigo() + "?")) {
             return;
         }
-        if (objetoDAO.eliminarObjeto(item.getCodigo()) != 1) {
-            menuControlador.navegador.mensajeError("Eliminar " + objetoNombre1, "No se pudo eliminar " + objetoNombre2 + " pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
+        if ( objetoDAO.verificarObjetoPeriodo(item.getCodigo()) == 0) {
+            objetoDAO.eliminarObjeto(item.getCodigo());
+        }else {
+            menuControlador.mensaje.delete_item_maestro_error(titulo);
             return;
         }
         menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
@@ -188,10 +190,10 @@ public class ListarControlador implements Initializable {
                 descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo,Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     

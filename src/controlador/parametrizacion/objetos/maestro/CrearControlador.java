@@ -107,15 +107,15 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear " + objetoNombre1, String.format("El código %s ya existe. No se puede crear %s.",codigo,objetoNombre2));
+            menuControlador.mensaje.create_exist_error(objetoNombre1);
             return;
         }
         if (objetoDAO.insertarObjeto(codigo,nombre)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear " + objetoNombre1, objetoNombre2 + " se creó correctamente.");
+            menuControlador.mensaje.create_success(objetoNombre1);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear " + objetoNombre1, "No se puede crear " + objetoNombre2 + ".");
+            menuControlador.mensaje.create_error(objetoNombre1);
         }
     }
     

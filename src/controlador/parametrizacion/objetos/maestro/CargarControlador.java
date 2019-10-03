@@ -67,6 +67,7 @@ public class CargarControlador implements Initializable {
     ObjetoDAO objetoDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     String objetoNombre1,objetoNombre2;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
@@ -179,7 +180,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error(titulo);
                 f.close();
                 return null;
             }
@@ -227,22 +228,26 @@ public class CargarControlador implements Initializable {
         List<EntidadDistribucion> lista = tabListar.getItems();
         if(lista.isEmpty())
         {
-            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }
         else{
             for (EntidadDistribucion item: lista) {
                 if (lstCodigos.contains(item.getCodigo())) {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", item.getCodigo(),titulo);
+                    logDetails +=String.format("- Ya existe en Catálogo.\r\n");
                     item.setFlagCargar(false);
+                    findError = true;
                 } else {
                     item.setFlagCargar(true);
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",item.getCodigo(),titulo);
                 }
             }
             objetoDAO.insertarListaObjeto(lista);
             crearReporteLOG(lista);
             if(findError == true){
-                menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                menuControlador.mensaje.upload_success_with_error(titulo);
             }else {
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                menuControlador.mensaje.upload_success();
             }
             btnDescargarLog.setVisible(true);
         }
@@ -257,14 +262,10 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         lista.forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }
-            else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Cuentas Contables.");
-                findError = true;
-            }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);

@@ -111,24 +111,32 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             default:
                 break;
         }
+        
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
+        }
+        
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -136,7 +144,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(objetoDAO.listar(periodoSeleccionado)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(objetoDAO.listar(periodoSeleccionado, menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -228,7 +236,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<EntidadDistribucion> lista = objetoDAO.listar(periodo);
+        List<EntidadDistribucion> lista = objetoDAO.listar(periodo,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de " + objetoNombre + "s", "No existen " + objetoNombre + "s para el periodo seleccionado.");
         txtBuscar.setText("");
