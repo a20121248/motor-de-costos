@@ -19,58 +19,71 @@ import modelo.Subcanal;
 public class CargarExcelDAO {
     
     public void limpiarTablas() {
-        String queryStr = "TRUNCATE TABLE CARGAR_HOJA_DRIVER";
+        String queryStr = "TRUNCATE TABLE MS_CARGAR_HOJA_DRIVER";
         ConexionBD.ejecutar(queryStr);
     }
+    
+    public double porcentajeTotalDriver(String codigoDriver) {
+        String queryStr = String.format("" +
+            "SELECT SUM(PORCENTAJE) PORCENTAJE_TOTAL\n" +
+            "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
+            " WHERE A.DRIVER_CODIGO='%s'\n" +
+            "GROUP BY a.DRIVER_CODIGO",codigoDriver);
+        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+        double cnt = 0;
+        try {
+            rs.next();
+            cnt = rs.getDouble("PORCENTAJE_TOTAL");
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cnt;        
+    }
 
-    public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, int periodo, StringBuilder msj) {
+    public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, int periodo, int repartoTipo, StringBuilder msj) {
 //        TO DO: Validar que centro este asignado al periodo
         String queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 CECO_CODIGO,\n" +
-                "       NVL((C.nombre),'NO') CECO_EXISTE,\n" +
+                "       CASE\n" +
+                "        WHEN C.nombre IS NULL THEN 'NO'\n" +
+                "        WHEN c.centro_tipo_codigo='BOLSA' AND c.centro_tipo_codigo != 'OFICINA' THEN 'NO, ES BOLSA'\n" +
+                "        WHEN C.nombre IS NOT  NULL THEN C.nombre\n" +
+                "       END CECO_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
-                "  FROM CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = %d\n" +
-                "  LEFT JOIN centros C ON A.CODIGO_1=C.CODIGO AND B.CENTRO_CODIGO = C.CODIGO\n" +
-                " WHERE DRIVER_CODIGO='%s'\n"+
-                " GROUP BY a.excel_fila,a.codigo_1, c.nombre,a.porcentaje\n" +
-                " ORDER BY a.excel_fila", periodo,driverCodigo);
+                "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
+                "  LEFT JOIN MS_centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = '%d' AND REPARTO_TIPO = '%d'\n" +
+                "  LEFT JOIN MS_centros C ON A.CODIGO_1=C.CODIGO AND B.CENTRO_CODIGO = C.CODIGO\n" +
+                " WHERE A.DRIVER_CODIGO='%s'\n" +
+                " ORDER BY a.excel_fila", periodo,repartoTipo,driverCodigo);
         List<DriverLinea> lista = new ArrayList();
         boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            double porcentajeAcc = 0;
             while(rs.next()) {
                 int fila = rs.getInt("EXCEL_FILA");
-
                 String centroCodigo = rs.getString("CECO_CODIGO");
                 String centroExiste = rs.getString("CECO_EXISTE");
                 if (centroExiste.equals("NO")) {
-                    msj.append(String.format("- Fila %d: El Centro de Costos con código %s no existe.\n",fila,centroCodigo));
+                    msj.append(String.format("- Fila %d: El Centro de Costos con código %s no esta registrado en el periodo %d.\r\n",fila,centroCodigo,periodo));
                     tieneErrores = true;
                 }
-                               
-                double porcentaje = rs.getDouble("PORCENTAJE");
-                /*try {
-                    porcentaje = Double.parseDouble(rs.getString("PORCENTAJE"));
-                } catch (NumberFormatException | SQLException ex) {
-                    msj.append(String.format("- Fila %d: El porcentaje es incorrecto. (%s).\n",fila,ex.getMessage()));
+                if (centroExiste.equals("NO, ES BOLSA")) {
+                    msj.append(String.format("- Fila %d: El Centro de Costos con código %s es de TIPO DE CENTRO bolsa.\r\n",fila,centroCodigo));
                     tieneErrores = true;
-                }*/
-                porcentajeAcc += porcentaje;
-                
+                } 
+                double porcentaje = rs.getDouble("PORCENTAJE");
                 Centro centro = new Centro(centroCodigo, centroExiste, null, 0, null, null);
                 DriverLinea item = new DriverLinea(centro, porcentaje, null, null);
                 lista.add(item);
             }
-            if (Math.abs(porcentajeAcc - 100) > 0.0001) {
-                msj.append(String.format("- Los porcentajes no suman %d%%, suman %.4f%%.\n",100,porcentajeAcc));
-                tieneErrores = true;
-            }
+//            if (Math.abs(porcentajeAcc - 100) > 0.0001) {
+//                msj.append(String.format("- Los porcentajes no suman %d%%, suman %.4f%%.\n",100,porcentajeAcc));
+//                tieneErrores = true
+//            }
         } catch (SQLException ex) {
             Logger.getLogger(CargarExcelDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (tieneErrores) return null;
+        if (tieneErrores) lista = null;
         return lista;
     }
     
@@ -138,7 +151,7 @@ public class CargarExcelDAO {
     
     public void insertarLineaDriverCentroBatch(int numFila, String driverCodigo, String centroCodigo, double porcentaje) {
         String queryStr = String.format(Locale.US,"" +
-                "INSERT INTO CARGAR_HOJA_DRIVER(EXCEL_FILA,DRIVER_CODIGO,CODIGO_1,PORCENTAJE)\n" +
+                "INSERT INTO MS_CARGAR_HOJA_DRIVER(EXCEL_FILA,DRIVER_CODIGO,CODIGO_1,PORCENTAJE)\n" +
                 "VALUES (%d,'%s','%s',%.4f)",
                 numFila,driverCodigo,centroCodigo,porcentaje);
         ConexionBD.agregarBatch(queryStr);
