@@ -192,12 +192,12 @@ public class ObjetoGrupoDAO {
         return null;
     }
     
-    public int verificarObjetoJerarquia(String codigo, int repartoTipo) {
+    public int verificarObjetoJerarquia(String codigo) {
         String queryStr = String.format("" +
                 "SELECT COUNT(*) AS COUNT\n" +
                 "  FROM MS_JERARQUIA\n" +
-                " WHERE ENTIDAD_PADRE_CODIGO = '%s' AND reparto_tipo='%d'",
-                codigo,repartoTipo);
+                " WHERE ENTIDAD_PADRE_CODIGO = '%s'",
+                codigo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
             while(rs.next()) {
@@ -209,11 +209,11 @@ public class ObjetoGrupoDAO {
         return cont;
     }
     
-    public int borrarGrupoPadre(String grupoCodigo, String grupoTipo, int periodo) {
+    public int borrarGrupoPadre(String grupoCodigo, String grupoTipo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM MS_jerarquia\n" +
-                " WHERE entidad_codigo='%s' AND entidad_tipo='%s' AND periodo=%d",
-                grupoCodigo,grupoTipo,periodo);
+                " WHERE entidad_codigo='%s' AND entidad_tipo='%s' AND periodo=%d AND reparto_tipo='%d'",
+                grupoCodigo,grupoTipo,periodo, repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
