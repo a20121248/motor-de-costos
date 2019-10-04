@@ -37,9 +37,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
+import modelo.EntidadDistribucion;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -74,6 +77,7 @@ public class CargarControlador implements Initializable {
     DriverDAO driverDAO;
     DriverLineaDAO driverLineaDAO;
     CentroDAO centroDAO;
+    List<DriverCentro> lstDriversCargar;
     int periodoSeleccionado;
     final int anhoSeleccionado;
     final int mesSeleccionado;
@@ -81,8 +85,10 @@ public class CargarControlador implements Initializable {
     CargarExcelDAO cargarExcelDAO;
     LogServicio logServicio;
     String logName;
+    String logDetail;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getControlador());
     String titulo, titulo1;
+    boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -99,10 +105,11 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         titulo1 = "Centros de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficio";
-            lblTitulo.setText("Drivers - " + titulo1);
-            lnkDrivers.setText("Drivers - " + titulo1);
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
@@ -116,12 +123,16 @@ public class CargarControlador implements Initializable {
         cmbMes.getSelectionModel().select(mesSeleccionado-1);
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            if (!oldValue.equals(newValue)) {
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            if (!oldValue.equals(newValue)) {
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            }
         });
     }
     
@@ -148,9 +159,15 @@ public class CargarControlador implements Initializable {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
+            if(menuControlador.repartoTipo == 2){
+                spAnho.setDisable(true);
+            }
+            else{
+                cmbMes.setDisable(true);
+                spAnho.setDisable(true);
+            }
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
-            cmbMes.setDisable(true);
-            spAnho.setDisable(true);
             List<DriverCentro> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
@@ -165,30 +182,28 @@ public class CargarControlador implements Initializable {
     
     private List<DriverCentro> leerArchivo(String rutaArchivo) {
         List<DriverCentro> lstDrivers = driverDAO.listarDriversCentroMaestro();
-        List<DriverCentro> lstDriversCargar = new ArrayList();
+        lstDriversCargar = new ArrayList();
         try (InputStream is = new FileInputStream(new File(rutaArchivo))){
             Workbook wb = ExcelServicio.abrirLibro(is);
             
             String shIndexName = "INDEX";
             Sheet sh = ExcelServicio.abrirHoja(wb, shIndexName);
             if (sh == null) {
-                String msj = "La hoja de control " + shIndexName + " no existe.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar drivers", msj);
-                //logServicio.agregarLineaArchivo(msj);
+                menuControlador.mensaje.upload_sheet_dont_exist_error(titulo, shIndexName);
                 return null;
             }
             
             Iterator<Row> filas = sh.iterator();
             
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("DRIVERS")))) {
-                String msj = "El título de la hoja " + shIndexName + " no es la correcta, deber ser DRIVERS.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar drivers", msj);
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("MODELO DE COSTOS")))) {
+                menuControlador.mensaje.upload_title_sheet_error(titulo, shIndexName, "MODELO DE COSTOS");
                 return null;
             }
             
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","DRIVER","¿CARGAR?")))) {
-                String msj = "La cabecera de la hoja "+ shIndexName +" no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar drivers", msj);
+            menuControlador.navegador.omitirFilas(filas, 4);
+            
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","TIPO","¿CARGAR?")))) {
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
             
@@ -199,128 +214,121 @@ public class CargarControlador implements Initializable {
                 Iterator<Cell> celdas = filas.next().cellIterator();
                 String codigo = celdas.next().getStringCellValue();
                 String nombre = celdas.next().getStringCellValue();
+                String tipo = celdas.next().getStringCellValue();
                 String cargar = celdas.next().getStringCellValue();
-                if (cargar.toUpperCase().equals("SÍ")) {
-                    DriverCentro driver = lstDrivers.stream().filter(item -> codigo.equals(item.getCodigo())).findAny().orElse(null);
-                    if (driver == null) { // crear un driver nuevo
-                        driver = new DriverCentro(codigo, nombre, null, null, null, null, null);
-                        driver.setEsNuevo(true);
-                    }
-                    leerHojaDriver(driver, wb);
-                    lstDriversCargar.add(driver);
+                
+                DriverCentro driver = lstDrivers.stream().filter(item -> codigo.equals(item.getCodigo())).findAny().orElse(null);
+                if (driver == null) { // crear un driver nuevo
+                    driver = new DriverCentro(codigo, nombre, null, null, null, null, null,true);
+                    driver.setEsNuevo(true);
+                } else {
+                    driver.setListaDriverLinea(new ArrayList());
                 }
+                if (cargar.toUpperCase().equals("SI")) {
+                    driver.setFlagCargar(true);
+                } else {
+                    driver.setFlagCargar(false);                    
+                }
+                lstDriversCargar.add(driver);
             }
+            leerHojaDetalleDriver(wb);
             ConexionBD.ejecutarBatch();
             ConexionBD.cerrarStatement();
         } catch (Throwable ex) {
-            menuControlador.navegador.mensajeError("Cargar Drivers", ex.getMessage());
-            LOGGER.log(Level.SEVERE, "Cargar Drivers: {0}", ex.getMessage());
             return null;
         }
         return lstDriversCargar;
     }
     
-    private void leerHojaDriver(DriverCentro driver, Workbook wb) {
-        Sheet sh = ExcelServicio.abrirHoja(wb, driver.getCodigo());
+    private void leerHojaDetalleDriver(Workbook wb) {
+        List<String> lstCentrosSinBolsas = centroDAO.listarCodigosWithoutBolsas(periodoSeleccionado);
+        
+        String sheetName = "DETALLE";
+        Sheet sh = ExcelServicio.abrirHoja(wb, sheetName);
         if (sh == null) {
-            //String sbMsj = String.format("%s: Su hoja no existe.\nNo se puede cargar dicho driver.",driverCodigo);
-            //LogServicio.agregarLineaArchivo(archLogNombre, sbMsj);
+            menuControlador.mensaje.upload_sheet_dont_exist_error(titulo, sheetName);
             return;
         }
+        
         Iterator<Row> filas = sh.iterator();
         Iterator<Cell> celdas;
         
-        menuControlador.navegador.omitirFilas(filas, 2);
+        Row fila;
+        Cell celda;
+        menuControlador.navegador.omitirFilas(filas, 6);
         
-        celdas = filas.next().cellIterator();
-        celdas.next();
-        celdas.next();
-        celdas.next();
-        String nombreDriver = celdas.next().getStringCellValue();
-        driver.setNombre(nombreDriver);
-
-        menuControlador.navegador.omitirFilas(filas, 2);
-        
-        celdas = filas.next().cellIterator();
-        celdas.next();
-        celdas.next();
-        celdas.next();
-        String descripcionDriver = celdas.next().getStringCellValue();
-        driver.setDescripcion(descripcionDriver);
-        
-        menuControlador.navegador.omitirFilas(filas, 2);
-        
-        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO_CECO","CECO","PORCENTAJE_DRIVER")))) {
-            //String sbMsj = String.format("La cabecera en la %s archivo no es la correcta.\nNo se puede cargar el archivo.",driverCodigo);
-            //LogServicio.agregarLineaArchivo(archLogNombre, sbMsj);
+        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO CENTRO","NOMBRE CENTRO","PORCENTAJE")))) {
+            menuControlador.mensaje.upload_header_error(titulo);
             return;
         }
         
-        //List<DriverObjetoLinea> lstDriverLinea = new ArrayList();
-        while (filas.hasNext()) {
-            Row fila = filas.next();
+        while(filas.hasNext()){
+            fila = filas.next();
             celdas = fila.cellIterator();
-            String centroCodigo = celdas.next().getStringCellValue();
-            //por si acaso...
-            if (centroCodigo.equals("")) break;
-            celdas.next(); //String centroNombre
-            double porcentaje = celdas.next().getNumericCellValue();
+            int index;
             
-            cargarExcelDAO.insertarLineaDriverCentroBatch(fila.getRowNum(),driver.getCodigo(), centroCodigo, porcentaje);
-            //DriverObjetoLinea item = new DriverObjetoLinea(banca, oficina, producto, porcentaje, fecha, fecha);
-            //lstDriverLinea.add(item);
+            celda = celdas.next();String codigoDriver = celda.getStringCellValue();
+            celda = celdas.next();String nombreDriver = celda.getStringCellValue();
+            celda = celdas.next();String codigoCentro = celda.getStringCellValue();
+            celda = celdas.next();String nombreCentro = celda.getStringCellValue();
+            celda = celdas.next();double porcentaje = (double)celda.getNumericCellValue();
+
+            DriverCentro dCentro = lstDriversCargar.stream().filter(item ->codigoDriver.equals(item.getCodigo())).findAny().orElse(null);
+            index = lstDriversCargar.indexOf(dCentro);
+            if(dCentro != null){
+                if(lstDriversCargar.get(index).getFlagCargar()){
+                    cargarExcelDAO.insertarLineaDriverCentroBatch(fila.getRowNum(),codigoDriver, codigoCentro, porcentaje);
+                }
+            }
         }
-        //Date fecha = new Date();
-        //DriverObjeto driver = new DriverObjeto(driverCodigo,nombreDriver,descripcionDriver,null,lstDriverLinea,fecha,fecha);
-        //LOGGER.log(Level.INFO,String.format("Se creó el driver %s'.",driver.getCodigo()));
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        boolean esPrimerItem = true;
-        for (DriverCentro driver: tabListar.getItems()) {
-            if (driver.getEsNuevo()) {
-                driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), "CECO", menuControlador.repartoTipo);
+        logDetail = "";
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.mensaje.upload_empty();
+        }else{
+            for (DriverCentro driver: tabListar.getItems()) {
+                if(driver.getFlagCargar()){
+                    if (driver.getEsNuevo()) {
+                        driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), "CECO", menuControlador.repartoTipo);
+                    }
+                    StringBuilder sbMsj = new StringBuilder("");
+                    List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo, sbMsj);
+                    String msj = "";
+                    msj = sbMsj.toString();
+                    double porcentaje = cargarExcelDAO.porcentajeTotalDriver(driver.getCodigo());
+                    if( porcentaje != 100.00){
+                        findError = true;
+                        msj += String.format("- Para el driver %s, los porcentajes de los centros suman %.4f. Debe sumar 100.00%%.\r\n",driver.getCodigo(),porcentaje);
+                        logDetail += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\r\n",driver.getCodigo());
+                        logDetail += msj + "\r\n";
+                    } else {
+                        if (lista != null) {
+                            ConexionBD.crearStatement();
+                            ConexionBD.tamanhoBatchMax = 10000;
+                            driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
+                            ConexionBD.ejecutarBatch();
+                            ConexionBD.cerrarStatement();
+                            logDetail += String.format("Driver %s: Se cargó correctamente con %s items.\r\n\r\n",driver.getCodigo(),lista.size());
+                            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getDireccion());
+                        } else {
+                            findError = true;
+                            logDetail += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\r\n",driver.getCodigo());
+                            logDetail += msj  + "\r\n";
+                        }
+                    }
+                }
             }
-        }
-        ConexionBD.crearStatement();
-        ConexionBD.tamanhoBatchMax = 10000;
-        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_CENTRO.log";
-        menuControlador.Log.crearArchivo(logName);
-        menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-        menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        for (DriverCentro driver: tabListar.getItems()) {
-            StringBuilder sbMsj = new StringBuilder("");
-            List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado,sbMsj);
-            String msj = "";
-//            if (!esPrimerItem) {
-//                for (int i=0; i < 100; ++i) msj+="-";msj += "\n";
-//            }
-            if (lista != null) {
-                driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
-                msj += String.format("Driver %s: Se cargó correctamente con %s items.\n",driver.getCodigo(),lista.size());
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_CARGAR.getDireccion());
-            } else {
-                msj += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\n",driver.getCodigo());
+            crearReporteLOG();
+            if(findError == true){
+                menuControlador.mensaje.upload_success_with_error(titulo);
+            }else {
+                menuControlador.mensaje.upload_success();
             }
-            sbMsj.insert(0, msj);
-            menuControlador.Log.agregarLineaArchivo(sbMsj.toString());
-            esPrimerItem = false;
+            btnDescargarLog.setVisible(true);        
         }
-        // los posibles registros que no se hayan ejecutado
-        ConexionBD.ejecutarBatch();
-        ConexionBD.cerrarStatement();
-        
-        menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        
-        //driverDAO.insertarListaDriverObjeto(lista, periodoSeleccionado);
-        cmbMes.setDisable(false);
-        spAnho.setDisable(false);
-        btnDescargarLog.setVisible(true);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Drivers cargados correctamente.");
-        //menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -328,17 +336,18 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_LOG);
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_CENTRO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivo(logDetail);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

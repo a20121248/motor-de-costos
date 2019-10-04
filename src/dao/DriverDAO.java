@@ -258,15 +258,17 @@ public class DriverDAO {
 
     public List<DriverCentro> listarDriversCentroMaestro() {
         String queryStr = "" +
-                "SELECT codigo\n" +
-                "  FROM drivers\n" +
+                "SELECT codigo,\n" +
+                "       nombre\n" +
+                "  FROM MS_drivers\n" +
                 " WHERE driver_tipo_codigo='CECO'\n" +
                 " ORDER BY codigo";
         List<DriverCentro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
                 String codigo = rs.getString("codigo");
-                DriverCentro driver = new DriverCentro(codigo, null, null, null, null, null, null);
+                String nombre = rs.getString("nombre");
+                DriverCentro driver = new DriverCentro(codigo, nombre, null, null, null, null, null,true);
                 lista.add(driver);
             }
         } catch (SQLException ex) {

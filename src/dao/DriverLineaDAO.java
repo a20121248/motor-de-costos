@@ -84,12 +84,13 @@ public class DriverLineaDAO {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverLinea item: listaDriverLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s',%d,%.4f,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
                     item.getEntidadDistribucionDestino().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);

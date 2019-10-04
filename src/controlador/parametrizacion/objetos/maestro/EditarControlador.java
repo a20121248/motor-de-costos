@@ -112,16 +112,12 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Editar " + objetoNombre1, "El código " + codigo + " ya existe. No se puede editar " + objetoNombre2 + ".");
-            return;
-        }
         if (objetoDAO.actualizarObjeto(codigo, nombre, objeto.getCodigo())==1) {
-            menuControlador.navegador.mensajeInformativo("Editar " + objetoNombre1, objetoNombre1 + " editado correctamente.");
+            menuControlador.mensaje.edit_success(objetoNombre1);
             menuControlador.Log.editarItem(LOGGER, menuControlador.usuario.getUsername(), objeto.getCodigo(),Navegador.RUTAS_OBJETOS_MAESTRO_EDITAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Editar " + objetoNombre1, "No se puede editar " + objetoNombre2 + ".");
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     

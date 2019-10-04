@@ -838,6 +838,10 @@ public class Navegador {
     public void mensajeInformativo(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         switch(contenido){
+            case "TABLE_EMPTY":
+                alert.setTitle("Consulta de " + titulo);
+                alert.setContentText("No existe información.");
+                break;
             case "UPLOAD":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText(titulo +  " asignados correctamente.");
@@ -875,6 +879,10 @@ public class Navegador {
                 alert.setTitle("Eliminar " + titulo);
                 alert.setContentText( titulo +" eliminado correctamente.");
                 break;
+            case "UPLOAD_SUCCESS_ERROR":
+                alert.setTitle("Subida de archivo Excel");
+                alert.setContentText("No se pudieron registrar algunos registros.\n\nPor favor, revise el LOG.");
+                break;
             case "PHASE1_BOLSAS_WITHOUT_DRIVERS":
                 alert.setTitle("FASE 1");
                 alert.setContentText("Existe(n) " + titulo +"Centros Bolsas sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros Bolsas tengan un Driver.");
@@ -898,12 +906,10 @@ public class Navegador {
                 alert.setTitle("Guardar LOG");
                 alert.setContentText("Descarga completa.");
                 break;
-
             case "SELECT_ENTITY":
                 alert.setTitle("Seleccionar entidad");
                 alert.setContentText("No seleccionó ninguna entidad.");
-                break;
-            
+                break;            
             case "UPLOAD_ERROR_PERIODO":
                 alert.setTitle("Subida de archivo Excel");
                 alert.setContentText("Presenta inconsistencia con el Periodo a cargar. \\Por favor, revise el documento a cargar.");

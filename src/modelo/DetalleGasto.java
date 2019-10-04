@@ -30,6 +30,7 @@ public class DetalleGasto {
     private DoubleProperty monto11;
     private DoubleProperty monto12;
     private BooleanProperty estado;
+    private String detalleError;
 
     public DetalleGasto(String codigoCuentaContable, String nombreCuentaContable, String codigoPartida, String nombrePartida, String codigoCECO, String nombreCECO, double monto01, boolean estado) {
         this.codigoCuentaContable = new SimpleStringProperty(codigoCuentaContable);
@@ -301,6 +302,14 @@ public class DetalleGasto {
 
     public BooleanProperty estadoProperty() {
         return estado;
+    }
+    
+    public String getDetalleError() {
+        return detalleError;
+    }
+
+    public void setDetalleError(String detalleError) {
+        this.detalleError = detalleError;
     }
 
     public boolean getEstado() {

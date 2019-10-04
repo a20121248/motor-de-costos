@@ -22,12 +22,10 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-import javafx.event.EventType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -36,12 +34,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import modelo.AsignacionPartidaCuenta;
 import modelo.DetalleGasto;
-import modelo.Centro;
-import modelo.CuentaContable;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -87,7 +81,7 @@ public class CargarControlador implements Initializable {
     @FXML private Button btnAtras;
     @FXML private Button btnSubir;
     
-    List<DetalleGasto> listaCargar = new ArrayList() ;
+    List<DetalleGasto> listaCargar = new ArrayList();
 
     public MenuControlador menuControlador;
     public DetalleGastoDAO detalleGastoDAO;
@@ -96,7 +90,6 @@ public class CargarControlador implements Initializable {
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
     String titulo;
     String logName;
-    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -215,11 +208,7 @@ public class CargarControlador implements Initializable {
             btnDescargarLog.setVisible(false);
             txtRuta.setText(archivoSeleccionado.getName());
             
-            List<DetalleGasto> lista;
-            if (menuControlador.repartoTipo == 1)
-                lista = leerArchivoReal(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
-            else
-                lista = leerArchivoPresupuesto(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
+            List<DetalleGasto> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros: " + lista.size());
@@ -234,7 +223,7 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<DetalleGasto> leerArchivoPresupuesto(String rutaArchivo, int repartoTipo) {
+    private List<DetalleGasto> leerArchivo(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
         List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
         List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
@@ -251,10 +240,11 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila;
             Cell celda;
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("cod cta contable","codpartida","Cuenta","Partida","Codigo CCs","Nombre CCs","M_Enero 2020","M_Febrero 2020","M_Marzo 2020","M_Abril 2020","M_Mayo 2020","M_Junio 2020","M_Julio 2020","M_Agosto 2020","M_Septiembre 2020","M_Octubre 2020","M_Noviembre 2020","M_Diciembre 2020")))) {
+            filas.next();
+            /*if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("cod cta contable","codpartida","Cuenta","Partida","Codigo CCs","Nombre CCs","M_Enero 2020","M_Febrero 2020","M_Marzo 2020","M_Abril 2020","M_Mayo 2020","M_Junio 2020","M_Julio 2020","M_Agosto 2020","M_Septiembre 2020","M_Octubre 2020","M_Noviembre 2020","M_Diciembre 2020")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
-            }
+            }*/
             
             while (filas.hasNext()) {
                 fila = filas.next();
@@ -266,29 +256,39 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto02 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto03 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto04 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto05 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto06 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto07 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto08 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto09 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto10 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto11 = Double.valueOf(celda.getStringCellValue());
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto12 = Double.valueOf(celda.getStringCellValue());
                 
-                DetalleGasto cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, monto02, monto03, monto04, monto05, monto06, monto07, monto08, monto09, monto10, monto11, monto12, true);
+                celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
+                DetalleGasto cuentaLeida;
+                if (repartoTipo == 1) {
+                    cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, true);
+                } else {
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto02 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto03 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto04 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto05 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto06 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto07 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto08 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto09 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto10 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto11 = Double.valueOf(celda.getStringCellValue());
+                    celda = celdas.next();celda.setCellType(CellType.STRING);double monto12 = Double.valueOf(celda.getStringCellValue());
+                    cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, monto02, monto03, monto04, monto05, monto06, monto07, monto08, monto09, monto10, monto11, monto12, true);
+                }                
                 List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
                 String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
                 String centro = listaCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
-                if (cuenta != null && partida!=null && centro != null) {
+                if (cuenta!=null && partida!=null && centro!=null) {
                     listaCargar.add(cuentaLeida);
                 } else {
-                    // >>>agregar linea para log sobre el error
+                    String detalleError = "";
+                    String repartoTipoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
+                    if (cuenta == null) detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuentaContable, periodoSeleccionado, repartoTipoStr);
+                    if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodoSeleccionado, repartoTipoStr);
+                    if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodoSeleccionado, repartoTipoStr);
+                    cuentaLeida.setDetalleError(detalleError);
                     cuentaLeida.setEstado(false);
                 }
                 lista.add(cuentaLeida);
@@ -302,103 +302,51 @@ public class CargarControlador implements Initializable {
         return lista;
     }
     
-    private List<DetalleGasto> leerArchivoReal(String rutaArchivo, int repartoTipo) {
-        List<DetalleGasto> lista = new ArrayList();
-        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
-        List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
-        
-        try (FileInputStream f = new FileInputStream(rutaArchivo);
-            XSSFWorkbook wb = new XSSFWorkbook(f);){
-            String hojaNombre = "Data_EPS_PPS";
-            XSSFSheet hoja = wb.getSheet(hojaNombre);
-            if (hoja == null) {
-                menuControlador.navegador.mensajeError("Cargar archivo", String.format("No existe la hoja '%s'. No se puede cargar el archivo.", hojaNombre));
-                return null;
-            }
-            Iterator<Row> filas = hoja.iterator();
-            Iterator<Cell> celdas;
-            Row fila;
-            Cell celda;
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("cod cta contable","codpartida","Cuenta","Partida","Codigo CCs","Nombre CCs","M_Enero 2020","M_Febrero 2020","M_Marzo 2020","M_Abril 2020","M_Mayo 2020","M_Junio 2020","M_Julio 2020","M_Agosto 2020","M_Septiembre 2020","M_Octubre 2020","M_Noviembre 2020","M_Diciembre 2020")))) {
-                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
-                return null;
-            }
-            
-            while (filas.hasNext()) {
-                fila = filas.next();
-                celdas = fila.cellIterator();
-                
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
-                
-                DetalleGasto cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, true);
-                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable, periodoSeleccionado);
-                // Verifica que exista la cuenta para poder agregarla
-                String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
-                String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listaCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
-                if (cuenta != null && partida!=null && centro != null) {
-                    listaCargar.add(cuentaLeida);
-                } else {
-                    // >>>agregar linea para log sobre el error
-                    cuentaLeida.setEstado(false);
-                }
-                lista.add(cuentaLeida);
-            }
-            wb.close();
-            f.close();
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-        lblNumeroRegistros.setText("Número de registros: " + lista.size());
-        return lista;
-    }    
-    
     // Acción del botón 'Subir'
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
-        findError = false;
         if (tabListar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         } else {
+            boolean findError = crearReporteLOG();
             if (listaCargar.isEmpty()){
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             } else {
                 detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado, listaCargar, menuControlador.repartoTipo);
-                crearReporteLOG();
-                if(findError == true){
+                if (findError == true) {
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
                 } else {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
                 }
-                btnDescargarLog.setVisible(true);
             }
-        }        
+            btnDescargarLog.setVisible(true);
+        }
     }
     
-    void crearReporteLOG(){
+    private boolean crearReporteLOG(){
+        boolean findError = false;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DETALLE_GASTO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        tabListar.getItems().forEach((item)->{
-            if(item.getEstado()){
-                menuControlador.Log.agregarLineaArchivo("Se creó item ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) en "+ titulo+" correctamente.");
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) " , Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
-            }
-            else{
-                menuControlador.Log.agregarLineaArchivo("No se creó item "+ " ( " + item.getCodigoCuentaContable() + ", " + item.getCodigoPartida() + ", " + item.getCodigoCentro() + " ) " + " en Balancete, debido a que no existe en Cuentas Contables.");
+        for (DetalleGasto item: tabListar.getItems()) {
+            String mensajeStr;
+            if(item.getEstado()) {
+                mensajeStr = String.format("Se creó el item (%s, %s, %s) en %s correctamente.", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo);
+                menuControlador.Log.agregarLineaArchivo(mensajeStr);
+                
+                mensajeStr = String.format("(%s, %s, %s)", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
+            } else {
                 findError = true;
+                mensajeStr = String.format("No se creó el item (%s, %s, %s) en %s, debido a los siguientes errores: %s", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo, item.getDetalleError());
+                menuControlador.Log.agregarLineaArchivo(mensajeStr);
             }
-        });
+        }
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        return findError;
     }
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
         String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;

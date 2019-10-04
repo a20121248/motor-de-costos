@@ -80,7 +80,7 @@
             </Spinner>
             <Label text="Ruta:">
                <HBox.margin>
-                  <Insets left="50.0" />
+                  <Insets left="100.0" />
                </HBox.margin></Label>
             <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">

@@ -41,7 +41,7 @@ public class ObjetoDAO {
     
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM " + prefixTableName+"s")) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM " + "MS_" + prefixTableName+"s")) {
             while(rs.next()) lista.add(rs.getString("CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(ObjetoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,7 +51,7 @@ public class ObjetoDAO {
     
     public List<String> listarCodigos(String codigo) {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT CODIGO FROM " + prefixTableName + "S WHERE CODIGO!='%s'",codigo))) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT CODIGO FROM " + "MS_" + prefixTableName + "S WHERE CODIGO!='%s'",codigo))) {
             while(rs.next()) lista.add(rs.getString("CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(ObjetoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,18 +90,18 @@ public class ObjetoDAO {
         return lista;
     }
     
-    public List<EntidadDistribucion> listar(int periodo) {
+    public List<EntidadDistribucion> listar(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.CODIGO,\n" +
                 "       A.NOMBRE,\n" +
                 "       A.FECHA_CREACION,\n" +
                 "       A.FECHA_ACTUALIZACION\n" +
-                "  FROM %sS A\n" +
-                "  JOIN %s_LINEAS B ON B.%s_CODIGO=A.CODIGO\n" +
-                " WHERE A.ESTA_ACTIVO=1 AND B.PERIODO=%d\n" +
+                "  FROM MS_%sS A\n" +
+                "  JOIN MS_%s_LINEAS B ON B.%s_CODIGO=A.CODIGO\n" +
+                " WHERE A.ESTA_ACTIVO=1 AND B.PERIODO=%d\n AND B.REPARTO_TIPO='%d'" +
                 " GROUP BY A.CODIGO,A.NOMBRE,A.FECHA_CREACION,A.FECHA_ACTUALIZACION\n" +
                 " ORDER BY A.CODIGO",
-                prefixTableName,prefixTableName,prefixTableName,periodo);
+                prefixTableName,prefixTableName,prefixTableName,periodo,repartoTipo);
         List<EntidadDistribucion> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -137,7 +137,7 @@ public class ObjetoDAO {
                 "       A.ESTA_ACTIVO,\n" +
                 "       A.FECHA_CREACION,\n" +
                 "       A.FECHA_ACTUALIZACION\n" +
-                "  FROM %sS A\n" +
+                "  FROM MS_%sS A\n" +
                 " ORDER BY A.CODIGO",prefixTableName);
         List<EntidadDistribucion> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -166,7 +166,41 @@ public class ObjetoDAO {
         }
         return lista;
     }
-
+    
+    public int verificarObjetoDriver(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT COUNT(*) AS COUNT\n" +
+                "  FROM MS_DRIVER_OBJETO_LINEAS\n" +
+                " WHERE %s_CODIGO = '%s''",
+                prefixTableName,codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
+    public int verificarObjetoPeriodo(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT COUNT(*) AS COUNT\n" +
+                "  FROM MS_%s_LINEAS\n" +
+                " WHERE %s_CODIGO = '%s'",
+                prefixTableName,prefixTableName,codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
     public void insertarListaObjeto(List<EntidadDistribucion> lista) {
         ConexionBD.crearStatement();
         lista.stream().filter(item -> item.getFlagCargar()).map((item) -> {
@@ -175,7 +209,7 @@ public class ObjetoDAO {
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO %sS(CODIGO,NOMBRE,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "INSERT INTO MS_%sS(CODIGO,NOMBRE,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                     "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     prefixTableName,codigo,nombre,1,fechaStr,fechaStr);
             return queryStr;
@@ -215,7 +249,7 @@ public class ObjetoDAO {
     public int actualizarObjeto(String codigo, String nombre, String codigoAnt) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "UPDATE %sS\n" +
+                "UPDATE MS_%sS\n" +
                 "   SET CODIGO='%s',NOMBRE='%s',FECHA_ACTUALIZACION=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
                 " WHERE CODIGO='%s'",
                 prefixTableName,codigo,nombre,fechaStr,codigoAnt);
@@ -225,7 +259,7 @@ public class ObjetoDAO {
     public int insertarObjeto(String codigo, String nombre) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO %sS(CODIGO,NOMBRE,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                "INSERT INTO MS_%sS(CODIGO,NOMBRE,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                 "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 prefixTableName,codigo,nombre,1,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -242,7 +276,7 @@ public class ObjetoDAO {
     
     public int eliminarObjeto(String codigo) {
         String queryStr = String.format("" +
-                "DELETE FROM %sS\n" +
+                "DELETE FROM MS_%sS\n" +
                 " WHERE codigo='%s'",
                 prefixTableName,codigo);
         return ConexionBD.ejecutar(queryStr);

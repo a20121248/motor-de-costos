@@ -166,6 +166,20 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void upload_sheet_dont_exist_error(String titulo, String sheetName){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Cargar "+ titulo);
+        alert.setContentText("La hoja de trabajo " + sheetName + " no existe.\nNo se puede cargar el archivo.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void upload_title_sheet_error(String titulo, String sheetName, String sheetTitle){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Cargar "+ titulo);
+        alert.setContentText("El título de la hoja " + sheetName + " no es la correcta, deber ser " + sheetTitle + ".\n No se puede cargar el archivo.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
     public void add_refresh_error(String titulo){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Agregar " + titulo);

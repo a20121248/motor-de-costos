@@ -131,19 +131,51 @@ public class DetalleGastoDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
         
+        // actualizo montos por mes o de anho dependiendo del tipo de reparto
+        actualizarSaldoCuentaPeriodo(periodo, repartoTipo);
+        actualizarSaldoPartidaPeriodo(periodo, repartoTipo);
+        actualizarSaldoCentroPeriodo(periodo, repartoTipo);
         
-        // TO-DO
-        /*periodoIter = periodo;
+        // actualizo montos por mes
+        periodoIter = periodo;
         if (repartoTipo != 1) ++periodoIter;
-        for (int i=0; i < lista.get(0).getMontos().size(); ++i) {
-            actualizarSaldoCentroPeriodo(periodoIter++);
-            actualizarSaldoPartidaPeriodo(periodoIter++);
-            actualizarSaldoCuentaPeriodo(periodoIter++);
-            actualizarSaldoCuentaPartidaPeriodo(periodoIter++);
-        }*/
+        for (Double monto: lista.get(0).getMontos()) {
+            actualizarSaldoCuentaPartidaPeriodo(periodoIter, repartoTipo);
+        }
     }
     
-    public int actualizarSaldoCuentaPartidaPeriodo( int periodo){
+    public int actualizarSaldoCuentaPeriodo(int periodo, int repartoTipo) {        
+        String queryStr = null;
+        if (repartoTipo == 1) {
+            queryStr = String.format(
+                    "UPDATE MS_PLAN_DE_CUENTA_LINEAS A\n" +
+                    "   SET SALDO=(SELECT SUM(COALESCE(B.SALDO,0)) FROM MS_CUENTA_PARTIDA_CENTRO B WHERE A.PLAN_DE_CUENTA_CODIGO=B.CUENTA_CONTABLE_CODIGO AND TRUNC(B.PERIODO/100)*100=%d AND B.REPARTO_TIPO=%d GROUP BY B.CUENTA_CONTABLE_CODIGO)\n" +
+                    " WHERE TRUNC(A.PERIODO/100)*100=%d AND A.REPARTO_TIPO=%d AND EXISTS (SELECT 1 FROM MS_CUENTA_PARTIDA_CENTRO B WHERE A.PLAN_DE_CUENTA_CODIGO=B.CUENTA_CONTABLE_CODIGO AND TRUNC(B.PERIODO/100)*100=%d AND B.REPARTO_TIPO=%d)",
+                    periodo, repartoTipo,
+                    periodo, repartoTipo,
+                    periodo, repartoTipo);
+        } else {
+            queryStr = String.format(
+                    "UPDATE MS_PLAN_DE_CUENTA_LINEAS A\n" +
+                    "   SET SALDO=(SELECT SUM(COALESCE(B.SALDO,0)) FROM MS_CUENTA_PARTIDA_CENTRO B WHERE A.PLAN_DE_CUENTA_CODIGO=B.CUENTA_CONTABLE_CODIGO AND B.PERIODO=%d AND B.REPARTO_TIPO=%d GROUP BY B.CUENTA_CONTABLE_CODIGO)\n" +
+                    " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d AND EXISTS (SELECT 1 FROM MS_CUENTA_PARTIDA_CENTRO B WHERE A.PLAN_DE_CUENTA_CODIGO=B.CUENTA_CONTABLE_CODIGO AND B.PERIODO=%d AND B.REPARTO_TIPO=%d)",
+                    periodo, repartoTipo,
+                    periodo, repartoTipo,
+                    periodo, repartoTipo);
+        }
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public int actualizarSaldoPartidaPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format(
+                "UPDATE PARTIDA_LINEAS A\n" +
+                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO  AND PERIODO = '%d' group by  B.partida_codigo)"+
+                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
+                ,periodo, periodo, periodo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public int actualizarSaldoCuentaPartidaPeriodo(int periodo, int repartoTipo) {
         String queryStr = String.format(
                 "UPDATE PARTIDA_CUENTA_CONTABLE A"+
                 "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND A.cuenta_contable_codigo = B.cuenta_contable_codigo AND PERIODO = '%d' group by B.cuenta_contable_codigo, B.partida_codigo)"+
@@ -176,25 +208,6 @@ public class DetalleGastoDAO {
                 " WHERE a.periodo=%d\n" +
                 " GROUP BY a.centro_codigo,b.grupo_gasto", fechaStr, fechaStr, repartoTipo, periodo);
         ConexionBD.ejecutar(queryStr);
-    }
-    
-
-    public int actualizarSaldoPartidaPeriodo( int periodo){
-        String queryStr = String.format(
-                "UPDATE PARTIDA_LINEAS A"+
-                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO  AND PERIODO = '%d' group by  B.partida_codigo)"+
-                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PARTIDA_CODIGO = B.PARTIDA_CODIGO AND B.PERIODO = '%d') AND PERIODO = '%d'"
-                , periodo,periodo,periodo);
-        return ConexionBD.ejecutar(queryStr);
-    }
-
-    public int actualizarSaldoCuentaPeriodo( int periodo){
-        String queryStr = String.format(
-                "UPDATE PLAN_DE_CUENTA_LINEAS A"+
-                "   SET SALDO = (SELECT sum(coalesce(B.saldo,0)) FROM cuenta_partida_centro B WHERE A.PLAN_DE_CUENTA_CODIGO = B.CUENTA_CONTABLE_CODIGO  AND PERIODO = '%d' group by  B.CUENTA_CONTABLE_codigo)"+
-                " WHERE EXISTS (SELECT 1 FROM cuenta_partida_centro B WHERE A.PLAN_DE_CUENTA_CODIGO = B.CUENTA_CONTABLE_CODIGO AND B.PERIODO = '%d')  AND PERIODO = '%d'"
-                , periodo,periodo,periodo);
-        return ConexionBD.ejecutar(queryStr);
     }
 
     public void limpiarSaldosAsociadosPeriodo(int periodo, boolean considerarMes) {
