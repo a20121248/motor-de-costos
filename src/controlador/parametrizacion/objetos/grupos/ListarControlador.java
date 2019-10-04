@@ -145,10 +145,10 @@ public class ListarControlador implements Initializable {
                 descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo,Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
@@ -159,7 +159,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         Grupo item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Editar Grupo", "Por favor seleccione un Grupo.");
+            menuControlador.mensaje.edit_empty_error("Grupo");
             return;
         }
         menuControlador.objeto = item;
@@ -169,24 +169,27 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         Grupo item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Grupo", "Por favor seleccione un Grupo.");
+            menuControlador.mensaje.delete_refresh_error("Grupo");
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Grupo", "¿Está seguro de eliminar el Grupo " + item.getCodigo() + "?")) {
             return;
         }
-        if (objetoGrupoDAO.eliminarObjeto(item.getCodigo()) != 1) {
-            menuControlador.navegador.mensajeError("Eliminar Grupo", "No se pudo eliminar el Grupo pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
-            return;
+        
+        if(objetoGrupoDAO.verificarObjetoJerarquia(item.getCodigo()) == 0){
+            objetoGrupoDAO.eliminarObjeto(item.getCodigo());
+            menuControlador.mensaje.delete_success("Grupo");
+            menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+        }else{
+            menuControlador.mensaje.delete_item_maestro_error("Grupo");
         }
-        menuControlador.Log.deleteItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+
+        
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarObjetos(-1)), p -> true);
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        menuControlador.navegador.mensajeInformativo("Eliminar Grupo", "Grupo eliminado correctamente.");
-        LOGGER.log(Level.INFO,String.format("El usuario %s eliminó el Grupo %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
