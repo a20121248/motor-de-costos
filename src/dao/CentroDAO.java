@@ -396,12 +396,12 @@ public class CentroDAO {
     }
     
 //    Verifica si esta siendo usado en las lineas
-    public int verificarObjetoEnDetalleGasto(String codigo, int periodo) {
+    public int verificarObjetoEnDetalleGasto(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
                 "  FROM MS_cuenta_partida_centro\n" +
-                " WHERE centro_codigo='%s' AND periodo = '%s'",
-                codigo,periodo);
+                " WHERE centro_codigo='%s' AND periodo = '%s' AND reparto_tipo='%d' ",
+                codigo,periodo,repartoTipo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
             while(rs.next()) {
