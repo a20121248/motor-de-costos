@@ -28,11 +28,11 @@ public class SubcanalDAO {
     public List<Subcanal> listarMaestro(String codigos) {
         String queryStr;
         if (codigos.isEmpty()) {
-            queryStr = "SELECT codigo,nombre FROM subcanals WHERE esta_activo=1 ORDER BY codigo";
+            queryStr = "SELECT codigo,nombre FROM MS_subcanals WHERE esta_activo=1 ORDER BY codigo";
         } else {
             queryStr = String.format(""+
                     "SELECT codigo,nombre\n" +
-                    "  FROM subcanals\n" +
+                    "  FROM MS_subcanals\n" +
                     " WHERE esta_activo=1 AND codigo NOT IN (%s)\n" +
                     " ORDER BY codigo",
                     codigos);
