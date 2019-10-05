@@ -57,31 +57,35 @@ public class ListarControlador implements Initializable {
     String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
-        detalleGastoDAO = new DetalleGastoDAO();
         this.menuControlador = menuControlador;
+        detalleGastoDAO = new DetalleGastoDAO();
         this.titulo = "Detalle de Gasto";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Botones para periodo
+        // Periodo seleccionado
+        periodoSeleccionado = menuControlador.periodo;
+        
+        // Mes seleccionado
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 buscarPeriodo(periodoSeleccionado, true);
             }
         });
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 buscarPeriodo(periodoSeleccionado, true);
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
+        
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -112,6 +116,7 @@ public class ListarControlador implements Initializable {
                 }
             };
         });
+        
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -164,7 +169,7 @@ public class ListarControlador implements Initializable {
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<DetalleGasto> lista = detalleGastoDAO.listar(periodo, menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_TABLE_EMPTY);
+            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);

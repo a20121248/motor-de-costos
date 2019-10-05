@@ -54,9 +54,9 @@ public class PrincipalControlador implements Initializable {
         spAnhoDestino.getValueFactory().setValue(menuControlador.anhoActual);
         
         if (menuControlador.repartoTipo == 2) {
-            tpCentros.setText("CENTROS DE BENEFICIO");
-            txtareaCentros.setText("- Esta sección permite el mantenimiento de los Centros de Beneficio.");
-            tpObjetos.setText("OBJETOS DE BENEFICIO");
+            //tpCentros.setText("CENTROS DE BENEFICIO");
+            //txtareaCentros.setText("- Esta sección permite el mantenimiento de los Centros de Beneficio.");
+            //tpObjetos.setText("OBJETOS DE BENEFICIO");
         }
     }
     

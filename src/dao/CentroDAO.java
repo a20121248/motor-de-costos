@@ -16,11 +16,9 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.CentroDriver;
-import modelo.CargarCentroLinea;
 import modelo.CargarObjetoPeriodoLinea;
 import modelo.ConnectionDB;
 import modelo.Centro;
-import modelo.Driver;
 import modelo.Tipo;
 
 public class CentroDAO {
@@ -329,6 +327,7 @@ public class CentroDAO {
         return lista;
     }
     public List<Centro> listarPeriodo(int periodo, int repartoTipo) {
+        String periodoStr = repartoTipo == 1 ? "C.PERIODO" : "TRUNC(C.PERIODO/100)*100";
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
@@ -338,10 +337,11 @@ public class CentroDAO {
                 "  FROM MS_centros A\n" +
                 "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
                 "  JOIN MS_centro_lineas C ON A.codigo=C.centro_codigo\n" +
-                " WHERE C.periodo=%d AND C.reparto_tipo=%d\n AND (c.iteracion = -1 OR C.iteracion = -2)" +
-                " GROUP BY A.codigo,A.nombre," +
+                " WHERE %s=%d AND C.reparto_tipo=%d\n" +
+                "   AND (c.iteracion = -1 OR C.iteracion = -2)\n" +
+                " GROUP BY A.codigo,A.nombre,\n" +
                 "          B.codigo,B.nombre",
-                periodo,repartoTipo);
+                periodoStr, periodo, repartoTipo);
         List<Centro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -681,20 +681,20 @@ public class CentroDAO {
     //Por evaluar
     public List<CentroDriver> listarCuentaPartidaCentroBolsaConDriverDirecta(int periodo) {
         String queryStr = String.format("" +
-            "SELECT  a.cuenta_contable_codigo cuenta_contable_codigo,\n" +
-            "        B.NOMBRE cuenta_contable_nombre,\n" +
-            "        A.PARTIDA_CODIGO partida_codigo,\n" +
-            "        C.NOMBRE partida_nombre,\n" +
-            "        A.CENTRO_CODIGO centro_codigo,\n" +
-            "        D.NOMBRE centro_nombre,\n" +
-            "        A.DRIVER_CODIGO driver_codigo,\n" +
-            "        E.NOMBRE driver_nombre\n" +
-            "FROM bolsa_driver A\n" +
-            "JOIN plan_de_cuentas B ON B.CODIGO = A.CUENTA_CONTABLE_CODIGO\n" +
-            "JOIN PARTIDAS C ON C.CODIGO = A.PARTIDA_CODIGO\n" +
-            "JOIN CENTROS D ON  D.CODIGO = A.CENTRO_CODIGO\n" +
-            "JOIN DRIVERS E ON E.CODIGO = A.DRIVER_CODIGO\n" +
-            "WHERE A.PERIODO = %d",
+            "SELECT A.CUENTA_CONTABLE_CODIGO CUENTA_CONTABLE_CODIGO,\n" +
+            "       B.NOMBRE cuenta_contable_nombre,\n" +
+            "       A.PARTIDA_CODIGO partida_codigo,\n" +
+            "       C.NOMBRE partida_nombre,\n" +
+            "       A.CENTRO_CODIGO centro_codigo,\n" +
+            "       D.NOMBRE centro_nombre,\n" +
+            "       A.DRIVER_CODIGO driver_codigo,\n" +
+            "       E.NOMBRE driver_nombre\n" +
+            "  FROM MS_BOLSA_DRIVER A\n" +
+            "  JOIN MS_PLAN_DE_CUENTAS B ON B.CODIGO=A.CUENTA_CONTABLE_CODIGO\n" +
+            "  JOIN MS_PARTIDAS C ON C.CODIGO=A.PARTIDA_CODIGO\n" +
+            "  JOIN MS_CENTROS D ON  D.CODIGO=A.CENTRO_CODIGO\n" +
+            "  JOIN MS_DRIVERS E ON E.CODIGO=A.DRIVER_CODIGO\n" +
+            " WHERE A.PERIODO=%d",
             periodo);
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

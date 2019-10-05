@@ -75,8 +75,8 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto11;
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto12;
     
-    @FXML private JFXButton btnDescargarLog;
     @FXML private Label lblNumeroRegistros;
+    @FXML private JFXButton btnDescargarLog;
     
     @FXML private Button btnAtras;
     @FXML private Button btnSubir;
@@ -142,6 +142,7 @@ public class CargarControlador implements Initializable {
             }
         });
         btnDescargarLog.setVisible(false);
+        
         // tabla formato
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());

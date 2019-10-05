@@ -35,18 +35,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import modelo.CentroDriver;
-import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
-import modelo.Tipo;
 import servicios.DescargaServicio;
 import servicios.DriverServicio;
 
@@ -56,14 +53,18 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Hyperlink lnkParametrizacion;
     @FXML private Hyperlink lnkAsignaciones;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
-    @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
-    
+    @FXML private Spinner<Integer> spAnho;    
     @FXML private JFXButton btnCargar;
     
-    @FXML private Label lblCentrosBolsas;
+    @FXML private JFXButton btnDriver;
+    @FXML private JFXButton btnAsignarDriverCentro;
+    @FXML private Tooltip ttAsignarDriverCentro;
+    @FXML private JFXButton btnQuitar;
+    
     @FXML private TextField txtBuscar;
+    
     @FXML private TableView<CentroDriver> tabListar;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoCuentaContable;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreCuentaContable;
@@ -73,18 +74,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<CentroDriver, String> tabcolNombreCentro;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoDriver;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
+    
     @FXML private Label lblNumeroRegistros;
-    
-    @FXML private JFXButton btnDriver;
-    @FXML private JFXButton btnAsignarDriverCentro;
-    @FXML private Tooltip ttAsignarDriverCentro;
-    @FXML private JFXButton btnQuitar;
-    
-    @FXML private JFXButton btnGuardar;
-    @FXML private JFXButton btnCancelar;
     @FXML private JFXButton btnDescargar;
-
-    
+    @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
     DriverDAO driverDAO;
@@ -97,52 +90,66 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FilteredList<CentroDriver> filteredData;
     SortedList<CentroDriver> sortedData;
     int periodoSeleccionado;
-    boolean tablaEstaActualizada;
     String titulo1, titulo2;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
     String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
+        this.menuControlador = menuControlador;
         driverDAO = new DriverDAO();
         centroDAO = new CentroDAO();
         centroDriverDAO = new CentroDriverDAO();
-        this.menuControlador = menuControlador;
         this.titulo = "Asignar Centros Bolsas";
+        titulo1 = "Centros de Costos";
+        titulo2 = "Centro de Costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Cambiar para Ingresos Operativos
-        titulo1 = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            btnAsignarDriverCentro.setText("Asignar Driver CEBE");
-            titulo1 = "Centros de Beneficios";
-            titulo2 = "Centro de Beneficio";
-        }
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = menuControlador.periodo;
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+                
         ttAsignarDriverCentro.setText("Asignar un driver que distribuye a " + titulo1);
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(periodoSeleccionado, true);
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
-        });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
 
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
-        // Tabla: Formato
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
+        // Tabla: Formato        
+        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaProperty());
+        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaProperty());
+        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
+        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
+        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
+        tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
+        tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
+        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);        
         tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -152,14 +159,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         
-        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaProperty());
-        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaProperty());
-        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
-        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
-        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
-        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
-        tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
-        tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // Tabla: Buscar
         List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado);
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
@@ -183,7 +182,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
-        tablaEstaActualizada = true;
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -204,7 +202,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CentroDriver> listaEntidades = new ArrayList();
-        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado));
+        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo));
         if (listaEntidades.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
@@ -213,7 +211,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
         txtBuscar.setText("");
-        tablaEstaActualizada = true;
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -225,12 +222,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         verDriver();
     }
     
-    @FXML void btnAsignarDriverCentroAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a " + titulo1, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-            return;
-        }
-        
+    @FXML void btnAsignarDriverCentroAction(ActionEvent event) {        
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a " + titulo1, "Por favor seleccione una entidad.");
@@ -245,12 +237,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         buscarDriverCentro();
     }
     
-    @FXML void btnQuitarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar Driver", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-            return;
-        }
-        
+    @FXML void btnQuitarAction(ActionEvent event) {        
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo("Quitar Driver", "Por favor seleccione una entidad.");

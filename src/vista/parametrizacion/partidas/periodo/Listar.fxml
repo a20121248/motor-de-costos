@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.TableColumn?>
@@ -55,39 +56,16 @@
             </HBox>
          </children>
       </AnchorPane>
-      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
-         <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolSaldo" prefWidth="101.0" styleClass="right" text="SALDO" />
-         </columns>
-      </TableView>
-      <Label layoutX="60.0" layoutY="134.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />
-      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnBuscarPeriodo" layoutX="322.0" layoutY="120.0" onAction="#btnBuscarPeriodoAction" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="SEARCH" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
-      <Spinner fx:id="spAnho" layoutX="20.0" layoutY="20.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
-         <valueFactory>
-            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-         </valueFactory>
-      </Spinner>
-      <TextField fx:id="txtBuscar" layoutX="534.0" layoutY="242.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
-      <Label layoutX="482.0" layoutY="204.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
-      <JFXButton fx:id="btnAtras" layoutX="633.0" layoutY="569.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="REPLY" />
-         </graphic>
-      </JFXButton>
-      <HBox alignment="TOP_RIGHT" layoutX="151.0" layoutY="207.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0" />
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnAgregar" onAction="#btnAgregarAction" styleClass="btn" text="Agregar">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
@@ -114,10 +92,38 @@
             </JFXButton>
          </children>
       </HBox>
-      <JFXButton fx:id="btnDescargar" layoutX="190.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="DOWNLOAD" />
-         </graphic>
-      </JFXButton>
+      <HBox alignment="CENTER_RIGHT" layoutX="151.0" layoutY="207.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0">
+         <children>
+            <Label text="Buscar:" />
+            <TextField fx:id="txtBuscar" prefHeight="25.0" prefWidth="200.0" />
+         </children>
+      </HBox>
+      <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
+         <columns>
+            <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolSaldo" prefWidth="101.0" styleClass="right" text="SALDO" />
+         </columns>
+      </TableView>
+      <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+         <children>
+            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
+            <JFXButton fx:id="btnDescargar" onAction="#btnDescargarAction" text="Descargar">
+               <graphic>
+                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">
+               <graphic>
+                  <FontAwesomeIconView glyphName="REPLY" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

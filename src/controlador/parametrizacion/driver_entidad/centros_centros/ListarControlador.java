@@ -41,6 +41,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -61,13 +62,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Hyperlink lnkParametrizacion;
     @FXML private Hyperlink lnkAsignaciones;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
+    @FXML private JFXButton btnCargar;
+    
     @FXML private Label lblTipoCentro;
     @FXML private ComboBox<Tipo> cmbTipoCentro;
-    @FXML private JFXButton btnBuscarPeriodo;
-    
-    @FXML private JFXButton btnCargar;
     
     @FXML private Label lblEntidades;
     @FXML private TextField txtBuscar;
@@ -107,6 +108,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
+        this.menuControlador = menuControlador;
         driverDAO = new DriverDAO();
         driverServicio = new DriverServicio();
         planDeCuentaDAO = new PlanDeCuentaDAO();
@@ -114,7 +116,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         productoDAO = new ProductoDAO();
         bancaDAO = new BancaDAO();
         asignacionEntidadDriverDAO = new AsignacionEntidadDriverDAO();
-        this.menuControlador = menuControlador;
         this.titulo = "Driver";
     }
     
