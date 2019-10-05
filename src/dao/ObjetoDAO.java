@@ -39,6 +39,21 @@ public class ObjetoDAO {
         }
     }
     
+    public List<String> listarCodigosPeriodo(int periodo,int repartoTipo) {
+        List<String> lista = new ArrayList();
+        String queryStr = String.format("" +
+                "SELECT %s_CODIGO CODIGO\n" +
+                "  FROM MS_%s_LINEAS\n" +
+                "WHERE PERIODO = %d AND REPARTO_TIPO=%d",
+                prefixTableName,prefixTableName,periodo,repartoTipo);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) lista.add(rs.getString("CODIGO"));
+        } catch (SQLException ex) {
+            Logger.getLogger(ObjetoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM " + "MS_" + prefixTableName+"s")) {

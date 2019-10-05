@@ -261,7 +261,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,null,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_TABLE_EMPTY);
+            menuControlador.mensaje.show_table_empty(titulo);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -282,10 +282,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
