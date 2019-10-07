@@ -102,15 +102,15 @@ public class CrearControlador implements Initializable {
         String nombre = txtNombre.getText();
         int nivel = spNivel.getValue();
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear Grupo", "El código " + codigo + " ya existe. No se puede crear el Grupo.");
+            menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
         if (objetoGrupoDAO.insertarObjeto(codigo,nombre,nivel)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear Grupo", "Grupo creado correctamente.");
+            menuControlador.mensaje.create_success(titulo);
             menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_OBJETOS_GRUPOS_CREAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear Grupo", "No se puede crear el Grupo.");
+            menuControlador.mensaje.create_error(titulo);
         }
     }
     

@@ -63,12 +63,12 @@ public class EditarControlador implements Initializable {
             case "PRO":
                 lblTitulo.setText("Editar Grupo de Productos");
                 lnkObjetos.setText("Productos");
-                this.titulo = "Bancas";
+                this.titulo = "Productos";
                 break;
             case "SCA":
                 lblTitulo.setText("Editar Grupo de Subcanales");
                 lnkObjetos.setText("Subcanales");
-                this.titulo = "Bancas";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -110,11 +110,11 @@ public class EditarControlador implements Initializable {
             return;
         }
         if (objetoGrupoDAO.actualizarObjeto(codigo,nombre,nivel,grupo.getCodigo())==1) {
-            menuControlador.navegador.mensajeInformativo("Editar Grupo", "Grupo editado correctamente.");
+            menuControlador.mensaje.edit_success(titulo);
             menuControlador.Log.editarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_OBJETOS_GRUPOS_EDITAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Editar Grupo", "No se puede editar el Grupo.");
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     

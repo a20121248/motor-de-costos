@@ -41,7 +41,7 @@ public class ObjetoGrupoDAO {
     
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM " + prefixTableName + "_GRUPOS")) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM " + "MS_" + prefixTableName + "_GRUPOS")) {
             while(rs.next()) lista.add(rs.getString("CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(ObjetoGrupoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,7 +51,7 @@ public class ObjetoGrupoDAO {
     
     public List<String> listarCodigos(String codigo) {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT CODIGO FROM " + prefixTableName +"_GRUPOS WHERE CODIGO!='%s'",codigo))) {
+        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT CODIGO FROM " + "MS_" +prefixTableName +"_GRUPOS WHERE CODIGO!='%s'",codigo))) {
             while(rs.next()) lista.add(rs.getString("CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(ObjetoGrupoDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,10 +67,10 @@ public class ObjetoGrupoDAO {
                 "       COALESCE(C.ENTIDAD_PADRE_CODIGO,'SIN ASIGNAR') ENTIDAD_PADRE_CODIGO,\n" +
                 "       COALESCE(D.NOMBRE,'SIN ASIGNAR') ENTIDAD_PADRE_NOMBRE,\n" +
                 "       CASE WHEN D.NOMBRE IS NULL THEN -1 ELSE 1 END ENTIDAD_PADRE_NIVEL\n" +
-                "  FROM %sS A\n" +
-                "  JOIN %s_LINEAS B ON A.CODIGO=B.%s_CODIGO\n" +
-                "  LEFT JOIN JERARQUIA C ON A.CODIGO=C.ENTIDAD_CODIGO AND C.NIVEL=0 AND B.PERIODO=C.PERIODO AND C.ENTIDAD_TIPO='%s'\n" +
-                "  LEFT JOIN %s_GRUPOS D ON C.ENTIDAD_PADRE_CODIGO=D.CODIGO\n" +
+                "  FROM MS_%sS A\n" +
+                "  JOIN MS_%s_LINEAS B ON A.CODIGO=B.%s_CODIGO\n" +
+                "  LEFT JOIN MS_JERARQUIA C ON A.CODIGO=C.ENTIDAD_CODIGO AND C.NIVEL=0 AND B.PERIODO=C.PERIODO AND C.ENTIDAD_TIPO='%s'\n" +
+                "  LEFT JOIN MS_%s_GRUPOS D ON C.ENTIDAD_PADRE_CODIGO=D.CODIGO\n" +
                 " WHERE B.PERIODO=%d\n" +
                 " UNION ALL\n" +
                 "SELECT A.CODIGO ENTIDAD_CODIGO,\n" +
@@ -79,9 +79,9 @@ public class ObjetoGrupoDAO {
                 "       COALESCE(B.ENTIDAD_PADRE_CODIGO,'SIN ASIGNAR') ENTIDAD_PADRE_CODIGO,\n" +
                 "       COALESCE(C.NOMBRE,'SIN ASIGNAR') ENTIDAD_PADRE_NOMBRE,\n" +
                 "       COALESCE(C.NIVEL,-1) ENTIDAD_PADRE_NIVEL\n" +
-                "  FROM %s_GRUPOS A\n" +
-                "  LEFT JOIN JERARQUIA B ON A.CODIGO=B.ENTIDAD_CODIGO AND A.NIVEL=B.NIVEL AND B.PERIODO=%d AND B.ENTIDAD_TIPO='%s'\n" +
-                "  LEFT JOIN %s_GRUPOS C ON B.ENTIDAD_PADRE_CODIGO=C.CODIGO\n" +
+                "  FROM MS_%s_GRUPOS A\n" +
+                "  LEFT JOIN MS_JERARQUIA B ON A.CODIGO=B.ENTIDAD_CODIGO AND A.NIVEL=B.NIVEL AND B.PERIODO=%d AND B.ENTIDAD_TIPO='%s'\n" +
+                "  LEFT JOIN MS_%s_GRUPOS C ON B.ENTIDAD_PADRE_CODIGO=C.CODIGO\n" +
                 " ORDER BY NIVEL,ENTIDAD_CODIGO",prefixTableName,prefixTableName,prefixTableName,objetoTipo,prefixTableName,periodo,prefixTableName,periodo,objetoTipo,prefixTableName);
         List<Grupo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -134,7 +134,7 @@ public class ObjetoGrupoDAO {
                 "       NIVEL,\n" +
                 "       FECHA_CREACION,\n" +
                 "       FECHA_ACTUALIZACION\n" +
-                "  FROM %s_GRUPOS\n" +
+                "  FROM MS_%s_GRUPOS\n" +
                 " WHERE ESTA_ACTIVO=1\n",prefixTableName);
         if (nivelOrigen!=-1) queryStr += String.format("   AND NIVEL=%d+1\n",nivelOrigen);
         queryStr += " ORDER BY NIVEL,CODIGO";
@@ -159,7 +159,7 @@ public class ObjetoGrupoDAO {
     public int insertarObjeto(String codigo, String nombre, int nivel) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
-            "INSERT INTO %s_GRUPOS(CODIGO,NOMBRE,NIVEL,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+            "INSERT INTO MS_%s_GRUPOS(CODIGO,NOMBRE,NIVEL,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
             "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
             prefixTableName,codigo,nombre,nivel,1,fechaStr,fechaStr);
         return ConexionBD.ejecutar(queryStr);
@@ -167,14 +167,14 @@ public class ObjetoGrupoDAO {
     
     public int actualizarObjeto(String codigo, String nombre, int nivel, String codigoAnt) {
         String queryStr = String.format("" +
-                "UPDATE %s_GRUPOS\n" +
+                "UPDATE MS_%s_GRUPOS\n" +
                 "   SET CODIGO='%s',NOMBRE='%s',NIVEL=%d\n" +
                 " WHERE CODIGO='%s'",prefixTableName,codigo,nombre,nivel,codigoAnt);
         return ConexionBD.ejecutar(queryStr);
     }
     
     public int eliminarObjeto(String codigo) {
-        String queryStr = String.format("DELETE FROM %s_GRUPOS WHERE CODIGO='%s'",prefixTableName,codigo);
+        String queryStr = String.format("DELETE FROM MS_%s_GRUPOS WHERE CODIGO='%s'",prefixTableName,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -192,11 +192,28 @@ public class ObjetoGrupoDAO {
         return null;
     }
     
-    public int borrarGrupoPadre(String grupoCodigo, String grupoTipo, int periodo) {
+    public int verificarObjetoJerarquia(String codigo) {
         String queryStr = String.format("" +
-                "DELETE FROM jerarquia\n" +
-                " WHERE entidad_codigo='%s' AND entidad_tipo='%s' AND periodo=%d",
-                grupoCodigo,grupoTipo,periodo);
+                "SELECT COUNT(*) AS COUNT\n" +
+                "  FROM MS_JERARQUIA\n" +
+                " WHERE ENTIDAD_PADRE_CODIGO = '%s'",
+                codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
+    public int borrarGrupoPadre(String grupoCodigo, String grupoTipo, int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "DELETE FROM MS_jerarquia\n" +
+                " WHERE entidad_codigo='%s' AND entidad_tipo='%s' AND periodo=%d AND reparto_tipo='%d'",
+                grupoCodigo,grupoTipo,periodo, repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -221,7 +238,7 @@ public class ObjetoGrupoDAO {
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO %s_GRUPOS(CODIGO,NOMBRE,NIVEL,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "INSERT INTO MS_%s_GRUPOS(CODIGO,NOMBRE,NIVEL,ESTA_ACTIVO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                     "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     prefixTableName,codigo,nombre,nivel,1,fechaStr,fechaStr);
             return queryStr;

@@ -167,12 +167,12 @@ public class ObjetoDAO {
         return lista;
     }
     
-    public int verificarObjetoDriver(String codigo) {
+    public int verificarObjetoDriver(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT COUNT(*) AS COUNT\n" +
                 "  FROM MS_DRIVER_OBJETO_LINEAS\n" +
-                " WHERE %s_CODIGO = '%s''",
-                prefixTableName,codigo);
+                " WHERE %s_CODIGO = '%s' AND PERIODO='%d' AND REPARTO_TIPO='%d'",
+                prefixTableName,codigo,periodo,repartoTipo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
             while(rs.next()) {
@@ -220,16 +220,16 @@ public class ObjetoDAO {
         ConexionBD.cerrarStatement();        
     }
     
-    public int borrarListaAsignacion(int periodo, String tipo) {
+    public int borrarListaAsignacion(int periodo, String tipo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM %s_LINEAS\n" +
-                " WHERE PERIODO=%d",
-                tipo,periodo);
+                "DELETE FROM MS_%s_LINEAS\n" +
+                " WHERE PERIODO=%d AND REPARTO_TIPO='%d'",
+                tipo,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarListaObjetoPeriodo(int periodo, List<CargarObjetoPeriodoLinea> lista) {
-        borrarListaAsignacion(periodo, prefixTableName);
+    public void insertarListaObjetoPeriodo(int periodo, List<CargarObjetoPeriodoLinea> lista, int repartoTipo) {
+        borrarListaAsignacion(periodo, prefixTableName, repartoTipo);
         ConexionBD.crearStatement();
         for (CargarObjetoPeriodoLinea item: lista) {
             String codigo = item.getCodigo();
@@ -237,9 +237,9 @@ public class ObjetoDAO {
             
             // inserto una linea dummy
             String queryStr = String.format("" +
-                    "INSERT INTO %s_LINEAS(%s_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES('%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    prefixTableName,prefixTableName,codigo,periodo,fechaStr,fechaStr);
+                    "INSERT INTO MS_%s_LINEAS(%s_codigo,periodo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES('%s',%d,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    prefixTableName,prefixTableName,codigo,periodo,repartoTipo,fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
         ConexionBD.ejecutarBatch();
@@ -265,12 +265,12 @@ public class ObjetoDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarObjetoPeriodo(String codigo, int periodo) {
+    public void insertarObjetoPeriodo(String codigo, int periodo, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO %s_LINEAS(%s_CODIGO,PERIODO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                "VALUES('%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                prefixTableName,prefixTableName,codigo,periodo,fechaStr,fechaStr);
+                "INSERT INTO MS_%s_LINEAS(%s_CODIGO,PERIODO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                "VALUES('%s',%d,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                prefixTableName,prefixTableName,codigo,periodo,repartoTipo,fechaStr,fechaStr);
         ConexionBD.ejecutar(queryStr);
     }
     
@@ -282,11 +282,11 @@ public class ObjetoDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void eliminarObjetoPeriodo(String codigo, int periodo) {
+    public void eliminarObjetoPeriodo(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM %s_LINEAS\n" +
-                " WHERE %s_CODIGO='%s' AND PERIODO=%d",
-                prefixTableName,prefixTableName,codigo,periodo);
+                "DELETE FROM MS_%s_LINEAS\n" +
+                " WHERE %s_CODIGO='%s' AND PERIODO=%d AND REPARTO_TIPO='%d'",
+                prefixTableName,prefixTableName,codigo,periodo,repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
     

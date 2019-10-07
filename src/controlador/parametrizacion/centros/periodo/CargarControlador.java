@@ -176,6 +176,7 @@ public class CargarControlador implements Initializable {
             //Estructura de la cabecera
             if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
+                f.close();
                 return null;
             }
 

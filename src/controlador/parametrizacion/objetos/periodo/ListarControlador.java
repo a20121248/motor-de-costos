@@ -180,7 +180,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar " + objetoNombre, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.mensaje.add_refresh_error(titulo);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> menuControlador.objetoTipo.equals(item.getCodigo())).findFirst().orElse(null);
@@ -204,22 +204,26 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar " + objetoNombre, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.mensaje.delete_refresh_error(titulo);
             return;
         }
         
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar " + objetoNombre, "Por favor seleccione un " + objetoNombre + ".");
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + objetoNombre, "¿Está seguro de quitar el " + objetoNombre + " " + item.getNombre() + "?"))
             return;
-                
-        objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
-        buscarPeriodo(periodoSeleccionado, false);
+        
+        if(objetoDAO.verificarObjetoDriver(item.getCodigo(),periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
+            objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
+            buscarPeriodo(periodoSeleccionado, false);
+        }else{
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
+        }
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -238,7 +242,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<EntidadDistribucion> lista = objetoDAO.listar(periodo,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de " + objetoNombre + "s", "No existen " + objetoNombre + "s para el periodo seleccionado.");
+            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
@@ -258,10 +262,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
@@ -271,7 +275,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }

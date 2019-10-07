@@ -211,7 +211,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + titulo2, "¿Está seguro de quitar el " + titulo2 + " " + item.getNombre() + "?"))
             return;        
         
-        if (centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
+        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
             centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);

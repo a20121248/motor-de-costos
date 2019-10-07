@@ -18,11 +18,11 @@ public class ProductoDAO {
     public List<Producto> listarMaestro(String codigos) {
         String queryStr;
         if (codigos.isEmpty()) {
-            queryStr = "SELECT codigo,nombre FROM productos WHERE esta_activo=1 ORDER BY codigo";
+            queryStr = "SELECT codigo,nombre FROM MS_productos WHERE esta_activo=1 ORDER BY codigo";
         } else {
             queryStr = String.format(""+
                     "SELECT codigo,nombre\n" +
-                    "  FROM productos\n" +
+                    "  FROM MS_productos\n" +
                     " WHERE esta_activo=1 AND codigo NOT IN (%s)\n" +
                     " ORDER BY codigo",
                     codigos);
@@ -47,8 +47,8 @@ public class ProductoDAO {
                 "       A.nombre,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
-                "  FROM productos A\n" +
-                "  JOIN producto_lineas B ON B.producto_codigo=A.codigo\n" +
+                "  FROM MS_productos A\n" +
+                "  JOIN MS_producto_lineas B ON B.producto_codigo=A.codigo\n" +
                 " WHERE A.esta_activo=1 AND B.periodo=%d\n" +
                 " GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                 " ORDER BY A.codigo",
