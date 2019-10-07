@@ -49,6 +49,11 @@
             </HBox>
          </children>
       </AnchorPane>
+      <JFXButton fx:id="btnGenerarTraza" layoutX="599.0" layoutY="120.0" onAction="#btnGenerarTrazaAction" styleClass="btn" text="GenerarTraza" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
+         </graphic>
+      </JFXButton>
       <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
       <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
       <Spinner fx:id="spAnho" layoutX="232.0" layoutY="120.0" prefWidth="74" AnchorPane.topAnchor="120.0">

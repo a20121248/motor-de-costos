@@ -3,7 +3,6 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -63,14 +62,16 @@
             </HBox>
          </children>
       </AnchorPane>
-      <Label fx:id="lblTipoGasto" layoutX="50.0" layoutY="179.0" text="Tipo de gasto:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <ComboBox fx:id="cmbTipoGasto" layoutX="136.0" layoutY="175.0" prefWidth="170.0" AnchorPane.leftAnchor="135.0" AnchorPane.topAnchor="120.0" />
       <Label layoutX="462.0" layoutY="184.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
       <TextField fx:id="txtBuscar" layoutX="504.0" layoutY="212.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="77.0" styleClass="center" text="TIPO GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="70.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="77.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="91.0" styleClass="center" text="NIIF17 GASTO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
@@ -79,38 +80,50 @@
             <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
-      <JFXButton fx:id="btnBuscar" layoutX="332.0" layoutY="130.0" onAction="#btnBuscarAction" AnchorPane.leftAnchor="322.0" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="SEARCH" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
       <HBox alignment="TOP_RIGHT" layoutX="111.0" layoutY="167.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
+            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
+            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
+            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" text="Cargar">
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>
+      <JFXButton fx:id="btnDescargar" layoutX="209.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

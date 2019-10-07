@@ -35,6 +35,11 @@ public class EditarControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
+    @FXML private ComboBox cmbEsBolsa;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Clase;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -44,25 +49,22 @@ public class EditarControlador implements Initializable {
     CentroDAO centroDAO;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centro = (Centro) menuControlador.objeto;
         centroDAO = new CentroDAO();
+        this.titulo = "Centro de Costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
-        if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
-        }
-        
         txtCodigo.setText(centro.getCodigo());
         txtNombre.setText(centro.getNombre());
         
         ObservableList<Tipo> obsListaTipos;
-        
+
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroTipos.subList(1, menuControlador.lstCentroTipos.size()));
         cmbTipo.setItems(obsListaTipos);
         cmbTipo.setConverter(new StringConverter<Tipo>() {
@@ -76,12 +78,6 @@ public class EditarControlador implements Initializable {
             }
         });
         cmbTipo.setValue(centro.getTipo());
-        if (menuControlador.repartoTipo == 1) {
-            cmbTipo.getSelectionModel().select(0);
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbTipo.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbTipo.setDisable(true);
-        }
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles.subList(1, menuControlador.lstCentroNiveles.size()));
         cmbNivel.setItems(obsListaTipos);
@@ -95,17 +91,50 @@ public class EditarControlador implements Initializable {
                 return cmbNivel.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            int nivel = centro.getNivel();
-            if (nivel == 0) {
-                cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            } else {
+        cmbNivel.getSelectionModel().select(centro.getNivel());
+        
+        cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
+        cmbEsBolsa.getSelectionModel().select(centro.getEsBolsa());
+        
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        if(centro.getTipoGasto().equals("DIRECTO")) cmbTipoGasto.getSelectionModel().select(1);
+        else cmbTipoGasto.getSelectionModel().select(0);
+        
+        
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(centro.getNIIF17Atribuible());
+        
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(centro.getNIIF17Tipo());
+        
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(centro.getNIIF17Clase());
+        
+        cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
+                cmbEsBolsa.getSelectionModel().select(1);
                 cmbNivel.getSelectionModel().select(0);
             }
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbNivel.setDisable(true);
-        }
+            if (newValue.getCodigo().equals("PROYECTO") || newValue.getCodigo().equals("FICTICIO")) {
+                cmbEsBolsa.getSelectionModel().select(0);
+                cmbNivel.getSelectionModel().select(99);
+            }
+        });
+        
+        cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("0")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+            } else {
+                cmbEsBolsa.getSelectionModel().select(0);
+            }
+        });
+        
+        cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.equals("SI")) {
+                cmbNivel.getSelectionModel().select(0);
+            }
+        });
+        
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -117,7 +146,7 @@ public class EditarControlador implements Initializable {
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -134,11 +163,17 @@ public class EditarControlador implements Initializable {
         String codigoGrupo = cmbTipo.getValue().getCodigo();
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
-        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo)==1) {
-            menuControlador.navegador.mensajeInformativo("Guardar Centros de Costos", "Centro de Costos actualizado correctamente.");
+        String esBolsa = cmbEsBolsa.getValue().toString();
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
+        if (centroDAO.actualizarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,esBolsa,tipoGasto,niif17Atribuible,niif17Tipo,niif17Clase)==1) {
+            menuControlador.mensaje.edit_success(titulo);
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Guardar Centros de Costos", "Error. No se pudo actualizar el Centro de Costos.");
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     

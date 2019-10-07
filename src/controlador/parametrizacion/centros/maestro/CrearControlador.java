@@ -8,9 +8,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -35,7 +38,12 @@ public class CrearControlador implements Initializable {
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
     @FXML private TextField txtCodigoCecoPadre;
-    
+    @FXML private ComboBox cmbEsBolsa;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Clase;
+
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
     
@@ -44,20 +52,17 @@ public class CrearControlador implements Initializable {
     CentroDAO centroDAO;
     List<String> lstCentrosCodigo;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getControlador());
+    String titulo;
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         lstCentrosCodigo = centroDAO.listarCodigos();
+        this.titulo = "Centro de Costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            lblTitulo.setText("Centros de Beneficio");
-            lnkCentros.setText("Centros de Beneficio");
-        }
-        
         ObservableList<Tipo> obsListaTipos;
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroTipos.subList(1, menuControlador.lstCentroTipos.size()));
@@ -72,12 +77,6 @@ public class CrearControlador implements Initializable {
                 return cmbTipo.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            cmbTipo.getSelectionModel().select(0);
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbTipo.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbTipo.setDisable(true);
-        }
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles.subList(1, menuControlador.lstCentroNiveles.size()));
         cmbNivel.setItems(obsListaTipos);
@@ -91,12 +90,47 @@ public class CrearControlador implements Initializable {
                 return cmbNivel.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        if (menuControlador.repartoTipo == 1) {
-            cmbNivel.getSelectionModel().select(0);
-        } else if (menuControlador.repartoTipo == 2) {
-            cmbNivel.getSelectionModel().select(obsListaTipos.size()-1);
-            cmbNivel.setDisable(true);
-        }
+        
+        cmbEsBolsa.setItems(FXCollections.observableArrayList(menuControlador.lstEsBolsa));
+        
+        
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
+        
+        cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("BOLSA") || newValue.getCodigo().equals("OFICINA")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+                cmbNivel.getSelectionModel().select(0);
+            }
+            if (newValue.getCodigo().equals("PROYECTO") || newValue.getCodigo().equals("FICTICIO")) {
+                cmbEsBolsa.getSelectionModel().select(0);
+                cmbNivel.getSelectionModel().select(99);
+            }
+        });
+        
+        cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.getCodigo().equals("0")) {
+                cmbEsBolsa.getSelectionModel().select(1);
+            } else {
+                cmbEsBolsa.getSelectionModel().select(0);
+            }
+        });
+        
+        cmbEsBolsa.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.equals("SI")) {
+                cmbNivel.getSelectionModel().select(0);
+            }
+        });
+        
+        
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(0);
+        
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(0);
+        
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(0);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -108,7 +142,7 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -120,26 +154,34 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void btnCrearAction(ActionEvent event) {
-        String titulo1 = "Centros de Costos";
-        String titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo1 = "Centros de Beneficios";
-            titulo2 = "Centro de Beneficio";
-        }
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String codigoGrupo = cmbTipo.getValue().getCodigo();
         int nivel = Integer.parseInt(cmbNivel.getValue().getCodigo());
         String cecoPadreCodigo = txtCodigoCecoPadre.getText();
-        if (lstCentrosCodigo.contains(codigo)) {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, "El código ya existe. No se puede crear el " + titulo2 + ".");
+        String esBolsa = cmbEsBolsa.getValue().toString();
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
+        boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
+        if (!ptrCodigo) {
+            menuControlador.mensaje.create_pattern_error(titulo);
             return;
         }
-        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, titulo2 + " creado correctamente.");
+        if (lstCentrosCodigo.contains(codigo)) {
+            menuControlador.mensaje.create_exist_error(titulo);
+            return;
+        }
+        if(cecoPadreCodigo.equals("")){
+            cecoPadreCodigo = "-";
+        }
+        if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,esBolsa,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase)==1) {
+            menuControlador.mensaje.create_success(titulo);
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_CENTROS_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeInformativo("Crear " + titulo1, "Error. No se puede crear el " + titulo2);
+            menuControlador.mensaje.create_error(titulo);
         }
     }
     

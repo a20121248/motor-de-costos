@@ -58,7 +58,7 @@
       </AnchorPane>
       <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
       <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="130.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />
-      <HBox alignment="CENTER" layoutX="375.0" layoutY="160.0" spacing="7.0" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="160.0">
+      <HBox alignment="CENTER" layoutX="375.0" layoutY="160.0" spacing="7.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="160.0">
          <children>
             <Label fx:id="lblTipoCentro" text="Tipo de Centro de Costos:" />
             <ComboBox fx:id="cmbTipoCentro" prefHeight="25.0" prefWidth="175.0" />
@@ -81,12 +81,7 @@
             <Tooltip text="Cargar a través de Excel las asignaciones de driver a entidades" />
          </tooltip>
       </JFXButton>
-      <HBox alignment="CENTER" layoutX="43.0" layoutY="198.0" spacing="7.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="160.0">
-         <children>
-            <Label text="Tipo de entidad:" />
-            <ComboBox fx:id="cmbTipoEntidad" onAction="#cmbTipoEntidadAction" prefHeight="25.0" prefWidth="207.0" />
-         </children>
-      </HBox>
+      <HBox alignment="CENTER" layoutX="43.0" layoutY="198.0" spacing="7.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="160.0" />
       <HBox alignment="TOP_RIGHT" layoutX="121.0" layoutY="177.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <children>
             <JFXButton fx:id="btnDriver" onAction="#btnDriverAction" text="Ver driver">
@@ -107,18 +102,6 @@
                </graphic>
                <tooltip>
                   <Tooltip fx:id="ttAsignarDriverCentro" text="Asignar un driver que distribuye a Centros de Costos" />
-               </tooltip>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="x-large" />
-               </styleClass>
-            </JFXButton>
-            <JFXButton fx:id="btnAsignarDriverObjeto" onAction="#btnAsignarDriverObjetoAction" text="Asignar driver Objeto">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PLUS" />
-               </graphic>
-               <tooltip>
-                  <Tooltip fx:id="ttAsignarDriverObjeto" text="Asignar un driver que distribuye a Objetos de Costos" />
                </tooltip>
                <styleClass>
                   <String fx:value="btn" />
@@ -165,5 +148,10 @@
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
          </valueFactory>
       </Spinner>
+      <JFXButton fx:id="btnDescargar" layoutX="638.0" layoutY="561.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

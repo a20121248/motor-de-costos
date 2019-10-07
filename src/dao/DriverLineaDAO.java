@@ -34,41 +34,93 @@ public class DriverLineaDAO {
         productoDAO = new ProductoDAO();
     }
     
+//    public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo) {
+//        String queryStr = String.format("" +
+//                "DELETE FROM driver_obco_lineas\n" +
+//                " WHERE driver_codigo='%s' AND periodo=%d",
+//                driverCodigo,
+//                periodo);
+//        ConexionBD.agregarBatch(queryStr);
+//    }
     public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo) {
         String queryStr = String.format("" +
-                "DELETE FROM driver_obco_lineas\n" +
+                "DELETE FROM driver_objeto_lineas\n" +
                 " WHERE driver_codigo='%s' AND periodo=%d",
                 driverCodigo,
                 periodo);
         ConexionBD.agregarBatch(queryStr);
     }
     
-    public void borrarListaDriverLinea(String driverCodigo, int periodo) {
+    public void borrarListaDriverLinea(String driverCodigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM driver_lineas\n" +
-                " WHERE driver_codigo='%s' AND periodo=%d",
+                "DELETE FROM MS_driver_lineas\n" +
+                " WHERE driver_codigo='%s' AND periodo=%d and reparto_tipo = '%d' ",
                 driverCodigo,
-                periodo);
-        ConexionBD.agregarBatch(queryStr);
+                periodo,
+                repartoTipo);
+        ConexionBD.ejecutar(queryStr);
+    }
+    
+    //    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoEnDriver(String codigo, int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM MS_driver_lineas\n" +
+                " WHERE ENTIDAD_DESTINO_CODIGO='%s' AND periodo = '%s' AND reparto_tipo='%d'",
+                codigo,periodo,repartoTipo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
     }
 
-    public void insertarListaDriverCentroLineaBatch(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea) {
-        borrarListaDriverLinea(driverCodigo, periodo);
+    public void insertarListaDriverCentroLineaBatch(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea, int repartoTipo) {
+        borrarListaDriverLinea(driverCodigo, periodo,repartoTipo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverLinea item: listaDriverLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s',%d,%.4f,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
                     item.getEntidadDistribucionDestino().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }
     }
 
+//    public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
+//        ConexionBD.crearStatement();
+//        ConexionBD.tamanhoBatchMax = 10000;
+//        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+//        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+//        for (DriverObjetoLinea item: listaDriverObjetoLinea) {
+//            String queryStr = String.format(Locale.US, "" +
+//                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+//                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                    driverCodigo,
+//                    item.getBanca().getCodigo(),
+//                    item.getOficina().getCodigo(),
+//                    item.getProducto().getCodigo(),
+//                    periodo,
+//                    item.getPorcentaje(),
+//                    fechaStr,
+//                    fechaStr);
+//            ConexionBD.agregarBatch(queryStr);
+//        }
+//        // los posibles registros que no se hayan ejecutado
+//        ConexionBD.ejecutarBatch();
+//        ConexionBD.cerrarStatement();
+//    }
+    
     public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 10000;
@@ -76,12 +128,11 @@ public class DriverLineaDAO {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
-                    item.getBanca().getCodigo(),
-                    item.getOficina().getCodigo(),
                     item.getProducto().getCodigo(),
+                    item.getSubcanal().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
                     fechaStr,
@@ -93,17 +144,34 @@ public class DriverLineaDAO {
         ConexionBD.cerrarStatement();
     }
     
+//    public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
+//        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+//        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
+//        for (DriverObjetoLinea item: listaDriverObjetoLinea) {
+//            String queryStr = String.format(Locale.US, "" +
+//                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+//                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+//                    driverCodigo,
+//                    item.getBanca().getCodigo(),
+//                    item.getOficina().getCodigo(),
+//                    item.getProducto().getCodigo(),
+//                    periodo,
+//                    item.getPorcentaje(),
+//                    fechaStr,
+//                    fechaStr);
+//            ConexionBD.agregarBatch(queryStr);
+//        }
+//    }
     public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
         borrarListaDriverObjetoLinea(driverCodigo, periodo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_obco_lineas(driver_codigo,banca_codigo,oficina_codigo,producto_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
-                    item.getBanca().getCodigo(),
-                    item.getOficina().getCodigo(),
                     item.getProducto().getCodigo(),
+                    item.getSubcanal().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
                     fechaStr,
@@ -112,19 +180,20 @@ public class DriverLineaDAO {
         }
     }
     
-    public void insertarListaDriverLinea(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea) {
+    public void insertarListaDriverLinea(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea, int repartoTipo) {
+        borrarListaDriverLinea(driverCodigo, periodo, repartoTipo);
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 10000;
-        borrarListaDriverLinea(driverCodigo, periodo);
-        String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverLinea driverLinea : listaDriverLinea) {
+            String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_driver_lineas(driver_codigo,entidad_destino_codigo,periodo,porcentaje,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s',%d,%.4f,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
                     driverLinea.getEntidadDistribucionDestino().getCodigo(),
                     periodo,
                     driverLinea.getPorcentaje(),
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
@@ -176,7 +245,7 @@ public class DriverLineaDAO {
     
     public List<DriverLinea> obtenerListaDriverLinea(String driverCodigo, int periodo, int repartoTipo) {
         // Cargo las entidades: centros de costos
-        List<Centro> listaCentros = centroDAO.listar(periodo, repartoTipo);
+        List<Centro> listaCentros = centroDAO.listar("",periodo, repartoTipo);
         List<EntidadDistribucion> listaEntidades = new ArrayList();
         listaEntidades.addAll(listaCentros);
         

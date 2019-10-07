@@ -76,25 +76,41 @@
       </JFXButton>
       <HBox alignment="TOP_RIGHT" layoutX="300.0" layoutY="168.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
+            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
+            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
+            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" text="Cargar">
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>
@@ -110,6 +126,11 @@
       <JFXButton fx:id="btnAtras" layoutX="643.0" layoutY="579.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="190.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
       </JFXButton>
    </children>

@@ -33,6 +33,9 @@ public class ObjetoGrupoDAO {
             case "PRO":
                 prefixTableName = "PRODUCTO";
                 break;
+            case "SCA":
+                prefixTableName = "SUBCANAL";
+                break;
         }
     }
     
@@ -98,6 +101,25 @@ public class ObjetoGrupoDAO {
                 
                 item.setGrupoPadre(itemPadre);
                 lista.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ObjetoGrupoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    public List<String> listarCodigoObjetos(int nivelOrigen){
+        String queryStr = String.format("" +
+                "SELECT CODIGO\n" +
+                "  FROM %s_GRUPOS\n" +
+                " WHERE ESTA_ACTIVO=1\n",prefixTableName);
+        if (nivelOrigen!=-1) queryStr += String.format("   AND NIVEL=%d+1\n",nivelOrigen);
+        queryStr += " ORDER BY CODIGO";
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                lista.add(codigo);
             }
         } catch (SQLException ex) {
             Logger.getLogger(ObjetoGrupoDAO.class.getName()).log(Level.SEVERE, null, ex);

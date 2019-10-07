@@ -129,7 +129,7 @@ public class ConexionBD {
     public static void crearStatement() {
         try {
             statement = connection.createStatement();
-            tamanhoBatchActual = 50;
+            tamanhoBatchActual = 0;
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
             Logger.getLogger(ConexionBD.class.getName()).log(Level.SEVERE, null, ex);

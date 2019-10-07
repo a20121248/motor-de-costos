@@ -4,6 +4,7 @@ public class RutaArchivos {
     private String vista;
     private String controlador;
     private String titulo;
+    private String direccion;
 
     public RutaArchivos(String vista) {
         this.vista = vista;
@@ -18,6 +19,12 @@ public class RutaArchivos {
         this.vista = vista;
         this.controlador = controlador;
         this.titulo = titulo;
+    }
+    public RutaArchivos(String vista, String controlador, String titulo, String direccion) {
+        this.vista = vista;
+        this.controlador = controlador;
+        this.titulo = titulo;
+        this.direccion = direccion;
     }
 
     public String getVista() {
@@ -42,5 +49,13 @@ public class RutaArchivos {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
-    }    
+    }
+
+    public String getDireccion() {
+        return this.direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }      
 }

@@ -80,11 +80,16 @@
       <TextField fx:id="txtBuscar" layoutX="514.0" layoutY="222.0" prefHeight="25.0" prefWidth="200.0" visible="false" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
       <TableView fx:id="tabListar" layoutX="56.0" layoutY="170.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="56.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolGrupo" prefWidth="128.0" styleClass="center" text="GRUPO" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="128.0" styleClass="center" text="NIVEL" />
-            <TableColumn fx:id="tabcolCentroPadre" prefWidth="128.0" styleClass="center" text="CECO PADRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="68.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="64.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolGrupo" prefWidth="58.0" styleClass="center" text="GRUPO" />
+            <TableColumn fx:id="tabcolNivel" prefWidth="56.0" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolCentroPadre" prefWidth="63.0" styleClass="center" text="CECO PADRE" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="62.0" styleClass="center" text="BOLSA" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="63.0" styleClass="center" text="TIPO GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="69.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="61.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="239.0" styleClass="center" text="NIIF17 CLASE" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
@@ -93,30 +98,50 @@
             <FontAwesomeIconView glyphName="REPLY" />
          </graphic>
       </JFXButton>
-      <HBox layoutX="56.0" layoutY="146.0" prefHeight="100.0" prefWidth="200.0" />
       <HBox alignment="TOP_RIGHT" layoutX="290.0" layoutY="158.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
+            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
+            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
+            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" text="Cargar">
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>
+      <JFXButton fx:id="btnDescargar" layoutX="200.0" layoutY="555.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

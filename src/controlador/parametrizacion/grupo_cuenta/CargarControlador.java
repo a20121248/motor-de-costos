@@ -107,8 +107,9 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
 
-    @FXML void lnkAsignacionesAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
+    @FXML void lnkAsignarAction(ActionEvent event) {
+        menuControlador.objeto = "Todos";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
 
     @FXML void lnkCargarAction(ActionEvent event) {
@@ -177,7 +178,16 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoAgrupacion = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreAgrupacion = celda.getStringCellValue();
-
+                
+                // Valida que los items del archivo tengan el periodo correcto
+                // De no cumplirlo, cancela la previsualización.
+                if(periodo != periodoSeleccionado){
+                    menuControlador.navegador.mensajeError("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
+                    lista.clear();
+                    txtRuta.setText("");
+                    break;
+                }
+                
                 CargarGrupoCuentaLinea linea = new CargarGrupoCuentaLinea(periodo,codigoCuenta,nombreCuenta,codigoAgrupacion,nombreAgrupacion);
                 lista.add(linea);
             }
@@ -192,10 +202,17 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         List<CargarGrupoCuentaLinea> lista = tabListar.getItems();
-        planDeCuentaDAO.insertarCuentasGrupo(periodoSeleccionado,lista,menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Asignaciones subidas correctamente.");
-        menuControlador.objeto = "Todos";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+        if(lista.isEmpty())
+        {
+            menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
+        }
+        else{
+            planDeCuentaDAO.insertarCuentasGrupo(periodoSeleccionado,lista,menuControlador.repartoTipo);
+            menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Asignaciones subidas correctamente.");
+            menuControlador.objeto = "Todos";
+            menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+        }
+        
         /*for (CargarCentroLinea cargarCentroLinea : lista) {
             //planDeCuentaDAO.insertarSaldo(cargarBalanceteLinea);
             menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Centros de Costos subidos correctamente.");

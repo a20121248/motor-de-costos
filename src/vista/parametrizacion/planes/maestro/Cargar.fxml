@@ -87,6 +87,10 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="57.0" styleClass="center" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="125.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="119.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="290.0" styleClass="center" text="NIIF17 CLASE" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="50.0" layoutY="549.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />

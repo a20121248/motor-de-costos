@@ -7,9 +7,11 @@ import dao.PlanDeCuentaDAO;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -26,6 +28,10 @@ public class EditarControlador implements Initializable {
     
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Clase;
     
     @FXML private JFXButton btnGuardar;
     @FXML private JFXButton btnCancelar;
@@ -35,17 +41,28 @@ public class EditarControlador implements Initializable {
     CuentaContable planDeCuenta;
     PlanDeCuentaDAO planDeCuentaDAO;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuenta = (CuentaContable) menuControlador.objeto;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
         txtCodigo.setText(planDeCuenta.getCodigo());
         txtNombre.setText(planDeCuenta.getNombre());
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        if(planDeCuenta.getTipoGasto().equals("DIRECTO")) cmbTipoGasto.getSelectionModel().select(1);
+        else cmbTipoGasto.getSelectionModel().select(0);
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(planDeCuenta.getNIIF17Atribuible());
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(planDeCuenta.getNIIF17Tipo());
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(planDeCuenta.getNIIF17Clase());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -57,7 +74,7 @@ public class EditarControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -69,12 +86,18 @@ public class EditarControlador implements Initializable {
     }
 
     @FXML void btnGuardarAction(ActionEvent event) {
+        String codigo = planDeCuenta.getCodigo();
         String nombre = txtNombre.getText();
-        if (planDeCuentaDAO.actualizarObjeto(planDeCuenta.getCodigo(),nombre)==1) {
-            menuControlador.navegador.mensajeInformativo("Editar Cuenta Contable", "Cuenta Contable editada correctamente.");
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
+        if (planDeCuentaDAO.actualizarObjeto(codigo,nombre, tipoGasto, niif17Atribuible, niif17Tipo,niif17Clase)==1) {
+            menuControlador.mensaje.edit_success(titulo);
+            menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), planDeCuenta.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Editar Cuenta Contable", "No se pudo editar la Cuenta Contable.");
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     

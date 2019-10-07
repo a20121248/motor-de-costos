@@ -1,6 +1,9 @@
 package modelo;
 
 import java.util.Date;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class CuentaContable extends EntidadDistribucion {
@@ -12,8 +15,14 @@ public class CuentaContable extends EntidadDistribucion {
     private StringProperty distribuyeCentroCosto;
     private StringProperty codProducto;
     private StringProperty descripcionProducto;
+    private BooleanProperty flagCargar;
+    private StringProperty tipoGasto;
+    private StringProperty niif17Atribuible;
+    private StringProperty niif17Tipo;
+    private StringProperty niif17Clase;
     // datos del saldo
     private Tipo grupo;
+    
     
     public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
@@ -24,6 +33,26 @@ public class CuentaContable extends EntidadDistribucion {
         this.grupo = grupo;
     }
     
+    public CuentaContable(String codigo, String nombre, String descripcion, double saldo, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
+    
+    public CuentaContable(String codigo, String nombre, String descripcion, String tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase,  double saldo, Date fechaCreacion, Date fechaActualizacion) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.niif17Atribuible = new SimpleStringProperty(niif17Atribuible);
+        this.niif17Tipo = new SimpleStringProperty(niif17Tipo);
+        this.niif17Clase = new SimpleStringProperty(niif17Clase);
+    }
+    public CuentaContable(String codigo, String nombre, String descripcion, String tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase,  double saldo, Date fechaCreacion, Date fechaActualizacion, boolean  flagCargar) {
+        super(codigo, nombre, descripcion, saldo, fechaCreacion, fechaActualizacion, true);
+        this.tipoGasto = new SimpleStringProperty(tipoGasto);
+        this.niif17Atribuible = new SimpleStringProperty(niif17Atribuible);
+        this.niif17Tipo = new SimpleStringProperty(niif17Tipo);
+        this.niif17Clase = new SimpleStringProperty(niif17Clase);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
     public Tipo getGrupo() {
         return grupo;
     }
@@ -127,5 +156,62 @@ public class CuentaContable extends EntidadDistribucion {
 
     public void setDescripcionProducto(String descripcionProducto) {
         this.descripcionProducto.set(descripcionProducto);
+    }
+
+    public StringProperty NIIF17AtribuibleProperty() {
+        return this.niif17Atribuible;
+    }
+
+    public String getNIIF17Atribuible() {
+        return niif17Atribuible.get();
+    }
+
+    public void setNIIF17Atribuible(String atribuible) {
+        this.niif17Atribuible.set(atribuible);
+    }
+
+    public StringProperty NIIF17TipoProperty() {
+        return this.niif17Tipo;
+    }
+
+    public String getNIIF17Tipo() {
+        return niif17Tipo.get();
+    }
+
+    public void setNIIF17Tipo(String tipoGasto) {
+        this.niif17Tipo.set(tipoGasto);
+    }
+
+    public StringProperty NIIF17ClaseProperty() {
+        return this.niif17Clase;
+    }
+
+    public String getNIIF17Clase() {
+        return niif17Clase.get();
+    }
+
+    public void setNIIF17Clase(String claseGasto) {
+        this.niif17Clase.set(claseGasto);
+    }
+@Override
+    public boolean getFlagCargar(){
+        return flagCargar.get();
+    }
+    
+@Override    
+    public void setFlagCargar(boolean flagCargar){
+        this.flagCargar.set(flagCargar);
+    }
+    
+    public StringProperty tipoGastoProperty() {
+        return this.tipoGasto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto.get();
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto.set(tipoGasto);
     }
 }

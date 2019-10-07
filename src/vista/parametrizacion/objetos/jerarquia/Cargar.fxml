@@ -114,5 +114,14 @@
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
          </valueFactory>
       </Spinner>
+      <JFXButton fx:id="btnDescargarLog" layoutX="228.0" layoutY="559.0" onAction="#btnDescargarLogAction" text="Descargar LOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
+      </JFXButton>
    </children>
 </AnchorPane>

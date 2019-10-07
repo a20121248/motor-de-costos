@@ -9,11 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import controlador.MenuControlador;
 import controlador.Navegador;
-import dao.PlanDeCuentaDAO;
-import java.util.ArrayList;
-import java.util.Arrays;
+import dao.DetalleGastoDAO;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -25,7 +22,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import modelo.CuentaContable;
+import modelo.DetalleGasto;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -35,44 +32,38 @@ public class ListarControlador implements Initializable {
 
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
-    @FXML private Label lblNumeroRegistros;
 
-    @FXML private Label lblTipoGasto;
-    @FXML private ComboBox<String> cmbTipoGasto;
-    
-    @FXML private TextField txtBuscar;
-    @FXML private TableView<CuentaContable> tabListar;
-    @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
-    @FXML private TableColumn<CuentaContable, String> tabcolNombre;
-    @FXML private TableColumn<CuentaContable, Double> tabcolSaldo;
-    
     @FXML private JFXButton btnCargar;
     
+    @FXML private TextField txtBuscar;
+    @FXML private TableView<DetalleGasto> tabListar;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCuentaContable;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoPartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombrePartida;
+    @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCentro;
+    @FXML private TableColumn<DetalleGasto, String> tabcolNombreCentro;
+    @FXML private TableColumn<DetalleGasto, Double> tabcolMonto01;
+    
+    @FXML private Label lblNumeroRegistros;
+    
     // Variables de la aplicacion
-    PlanDeCuentaDAO planDeCuentaDAO;
+    DetalleGastoDAO detalleGastoDAO;
     MenuControlador menuControlador;
-    FilteredList<CuentaContable> filteredData;
-    SortedList<CuentaContable> sortedData;
+    FilteredList<DetalleGasto> filteredData;
+    SortedList<DetalleGasto> sortedData;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_LISTAR.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
-        planDeCuentaDAO = new PlanDeCuentaDAO();
+        detalleGastoDAO = new DetalleGastoDAO();
         this.menuControlador = menuControlador;
+        this.titulo = "Detalle de Gasto";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            lblTipoGasto.setVisible(false);
-            cmbTipoGasto.setVisible(false);
-        }
-        
-        // Combo para Tipo de Gasto
-        List<String> lstTipoGasto = new ArrayList(Arrays.asList("Todos","Administrativo","Operativo"));
-        cmbTipoGasto.getItems().addAll(lstTipoGasto);
-        cmbTipoGasto.getSelectionModel().select(0);
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
@@ -80,25 +71,35 @@ public class ListarControlador implements Initializable {
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
         // Periodo seleccionado
         periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
-        tabcolSaldo.setCellFactory(column -> {
-                return new TableCell<CuentaContable, Double>() {
+        tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+        tabcolMonto01.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
+        tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
+        tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
+        tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
+        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
+        tabcolMonto01.setCellValueFactory(cellData -> cellData.getValue().monto01Property().asObject());
+        tabcolMonto01.setCellFactory(column -> {
+                return new TableCell<DetalleGasto, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
@@ -112,13 +113,17 @@ public class ListarControlador implements Initializable {
             };
         });
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(detalleGastoDAO.listar(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoCuentaContable().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombreCuentaContable().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoPartida().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombrePartida().toLowerCase().contains(lowerCaseFilter)) return true;
+                if (item.getCodigoCentro().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombreCentro().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
@@ -155,16 +160,11 @@ public class ListarControlador implements Initializable {
         menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_CARGAR);
     }
-    
-    // Acción del botón con ícono de lupa
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
 
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        List<DetalleGasto> lista = detalleGastoDAO.listar(periodo, menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Balancete", "No existen Cuentas Contables para el periodo seleccionado.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);

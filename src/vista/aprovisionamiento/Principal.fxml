@@ -42,21 +42,21 @@
             </HBox>
          </children>
       </AnchorPane>
-      <TitledPane animated="false" collapsible="false" layoutX="100.0" layoutY="280.0" prefHeight="90.0" text="PLAN DE CUENTAS" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <TitledPane animated="false" collapsible="false" layoutX="100.0" layoutY="280.0" prefHeight="90.0" text="INFORMACIÓN DE GASTO" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <content>
             <SplitPane maxHeight="80.0" prefHeight="80.0" prefWidth="498.0">
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="103.0" layoutY="6.0" prefHeight="58.0" text="- Esta sección permite la carga de los saldos de las Cuentas Contables para un periodo específico." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
-                        <JFXButton fx:id="btnBalancete" layoutX="14.0" layoutY="19.0" onAction="#btnBalanceteAction" text="Balancete" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
+                        <TextArea editable="false" layoutX="188.0" layoutY="6.0" prefHeight="44.0" prefWidth="300.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
+                        <JFXButton fx:id="btnBalancete" layoutX="14.0" layoutY="11.0" nodeOrientation="LEFT_TO_RIGHT" onAction="#btnBalanceteAction" prefWidth="127.0" text="Detalle de Gasto&#10;SALDO" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>
@@ -74,15 +74,15 @@
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="160.0" layoutY="7.0" prefHeight="58.0" text="- Esta sección permite la creación y edición de un driver.&#10;- Es necesario indicar las entidades de destino y porcentaje de distribución para cada una de ellas." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
+                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="147.0" layoutY="42.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
                         <JFXButton fx:id="btnDrivers" layoutX="54.0" layoutY="22.0" onAction="#btnDriversAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>
@@ -100,15 +100,15 @@
                <items>
                   <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0">
                      <children>
-                        <TextArea editable="false" layoutX="160.0" layoutY="7.0" prefHeight="58.0" text="- Esta sección permite la creación y edición de un driver.&#10;- Es necesario indicar las entidades de destino y porcentaje de distribución para cada una de ellas." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" AnchorPane.leftAnchor="125.0" />
+                        <TextArea editable="false" layoutX="188.0" layoutY="7.0" prefHeight="44.0" prefWidth="450.0" text="- XXXX&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="145.0" layoutY="43.0" size="30" text="" AnchorPane.leftAnchor="170.0" />
                         <JFXButton fx:id="btnDriversObjeto" layoutX="54.0" layoutY="22.0" onAction="#btnDriversObjetoAction" text="Drivers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
                            <graphic>
                               <FontAwesomeIconView glyphName="CUBES" />
                            </graphic>
                            <styleClass>
                               <String fx:value="btn" />
-                              <String fx:value="large" />
+                              <String fx:value="x-large" />
                            </styleClass>
                         </JFXButton>
                      </children>

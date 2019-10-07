@@ -34,6 +34,7 @@ import modelo.Banca;
 import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
+import modelo.Subcanal;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -66,10 +67,14 @@ public class CargarControlador implements Initializable {
     ObjetoDAO objetoDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     String objetoNombre1,objetoNombre2;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<EntidadDistribucion> listaCargar = new ArrayList();
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getControlador());
+    String titulo;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -85,18 +90,28 @@ public class CargarControlador implements Initializable {
                 lnkObjetos.setText("Oficinas");
                 objetoNombre1 = "Oficina";
                 objetoNombre2 = "la Oficina";
+                this.titulo = "Oficinass";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre1 = "Banca";
                 objetoNombre2 = "la Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
+                this.titulo = "Productos";
+                break;
+            case "SCA":
+                lblTitulo.setText("Cargar Subcanales");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -108,6 +123,7 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        btnDescargarLog.setVisible(false);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -120,6 +136,10 @@ public class CargarControlador implements Initializable {
     
     @FXML void lnkObjetosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    }
+    
+    @FXML void lnkAsignacionAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -160,17 +180,11 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar " + objetoNombre1 + "s", msj);
+                menuControlador.mensaje.upload_header_error(titulo);
+                f.close();
                 return null;
             }
             
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_" + objetoNombre1.toUpperCase() + "S.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
@@ -188,6 +202,9 @@ public class CargarControlador implements Initializable {
                     case "PRO":
                         lstPrevisualizar.add(new Producto(codigo, nombre, null, 0, null, null));
                         break;
+                    case "SCA":
+                        lstPrevisualizar.add(new Subcanal(codigo, nombre, null, 0, null, null));
+                        break;
                 }
             }
             //cerramos el libro
@@ -199,18 +216,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -218,19 +224,50 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
+        findError = false;
         List<EntidadDistribucion> lista = tabListar.getItems();
-        for (EntidadDistribucion item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear %s porque el código %s ya existe.",objetoNombre2,item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó %s con código %s.",objetoNombre2,item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        if(lista.isEmpty())
+        {
+            menuControlador.mensaje.upload_empty();
         }
-        objetoDAO.insertarListaObjeto(lista);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre1 + "s subidos correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %ss.",menuControlador.usuario.getUsername(),objetoNombre1));
+        else{
+            for (EntidadDistribucion item: lista) {
+                if (lstCodigos.contains(item.getCodigo())) {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", item.getCodigo(),titulo);
+                    logDetails +=String.format("- Ya existe en Catálogo.\r\n");
+                    item.setFlagCargar(false);
+                    findError = true;
+                } else {
+                    item.setFlagCargar(true);
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",item.getCodigo(),titulo);
+                }
+            }
+            objetoDAO.insertarListaObjeto(lista);
+            crearReporteLOG(lista);
+            if(findError == true){
+                menuControlador.mensaje.upload_success_with_error(titulo);
+            }else {
+                menuControlador.mensaje.upload_success();
+            }
+            btnDescargarLog.setVisible(true);
+        }
+        
+    }
+    
+    void crearReporteLOG(List<EntidadDistribucion> lista){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_"+this.titulo+"_CATALOGO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        lista.forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_MAESTRO_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            }
+        });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

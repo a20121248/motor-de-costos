@@ -8,9 +8,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 
@@ -23,8 +25,12 @@ public class CrearControlador implements Initializable {
     @FXML private Hyperlink lnkCrear;
         
     @FXML private TextField txtCodigo;
-    @FXML private TextField txtNombre;
-    
+    @FXML private TextField txtNombre;    
+    @FXML private ComboBox cmbTipoGasto;
+    @FXML private ComboBox cmbNIIF17Atribuible;
+    @FXML private ComboBox cmbNIIF17Tipo;
+    @FXML private ComboBox cmbNIIF17Clase;
+
     @FXML private JFXButton btnCrear;
     @FXML private JFXButton btnCancelar;
     
@@ -33,16 +39,25 @@ public class CrearControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     List<String> lstCodigos;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CREAR.getControlador());
+    String titulo;
     
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         lstCodigos = planDeCuentaDAO.listarCodigos();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        cmbTipoGasto.setItems(FXCollections.observableArrayList(menuControlador.lstTipoGasto));
+        cmbTipoGasto.getSelectionModel().select(0);
+        cmbNIIF17Atribuible.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Atribuible));
+        cmbNIIF17Atribuible.getSelectionModel().select(0);
+        cmbNIIF17Tipo.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Tipo));
+        cmbNIIF17Tipo.getSelectionModel().select(0);
+        cmbNIIF17Clase.setItems(FXCollections.observableArrayList(menuControlador.lstNIIF17Clase));
+        cmbNIIF17Clase.getSelectionModel().select(0);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -54,7 +69,7 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -68,15 +83,25 @@ public class CrearControlador implements Initializable {
     @FXML void btnCrearAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear Cuenta Contable", "El código " + codigo + " ya existe. No se puede crear la Cuenta Contable.");
+        int tipoGasto = cmbTipoGasto.getSelectionModel().getSelectedIndex();
+        String niif17Atribuible = cmbNIIF17Atribuible.getValue().toString();
+        String niif17Tipo = cmbNIIF17Tipo.getValue().toString();
+        String niif17Clase = cmbNIIF17Clase.getValue().toString();
+        boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
+        if (!ptrCodigo) {
+            menuControlador.mensaje.create_pattern_error(titulo);
             return;
         }
-        if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear Cuenta Contable", "Cuenta Contable creada correctamente.");
+        if (lstCodigos.contains(codigo)) {
+            menuControlador.mensaje.create_exist_error(titulo);
+            return;
+        }
+        if (planDeCuentaDAO.insertarObjetoCuenta(codigo,nombre,menuControlador.repartoTipo,tipoGasto,niif17Atribuible, niif17Tipo, niif17Clase)==1) {
+            menuControlador.mensaje.create_success(titulo);
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear Cuenta Contable", "No se puede crear la cuenta contable.");
+            menuControlador.mensaje.create_error(titulo);
         }
     }
     

@@ -6,6 +6,7 @@ import controlador.Navegador;
 import controlador.ObjetoControladorInterfaz;
 import controlador.modals.BuscarEntidadControlador;
 import dao.ObjetoGrupoDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -28,6 +29,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.DriverCentro;
@@ -35,6 +37,7 @@ import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
 import modelo.Grupo;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
@@ -51,6 +54,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private JFXButton btnAsignar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnAgrupacion;
 
     @FXML private TextField txtBuscar;
     @FXML private TableView<Grupo> tabListar;
@@ -63,6 +67,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnAtras;
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     ObjetoGrupoDAO objetoGrupoDAO;
@@ -74,6 +79,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA.getControlador());
+    String titulo;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -87,16 +93,25 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 lblTitulo.setText("Jerarquía de Oficinas");
                 lnkObjetos.setText("Oficinas");
                 objetoNombre = "Oficina";
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Jerarquía de Bancas");
                 lnkObjetos.setText("Bancas");
                 objetoNombre = "Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Jerarquía de Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre = "Producto";
+                this.titulo = "Productos";
+                break;
+            case "SCA":
+                lblTitulo.setText("Jerarquía de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre = "Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -231,12 +246,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
         
         objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado);
+        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" del "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR);
+    }
+    
+    @FXML void btnAgrupacionAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
@@ -256,6 +276,24 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tablaEstaActualizada = true;
     }
     
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio(titulo + "-Jerarquía", tabListar);
+                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
+    }
+    
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
@@ -267,6 +305,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             return;
         }
         objetoGrupoDAO.insertarGrupoPadre(periodoSeleccionado,grupoSeleccionado.getCodigo(),menuControlador.objetoTipo,grupoSeleccionado.getNivel(),entidad.getCodigo());
+        menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" al "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }
 

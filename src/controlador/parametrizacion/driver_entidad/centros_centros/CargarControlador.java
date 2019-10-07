@@ -1,4 +1,4 @@
-package controlador.parametrizacion.driver_entidad;
+package controlador.parametrizacion.driver_entidad.centros_centros;
 
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
@@ -11,8 +11,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,7 +32,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import modelo.CargarEntidadDriver;
+import modelo.Centro;
+import modelo.CentroDriver;
 import modelo.Driver;
+import modelo.DriverCentro;
 import modelo.EntidadDistribucion;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -49,17 +54,19 @@ public class CargarControlador implements Initializable {
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
-    @FXML private TableView<CargarEntidadDriver> tabAsignaciones;
-    @FXML private TableColumn<CargarEntidadDriver, String> tabcolCodigoEntidad;
-    @FXML private TableColumn<CargarEntidadDriver, String> tabcolNombreEntidad;
-    @FXML private TableColumn<CargarEntidadDriver, String> tabcolCodigoDriver;
-    @FXML private TableColumn<CargarEntidadDriver, String> tabcolNombreDriver;
+    @FXML private TableView<CentroDriver> tabAsignaciones;
+    @FXML private TableColumn<CentroDriver, String> tabcolCodigoEntidad;
+    @FXML private TableColumn<CentroDriver, String> tabcolNombreEntidad;
+    @FXML private TableColumn<CentroDriver, String> tabcolCodigoDriver;
+    @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
     @FXML private Label lblNumeroRegistros;
     
-    @FXML private JFXButton btnCancelar;
+    @FXML private JFXButton btnDescargarLog;
+    @FXML private JFXButton btnAtras;
     @FXML private JFXButton btnSubir;    
     
     // Variables de la aplicacion
+    List<CentroDriver> listaCargar = new ArrayList();
     public MenuControlador menuControlador;
     GrupoDAO grupoDAO;
     CentroDAO centroDAO;
@@ -68,7 +75,10 @@ public class CargarControlador implements Initializable {
     int periodoSeleccionado;
     final int anhoSeleccionado;
     final int mesSeleccionado;
-    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR.getControlador());
+    final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
+    String titulo = "Driver";
+    boolean findError;
+    String logName;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -90,8 +100,8 @@ public class CargarControlador implements Initializable {
         tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 35);
         // tabla formato
-        tabcolCodigoEntidad.setCellValueFactory(cellData -> cellData.getValue().codigoEntidadProperty());
-        tabcolNombreEntidad.setCellValueFactory(cellData -> cellData.getValue().nombreEntidadProperty());
+        tabcolCodigoEntidad.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreEntidad.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // meses
@@ -106,6 +116,7 @@ public class CargarControlador implements Initializable {
             if (!oldValue.equals(newValue))
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        btnDescargarLog.setVisible(false);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -117,11 +128,11 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkAsignacionesAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
     
     @FXML void lnkCargarAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_CARGAR);
     }
     
     @FXML void btnCargarRutaAction(ActionEvent event) {
@@ -133,7 +144,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CargarEntidadDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado);
+            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado);
             if (lista != null) {
                 tabAsignaciones.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -145,14 +156,11 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<CargarEntidadDriver> leerArchivo(String rutaArchivo, int periodo) {
-        List<CargarEntidadDriver> lista = new ArrayList();
-        List<EntidadDistribucion> lstEntidades = new ArrayList();
-        lstEntidades.addAll(grupoDAO.listar(periodoSeleccionado,"",menuControlador.repartoTipo));
-        lstEntidades.addAll(centroDAO.listar(periodoSeleccionado,menuControlador.repartoTipo));
-        List<Driver> lstDrivers = new ArrayList();
-        lstDrivers.addAll(driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo));
-        lstDrivers.addAll(driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo));
+    private List<CentroDriver> leerArchivo(String rutaArchivo, int periodo) {
+        List<CentroDriver> lista = new ArrayList();
+        List<CentroDriver> lstEntidades = centroDAO.listarCentrosConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1);
+        List<String> lstDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"CECO");
+        
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -162,33 +170,15 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila = null;
             Cell celda = null;
-            //int numFilasOmitir = 2
-            //Estructura de la cabecera
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO ENTIDAD","NOMBRE ENTIDAD","CODIGO DRIVER","NOMBRE DRIVER"));
-            int numFilaCabecera = 2;
-            for (int i = 0; i < numFilaCabecera-1; i++) {
-                 filas.next();
-             }
-            boolean archivoEstaBien = true;
-            while (filas.hasNext() && archivoEstaBien) {
+            
+            
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
+                menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
+                return null;
+            }
+            while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
-                
-                // valido la cabecera
-                if (fila.getRowNum() == numFilaCabecera - 1) {
-                    List<String> listaCabeceraLeida = new ArrayList();
-                    while (celdas.hasNext()) {
-                        celda = celdas.next();
-                        listaCabeceraLeida.add(celda.getStringCellValue());
-                    }
-                    if (!listaCabecera.equals(listaCabeceraLeida)) {
-                        menuControlador.navegador.mensajeInformativo("Lectura de archivo Excel", "El archivo seleccionado no es el correcto.");
-                        tabAsignaciones.getItems().clear();
-                        txtRuta.setText("");                        
-                        archivoEstaBien = false;
-                    }
-                    continue;
-                }
                 
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodoArchivo = (int) celda.getNumericCellValue();
@@ -202,19 +192,15 @@ public class CargarControlador implements Initializable {
                     return null;
                 }
                 
-                EntidadDistribucion entidad = lstEntidades.stream().filter(item -> codigoEntidad.equals(item.getCodigo())).findAny().orElse(null);
-                if (entidad == null) {
-                    menuControlador.navegador.mensajeInformativo("Cargar asignaciones", "No se encontró la entidad con código " + codigoEntidad + ".\nNo se puede cargar el archivo.");
-                    return null;
-                }
-                
-                Driver driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item.getCodigo())).findAny().orElse(null);
-                if (driver == null) {
-                    menuControlador.navegador.mensajeInformativo("Cargar asignaciones", "No se encontró el driver con código " + codigoDriver + ".\nNo se puede cargar el archivo.");
-                    return null;
-                }
+                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoEntidad.equals(item.getCodigoCentro())).findAny().orElse(null);
+                String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
 
-                CargarEntidadDriver linea = new CargarEntidadDriver(periodo,codigoEntidad,nombreEntidad,codigoDriver,nombreDriver);
+                CentroDriver linea = new CentroDriver(periodo,codigoEntidad,nombreEntidad,codigoDriver,nombreDriver,true);
+                if (entidad != null  && driver!=null) {
+                    listaCargar.add(linea);
+                } else {
+                    linea.setFlagCargar(false);
+                }
                 lista.add(linea);
             }
             //cerramos el libro
@@ -226,14 +212,52 @@ public class CargarControlador implements Initializable {
         return lista;
     }
     
-    @FXML void btnCancelarAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+    @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
+    }
+    
+    @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        List<CargarEntidadDriver> lista = tabAsignaciones.getItems();
-        asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, periodoSeleccionado, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Cargar asignaciones de driver a entidades", "Las asignaciones se guardaron correctamente.");
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+        findError = false;
+        if(tabAsignaciones.getItems().isEmpty()){
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+        }else {
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+            }else{
+                asignacionEntidadDriverDAO.insertarListaAsignaciones(listaCargar, periodoSeleccionado, menuControlador.repartoTipo);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
+            }
+        }
     }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROOBJETOS_DRIVER.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabAsignaciones.getItems().forEach((CentroDriver item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+titulo+", debido a que no existe algún valor en su respectivo catálogo" );
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+    }  
 }

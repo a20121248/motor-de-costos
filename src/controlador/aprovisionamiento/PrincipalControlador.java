@@ -33,10 +33,6 @@ public class PrincipalControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            tpDriversCentros.setText("DRIVERS - CENTROS DE BENEFICIO");
-            tpDriversObjetos.setText("DRIVERS - OBJETOS DE BENEFICIO");
-        }
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {

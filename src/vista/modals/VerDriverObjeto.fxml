@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label text="Código:" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="64.0" />
       <TextField fx:id="txtCodigo" disable="true" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="93.0" AnchorPane.topAnchor="60.0" />
@@ -17,12 +18,10 @@
       <TextArea fx:id="txtDescripcion" disable="true" prefHeight="65.0" prefWidth="200.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="60.0" />
       <TableView fx:id="tabLista" prefHeight="186.0" prefWidth="540.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigoOficina" prefWidth="75.0" text="CÓDIGO OFICINA" />
-            <TableColumn fx:id="tabcolNombreOficina" prefWidth="75.0" text="NOMBRE OFICINA" />
-            <TableColumn fx:id="tabcolCodigoBanca" prefWidth="75.0" text="CÓDIGO BANCA" />
-            <TableColumn fx:id="tabcolNombreBanca" prefWidth="75.0" text="NOMBRE BANCA" />
             <TableColumn fx:id="tabcolCodigoProducto" prefWidth="75.0" text="CÓDIGO PRODUCTO" />
             <TableColumn fx:id="tabcolNombreProducto" prefWidth="75.0" text="NOMBRE PRODUCTO" />
+            <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="75.0" text="CÓDIGO SUBCANAL" />
+            <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="75.0" text="NOMBRE SUBCANAL" />
             <TableColumn fx:id="tabcolPorcentaje" prefWidth="75.0" text="PORCENTAJE (%)" />
          </columns>
       </TableView>

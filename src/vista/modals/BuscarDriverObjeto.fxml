@@ -30,12 +30,10 @@
       <Label fx:id="lblCantResultados" layoutX="30.0" layoutY="349.0" text="Cantidad de resultados: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="30.0" />
       <TableView fx:id="tabEntidades" layoutX="300.0" layoutY="130.0" prefHeight="190.0" prefWidth="347.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="270.0">
          <columns>
-            <TableColumn fx:id="tabcolOficinaCodigo" prefWidth="75.0" text="CÓDIGO OFICINA" />
-            <TableColumn fx:id="tabcolOficinaNombre" prefWidth="75.0" text="NOMBRE OFICINA" />
-            <TableColumn fx:id="tabcolBancaCodigo" prefWidth="75.0" text="CÓDIGO BANCA" />
-            <TableColumn fx:id="tabcolBancaNombre" prefWidth="75.0" text="NOMBRE BANCA" />
             <TableColumn fx:id="tabcolProductoCodigo" prefWidth="75.0" text="CÓDIGO PRODUCTO" />
             <TableColumn fx:id="tabcolProductoNombre" prefWidth="75.0" text="NOMBRE PRODUCTO" />
+            <TableColumn fx:id="tabcolSubcanalCodigo" prefWidth="75.0" text="CÓDIGO SUBCANAL" />
+            <TableColumn fx:id="tabcolSubcanalNombre" prefWidth="75.0" text="NOMBRE SUBCANAL" />
             <TableColumn fx:id="tabcolPorcentaje" prefWidth="75.0" text="PORCENTAJE (%)" />
          </columns>
       </TableView>

@@ -3,19 +3,12 @@ package dao;
 import controlador.ConexionBD;
 import java.util.ArrayList;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.ConnectionDB;
-import modelo.Driver;
-import modelo.Producto;
 import modelo.Tipo;
 
 public class TipoDAO {
@@ -26,7 +19,7 @@ public class TipoDAO {
     }
 
     public List<Tipo> listarCentroNiveles() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_niveles";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_niveles order by nombre";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -43,7 +36,7 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarCentroTipos() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM centro_tipos";
+        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_tipos ORDER BY CODIGO";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -83,7 +76,23 @@ public class TipoDAO {
     }
     
     public List<Tipo> listarEntidadTipos() {
-        String queryStr = "SELECT CODIGO,NOMBRE FROM ENTIDAD_TIPOS";
+        String queryStr = "SELECT CODIGO,NOMBRE FROM MS_ENTIDAD_TIPOS";
+        List<Tipo> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                Tipo tipo = new Tipo(codigo,nombre);
+                lista.add(tipo);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TipoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
+    public List<Tipo> listarGrupoGastos() {
+        String queryStr = "SELECT CODIGO,NOMBRE FROM MS_GRUPO_GASTOS";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

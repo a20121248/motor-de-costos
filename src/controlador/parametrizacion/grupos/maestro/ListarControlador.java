@@ -4,6 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.GrupoDAO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +25,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import modelo.Grupo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
@@ -47,6 +51,7 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Grupo,String> tabcolNombre;
     @FXML private Label lblNumeroRegistros;
     
+    @FXML private JFXButton btnDescargar;
     @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
@@ -55,10 +60,12 @@ public class ListarControlador implements Initializable {
     FilteredList<Grupo> filteredData;
     SortedList<Grupo> sortedData;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_LISTAR.getControlador());
-    
+    String titulo;
+
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
+        this.titulo = "Grupos de Cuentas Contables";
     }
     
     @Override
@@ -120,7 +127,7 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
         LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Grupos.",menuControlador.usuario.getUsername()));
     }
     
@@ -148,33 +155,51 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         Grupo item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Por favor seleccione un Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Grupo de Cuentas Contables", "¿Está seguro de eliminar el Grupo " + item.getCodigo() + "?")) {
             return;
         }
-        if (grupoDAO.eliminarObjeto(item.getCodigo()) != 1) {
-            menuControlador.navegador.mensajeError("Eliminar Grupo de Cuentas Contables", "No se pudo eliminar el Grupo pues está siendo utilizado en otros módulos.\nPara eliminarla, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
-            return;
+        
+        if(grupoDAO.verificarObjetoGrupo(item.getCodigo()) == 0){
+            grupoDAO.eliminarObjeto(item.getCodigo());
+            txtBuscar.setText("");
+            filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
+            sortedData = new SortedList(filteredData);
+            tabListar.setItems(sortedData);
+            lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SUCCESS);
+            menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
+        }else{
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_ITEM);
         }
-        txtBuscar.setText("");
-        filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listarObjetos("",menuControlador.repartoTipo)), p -> true);
-        sortedData = new SortedList(filteredData);
-        tabListar.setItems(sortedData);
-        lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        menuControlador.navegador.mensajeInformativo("Eliminar Grupo de Cuentas Contables", "Grupo eliminado correctamente.");
-        LOGGER.log(Level.INFO,String.format("El usuario %s eliminó el Grupo %s.",menuControlador.usuario.getUsername(),item.getCodigo()));
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_MAESTRO_CARGAR);
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Cargar Grupos.",menuControlador.usuario.getUsername()));
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio("GruposDeCuentasContables-Catálogo", tabListar);
+                descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_PLANES_MAESTRO_LISTAR.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Grupos.",menuControlador.usuario.getUsername()));
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
     @FXML void btnBuscarAction(ActionEvent event) {

@@ -71,11 +71,11 @@ public class PrincipalControlador implements Initializable {
                         primeraPregunta = false;
                         newValue.setSelected(true);
                         menuControlador.lblTitulo.setText(opcion);
-                        if (opcion.equals("GASTOS ADMINISTRATIVOS Y OPERATIVOS")) {
+                        if (opcion.equals("GASTOS")) {
                             menuControlador.repartoTipo = 1;
                             menuControlador.apHeader.getStyleClass().remove("ingresos");
                             menuControlador.apSidebar.getStyleClass().remove("ingresos");
-                        } else if (opcion.equals("INGRESOS OPERATIVOS")) {
+                        } else if (opcion.equals("PRESUPUESTO")) {
                             menuControlador.repartoTipo = 2;
                             menuControlador.apHeader.getStyleClass().add("ingresos");
                             menuControlador.apSidebar.getStyleClass().add("ingresos");
@@ -100,29 +100,29 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnF1GruposAction(ActionEvent event) {
-        menuControlador.objeto = "Todos";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
+//        menuControlador.objeto = "Todos";
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
     @FXML void btnF1AdministrativosAction(ActionEvent event) {
-        menuControlador.objeto = "Administrativo";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+//        menuControlador.objeto = "Administrativo";
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
     
     @FXML void btnF1OperativosAction(ActionEvent event) {
-        menuControlador.objeto = "Operativo";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+//        menuControlador.objeto = "Operativo";
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
 
     @FXML void btnF2AdministrativosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
     
     @FXML void btnF2OperativosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
     
     @FXML void btnF2CECOAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
+//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
     }
 }

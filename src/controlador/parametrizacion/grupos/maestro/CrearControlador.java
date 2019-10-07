@@ -34,11 +34,13 @@ public class CrearControlador implements Initializable {
     List<String> lstCodigos;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_CREAR.getControlador());
-    
+    String titulo;
+
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
         lstCodigos = grupoDAO.listarCodigos();
+        this.titulo = "Grupos de Cuentas Contables";
     }
     
     @Override
@@ -55,7 +57,7 @@ public class CrearControlador implements Initializable {
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -70,16 +72,16 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear Grupo de Cuentas Contables", "El código " + codigo + " ya existe. No se puede crear el Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ITEM_EXIST);
             return;
         }
         if (grupoDAO.insertarObjeto(codigo,nombre,menuControlador.repartoTipo)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear Grupo de Cuentas Contables", "Grupo creado correctamente.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_SUCCESS);
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_CREAR.getDireccion());
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear Grupo de Cuentas Contables", "No se puede crear el Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_CREATE_ERROR);
         }
-        LOGGER.log(Level.INFO,String.format("El usuario %s cambió a la pestaña Crear Grupo.",menuControlador.usuario.getUsername()));
     }
     
     @FXML void btnCancelarAction(ActionEvent event) {

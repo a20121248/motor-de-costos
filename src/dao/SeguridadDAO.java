@@ -13,8 +13,8 @@ public class SeguridadDAO {
     public Permiso obtenerPermisoRol(String permisoCodigo, String rolCodigo) {
         String queryStr = String.format("" +
                 "SELECT B.codigo,B.nombre,B.descripcion\n" +
-                "  FROM seguridad_permiso_rol A\n" +
-                "  JOIN seguridad_permisos B ON A.permiso_codigo=B.codigo\n" +
+                "  FROM ms_seguridad_permiso_rol A\n" +
+                "  JOIN ms_seguridad_permisos B ON A.permiso_codigo=B.codigo\n" +
                 " WHERE rol_codigo='%s' AND permiso_codigo='%s'",
                 rolCodigo,permisoCodigo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -33,7 +33,7 @@ public class SeguridadDAO {
     public Permiso obtenerPermiso(String permisoCodigo) {
         String queryStr = String.format("" +
                 "SELECT codigo,nombre,descripcion\n" +
-                "  FROM seguridad_permisos\n" +
+                "  FROM ms_seguridad_permisos\n" +
                 " WHERE codigo='%s'",
                 permisoCodigo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
@@ -72,8 +72,8 @@ public class SeguridadDAO {
         String queryStr = String.format("" +
                 "SELECT A.usuario,A.contrasenha,A.nombres,A.apellidos,\n" +
                 "       B.codigo,B.nombre,B.descripcion\n" +
-                "  FROM seguridad_usuarios A\n" +
-                "  JOIN seguridad_roles B ON A.rol_codigo=B.codigo\n" +
+                "  FROM MS_seguridad_usuarios A\n" +
+                "  JOIN MS_seguridad_roles B ON A.rol_codigo=B.codigo\n" +
                 " WHERE usuario='%s'",usuarioCodigo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

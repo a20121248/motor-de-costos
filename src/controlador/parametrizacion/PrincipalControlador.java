@@ -69,30 +69,28 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void btnGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
-       
+    
+    @FXML void btnPartidasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO);
+    }
     @FXML void btnGrupoCuentaAction(ActionEvent event) {
         menuControlador.objeto = "Todos";
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
     }
     
-    @FXML void btnCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
-    }
-
-    @FXML void btnOficinasAction(ActionEvent event) {
-        menuControlador.objetoTipo = "OFI";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    @FXML void btnCuentaPartidaAction(ActionEvent event) {
+        menuControlador.objeto = "Todos";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_LISTAR);
     }
     
-    @FXML void btnBancasAction(ActionEvent event) {
-        menuControlador.objetoTipo = "BAN";
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    @FXML void btnCentrosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void btnProductosAction(ActionEvent event) {
@@ -100,8 +98,21 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
-    @FXML void btnDriverEntidadAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
+    @FXML void btnSubCanalAction(ActionEvent event) {
+        menuControlador.objetoTipo = "SCA";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    }
+    
+    @FXML void btnDriverCentrosCentrosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
+    }
+    
+    @FXML void btnDriverCentrosBolsasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR);
+    }
+    
+    @FXML void btnDriverCentrosObjetosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR);
     }
     
     @FXML void btnCopiarAction(ActionEvent event) {

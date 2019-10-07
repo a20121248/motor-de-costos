@@ -111,12 +111,10 @@
                   </JFXButton>
                   <TableView fx:id="tabDetalleDriver" layoutX="30.0" layoutY="86.0" prefHeight="185.0" prefWidth="236.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
                      <columns>
-                        <TableColumn fx:id="tabcolCodigoBanca" prefWidth="75.0" styleClass="center" text="CÓDIGO BANCA" />
-                        <TableColumn fx:id="tabcolNombreBanca" prefWidth="75.0" styleClass="center" text="NOMBRE BANCA" />
-                        <TableColumn fx:id="tabcolCodigoOficina" prefWidth="75.0" styleClass="center" text="CÓDIGO OFICINA" />
-                        <TableColumn fx:id="tabcolNombreOficina" prefWidth="75.0" styleClass="center" text="NOMBRE OFICINA" />
                         <TableColumn fx:id="tabcolCodigoProducto" prefWidth="75.0" styleClass="center" text="CÓDIGO PRODUCTO" />
                         <TableColumn fx:id="tabcolNombreProducto" prefWidth="75.0" styleClass="center" text="NOMBRE PRODUCTO" />
+                        <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="75.0" styleClass="center" text="CÓDIGO SUBCANAL" />
+                        <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="75.0" styleClass="center" text="NOMBRE SUBCANAL" />
                         <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="75.0" styleClass="right" text="PORCENTAJE (%)" />
                      </columns>
                   </TableView>

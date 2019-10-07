@@ -54,6 +54,16 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
+                  <Hyperlink fx:id="lnkAsignacion" onAction="#lnkAsignacionAction" text="Asociación" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
                   <Hyperlink fx:id="lnkCatalogo" onAction="#lnkCatalogoAction" text="Catálogo" textFill="#676a6c">
                      <font>
                         <Font size="13.0" />

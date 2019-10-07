@@ -66,7 +66,10 @@ public class CargarControlador implements Initializable {
     String logName;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<Grupo> listaCargar = new ArrayList();
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_GRUPOS_CARGAR.getControlador());
+    String titulo;
+    boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -80,14 +83,22 @@ public class CargarControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Cargar Grupos de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Cargar Grupos de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Cargar Grupos de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Productos";
+                break;
+            case "SCA":
+                lblTitulo.setText("Cargar Grupos de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -115,6 +126,9 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
+    @FXML void lnkJerarquiaAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA);
+    }
     @FXML void lnkGruposAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
@@ -153,17 +167,9 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","NIVEL")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar Grupos", msj);
+                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
-            
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_GRUPOS.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
@@ -174,6 +180,15 @@ public class CargarControlador implements Initializable {
                 
                 Grupo linea = new Grupo(codigo,nombre,null,0,null,null,null);
                 linea.setNivel(nivel);
+                linea.setFlagCargar(true);
+                String grupo = lstCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                if(grupo == null){
+                    listaCargar.add(linea);
+                    linea.setFlagCargar(true);
+                }else {
+                    linea.setFlagCargar(false);
+//                    listaError.add(linea);
+                }
                 lstPrevisualizar.add(linea);
             }
             //cerramos el libro
@@ -185,18 +200,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -204,18 +208,43 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        List<Grupo> lista = tabListar.getItems();
-        for (Grupo item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear el Grupo porque el código %s ya existe.",item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó el grupo con código %s.",item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.navegador.mensajeInformativo( menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }else{
+            if(listaCargar.isEmpty()){
+                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ALLCHARGED_YET);
+            }else{
+                objetoGrupoDAO.insertarListaObjeto(listaCargar);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                }else {
+                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                }
+                btnDescargarLog.setVisible(true);
+            }        
         }
-        objetoGrupoDAO.insertarListaObjeto(lista);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Grupos subidos correctamente.");
-        btnDescargarLog.setVisible(true);
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_GRUPOS.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_GRUPOS_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            }
+            else{
+                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que ya existe en catálogo");
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

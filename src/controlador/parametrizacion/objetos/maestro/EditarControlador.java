@@ -40,6 +40,7 @@ public class EditarControlador implements Initializable {
     List<String> lstCodigos;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -55,18 +56,28 @@ public class EditarControlador implements Initializable {
                 lnkObjetos.setText("Oficinas");
                 objetoNombre1 = "Oficina";
                 objetoNombre2 = "la Oficina";
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Editar Banca");
                 lnkObjetos.setText("Bancas");
                 objetoNombre1 = "Banca";
                 objetoNombre2 = "la Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Editar Producto");
                 lnkObjetos.setText("Productos");
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
+                this.titulo = "Productos";
+                break;
+            case "SCA":
+                lblTitulo.setText("Editar Subcanal");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -87,7 +98,9 @@ public class EditarControlador implements Initializable {
     @FXML void lnkObjetosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
-    
+    @FXML void lnkAsignacionAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
+    }
     @FXML void lnkCatalogoAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
     }
@@ -99,15 +112,12 @@ public class EditarControlador implements Initializable {
     @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
-        if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Editar " + objetoNombre1, "El código " + codigo + " ya existe. No se puede editar " + objetoNombre2 + ".");
-            return;
-        }
         if (objetoDAO.actualizarObjeto(codigo, nombre, objeto.getCodigo())==1) {
-            menuControlador.navegador.mensajeInformativo("Editar " + objetoNombre1, objetoNombre1 + " editado correctamente.");
+            menuControlador.mensaje.edit_success(objetoNombre1);
+            menuControlador.Log.editarItem(LOGGER, menuControlador.usuario.getUsername(), objeto.getCodigo(),Navegador.RUTAS_OBJETOS_MAESTRO_EDITAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Editar " + objetoNombre1, "No se puede editar " + objetoNombre2 + ".");
+            menuControlador.mensaje.edit_error(titulo);
         }
     }
     

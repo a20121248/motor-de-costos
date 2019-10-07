@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
 import modelo.Centro;
+import modelo.CentroDriver;
 import modelo.DriverLinea;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
 import servicios.ReportingServicio;
+import servicios.TrazabilidadServicio;
 
 public class DistribuirFase2Task extends Task {
     int periodo;
@@ -23,6 +25,7 @@ public class DistribuirFase2Task extends Task {
     PrincipalControlador principalControlador;
     DriverServicio driverServicio;
     ReportingServicio reportingServicio;
+    TrazabilidadServicio trazabilidadServicio;
     final int fase;
     double progresoTotal;
     final static Logger LOGGER = Logger.getLogger("controlador.procesos.DistribuirFase2Task");
@@ -32,13 +35,14 @@ public class DistribuirFase2Task extends Task {
         this.principalControlador = principalControlador;
         this.fase = 2;
         this.progresoTotal=0.3333;
-        
+
         centroDAO = new CentroDAO();
         driverDAO = new DriverDAO();
         procesosDAO = new ProcesosDAO();
         distribucionServicio = new DistribucionServicio();
         driverServicio = new DriverServicio();
         reportingServicio = new ReportingServicio();
+        trazabilidadServicio = new TrazabilidadServicio();
     }
 
     @Override
@@ -48,27 +52,44 @@ public class DistribuirFase2Task extends Task {
         principalControlador.pbTotal.setProgress(progresoTotal);
         
         int numCentros = centroDAO.numeroCentrosCascada(periodo, principalControlador.menuControlador.repartoTipo);
+        int maxNivel  =  centroDAO.maxNivelCascada(periodo, principalControlador.menuControlador.repartoTipo);
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
-        updateProgress(centroI, numCentros+1);
-        for (int iter=1; iter<=6; ++iter) {
-            List<Centro> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
-            for (Centro centro: lstNivelI) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, centro.getDriver().getCodigo(), principalControlador.menuControlador.repartoTipo);
-                distribucionServicio.distribuirEntidadCascada(centro, lstDriverLinea, periodo, iter);
-                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(numCentros+1));
-                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(numCentros+1));
+        updateProgress(centroI, 2*numCentros+1);
+        for (int iter=1; iter<=maxNivel; ++iter) {
+            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
+            for (CentroDriver item: lstNivelI) {
+                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+                distribucionServicio.distribuirEntidadCascada(item, lstDriverLinea, periodo, iter,maxNivel);                
+                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
+                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
                 // fin logica
-                updateProgress(++centroI, numCentros+1);
+                updateProgress(++centroI, 2*numCentros+1);
             }
             ConexionBD.ejecutarBatch();
-        }
+        }        
+
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
-
+        
+        for (int itera=1; itera<=maxNivel; ++itera) {
+            List<CentroDriver> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, itera);
+            String codigoCentro = "";
+            for (CentroDriver item: lista) {
+                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+                if(!item.getCodigoCentro().equals(codigoCentro)){
+                    trazabilidadServicio.ingresarPorcentajesCentros(item,lstDriverLinea,periodo,itera);
+                }
+                codigoCentro = item.getCodigoCentro();
+                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
+                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
+                // fin logica
+                updateProgress(++centroI, 2*numCentros+1);
+            }       
+        }
         // Generar reportes
         String reporteNombre,rutaOrigen;
         principalControlador.lblMensajeFase2.setVisible(true);

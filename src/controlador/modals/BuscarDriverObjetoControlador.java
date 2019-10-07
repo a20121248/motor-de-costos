@@ -34,10 +34,8 @@ public class BuscarDriverObjetoControlador implements Initializable {
     @FXML private TableColumn<DriverObjeto, String> tabcolNombre;
     @FXML private TableColumn<DriverObjeto, String> tabcolDescripcion;
     @FXML private TableView<DriverObjetoLinea> tabEntidades;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolOficinaCodigo;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolOficinaNombre;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolBancaCodigo;
-    @FXML private TableColumn<DriverObjetoLinea, String> tabcolBancaNombre;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolSubcanalCodigo;
+    @FXML private TableColumn<DriverObjetoLinea, String> tabcolSubcanalNombre;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolProductoCodigo;
     @FXML private TableColumn<DriverObjetoLinea, String> tabcolProductoNombre;
     @FXML private TableColumn<DriverObjetoLinea, Double> tabcolPorcentaje;    
@@ -73,20 +71,16 @@ public class BuscarDriverObjetoControlador implements Initializable {
         tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
         // tabla detalle driver: dimensiones
         tabEntidades.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolOficinaCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 13);
-        tabcolOficinaNombre.setMaxWidth(1f * Integer.MAX_VALUE * 15.5);
-        tabcolBancaCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 13);
-        tabcolBancaNombre.setMaxWidth(1f * Integer.MAX_VALUE * 15.5);
-        tabcolProductoCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 13);
-        tabcolProductoNombre.setMaxWidth(1f * Integer.MAX_VALUE * 15.5);
-        tabcolPorcentaje.setMaxWidth(1f * Integer.MAX_VALUE * 14.5);
+        tabcolProductoCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolProductoNombre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
+        tabcolSubcanalCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolSubcanalNombre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
+        tabcolPorcentaje.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         // tabla drivers: formato
-        tabcolOficinaCodigo.setCellValueFactory(cellData -> cellData.getValue().getOficina().codigoProperty());
-        tabcolOficinaNombre.setCellValueFactory(cellData -> cellData.getValue().getOficina().nombreProperty());
-        tabcolBancaCodigo.setCellValueFactory(cellData -> cellData.getValue().getBanca().codigoProperty());
-        tabcolBancaNombre.setCellValueFactory(cellData -> cellData.getValue().getBanca().nombreProperty());
         tabcolProductoCodigo.setCellValueFactory(cellData -> cellData.getValue().getProducto().codigoProperty());
         tabcolProductoNombre.setCellValueFactory(cellData -> cellData.getValue().getProducto().nombreProperty());
+        tabcolSubcanalCodigo.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().codigoProperty());
+        tabcolSubcanalNombre.setCellValueFactory(cellData -> cellData.getValue().getSubcanal().nombreProperty());
         tabcolPorcentaje.setCellValueFactory(cellData -> cellData.getValue().porcentajeProperty().asObject());
         // tabla drivers: evento de click
         tabDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {

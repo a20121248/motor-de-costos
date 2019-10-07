@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import modelo.RutaArchivos;
 import modelo.Usuario;
+import servicios.LoggingServicio;
 import servicios.SeguridadServicio;
 
 public class LoginControlador implements Initializable {
@@ -40,7 +41,6 @@ public class LoginControlador implements Initializable {
     @FXML private MenuItem itmSalir;
     @FXML private MenuItem itmAcerca;
     
-    public String rutaLogs;
     public String estiloSeleccionado;
     public String idiomaSeleccionado;    
     public String nombreBD;
@@ -72,7 +72,7 @@ public class LoginControlador implements Initializable {
     
     public LoginControlador(App app) {
         this.app = app;
-        estiloSeleccionado = "Default";
+        estiloSeleccionado = "PACIFICO";
         preferencias = new Preferencias();
         seguridadServicio = new SeguridadServicio();
         nombreBD = "Oracle";
@@ -80,13 +80,16 @@ public class LoginControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        txtUsuario.setText("admin");
+        txtContrasenha.setText("secret");
     }
     
-    @FXML void btnLoginAction(ActionEvent event) {
+    @FXML void btnLoginAction(ActionEvent event)  {
         login();
     }
     
-    private void login() {
+    private void login(){
+        String rutaLog = preferencias.obtenerRutaLogs();
         if (ConexionBD.connection == null) {
             //si la BD es nula, intento conectarme con las preferencias
             //obtener los parametros de conexion de las preferencias
@@ -136,7 +139,7 @@ public class LoginControlador implements Initializable {
             alert.setHeaderText(null);
             alert.setContentText("El usuario " + txtUsuario.getText() + "no existe.");
             alert.showAndWait();
-            LOGGER.log(Level.WARNING,String.format("Se introdujo el usuario %s que no existe.",txtUsuario.getText()));
+            LOGGER.log(Level.WARNING,String.format("Se introdujo el usuario %s que no existe.\n",txtUsuario.getText()));
             return;
         }
         
@@ -147,10 +150,10 @@ public class LoginControlador implements Initializable {
             alert.setHeaderText(null);
             alert.setContentText("La contraseña es incorrecta.");
             alert.showAndWait();
-            LOGGER.log(Level.WARNING,String.format("Se introdujo una contraseña incorrecta para el usuario %s.",txtUsuario.getText()));
+            LOGGER.log(Level.WARNING,String.format("Se introdujo una contraseña incorrecta para el usuario %s.\n",txtUsuario.getText()));
             return;
         }        
-        LOGGER.log(Level.INFO,String.format("El usuario %s inició sesión correctamente.",txtUsuario.getText()));
+        LOGGER.log(Level.INFO,String.format("El usuario %s inició sesión correctamente.\n",txtUsuario.getText()));
         
         try {
             String rutaEstilo, rutaImagen, rutaIcono;
@@ -181,7 +184,7 @@ public class LoginControlador implements Initializable {
             }
             
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(RUTAS_MENU.getVista()));
-            MenuControlador menuControlador = new MenuControlador(rutaImagen,usuario,nombreBD);
+            MenuControlador menuControlador = new MenuControlador(rutaImagen,usuario,nombreBD,rutaLog);
             fxmlLoader.setController(menuControlador);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);

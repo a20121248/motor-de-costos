@@ -59,6 +59,11 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Centro, String> tabcolNombreGrupo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCodigoCentroPadre;
+    @FXML private TableColumn<Centro, String> tabcolEsBolsa;
+    @FXML private TableColumn<Centro, String> tabcolTipoGasto;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<Centro, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -70,34 +75,35 @@ public class CargarControlador implements Initializable {
     CentroDAO centroDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<Centro> listaCargar = new ArrayList() ;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_CARGAR.getControlador());
+    String titulo;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         lstCodigos = centroDAO.listarCodigos();
+        this.titulo = "Centros de Costos";
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            titulo1 = "Centros de Beneficio";
-            titulo2 = "Centro de Beneficio";
-            lblTitulo.setText("Cargar Centros de Beneficio");
-            lnkCentros.setText("Cargar Centros de Beneficio");
-        }
+    public void initialize(URL url, ResourceBundle rb) {    
         // tabla centros
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 36);
-        tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 12);
-        tabcolNombreGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 12);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 20);
+        tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -105,6 +111,12 @@ public class CargarControlador implements Initializable {
         tabcolNombreGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);
+        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
+        btnDescargarLog.setVisible(false);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -116,7 +128,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkCentrosAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -147,6 +159,16 @@ public class CargarControlador implements Initializable {
     
     private List<Centro> leerArchivo(String rutaArchivo) {
         List<Centro> lista = new ArrayList();
+        List<String> listaCodigos = centroDAO.listarCodigos();
+        List<Tipo> listaTipoCentro = menuControlador.lstCentroTipos;
+        listaCargar = new ArrayList();
+        logDetails = "";
+        List<String> grupoTipoBolsa = new ArrayList();
+        grupoTipoBolsa.add("BOLSA");
+        grupoTipoBolsa.add("OFICINA");
+        List<String> grupoTipoFicticio = new ArrayList();
+        grupoTipoFicticio.add("FICTICIO");
+        grupoTipoFicticio.add("PROYECTO");
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -156,18 +178,11 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar " + titulo1, msj);
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","TIPO GASTO","NIIF17 ATRIBUIBLE","NIIF17 TIPO","NIIF17 CLASE")))) {
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
-            
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROS.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
+
             while (filas.hasNext()) {
                 fila = filas.next();
                 celdas = fila.cellIterator();
@@ -177,8 +192,84 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
-
-                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),null,null);
+                celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Tipo = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Clase = celda.getStringCellValue();
+                
+                niif17Atribuible = centroDAO.convertirAbreviaturaPalabra(niif17Atribuible);
+                niif17Tipo = centroDAO.convertirAbreviaturaPalabra(niif17Tipo);
+                niif17Clase = centroDAO.convertirAbreviaturaPalabra(niif17Clase);
+                String strTipoGasto;
+                if(tipoGasto == 1) strTipoGasto ="DIRECTO";
+                else strTipoGasto ="INDIRECTO";
+                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa, strTipoGasto,niif17Atribuible,niif17Tipo, niif17Clase, null,null,true);
+                String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                Tipo tipoCentro = listaTipoCentro.stream().filter(item ->codigoGrupo.equals(item.getCodigo())).findAny().orElse(null);
+                boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
+                String relación = "";
+                boolean relacionGrupoNivel = false;
+                if(tipoCentro != null){
+                    if(grupoTipoBolsa.contains(codigoGrupo)){
+                        if(nivel == 0){
+                            if(esBolsa.equals("SI"))relacionGrupoNivel = true;
+                            else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es BOLSA = SI.\r\n",codigoGrupo);
+                            }
+                        } else {
+                            relacionGrupoNivel = false;
+                            relación += String.format("- El grupo %s es NIVEL = 0.\r\n",codigoGrupo);
+                        }
+                    } else {
+                        if(grupoTipoFicticio.contains(codigoGrupo)){
+                            if(nivel == 99){
+                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
+                                else {
+                                    relacionGrupoNivel = false;
+                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
+                                }
+                            } else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es NIVEL = 99.\r\n",codigoGrupo);
+                            }
+                        } else {
+                            if(nivel>0 && nivel < 99){
+                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
+                                else {
+                                    relacionGrupoNivel = false;
+                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
+                                }
+                            } else {
+                                relacionGrupoNivel = false;
+                                relación += String.format("- El grupo %s es NIVEL > 0 Y NIVEL < 99.\r\n",codigoGrupo);
+                            }
+                        }
+                    }
+                } else {
+                    relación += String.format("- El grupo %s asignado no está listado.\r\n",codigoGrupo);
+                }
+                
+                
+                if( cuenta == null && ptrCodigo && tipoCentro!= null &&relacionGrupoNivel){
+                    listaCargar.add(linea);                    
+                    listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
+                }else {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
+                    if(cuenta!= null){
+                        logDetails +=String.format("- Ya existe en Catálogo.\r\n");
+                    }else {
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
+                        logDetails += relación;
+                    }
+                    linea.setFlagCargar(false);
+//                    listaError.add(linea);
+                }
+                if(niif17Atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
+                if(niif17Tipo == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
+                if(niif17Clase == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
                 lista.add(linea);
             }
             //cerramos el libro
@@ -191,18 +282,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -210,22 +290,42 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        List<Centro> lista = tabListar.getItems();
-        for (Centro item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear el %s porque el código %s ya existe.",titulo2,item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó el %s con código %s.",titulo2,item.getCodigo()));
-                item.setFlagCargar(true);
-            }
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.mensaje.upload_empty();
+        }else{
+            if(listaCargar.isEmpty()){
+                menuControlador.mensaje.upload_allCharged_now(titulo);
+            }else{
+                centroDAO.insertarListaObjeto(listaCargar, menuControlador.repartoTipo);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.mensaje.upload_success_with_error(titulo);
+                }else {
+                    menuControlador.mensaje.upload_success();
+                }
+                btnDescargarLog.setVisible(true);
+            }        
         }
-        logServicio.agregarSeparadorArchivo('=', 100);
-        logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        logServicio.agregarSeparadorArchivo('=', 100);
-        centroDAO.insertarListaObjeto(lista, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", titulo1 + " subidos correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de %s.",menuControlador.usuario.getUsername(),titulo1));
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROS_CATALOGO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_CARGAR.getDireccion());
+            }
+            else{
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

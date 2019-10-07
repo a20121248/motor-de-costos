@@ -106,6 +106,16 @@
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
             </JFXButton>
+            <JFXButton fx:id="btnAgrupacion" onAction="#btnAgrupacionAction" text="Agrupación">
+               <graphic>
+                  <FontAwesomeIconView glyphName="CUBES" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+                  <String fx:value="important" />
+               </styleClass>
+            </JFXButton>
          </children>
       </HBox>
       <Label layoutX="482.0" layoutY="204.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
@@ -124,6 +134,11 @@
       <JFXButton fx:id="btnAtras" layoutX="633.0" layoutY="573.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="220.0" layoutY="575.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
       </JFXButton>
    </children>

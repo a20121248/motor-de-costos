@@ -56,16 +56,6 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Hyperlink fx:id="lnkAsignacion" onAction="#lnkAsignacionAction" text="Asociación" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Hyperlink>
-                  <Label text="/" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
                   <Hyperlink fx:id="lnkCargar" onAction="#lnkCargarAction" text="Cargar" textFill="#676a6c">
                      <font>
                         <Font name="System Bold" size="13.0" />
@@ -93,11 +83,6 @@
          </styleClass>
       </JFXButton>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnCancelar" layoutX="260.0" layoutY="466.0" onAction="#btnCancelarAction" styleClass="btn" text="Cancelar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="CLOSE" />
-         </graphic>
-      </JFXButton>
       <JFXButton fx:id="btnSubir" layoutX="365.0" layoutY="466.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="UPLOAD" />
@@ -110,5 +95,19 @@
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
          </valueFactory>
       </Spinner>
+      <JFXButton fx:id="btnDescargarLog" layoutX="208.0" layoutY="539.0" onAction="#btnDescargarLogAction" text="Descargar LOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
+      </JFXButton>
+      <JFXButton fx:id="btnAtras" layoutX="470.0" layoutY="545.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

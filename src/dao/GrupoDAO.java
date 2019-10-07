@@ -130,6 +130,42 @@ public class GrupoDAO {
         return lista;
     }
     
+    public int verificarObjetoGrupoPeriodoAsignacion(String codigo, int periodo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM grupo_plan_de_cuenta\n" +
+                " WHERE grupo_codigo='%s' AND periodo=%d",
+                codigo,periodo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
+//    Verifica si esta siendo usado en las lineas
+    public int verificarObjetoGrupo(String codigo) {
+        String queryStr = String.format("" +
+                "SELECT count(*) as COUNT\n"+
+                "  FROM grupo_lineas\n" +
+                " WHERE grupo_codigo='%s'",
+                codigo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("COUNT");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont;
+    }
+    
     public int insertarObjeto(String codigo, String nombre, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +

@@ -10,6 +10,7 @@ import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProcesosDAO;
 import dao.ProductoDAO;
+import dao.TrazaDAO;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +33,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
+import servicios.TrazabilidadServicio;
 
 public class PrincipalControlador implements Initializable {
     @FXML private Hyperlink lnkInicio;
@@ -72,15 +74,16 @@ public class PrincipalControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     DriverDAO driverDAO;
     DriverServicio driverServicio;
-    GrupoDAO grupoDAO;
     CentroDAO centroDAO;
     ProductoDAO productoDAO;
     BancaDAO bancaDAO;
     ObjetoDAO objetoDAO;
     ProcesosDAO procesosDAO;
+    TrazaDAO trazaDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
+    TrazabilidadServicio trazabilidadServicio;
     int periodoSeleccionado;
     final ExecutorService executor;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_MODULO_PROCESOS.getControlador());
@@ -92,13 +95,14 @@ public class PrincipalControlador implements Initializable {
         planDeCuentaDAO = new PlanDeCuentaDAO();
         driverDAO = new DriverDAO();
         driverServicio = new DriverServicio();
-        grupoDAO = new GrupoDAO();
         centroDAO = new CentroDAO();
         productoDAO = new ProductoDAO();
         bancaDAO = new BancaDAO();
         objetoDAO = new ObjetoDAO("");
         procesosDAO = new ProcesosDAO();
+        trazaDAO = new TrazaDAO();
         distribucionServicio = new DistribucionServicio();
+        trazabilidadServicio = new TrazabilidadServicio();
         executor = Executors.newSingleThreadExecutor();
         if (menuControlador.repartoTipo == 1) {
             this.progreso = 0.3333;
@@ -226,12 +230,16 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PROCESOS);
     }
     
+    @FXML void btnGenerarTrazaAction(ActionEvent event) {
+        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
+    }
+    
     @FXML void btnFase1Action(ActionEvent event) {
         if (ejecutandoFase1) {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 1", "La fase se está ejecutando actualmente.");
             return;
         }
-        int cantSinDriver = grupoDAO.cantObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
+        int cantSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
         if (cantSinDriver!=0) {
             if (cantSinDriver==1) 
                 menuControlador.navegador.mensajeError("Fase 1", "Existe 1 Grupo de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
@@ -257,7 +265,27 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 2", "La fase se está ejecutando actualmente.");
             return;
         }
-        ejecutarFase2(periodoSeleccionado);
+        if (menuControlador.repartoTipo == 1) {
+            if (!ejecutoFase1) {
+                menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
+                return;
+            }
+            int cantSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+            if (cantSinDriver!=0) {
+                menuControlador.navegador.mensajeError("Fase 2", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
+                return;
+            }
+            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 2, menuControlador.repartoTipo);
+            if (fechaEjecucion != null) {
+                String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
+                        "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
+                        (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
+                        (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
+                        2);
+                if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
+            }
+            ejecutarFase2(periodoSeleccionado);
+        }
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -269,6 +297,12 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "Necesita ejecutar las fases previas a la FASE 3.");
             return;
         }
+        
+        int cantSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        if (cantSinDriver!=0) {
+            menuControlador.navegador.mensajeError("Fase 3", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
+            return;
+        }
         Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 3, menuControlador.repartoTipo);
         if (fechaEjecucion != null) {
             String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
@@ -277,8 +311,6 @@ public class PrincipalControlador implements Initializable {
                     (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
                     3);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 3", mensaje)) return;            
-            //pbFase3.setProgress(0);
-            //piFase3.setProgress(0);
         }
         ejecutarFase3(periodoSeleccionado);
     }
@@ -287,14 +319,31 @@ public class PrincipalControlador implements Initializable {
         if (ejecutandoFase1 || ejecutandoFase2 || ejecutandoFase3) {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE TOTAL", "La FASE TOTAL se está ejecutando actualmente.");
             return;
-        }        
+        }
+        int cantBolsasSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
+        int cantCentrosSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        int cantCentroObjetosSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        if (cantBolsasSinDriver != 0 && cantCentrosSinDriver !=0 && cantCentroObjetosSinDriver !=0){
+            String msj = null;
+            if (cantBolsasSinDriver != 0) msj+= "\n- Existen  "+ cantBolsasSinDriver + " Centros Bolsas sin driver asignado.";
+            if (cantCentrosSinDriver != 0) msj+= "\n- Existen  "+ cantCentrosSinDriver + " Centros sin driver asignado.";
+            if (cantCentroObjetosSinDriver != 0) msj+= "\n- Existen  "+ cantCentroObjetosSinDriver + " Centros para Objetos de Costos sin driver asignado.";
+            menuControlador.navegador.mensajeError("FASE TOTAL", msj + "\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver. ");
+            return;
+        }
+        
+        Date fechaEjecucion1 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 1, menuControlador.repartoTipo);
+        Date fechaEjecucion2 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 2, menuControlador.repartoTipo);
+        Date fechaEjecucion3 = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 3, menuControlador.repartoTipo);
+        if(fechaEjecucion1!=null &&fechaEjecucion2!=null && fechaEjecucion3!=null){
+            String mensaje = "Existe ejecución previa. \n¿Está seguro que desea reprocesar?";
+            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE TOTAL", mensaje)) return;
+        }
         if (menuControlador.repartoTipo == 1) {
             ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2Costos(periodoSeleccionado);
+            ejecutarFase2(periodoSeleccionado);
             ejecutarFase3(periodoSeleccionado);
         } else {
-            ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2Ingresos(periodoSeleccionado);
         }
     }
     
@@ -354,63 +403,13 @@ public class PrincipalControlador implements Initializable {
             piFase1Ingresos.progressProperty().bind(df1t.progressProperty());
         }
         executor.execute(df1t);
-    }
-
-    public void ejecutarFase2(int periodo) {
-        if (menuControlador.repartoTipo == 1) {
-            if (!ejecutoFase1) {
-                menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
-                return;
-            }
-            int cantSinDriver = centroDAO.cantObjetosSinDriver(menuControlador.repartoTipo, "!=", 0, periodoSeleccionado);
-            if (cantSinDriver!=0) {
-                menuControlador.navegador.mensajeError("Fase 2", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
-                return;
-            }
-            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 2, menuControlador.repartoTipo);
-            if (fechaEjecucion != null) {
-                String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
-                        "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
-                        (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
-                        (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
-                        2);
-                if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
-            }
-            ejecutarFase2Costos(periodo);
-        } else {
-            /*if (!principalControlador.ejecutoFase2) {
-                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Por favor, primero ejecute la Fase " + (fase-1));
-                return null;
-            }
-            int cantSinDriver = centroDAO.cantObjetosSinDriver(principalControlador.menuControlador.repartoTipo, "=", 0, periodo);
-            if (cantSinDriver!=0) {
-                principalControlador.menuControlador.navegador.mensajeError("Fase " + fase, "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
-                return null;
-            }*/
-
-            if (!ejecutoFase1) {
-                menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
-                return;
-            }
-            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo);
-            if (fechaEjecucion != null) {
-                String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
-                        "¿Está seguro que desea reprocesar la fase %d?",
-                        (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
-                        (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
-                        2);
-                if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;            
-                //pbFase3.setProgress(0);
-                //piFase3.setProgress(0);
-            }
-            ejecutarFase2Ingresos(periodo);
-        }
-    }    
+    } 
    
-    public void ejecutarFase2Costos(int periodo) {
+    public void ejecutarFase2(int periodo) {
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 1, menuControlador.repartoTipo);
         objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
         //pbFase2.setProgress(0);
         //piFase2.setProgress(0);
         ejecutoFase2 = false;
@@ -424,16 +423,6 @@ public class PrincipalControlador implements Initializable {
         pbFase2.progressProperty().bind(df2t.progressProperty());
         piFase2.progressProperty().bind(df2t.progressProperty());
         executor.execute(df2t);
-    }
-
-    public void ejecutarFase2Ingresos(int periodo) {        
-        procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
-               
-        DistribuirFase3Task df3t = new DistribuirFase3Task(periodo, this);
-        pbFase2Ingresos.progressProperty().bind(df3t.progressProperty());
-        piFase2Ingresos.progressProperty().bind(df3t.progressProperty());
-        executor.execute(df3t);
     }
     
     public void ejecutarFase3(int periodo) {       

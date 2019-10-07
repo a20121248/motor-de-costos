@@ -36,7 +36,7 @@ public class CrearControlador implements Initializable {
     List<String> lstCodigos;
     public MenuControlador menuControlador;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_MAESTRO_CREAR.getControlador());
-    
+    String titulo;
     public CrearControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         objetoDAO = new ObjetoDAO(menuControlador.objetoTipo);
@@ -50,18 +50,28 @@ public class CrearControlador implements Initializable {
                 lnkObjetos.setText("Oficinas");
                 objetoNombre1 = "Oficina";
                 objetoNombre2 = "la Oficina";
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Crear Banca");
                 lnkObjetos.setText("Bancas");
                 objetoNombre1 = "Banca";
                 objetoNombre2 = "la Banca";
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Crear Producto");
                 lnkObjetos.setText("Productos");
                 objetoNombre1 = "Producto";
                 objetoNombre2 = "el Producto";
+                this.titulo = "Productos";
+                break;
+            case "SCA":
+                lblTitulo.setText("Crear Subcanal");
+                lnkObjetos.setText("Subcanales");
+                objetoNombre1 = "Subcanal";
+                objetoNombre2 = "el Subcanal";
+                this.titulo = "Subcanales";
                 break;
             default:
                 break;
@@ -81,6 +91,10 @@ public class CrearControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
     
+    @FXML void lnkAsignacionAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
+    }
+    
     @FXML void lnkCatalogoAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
     }
@@ -93,14 +107,15 @@ public class CrearControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         if (lstCodigos.contains(codigo)) {
-            menuControlador.navegador.mensajeError("Crear " + objetoNombre1, String.format("El código %s ya existe. No se puede crear %s.",codigo,objetoNombre2));
+            menuControlador.mensaje.create_exist_error(objetoNombre1);
             return;
         }
         if (objetoDAO.insertarObjeto(codigo,nombre)==1) {
-            menuControlador.navegador.mensajeInformativo("Crear " + objetoNombre1, objetoNombre2 + " se creó correctamente.");
+            menuControlador.mensaje.create_success(objetoNombre1);
+            menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), codigo,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_MAESTRO_LISTAR);
         } else {
-            menuControlador.navegador.mensajeError("Crear " + objetoNombre1, "No se puede crear " + objetoNombre2 + ".");
+            menuControlador.mensaje.create_error(objetoNombre1);
         }
     }
     

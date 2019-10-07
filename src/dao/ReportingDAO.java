@@ -11,104 +11,286 @@ public class ReportingDAO {
     public ReportingDAO() {
         this.connection = new ConnectionDB();
     }
-
-    public ResultSet dataReporteCuentaCentro(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
-                "SELECT B.codigo CENTRO_CODIGO,\n" +
-                "       B.nombre CENTRO_NOMBRE,\n" +
-                "       C.codigo GRUPO_CODIGO,\n" +
-                "       C.nombre GRUPO_NOMBRE,\n" +
-                "       E.codigo CUENTA_CONTABLE_CODIGO,\n" +
-                "       E.nombre CUENTA_CONTABLE_NOMBRE,\n" +
-                "       CASE WHEN G.saldo_grupo=0 THEN 0\n" +
-                "            ELSE A.saldo*F.saldo/G.saldo_grupo\n" +
-                "       END SALDO" +
-                "  FROM centro_lineas A\n" +
-                "  JOIN centros B ON A.centro_codigo=B.codigo\n" +
-                "  JOIN grupos C ON A.entidad_origen_codigo=C.codigo\n" +
-                "  JOIN grupo_plan_de_cuenta D ON C.codigo=D.grupo_codigo\n" +
-                "  JOIN plan_de_cuentas E ON D.plan_de_cuenta_codigo=E.codigo\n" +
-                "  JOIN plan_de_cuenta_lineas F ON E.codigo=F.plan_de_cuenta_codigo\n" +
-                "  JOIN (SELECT A.codigo,SUM(C.saldo) saldo_grupo FROM grupos A JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo JOIN plan_de_cuenta_lineas C ON B.plan_de_cuenta_codigo=C.plan_de_cuenta_codigo WHERE B.periodo=%d AND C.periodo=%d GROUP BY A.codigo) G ON C.codigo=G.codigo\n" +
-                " WHERE A.iteracion=0\n" +
-                "   AND A.periodo=%d\n" +
-                "   AND B.reparto_tipo=%d\n" +
-                "   AND D.periodo=%d\n" +
-                "   AND F.periodo=%d",
-            periodo,periodo,periodo,repartoTipo,periodo,periodo);
+    
+    
+//    public ResultSet dataReporteCuentaCentro(int periodo, int repartoTipo) {
+//        String queryStr = String.format("" +
+//                "SELECT B.codigo CENTRO_CODIGO,\n" +
+//                "       B.nombre CENTRO_NOMBRE,\n" +
+//                "       C.codigo GRUPO_CODIGO,\n" +
+//                "       C.nombre GRUPO_NOMBRE,\n" +
+//                "       E.codigo CUENTA_CONTABLE_CODIGO,\n" +
+//                "       E.nombre CUENTA_CONTABLE_NOMBRE,\n" +
+//                "       CASE WHEN G.saldo_grupo=0 THEN 0\n" +
+//                "            ELSE A.saldo*F.saldo/G.saldo_grupo\n" +
+//                "       END SALDO" +
+//                "  FROM centro_lineas A\n" +
+//                "  JOIN centros B ON A.centro_codigo=B.codigo\n" +
+//                "  JOIN grupos C ON A.entidad_origen_codigo=C.codigo\n" +
+//                "  JOIN grupo_plan_de_cuenta D ON C.codigo=D.grupo_codigo\n" +
+//                "  JOIN plan_de_cuentas E ON D.plan_de_cuenta_codigo=E.codigo\n" +
+//                "  JOIN plan_de_cuenta_lineas F ON E.codigo=F.plan_de_cuenta_codigo\n" +
+//                "  JOIN (SELECT A.codigo,SUM(C.saldo) saldo_grupo FROM grupos A JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo JOIN plan_de_cuenta_lineas C ON B.plan_de_cuenta_codigo=C.plan_de_cuenta_codigo WHERE B.periodo=%d AND C.periodo=%d GROUP BY A.codigo) G ON C.codigo=G.codigo\n" +
+//                " WHERE A.iteracion=0\n" +
+//                "   AND A.periodo=%d\n" +
+//                "   AND B.reparto_tipo=%d\n" +
+//                "   AND D.periodo=%d\n" +
+//                "   AND F.periodo=%d",
+//            periodo,periodo,periodo,repartoTipo,periodo,periodo);
+//        return ConexionBD.ejecutarQuery(queryStr);
+//    }
+    
+    public ResultSet dataReporteCuentaPartidaCentroBolsa(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+
+                "select a.periodo PERIODO,\n" +
+                "      A.centro_codigo CODIGO_CENTRO,\n" +
+                "      E.nombre NOMBRE_CENTRO,\n" +
+                "      B.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "      H.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "      B.partida_codigo CODIGO_PARTIDA,\n" +
+                "      D.nombre NOMBRE_PARTIDA,\n" +
+                "      A.saldo SALDO,\n" +
+                "      A.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "      F.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "      B.driver_codigo CODIGO_DRIVER,\n" +
+                "      G.nombre NOMBRE_DRIVER,\n" +
+                "      CASE  \n" +
+                "        when A.iteracion=0 then 'BOLSA'\n" +
+                "        ELSE 'DIRECTO'\n" +
+                "      END ASIGNACION      \n" +
+                "FROM centro_lineas A \n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo = b.driver_codigo AND C.entidad_destino_codigo = a.centro_codigo AND C.periodo = a.periodo\n" +
+                "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
+                "join centros E ON E.codigo = A.centro_codigo\n" +
+                "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
+                "join drivers G ON G.codigo = B.driver_codigo\n" +
+                "JOIN plan_de_cuentas H ON H.codigo = B.cuenta_contable_codigo\n" +
+                "where A.periodo = %d and a.iteracion = 0\n" +
+                "UNION\n" +
+                "SELECT A.periodo PERIODO,\n" +
+                "       a.centro_codigo CODIGO_CENTRO,\n" +
+                "       d.nombre NOMBRE_CENTRO,\n" +
+                "       a.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "       b.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "       a.partida_codigo CODIGO_PARTIDA,\n" +
+                "       c.nombre NOMBRE_PARTIDA,\n" +
+                "       a.saldo SALDO,\n" +
+                "       '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "       '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "       '-' CODIGO_DRIVER_ORIGEN,\n" +
+                "       '-' NOMBRE_DRIVER_ORIGEN,\n" +
+                "       CASE  \n" +
+                "        when d.es_bolsa = 'NO' then 'DIRECTO'\n" +
+                "        ELSE 'BOLSA'\n" +
+                "      END ASIGNACION  \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "ORDER BY CODIGO_CENTRO",
+                periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
+    public ResultSet dataReporteCuentaPartidaCentroPropio(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+ 
+                "SELECT A.periodo PERIODO,\n" +
+                "       a.centro_codigo CODIGO_CENTRO,\n" +
+                "       d.nombre NOMBRE_CENTRO,\n" +
+                "       a.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "       b.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "       a.partida_codigo CODIGO_PARTIDA,\n" +
+                "       c.nombre NOMBRE_PARTIDA,\n" +
+                "       a.saldo SALDO,\n" +
+                "       '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "       '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "       '-' CODIGO_DRIVER_ORIGEN,\n" +
+                "       '-' NOMBRE_DRIVER_ORIGEN,\n" +
+                "       CASE  \n" +
+                "        when d.es_bolsa = 'NO' then 'DIRECTO'\n" +
+                "        ELSE 'BOLSA'\n" +
+                "      END TIPO_CECO  \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "order by a.cuenta_contable_codigo, a.partida_codigo, a.centro_codigo",
+                periodo);
+        return ConexionBD.ejecutarQuery(queryStr);
+    }
     public ResultSet dataReporteGastoPropioAsignado(int periodo, int repartoTipo) {
         String queryStr;
-        queryStr = "TRUNCATE TABLE JMD_REP_GRUPO_SALDO";
-        ConexionBD.ejecutar(queryStr);
-        queryStr = String.format("" +
-                "INSERT INTO JMD_REP_GRUPO_SALDO\n" +
-                "SELECT Y.PERIODO,X1.CODIGO,SUM(Z.SALDO)SALDO\n" +
-                "  FROM GRUPOS X1\n" +
-                "  JOIN GRUPO_LINEAS X2 ON X1.CODIGO=X2.GRUPO_CODIGO\n" +
-                "  JOIN GRUPO_PLAN_DE_CUENTA Y ON X1.CODIGO=Y.GRUPO_CODIGO AND X2.PERIODO=Y.PERIODO\n" +
-                "  JOIN PLAN_DE_CUENTA_LINEAS Z ON Y.PLAN_DE_CUENTA_CODIGO=Z.PLAN_DE_CUENTA_CODIGO AND X2.PERIODO=Z.PERIODO\n" +
-                " WHERE X2.PERIODO=%d AND X1.REPARTO_TIPO=%d\n" +
-                " GROUP BY Y.PERIODO,X1.CODIGO",
-                periodo,repartoTipo);
-        ConexionBD.ejecutar(queryStr);
-        queryStr = String.format("" +
-                "SELECT A.CODIGO CECO_CODIGO,\n" +
-                "       A.NOMBRE CECO_NOMBRE,\n" +
-                "       A.NIVEL CECO_NIVEL,\n" +
-                "       C.NOMBRE CECO_TIPO,\n" +
-                "       B.ITERACION,\n" +
-                "       CASE WHEN B.ITERACION=0 THEN 'PROPIO' ELSE 'ASIGNADO' END TIPO_GASTO,\n" +
-                "       CASE WHEN B.ITERACION=0 THEN 'GRUPO CUENTAS CONTABLE' ELSE 'CECO' END TIPO_ENTIDAD,\n" +
-                "       COALESCE(D.CODIGO,E.CODIGO) CODIGO_ENTIDAD,\n" +
-                "       COALESCE(D.NOMBRE,E.NOMBRE) NOMBRE_ENTIDAD,\n" +
-                "       COALESCE(TO_CHAR(D.NIVEL),'NO APLICA') CECO_ASIGNADO_NIVEL,\n" +
-                "       COALESCE(G.CODIGO,'NO APLICA') CUENTA_CONTABLE_CODIGO,\n" +
-                "       COALESCE(G.NOMBRE,'NO APLICA') CUENTA_CONTABLE_NOMBRE,\n" +
-                "       CASE WHEN B.ITERACION=0 THEN CASE WHEN I.SALDO=0 THEN 0 ELSE B.SALDO*H.SALDO/I.SALDO END\n" +
-                "            ELSE B.SALDO\n" +
-                "       END GASTO\n" +
-                "  FROM CENTROS A\n" +
-                "  JOIN CENTRO_LINEAS B ON A.CODIGO=B.CENTRO_CODIGO\n" +
-                "  JOIN CENTRO_TIPOS C ON A.CENTRO_TIPO_CODIGO=C.CODIGO\n" +
-                "  LEFT JOIN CENTROS D ON B.ENTIDAD_ORIGEN_CODIGO=D.CODIGO\n" +
-                "  LEFT JOIN GRUPOS E ON B.ENTIDAD_ORIGEN_CODIGO=E.CODIGO\n" +
-                "  LEFT JOIN GRUPO_PLAN_DE_CUENTA F ON E.CODIGO=F.GRUPO_CODIGO AND B.PERIODO=F.PERIODO\n" +
-                "  LEFT JOIN PLAN_DE_CUENTAS G ON F.PLAN_DE_CUENTA_CODIGO=G.CODIGO\n" +
-                "  LEFT JOIN PLAN_DE_CUENTA_LINEAS H ON G.CODIGO=H.PLAN_DE_CUENTA_CODIGO AND B.PERIODO=H.PERIODO\n" +
-                "  LEFT JOIN JMD_REP_GRUPO_SALDO I ON I.grupo_codigo=E.codigo AND B.periodo=I.periodo\n" +
-                " WHERE B.PERIODO=%d\n" +
-                "   AND B.ENTIDAD_ORIGEN_CODIGO!=0\n" +
-                "   AND A.REPARTO_TIPO=%d",
-                periodo,repartoTipo);
+        queryStr = String.format(""+
+                "SELECT a.periodo PERIODO,\n" +
+                "      A.centro_codigo CODIGO_CENTRO,\n" +
+                "      E.nombre NOMBRE_CENTRO,\n" +
+                "      E.nivel NIVEL_CENTRO,\n" +
+                "      I.nombre TIPO_CENTRO,\n" +
+                "      A.iteracion ITERACION,\n" +
+                "      'PROPIO-BOLSA' TIPO_ASIGNACION_GASTO,\n" +
+                "      A.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "      F.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "      F.nivel NIVEL_CENTRO_ORIGEN,\n" +
+                "      J.NOMBRE TIPO_CENTRO_ORIGEN,\n" +
+                "      B.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE_ORIGEN,\n" +
+                "      H.nombre NOMBRE_CUENTA_CONTABLE_ORIGEN,\n" +
+                "      B.partida_codigo CODIGO_PARTIDA_ORIGEN,\n" +
+                "      D.nombre NOMBRE_PARTIDA_ORIGEN,\n" +
+                "      B.driver_codigo CODIGO_DRIVER,\n" +
+                "      G.nombre NOMBRE_DRIVER,\n" +
+                "      k.nombre TIPO_GASTO,\n" +
+                "      A.saldo SALDO     \n" +
+                "FROM centro_lineas A \n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo= b.driver_codigo and C.entidad_destino_codigo = a.centro_codigo AND C.PERIODO = B.PERIODO AND A.PERIODO = C.PERIODO\n" +
+                "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
+                "join centros E ON E.codigo = A.centro_codigo\n" +
+                "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
+                "join drivers G ON G.codigo = B.driver_codigo\n" +
+                "JOIN plan_de_cuentas H ON H.codigo = B.cuenta_contable_codigo\n" +
+                "JOIN centro_tipos I on e.centro_tipo_codigo = i.codigo\n" +
+                "JOIN centro_tipos J on e.centro_tipo_codigo = j.codigo\n" +
+                "JOIN grupo_gastos K on k.codigo = a.grupo_gasto\n" +
+                "where A.periodo = %d and a.iteracion = 0" +
+                "UNION\n" +
+                "SELECT  A.periodo PERIODO,\n" +
+                "        a.centro_codigo CODIGO_CENTRO,\n" +
+                "        d.nombre NOMBRE_CENTRO,\n" +
+                "        d.nivel NIVEL_CENTRO,\n" +
+                "        e.nombre TIPO_CENTRO,\n" +
+                "        -1 ITERACION,\n" +
+                "        'PROPIO' TIPO_ASIGNACION_GASTO,\n" +
+                "        '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "        '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "        d.nivel NIVEL_CENTRO_ORIGEN,\n" +
+                "        e.nombre TIPO_CENTRO_ORIGEN,\n" +
+                "        a.cuenta_contable_codigo CODIGO_CUENTA_CONTABLE,\n" +
+                "         b.nombre NOMBRE_CUENTA_CONTABLE,\n" +
+                "         a.partida_codigo CODIGO_PARTIDA,\n" +
+                "         c.nombre NOMBRE_PARTIDA,\n" +
+                "         '-' CODIGO_DRIVER_ORIGEN,\n" +
+                "         '-' NOMBRE_DRIVER_ORIGEN,\n" +
+                "         F.nombre TIPO_GASTO,\n" +
+                "         a.saldo SALDO\n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "JOIN centro_tipos E ON E.codigo = d.centro_tipo_codigo\n" +
+                "JOIN grupo_gastos F ON F.codigo = c.grupo_gasto\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "UNION\n" +
+                "select  a.periodo PERIODO,\n" +
+                "        a.centro_codigo CODIGO_CENTRO,\n" +
+                "        c.nombre NOMBRE_CENTRO,\n" +
+                "        c.niveL NIVEL_CENTRO,\n" +
+                "        e.nombre TIPO_CENTRO,\n" +
+                "        a.iteracion ITERACION,\n" +
+                "        'ASIGNADO' TIPO_ASIGNACION_GASTO,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        d.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "        d.nivel NIVEL_CENTRO_ORIGEN,\n" +
+                "        f.nombre TIPO_CENTRO_ORIGEN,\n" +
+                "        '-' CODIGO_CUENTA_CONTABLE_ORIGEN,\n" +
+                "        '-' NOMBRE_CUENTA_CONTABLE_ORIGEN,\n" +
+                "        '-' CODIGO_PARTIDA_ORIGEN,\n" +
+                "        '-' N0MBRE_PARTIDA_ORIGEN,\n" +
+                "        b.driver_codigo CODIGO_DRIVER,\n" +
+                "        h.nombre NOMBRE_DRIVER,\n" +
+                "        g.nombre TIPO_GASTO,\n" +
+                "        a.saldo SALDO\n" +
+                "FROM CENTRO_LINEAS A\n" +
+                "JOIN ENTIDAD_ORIGEN_DRIVER B ON A.entidad_origen_codigo = B.entidad_origen_codigo AND A.PERIODO = B.PERIODO\n" +
+                "JOIN CENTROS C ON c.codigo = a.centro_codigo\n" +
+                "JOIN CENTROS D ON d.codigo = b.entidad_origen_codigo\n" +
+                "JOIN centro_tipos E ON e.codigo = c.centro_tipo_codigo\n" +
+                "JOIN centro_tipos F ON f.codigo = d.centro_tipo_codigo\n" +
+                "JOIN grupo_gastos G ON g.codigo = a.grupo_gasto\n" +
+                "join drivers H ON H.codigo = b.driver_codigo\n" +
+                "WHERE A.PERIODO = %d\n" +
+                "ORDER BY CODIGO_CENTRO" 
+                ,periodo,periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
     public ResultSet dataReporteCascada(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "SELECT A.CODIGO CECO_CODIGO,\n" +
-                "       A.NOMBRE CECO_NOMBRE,\n" +
-                "       CASE WHEN A.nivel=0 THEN 999\n" +
-                "            ELSE A.nivel\n" +
-                "       END NIVEL_DUMMY,\n" +
-                "       'NIVEL '||TO_CHAR(A.nivel) CECO_NIVEL,\n" +
-                "       C.NOMBRE CECO_TIPO,\n" +
-                "       B.ITERACION,\n" +
-                "       B.SALDO,\n" +
-                "       B.ENTIDAD_ORIGEN_CODIGO,\n" +
-                "       COALESCE(E.nombre,F.nombre) ENTIDAD_ORIGEN_NOMBRE,\n" +
-                "       D.DRIVER_CODIGO\n" +
-                "  FROM centros A\n" +
-                "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-                "  JOIN centro_tipos C ON A.centro_tipo_codigo=C.codigo\n" +
-                "  LEFT JOIN entidad_origen_driver D ON A.codigo=D.entidad_origen_codigo AND B.periodo=D.periodo\n" +
-                "  LEFT JOIN grupos E ON B.entidad_origen_codigo=E.codigo\n" +
-                "  LEFT JOIN centros F ON B.entidad_origen_codigo=F.codigo\n" +
-                " WHERE B.periodo=%d AND A.reparto_tipo=%d AND B.iteracion!=-1\n" +
-                " ORDER BY NIVEL_DUMMY,A.codigo,B.iteracion,B.entidad_origen_codigo",
-                periodo,repartoTipo);
+                "SELECT a.centro_codigo CODIGO_CENTRO,\n" +
+                "        E.nombre NOMBRE_CENTRO,\n" +
+                "        case  when E.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(E.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        I.NOMBRE TIPO_CENTRO,\n" +
+                "        CASE  WHEN A.ITERACION = 0 THEN 'PROPIO'\n" +
+                "        END ITERACION,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        F.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
+                "        B.DRIVER_CODIGO  CODIGO_DRIVER,\n" +
+                "        G.NOMBRE NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO\n" +
+                "FROM centro_lineas A \n" +
+                "join bolsa_driver B on a.entidad_origen_codigo = b.centro_codigo AND b.periodo = a.periodo\n" +
+                "join driver_lineas C on c.driver_codigo= b.driver_codigo and C.entidad_destino_codigo = a.centro_codigo AND C.PERIODO = B.PERIODO AND A.PERIODO = C.PERIODO\n" +
+                "join partidas D on D.codigo = B.partida_codigo AND d.grupo_gasto = a.grupo_gasto\n" +
+                "join centros E ON E.codigo = A.centro_codigo\n" +
+                "join centros F ON F.codigo = a.entidad_origen_codigo\n" +
+                "join drivers G ON G.codigo = B.driver_codigo\n" +
+                "JOIN plan_de_cuentas H ON H.codigo = B.cuenta_contable_codigo\n" +
+                "JOIN centro_tipos I on e.centro_tipo_codigo = i.codigo\n" +
+                "JOIN centro_tipos J on e.centro_tipo_codigo = j.codigo\n" +
+                "JOIN grupo_gastos K on k.codigo = a.grupo_gasto\n" +
+                "where A.periodo = %d and a.iteracion = 0\n" +
+                "GROUP BY a.centro_codigo, e.nombre, e.nivel, i.nombre, a.iteracion, a.entidad_origen_codigo, f.nombre, b.driver_codigo, g.nombre\n" +
+                "UNION\n" +
+                "SELECT  A.CENTRO_CODIGO CODIGO_CENTRO,\n" +
+                "        D.NOMBRE NOMBRE_CENTRO,\n" +
+                "        case  when D.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(D.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        E.NOMBRE TIPO_CENTRO,\n" +
+                "        'PROPIO' ITERACION,\n" +
+                "        '-' CODIGO_CENTRO_ORIGEN,\n" +
+                "        '-' NOMBRE_CENTRO_ORIGEN,\n" +
+                "        '-' CODIGO_DRIVER,\n" +
+                "        '-' NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO\n" +
+                "        \n" +
+                "FROM cuenta_partida_centro A\n" +
+                "join plan_de_cuentas B ON B.codigo = A.cuenta_contable_codigo\n" +
+                "join partidas C ON c.codigo = A.partida_codigo\n" +
+                "join centros D ON d.codigo = A.centro_codigo\n" +
+                "JOIN centro_tipos E ON E.codigo = d.centro_tipo_codigo\n" +
+                "JOIN grupo_gastos F ON F.codigo = c.grupo_gasto\n" +
+                "WHERE a.periodo = %d and d.es_bolsa = 'NO'\n" +
+                "GROUP BY A.CENTRO_CODIGO, D.NOMBRE,D.NIVEL,E.NOMBRE\n" +
+                "union\n" +
+                "select  a.centro_codigo CODIGO_CENTRO,\n" +
+                "        c.nombre NOMBRE_CENTRO,\n" +
+                "        case  when C.nivel <= 0 then 'NIVEL 999'\n" +
+                "              else 'NIVEL '|| TO_CHAR(C.nivel)\n" +
+                "        end NIVEL_CENTRO,\n" +
+                "        E.NOMBRE TIPO_CENTRO,\n" +
+                "        CASE  WHEN A.ITERACION > 0 THEN 'CENTRO NIVEL ' ||TO_CHAR(A.ITERACION)\n" +
+                "              WHEN A.ITERACION <= 0 THEN 'PROPIO'\n" +
+                "        END ITERACION,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        D.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
+                "        B.DRIVER_CODIGO  CODIGO_DRIVER,\n" +
+                "        H.NOMBRE NOMBRE_DRIVER,\n" +
+                "        SUM(A.SALDO) SALDO       \n" +
+                "FROM CENTRO_LINEAS A\n" +
+                "JOIN ENTIDAD_ORIGEN_DRIVER B ON A.entidad_origen_codigo = B.entidad_origen_codigo AND A.PERIODO = B.PERIODO\n" +
+                "JOIN CENTROS C ON c.codigo = a.centro_codigo\n" +
+                "JOIN CENTROS D ON d.codigo = b.entidad_origen_codigo\n" +
+                "JOIN centro_tipos E ON e.codigo = c.centro_tipo_codigo\n" +
+                "join drivers H ON H.codigo = b.driver_codigo\n" +
+                "WHERE A.PERIODO = %d\n" +
+                "GROUP BY A.CENTRO_CODIGO, C.NOMBRE, C.NIVEL, a.iteracion, e.nombre,a.entidad_origen_codigo, d.nombre, b.driver_codigo,h.nombre \n" +
+                "ORDER BY NIVEL_CENTRO,CODIGO_CENTRO,ITERACION,CODIGO_CENTRO_ORIGEN",
+                periodo,periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
@@ -306,12 +488,27 @@ public class ReportingDAO {
         ConexionBD.ejecutar(query);
     }
     
-    public ResultSet dataReporteObjetosGastoAdmOpe(String tableName) {
-        String queryStr;
-        if (tableName.equals("JMD_REP_ADM_OPE_OBCO_F"))
-            queryStr = String.format("SELECT * FROM %s ORDER BY OFICINA_CODIGO,BANCA_CODIGO,PRODUCTO_CODIGO,CECO_ORIGEN_CODIGO",tableName);
-        else
-            queryStr = String.format("SELECT * FROM %s ORDER BY CENTRO_NIVEL,CENTRO_CODIGO",tableName);
+    public ResultSet dataReporteObjetosCostos(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+
+                "SELECT  A.periodo PERIODO,\n" +
+                "        A.producto_codigo CODIGO_PRODUCTO,\n" +
+                "        b.nombre NOMBRE_PRODUCTO,\n" +
+                "        a.subcanal_codigo CODIGO_SUBCANAL,\n" +
+                "        c.nombre NOMBRE_SUBCANAL,\n" +
+                "        e.nombre GRUPO_GASTO,\n" +
+                "        a.saldo SALDO,\n" +
+                "        a.entidad_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
+                "        d.nombre NOMBRE_CENTRO_ORIGEN,\n" +
+                "        a.driver_codigo CODIGO_DRIVER,\n" +
+                "        f.nombre NOMBRE_DRIVER\n" +
+                "FROM objeto_lineas A\n" +
+                "JOIN productos B ON b.codigo = a.producto_codigo\n" +
+                "JOIN subcanals C ON c.codigo = a.subcanal_codigo\n" +
+                "JOIN centros D ON d.codigo = a.entidad_origen_codigo\n" +
+                "join grupo_gastos E ON e.codigo = a.grupo_gasto\n" +
+                "JOIN drivers F ON f.codigo = a.driver_codigo\n" +
+                "WHERE A.PERIODO = 201906",
+                periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
@@ -356,4 +553,6 @@ public class ReportingDAO {
         
         return ConexionBD.ejecutarQuery("SELECT * FROM TP_OFICINAS_OC_2");
     }
+    
+    
 }

@@ -15,7 +15,8 @@ public class EntidadDistribucion {
     final StringProperty codigo;
     final StringProperty nombre;
     final StringProperty descripcion;
-    final BooleanProperty estaActiva;
+    private ObjectProperty<Tipo> tipoCentro;
+    private BooleanProperty estaActiva;
     final DoubleProperty saldoAcumulado;
     final ObjectProperty<Date> fechaCreacion;
     final ObjectProperty<Date> fechaActualizacion;
@@ -27,11 +28,23 @@ public class EntidadDistribucion {
         this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
         this.saldoAcumulado = new SimpleDoubleProperty(saldoAcumulado);
+//        this.tipoCentro = new SimpleObjectProperty(tipoCentro);
         this.fechaCreacion = new SimpleObjectProperty(fechaCreacion);
         this.fechaActualizacion = new SimpleObjectProperty(fechaActualizacion);
         this.estaActiva = new SimpleBooleanProperty(estaActiva);
         this.driver = new SimpleObjectProperty(null);
     }
+//    public EntidadDistribucion(String codigo, String nombre, String descripcion, String padre, double saldoAcumulado, Tipo tipoCentro, Date fechaCreacion, Date fechaActualizacion) {
+//        this.codigo = new SimpleStringProperty(codigo);
+//        this.nombre = new SimpleStringProperty(nombre);
+//        this.descripcion = new SimpleStringProperty(descripcion);
+//        this.tipoCentro = new SimpleObjectProperty(tipoCentro);
+//        this.saldoAcumulado = new SimpleDoubleProperty(saldoAcumulado);
+//        this.fechaCreacion = new SimpleObjectProperty(fechaCreacion);
+//        this.fechaActualizacion = new SimpleObjectProperty(fechaActualizacion);
+//        this.driver = new SimpleObjectProperty(null);
+//    }
+
 
     public StringProperty codigoProperty() {
         return codigo;
@@ -67,6 +80,18 @@ public class EntidadDistribucion {
 
     public void setDescripcion(String descripcion) {
         this.descripcion.set(descripcion);
+    }
+    
+    public ObjectProperty<Tipo>  tipoCentroProperty() {
+        return tipoCentro;
+    }
+    
+    public Tipo getTipoCentro() {
+        return this.tipoCentro.get();
+    }
+
+    public void setTipoCentro(Tipo tipoCentro) {
+        this.tipoCentro.set(tipoCentro);
     }
 
     public DoubleProperty saldoAcumuladoProperty() {

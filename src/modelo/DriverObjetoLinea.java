@@ -10,6 +10,8 @@ public class DriverObjetoLinea {
     private Banca banca;
     private Oficina oficina;
     private Producto producto;
+    private Subcanal subcanal;
+    private boolean flagCargar;
     private final DoubleProperty porcentaje;
     private final ObjectProperty<Date> fechaCreacion;
     private final ObjectProperty<Date> fechaActualizacion;
@@ -21,6 +23,23 @@ public class DriverObjetoLinea {
         this.porcentaje = new SimpleDoubleProperty(porcentaje);
         this.fechaCreacion = new SimpleObjectProperty<>(fechaCreacion);
         this.fechaActualizacion = new SimpleObjectProperty<>(fechaActualizacion);
+    }
+    
+    public DriverObjetoLinea(Producto producto, Subcanal subcanal, double porcentaje, Date fechaCreacion, Date fechaActualizacion){
+        this.producto = producto;
+        this.subcanal = subcanal;
+        this.porcentaje = new SimpleDoubleProperty(porcentaje);
+        this.fechaCreacion = new SimpleObjectProperty<>(fechaCreacion);
+        this.fechaActualizacion = new SimpleObjectProperty<>(fechaActualizacion);
+    }
+    
+    public DriverObjetoLinea(Producto producto, Subcanal subcanal, double porcentaje, Date fechaCreacion, Date fechaActualizacion, boolean flagCargar){
+        this.producto = producto;
+        this.subcanal = subcanal;
+        this.porcentaje = new SimpleDoubleProperty(porcentaje);
+        this.fechaCreacion = new SimpleObjectProperty<>(fechaCreacion);
+        this.fechaActualizacion = new SimpleObjectProperty<>(fechaActualizacion);
+        this.flagCargar = flagCargar;
     }
 
     public Banca getBanca() {
@@ -45,6 +64,14 @@ public class DriverObjetoLinea {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+    
+    public Subcanal getSubcanal() {
+        return this.subcanal;
+    }
+
+    public void setSubcanal(Subcanal subcanal) {
+        this.subcanal = subcanal;
     }
 
     public DoubleProperty porcentajeProperty() {
@@ -81,5 +108,13 @@ public class DriverObjetoLinea {
 
     public void setFechaActualizacion(Date fechaActualizacion) {
         this.fechaActualizacion.set(fechaActualizacion);
+    }
+    
+    public boolean getFlagCargar(){
+        return this.flagCargar;
+    }
+    
+    public void setFlagCargar(boolean flagCargar){
+        this.flagCargar = flagCargar;
     }
 }

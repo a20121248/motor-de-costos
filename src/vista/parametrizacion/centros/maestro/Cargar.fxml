@@ -74,12 +74,17 @@
       </AnchorPane>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolCodigoGrupo" prefWidth="75.0" styleClass="center" text="CÓDIGO GRUPO" />
-            <TableColumn fx:id="tabcolNombreGrupo" prefWidth="75.0" styleClass="left" text="NOMBRE GRUPO" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="75.0" styleClass="center" text="NIVEL" />
-            <TableColumn fx:id="tabcolCodigoCentroPadre" prefWidth="75.0" styleClass="center" text="CÓDIGO CENTRO PADRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="45.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="51.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolCodigoGrupo" prefWidth="67.0" styleClass="center" text="CÓDIGO GRUPO" />
+            <TableColumn fx:id="tabcolNombreGrupo" prefWidth="64.0" styleClass="left" text="NOMBRE GRUPO" />
+            <TableColumn fx:id="tabcolNivel" prefWidth="60.0" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolCodigoCentroPadre" prefWidth="64.0" styleClass="center" text="CÓDIGO CENTRO PADRE" />
+            <TableColumn fx:id="tabcolEsBolsa" prefWidth="49.0" styleClass="center" text="BOLSA" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="57.0" styleClass="center" text="TIPO DE GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="61.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="382.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="91.0" styleClass="center" text="NIIF17 CLASE" />
          </columns>
       </TableView>
       <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
@@ -94,15 +99,6 @@
          </styleClass>
       </JFXButton>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnDescargarLog" layoutX="242.0" layoutY="585.0" onAction="#btnDescargarLogAction" text="Descargar LOG" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="FILE_TEXT_ALT" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="large" />
-         </styleClass>
-      </JFXButton>
       <JFXButton fx:id="btnAtras" layoutX="260.0" layoutY="466.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
@@ -112,6 +108,15 @@
          <graphic>
             <FontAwesomeIconView glyphName="UPLOAD" />
          </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargarLog" layoutX="218.0" layoutY="549.0" onAction="#btnDescargarLogAction" text="Descargar LOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
+         </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
       </JFXButton>
    </children>
 </AnchorPane>

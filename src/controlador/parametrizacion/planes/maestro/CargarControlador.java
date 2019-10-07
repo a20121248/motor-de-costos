@@ -8,10 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +48,10 @@ public class CargarControlador implements Initializable {
     @FXML private TableView<CuentaContable> tabListar;
     @FXML private TableColumn<CuentaContable, String> tabcolCodigo;
     @FXML private TableColumn<CuentaContable, String> tabcolNombre;
+    @FXML private TableColumn<CuentaContable, String> tabcolTipoGasto;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Atribuible;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Tipo;
+    @FXML private TableColumn<CuentaContable, String> tabcolNIIF17Clase;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
@@ -62,25 +62,38 @@ public class CargarControlador implements Initializable {
     PlanDeCuentaDAO planDeCuentaDAO;
     LogServicio logServicio;
     String logName;
+    String logDetails;
     public MenuControlador menuControlador;
     List<String> lstCodigos;
+    List<CuentaContable> listaCargar = new ArrayList() ;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getControlador());
+    String titulo;
+    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         lstCodigos = planDeCuentaDAO.listarCodigos();
+        this.titulo = "Cuentas Contables";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 85);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17AtribuibleProperty());
+        tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
+        tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -92,7 +105,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkPlanDeCuentasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -122,7 +135,11 @@ public class CargarControlador implements Initializable {
     }
     
     private List<CuentaContable> leerArchivo(String rutaArchivo) {
-        List<CuentaContable> lstPrevisualizar = new ArrayList();
+        List<CuentaContable> lista = new ArrayList();
+        List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
+        listaCargar = new ArrayList();
+        logDetails = "";
+//        List<CuentaContable> listaError = new ArrayList();
         try (FileInputStream f = new FileInputStream(rutaArchivo);
              XSSFWorkbook libro = new XSSFWorkbook(f)) {
             XSSFSheet hoja = libro.getSheetAt(0);
@@ -132,27 +149,48 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
-                String msj = "La cabecera no es la correcta.\nNo se puede cargar el archivo.";
-                menuControlador.navegador.mensajeError("Cargar Cuentas Contables", msj);
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","TIPO GASTO","NIIF17 ATRIBUIBLE","NIIF17 TIPO","NIIF17 CLASE")))) {
+                menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
             
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTAS_CONTABLES.log";
-            logServicio = new LogServicio(logName);
-            logServicio.crearArchivo();
-            logServicio.agregarSeparadorArchivo('=', 100);
-            logServicio.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            logServicio.agregarSeparadorArchivo('=', 100);
             while (filas.hasNext()) {
+                
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Tipo = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Clase = celda.getStringCellValue();
+
+                niif17Atribuible = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Atribuible);
+                niif17Tipo = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Tipo);
+                niif17Clase = planDeCuentaDAO.convertirAbreviaturaPalabra(niif17Clase);
+                String strTipoGasto;
+                if(tipoGasto == 1) strTipoGasto ="DIRECTO";
+                else strTipoGasto ="INDIRECTO";
                 
-                CuentaContable linea = new CuentaContable(codigo,nombre,null,0,null,null);
-                lstPrevisualizar.add(linea);
+                CuentaContable linea = new CuentaContable(codigo,nombre,null,strTipoGasto,niif17Atribuible,niif17Tipo, niif17Clase,0,null,null,true);
+                boolean ptrCodigo = menuControlador.patronCodigoCuenta(codigo);
+                String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                if(cuenta == null & ptrCodigo){
+                    listaCargar.add(linea);                    
+                    listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
+                }else {
+                    logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
+                    if(cuenta!= null){
+                        logDetails +=String.format("- Ya existe en Catálogo.\r\n");
+                    }else {
+                        if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
+                    }
+                    linea.setFlagCargar(false);
+//                    listaError.add(linea);
+                }
+                lista.add(linea);
             }
             //cerramos el libro
             f.close();
@@ -160,22 +198,11 @@ public class CargarControlador implements Initializable {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE,ex.getMessage());
         }
-        return lstPrevisualizar;
+        return lista;
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        String rutaOrigen = "." + File.separator + "logs" + File.separator + logName;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar LOG");
-        fileChooser.setInitialFileName(logName);
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivo LOG", "*.log"));
-        File archivoSeleccionado = fileChooser.showSaveDialog(btnDescargarLog.getScene().getWindow());
-        if (archivoSeleccionado != null) {
-            Path origen = Paths.get(rutaOrigen);
-            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            menuControlador.navegador.mensajeInformativo("Guardar LOG","Descarga completa.");
-        }
+        menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
@@ -183,22 +210,42 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) {
-        List<CuentaContable> lista = tabListar.getItems();
-        for (CuentaContable item: lista) {
-            if (lstCodigos.contains(item.getCodigo())) {
-                logServicio.agregarLineaArchivo(String.format("No se pudo crear la Cuenta Contable porque el código %s ya existe.",item.getCodigo()));
-                item.setFlagCargar(false);
-            } else {
-                logServicio.agregarLineaArchivo(String.format("Se creó la Cuenta Contable con código %s.",item.getCodigo()));
-                item.setFlagCargar(true);
+        findError = false;
+        if(tabListar.getItems().isEmpty()){
+            menuControlador.mensaje.upload_empty();
+        }else{
+            if(listaCargar.isEmpty()){
+                menuControlador.mensaje.upload_allCharged_now(titulo);
+            }else{
+                planDeCuentaDAO.insertarListaObjetoCuenta(listaCargar, menuControlador.repartoTipo);
+                crearReporteLOG();
+                if(findError == true){
+                    menuControlador.mensaje.upload_success_with_error(titulo);
+                }else {
+                    menuControlador.mensaje.upload_success();
+                }
+                btnDescargarLog.setVisible(true);
             }
         }
-        logServicio.agregarSeparadorArchivo('=', 100);
-        logServicio.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-        logServicio.agregarSeparadorArchivo('=', 100);
-        planDeCuentaDAO.insertarListaObjetoCuenta(lista, menuControlador.repartoTipo);
-        menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", "Cuentas contables subidas correctamente.");
-        btnDescargarLog.setVisible(true);
-        LOGGER.log(Level.INFO,String.format("El usuario %s subió el catálogo de Cuentas Contables.",menuControlador.usuario.getUsername()));
+    }
+    
+    void crearReporteLOG(){
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CUENTACONTABLE_CATALOGO.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        tabListar.getItems().forEach((item)->{
+            if(item.getFlagCargar()){
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_MAESTRO_CARGAR.getDireccion());
+            }
+            else{
+                findError = true;
+            }
+        });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     }
 }

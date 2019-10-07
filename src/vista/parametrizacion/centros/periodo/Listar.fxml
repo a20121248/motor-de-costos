@@ -48,16 +48,6 @@
                   </Label>
                   <Hyperlink fx:id="lnkCentros" onAction="#lnkCentrosAction" text="Centros de Costos" textFill="#676a6c">
                      <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Hyperlink>
-                  <Label text="/" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Hyperlink fx:id="lnkAsignacion" onAction="#lnkAsignacionAction" text="Asociación" textFill="#676a6c">
-                     <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Hyperlink>
@@ -98,6 +88,15 @@
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
             </JFXButton>
+            <JFXButton fx:id="btnCatalogo" layoutX="170.0" layoutY="10.0" onAction="#btnCatalogoAction" text="Catálogo">
+               <graphic>
+                  <FontAwesomeIconView glyphName="CUBES" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="important" />
+               </styleClass>
+            </JFXButton>
          </children>
       </HBox>
       <Label layoutX="462.0" layoutY="184.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
@@ -106,12 +105,19 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolTipoCentro" prefWidth="101.0" styleClass="left" text="TIPO CENTRO" />
+            <TableColumn fx:id="tabcolSaldo" prefWidth="101.0" styleClass="right" text="SALDO" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
       <JFXButton fx:id="btnAtras" layoutX="613.0" layoutY="549.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="REPLY" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="btnDescargar" layoutX="215.0" layoutY="545.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
       </JFXButton>
    </children>

@@ -33,11 +33,14 @@ public class EditarControlador implements Initializable {
     GrupoDAO grupoDAO;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_EDITAR.getControlador());
-    
+    String titulo;
+
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupo = (Grupo) menuControlador.objeto;
         grupoDAO = new GrupoDAO();
+        this.titulo = "Grupos de Cuentas Contables";
+
     }
     
     @Override
@@ -55,7 +58,7 @@ public class EditarControlador implements Initializable {
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
@@ -70,7 +73,8 @@ public class EditarControlador implements Initializable {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         grupoDAO.actualizarObjeto(codigo, nombre, 1);
-        menuControlador.navegador.mensajeInformativo("Editar Grupo de Cuentas Contables", "Grupo editado correctamente.");
+        menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_EDIT_SUCCESS);
+        menuControlador.Log.editarItem(LOGGER,menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_PLANES_MAESTRO_EDITAR.getDireccion());
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_MAESTRO_LISTAR);
     }
     

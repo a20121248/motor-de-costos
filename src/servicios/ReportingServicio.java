@@ -99,41 +99,52 @@ public class ReportingServicio {
             // Cabecera de la tabla
             int rowNum = 0;
             List<String> listaCabecera;
-            if (repartoTipo == 1)
-                listaCabecera = new ArrayList(Arrays.asList("PERIODO","CECO_CODIGO","CECO_NOMBRE","GRUPO_CUENTAS_CODIGO","GRUPO_CUENTAS_NOMBRE","CUENTA_CONTABLE_CODIGO","CUENTA_CONTABLE_NOMBRE","GASTO"));
-            else
-                listaCabecera = new ArrayList(Arrays.asList("PERIODO","CEBE_CODIGO","CEBE_NOMBRE","GRUPO_CUENTAS_CODIGO","GRUPO_CUENTAS_NOMBRE","CUENTA_CONTABLE_CODIGO","CUENTA_CONTABLE_NOMBRE","INGRESO"));
+            listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CENTRO","NOMBRE_CENTRO","CODIGO_CUENTA_CONTABLE_ORIGEN","NOMBRE_CUENTA_CONTABLE_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER","TIPO_ASIGNACION_GASTO"));
             
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             
             // Contenido de la tabla en la fila rowNum+1
             CellStyle numberCellStyle = decimalEstilo(wb);
-            ResultSet rs = reportingDAO.dataReporteCuentaCentro(periodo, repartoTipo);
+            ResultSet rs = reportingDAO.dataReporteCuentaPartidaCentroBolsa(periodo, repartoTipo);
             while(rs.next()) {
-                String centroCodigo = rs.getString("CENTRO_CODIGO");
-                String centroNombre = rs.getString("CENTRO_NOMBRE");
-                String grupoCodigo = rs.getString("GRUPO_CODIGO");
-                String grupoNombre = rs.getString("GRUPO_NOMBRE");
-                String cuentaCodigo = rs.getString("CUENTA_CONTABLE_CODIGO");
-                String cuentaNombre = rs.getString("CUENTA_CONTABLE_NOMBRE");
+                String periodoReporte = rs.getString("PERIODO");
+                String codigoCentro = rs.getString("CODIGO_CENTRO");
+                String nombreCentro = rs.getString("NOMBRE_CENTRO");
+                String codigoCuenta = rs.getString("CODIGO_CUENTA_CONTABLE");
+                String nombreCuenta = rs.getString("NOMBRE_CUENTA_CONTABLE");
+                String codigoPartida = rs.getString("CODIGO_PARTIDA");
+                String nombrePartida = rs.getString("NOMBRE_PARTIDA");
                 double saldo = rs.getDouble("SALDO");
+                String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
+                String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
+                String codigoDriver = rs.getString("CODIGO_DRIVER");
+                String nombreDriver = rs.getString("NOMBRE_DRIVER");
+                String tipoCentro = rs.getString("ASIGNACION");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
-                row.createCell(idxColumn++).setCellValue(periodo);
-                row.createCell(idxColumn++).setCellValue(centroCodigo);
+                row.createCell(idxColumn++).setCellValue(periodoReporte);
+                row.createCell(idxColumn++).setCellValue(codigoCentro);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(centroNombre);
-                row.createCell(idxColumn++).setCellValue(grupoCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreCentro);
+                row.createCell(idxColumn++).setCellValue(codigoCuenta);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(grupoNombre);
-                row.createCell(idxColumn++).setCellValue(cuentaCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreCuenta);
+                row.createCell(idxColumn++).setCellValue(codigoPartida);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(cuentaNombre);
+                row.createCell(idxColumn++).setCellValue(nombrePartida);
                 sh.setColumnWidth(idxColumn, 5000);
                 row.createCell(idxColumn).setCellValue(saldo);
                 row.getCell(idxColumn++).setCellStyle(numberCellStyle);
+                row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(codigoDriver);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreDriver);
+                row.createCell(idxColumn++).setCellValue(tipoCentro);
+                
                 
                 if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
             }
@@ -153,7 +164,7 @@ public class ReportingServicio {
             
             // Cabecera de la tabla
             int rowNum = 0;
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CECO_CODIGO","CECO_NOMBRE","CECO_NIVEL","CECO_TIPO","ITERACION","TIPO_GASTO_CODIGO","TIPO_ENTIDAD","CODIGO_ENTIDAD","NOMBRE_ENTIDAD","CECO_ASIGNADO_NIVEL","CUENTA_CONTABLE_CODIGO","CUENTA_CONTABLE_NOMBRE","GASTO"));
+            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CENTRO","NOMBRE_CENTRO","NIVEL_CENTRO","TIPO_CENTRO","ITERACION","TIPO_ASIGNACION_GASTO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","NIVEL_CENTRO_ORIGEN","TIPO_CENTRO_ORIGEN","CODIGO_CUENTA_CONTABLE_ORIGEN","NOMBRE_CUENTA_CONTABLE_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER","TIPO_GASTO","SALDO"));
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             
@@ -161,40 +172,52 @@ public class ReportingServicio {
             CellStyle decimalCellStyle = decimalEstilo(wb);
             ResultSet rs = reportingDAO.dataReporteGastoPropioAsignado(periodo,repartoTipo);
             while(rs.next()) {
-                String centroCodigo = rs.getString("CECO_CODIGO");
-                String centroNombre = rs.getString("CECO_NOMBRE");
-                int centroNivel = rs.getInt("CECO_NIVEL");
-                String centroTipo = rs.getString("CECO_TIPO");
+                int periodoReporte = rs.getInt("PERIODO");
+                String codigoCentro = rs.getString("CODIGO_CENTRO");
+                String nombreCentro = rs.getString("NOMBRE_CENTRO");
+                int nivelCentro = rs.getInt("NIVEL_CENTRO");
+                String tipoCentro = rs.getString("TIPO_CENTRO");
                 int iteracion = rs.getInt("ITERACION");
+                String tipoAsignacion = rs.getString("TIPO_ASIGNACION_GASTO");
+                String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
+                String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
+                int nivelCentroOrigen = rs.getInt("NIVEL_CENTRO_ORIGEN");
+                String tipoCentroOrigen = rs.getString("TIPO_CENTRO_ORIGEN");
+                String codigoCuenta = rs.getString("CODIGO_CUENTA_CONTABLE_ORIGEN");
+                String nombreCuenta = rs.getString("NOMBRE_CUENTA_CONTABLE_ORIGEN");
+                String codigoPartida = rs.getString("CODIGO_PARTIDA_ORIGEN");
+                String nombrePartida = rs.getString("NOMBRE_PARTIDA_ORIGEN");
+                String codigoDriver = rs.getString("CODIGO_DRIVER");
+                String nombreDriver = rs.getString("NOMBRE_DRIVER");
                 String tipoGasto = rs.getString("TIPO_GASTO");
-                String tipoEntidad = rs.getString("TIPO_ENTIDAD");
-                String entidadCodigo = rs.getString("CODIGO_ENTIDAD");
-                String entidadNombre = rs.getString("NOMBRE_ENTIDAD");
-                String nivelCecoAsignado = rs.getString("CECO_ASIGNADO_NIVEL");
-                String cuentaCodigo = rs.getString("CUENTA_CONTABLE_CODIGO");
-                String cuentaNombre = rs.getString("CUENTA_CONTABLE_NOMBRE");
-                double gasto = rs.getDouble("GASTO");
-
+                double saldo = rs.getDouble("SALDO");
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
-                row.createCell(idxColumn++).setCellValue(periodo);
-                row.createCell(idxColumn++).setCellValue(centroCodigo);
+                row.createCell(idxColumn++).setCellValue(periodoReporte);
+                row.createCell(idxColumn++).setCellValue(codigoCentro);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(centroNombre);
-                row.createCell(idxColumn++).setCellValue(centroNivel);
-                row.createCell(idxColumn++).setCellValue(centroTipo);
+                row.createCell(idxColumn++).setCellValue(nombreCentro);
+                row.createCell(idxColumn++).setCellValue(nivelCentro);
+                row.createCell(idxColumn++).setCellValue(tipoCentro);
                 row.createCell(idxColumn++).setCellValue(iteracion);
+                row.createCell(idxColumn++).setCellValue(tipoAsignacion);
+                row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(nivelCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(tipoCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(codigoCuenta);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreCuenta);
+                row.createCell(idxColumn++).setCellValue(codigoPartida);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombrePartida);
+                row.createCell(idxColumn++).setCellValue(codigoDriver);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreDriver);
                 row.createCell(idxColumn++).setCellValue(tipoGasto);
-                row.createCell(idxColumn++).setCellValue(tipoEntidad);
-                row.createCell(idxColumn++).setCellValue(entidadCodigo);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(entidadNombre);
-                row.createCell(idxColumn++).setCellValue(nivelCecoAsignado);
-                row.createCell(idxColumn++).setCellValue(cuentaCodigo);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(cuentaNombre);
                 sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gasto);
+                row.createCell(idxColumn).setCellValue(saldo);
                 row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
                 
                 if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
@@ -252,7 +275,7 @@ public class ReportingServicio {
             
             // Cabecera de la tabla
             int rowNum = 0;
-            List<String> listaCabecera = new ArrayList(Arrays.asList("CECO","CECO_NIVEL","CECO_TIPO","ITERACION","SALDO"));
+            List<String> listaCabecera = new ArrayList(Arrays.asList("CENTRO","CENTRO_NIVEL","TIPO_CENTRO","ITERACION","SALDO"));
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             
@@ -260,20 +283,20 @@ public class ReportingServicio {
             CellStyle numberCellStyle = ReportingServicio.this.decimalEstilo(wb);
             ResultSet rs = reportingDAO.dataReporteCascada(periodo, repartoTipo);
             while(rs.next()) {
-                String cecoCodigo = rs.getString("CECO_CODIGO");
-                String cecoNombre = rs.getString("CECO_NOMBRE");
-                String cecoNivel = rs.getString("CECO_NIVEL");
-                String cecoTipo = rs.getString("CECO_TIPO");
-                int iteracion = rs.getInt("ITERACION");
+                String cecoCodigo = rs.getString("CODIGO_CENTRO");
+                String cecoNombre = rs.getString("NOMBRE_CENTRO");
+                String cecoNivel = rs.getString("NIVEL_CENTRO");
+                String cecoTipo = rs.getString("TIPO_CENTRO");
+                String iteracion = rs.getString("ITERACION");
                 double saldo = rs.getDouble("SALDO");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
                 sh.setColumnWidth(idxColumn, 8000);
                 row.createCell(idxColumn++).setCellValue(cecoCodigo + " - " + cecoNombre);
-                row.createCell(idxColumn++).setCellValue(cecoNivel);
+                row.createCell(idxColumn++).setCellValue(cecoNivel.equals("NIVEL 999") ? "-":cecoNivel);
                 row.createCell(idxColumn++).setCellValue(cecoTipo);
-                row.createCell(idxColumn++).setCellValue(iteracion == 0 ? "CUENTAS CONTABLES" : "CECOS NIVEL " + iteracion);
+                row.createCell(idxColumn++).setCellValue(iteracion);
                 sh.setColumnWidth(idxColumn, 5000);
                 row.createCell(idxColumn).setCellValue(saldo);
                 row.getCell(idxColumn++).setCellStyle(numberCellStyle);
@@ -387,69 +410,51 @@ public class ReportingServicio {
         }
     }
     
-    public void crearReporteObjetosGastoAdmOpe(int periodo, String ruta, int repartoTipo) {
-        try {            
+    public void crearReporteObjetosCostos(int periodo, String ruta, int repartoTipo) {
+        try {
             SXSSFWorkbook wb = new SXSSFWorkbook(-1);
-            SXSSFSheet sh;
-            int rowNum;
-            List<String> listaCabecera;
-            CellStyle headerCellStyle = cabeceraEstilo(wb);
-            CellStyle numberCellStyle = decimalEstilo(wb);
-            ResultSet rs;
-            // crea las tablas intermedias
-            reportingDAO.dataReporteObjetosGastoAdmOpeBorrarTablas();
-            reportingDAO.dataReporteObjetosGastoAdmOpeLlenarTablas(periodo, repartoTipo);
-            //HOJA
-            sh = wb.createSheet("REPORTE");            
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
             // Cabecera de la tabla
-            rowNum = 0;
-            listaCabecera = new ArrayList(Arrays.asList("PERIODO","OFICINA_CODIGO","OFICINA_NOMBRE","BANCA_CODIGO","BANCA_NOMBRE","PRODUCTO_CODIGO","PRODUCTO_NOMBRE","GASTOS_OPERATIVOS","GASTOS_ADMINISTRATIVOS","GASTOS_TOTALES","CECO_ORIGEN_CODIGO","CECO_ORIGEN_NOMBRE","DRIVER_CODIGO","DRIVER_NOMBRE"));
-            crearCabecera(listaCabecera, sh, rowNum, headerCellStyle);            
+            int rowNum = 0;
+            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_PRODUCTO","NOMBRE_PRODUCTO","CODIGO_SUBCANAL","NOMBRE_SUBCANAL","GRUPO_GASTO","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER"));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             // Contenido de la tabla en la fila rowNum+1
-            ++rowNum;
-            rs = reportingDAO.dataReporteObjetosGastoAdmOpe("JMD_REP_ADM_OPE_OBCO_F");
+            CellStyle decimalCellStyle = decimalEstilo(wb);
+            ResultSet rs = reportingDAO.dataReporteObjetosCostos(periodo, repartoTipo);
             while(rs.next()) {
-                String oficinaCodigo = rs.getString("OFICINA_CODIGO");
-                String oficinaNombre = rs.getString("OFICINA_NOMBRE");
-                String bancaCodigo = rs.getString("BANCA_CODIGO");
-                String bancaNombre = rs.getString("BANCA_NOMBRE");
-                String productoCodigo = rs.getString("PRODUCTO_CODIGO");
-                String productoNombre = rs.getString("PRODUCTO_NOMBRE");
-                double gastosOperativos = rs.getDouble("GASTOS_OPERATIVOS");
-                double gastosAdministrativos = rs.getDouble("GASTOS_ADMINISTRATIVOS");
-                double gastosTotales = rs.getDouble("GASTOS_TOTALES");
-                String cecoOrigenCodigo = rs.getString("CECO_ORIGEN_CODIGO");
-                String cecoOrigenNombre = rs.getString("CECO_ORIGEN_NOMBRE");
-                String driverCodigo = rs.getString("DRIVER_CODIGO");
-                String driverNombre = rs.getString("DRIVER_NOMBRE");
+                int periodoReporte = rs.getInt("PERIODO");
+                String codigoProducto = rs.getString("CODIGO_PRODUCTO");
+                String nombreProducto = rs.getString("NOMBRE_PRODUCTO");
+                String codigoSubcanal = rs.getString("CODIGO_SUBCANAL");
+                String nombreSubcanal = rs.getString("NOMBRE_SUBCANAL");
+                String grupoGasto = rs.getString("GRUPO_GASTO");
+                double saldo = rs.getDouble("SALDO");
+                String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
+                String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
+                String codigoDriver = rs.getString("CODIGO_DRIVER");
+                String nombreDriver = rs.getString("NOMBRE_DRIVER");
 
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
-                row.createCell(idxColumn++).setCellValue(periodo);
-                row.createCell(idxColumn++).setCellValue(oficinaCodigo);
+                row.createCell(idxColumn++).setCellValue(periodoReporte);
+                row.createCell(idxColumn++).setCellValue(codigoProducto);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(oficinaNombre);
-                row.createCell(idxColumn++).setCellValue(bancaCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreProducto);
+                row.createCell(idxColumn++).setCellValue(codigoSubcanal);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(bancaNombre);
-                row.createCell(idxColumn++).setCellValue(productoCodigo);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(productoNombre);
+                row.createCell(idxColumn++).setCellValue(nombreSubcanal);
+                row.createCell(idxColumn++).setCellValue(grupoGasto);
                 sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosOperativos);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosAdministrativos);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(gastosTotales);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                row.createCell(idxColumn++).setCellValue(cecoOrigenCodigo);
+                row.createCell(idxColumn).setCellValue(saldo);
+                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(cecoOrigenNombre);
-                row.createCell(idxColumn++).setCellValue(driverCodigo);
+                row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
+                row.createCell(idxColumn++).setCellValue(codigoDriver);
                 sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(driverNombre);
+                row.createCell(idxColumn++).setCellValue(nombreDriver);
                 
                if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
             }
@@ -525,5 +530,8 @@ public class ReportingServicio {
         } catch (IOException | SQLException ex) {
             LOGGER.log(Level.INFO,ex.getMessage());
         }
+    }
+    
+    public void crearReporteTrazabilidad(){
     }
 }

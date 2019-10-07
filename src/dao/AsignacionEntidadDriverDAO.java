@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import modelo.CargarEntidadDriver;
+import modelo.CentroDriver;
 import modelo.Driver;
 import modelo.EntidadDistribucion;
 
@@ -41,16 +42,12 @@ public class AsignacionEntidadDriverDAO {
         String queryStr = String.format("" +
                 "DELETE FROM entidad_origen_driver A\n" +
                 " WHERE EXISTS (SELECT 1\n" +
-                "                 FROM grupos B\n" +
-                "                WHERE A.entidad_origen_codigo=B.codigo\n" +
-                "                  AND A.periodo=%d\n" +
-                "                  AND B.reparto_tipo=%d)\n" +
-                "    OR EXISTS (SELECT 1\n" +
                 "                 FROM centros C\n" +
                 "                WHERE A.entidad_origen_codigo=C.codigo\n" +
                 "                  AND A.periodo=%d\n" +
-                "                  AND C.reparto_tipo=%d)\n",
-                periodo,repartoTipo,periodo,repartoTipo);
+                "                  AND C.reparto_tipo=%d)\n"
+                + "AND periodo = '%s'",
+                periodo,repartoTipo,periodo,repartoTipo,periodo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -95,17 +92,17 @@ public class AsignacionEntidadDriverDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public void insertarListaAsignaciones(List<CargarEntidadDriver> lstEntidadDriver, int periodo, int repartoTipo) {
+    public void insertarListaAsignaciones(List<CentroDriver> lstEntidadDriver, int periodo, int repartoTipo) {
         borrarAsignacionesPeriodo(periodo, repartoTipo);
         
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 100;
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        for (CargarEntidadDriver item: lstEntidadDriver) {
+        for (CentroDriver item: lstEntidadDriver) {
             String queryStr = String.format(Locale.US, "" +
                     "INSERT INTO entidad_origen_driver(entidad_origen_codigo,driver_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
                     "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    item.getCodigoEntidad(),
+                    item.getCodigoCentro(),
                     item.getCodigoDriver(),
                     item.getPeriodo(),
                     fechaStr,

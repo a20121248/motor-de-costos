@@ -9,6 +9,8 @@ import dao.OficinaDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProductoDAO;
 import dao.ObjetoGrupoDAO;
+import dao.PartidaDAO;
+import dao.SubcanalDAO;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,11 +46,13 @@ public class BuscarEntidadControlador implements Initializable {
     
     //EntidadDistribucionDAO entidadDistribucionDAO;
     PlanDeCuentaDAO planDeCuentaDAO;
+    PartidaDAO partidaDAO;
     GrupoDAO grupoDAO;
     CentroDAO centroDAO;
     OficinaDAO oficinaDAO;
     BancaDAO bancaDAO;
     ProductoDAO productoDAO;
+    SubcanalDAO subcanalDAO;
     ObjetoGrupoDAO objetoGrupoDAO;
     MenuControlador menuControlador;
     ObjetoControladorInterfaz objetoControlador;
@@ -65,11 +69,13 @@ public class BuscarEntidadControlador implements Initializable {
         this.periodoSeleccionado = periodoSeleccionado;
         this.repartoTipo = repartoTipo;
         planDeCuentaDAO = new PlanDeCuentaDAO();
+        partidaDAO = new PartidaDAO();
         grupoDAO = new GrupoDAO();
         centroDAO = new CentroDAO();
         bancaDAO = new BancaDAO();
         oficinaDAO = new OficinaDAO();
         productoDAO = new ProductoDAO();
+        subcanalDAO = new SubcanalDAO();
         if (menuControlador.objetoTipo != null)
             objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
         lstTipos = menuControlador.lstEntidadTipos;
@@ -84,6 +90,11 @@ public class BuscarEntidadControlador implements Initializable {
                     if (periodoSeleccionado==-1) lista = planDeCuentaDAO.listarMaestro(menuControlador.codigos, repartoTipo);
                     else lista = planDeCuentaDAO.listar(periodoSeleccionado,"Todos", repartoTipo);
                     break;
+                case "PART": // Partidas
+                    //lista = planDeCuentaDAO.listarGruposNombres(periodoSeleccionado,repartoTipo);
+                    if (periodoSeleccionado==-1) lista = partidaDAO.listarObjetos(menuControlador.codigos, repartoTipo);
+                    else lista = partidaDAO.listar(periodoSeleccionado,"Todos", repartoTipo);
+                    break;
                 case "GCTA": // Grupo de Cuentas Contables
                     //lista = planDeCuentaDAO.listarGruposNombres(periodoSeleccionado,repartoTipo);
                     if (periodoSeleccionado==-1) lista = grupoDAO.listarObjetos(menuControlador.codigos, repartoTipo);
@@ -91,7 +102,7 @@ public class BuscarEntidadControlador implements Initializable {
                     break;
                 case "CECO": // Centro de Costo
                     if (periodoSeleccionado==-1) lista = centroDAO.listarMaestro(menuControlador.codigos, repartoTipo);
-                    else lista = centroDAO.listar(periodoSeleccionado, repartoTipo);
+                    else lista = centroDAO.listar(menuControlador.codigos ,periodoSeleccionado, repartoTipo);
                     break;
                 case "BAN": // Banca
                     if (periodoSeleccionado==-1) lista = bancaDAO.listarMaestro(menuControlador.codigos);
@@ -105,6 +116,10 @@ public class BuscarEntidadControlador implements Initializable {
                     if (periodoSeleccionado==-1) lista = productoDAO.listarMaestro(menuControlador.codigos);
                     else lista = productoDAO.listar(periodoSeleccionado);
                     break;
+                case "SCA": // Subcanal
+                    if (periodoSeleccionado==-1) lista = subcanalDAO.listarMaestro(menuControlador.codigos);
+                    else lista = subcanalDAO.listar(periodoSeleccionado);
+                    break;
                 case "GOFI": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
                     break;
@@ -114,6 +129,9 @@ public class BuscarEntidadControlador implements Initializable {
                 case "GPRO": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
                     break;
+                case "GSCA": // Grupo de Productos
+                    lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);
+                    break;         
                 default:
                     lista = null;
             }
@@ -169,11 +187,7 @@ public class BuscarEntidadControlador implements Initializable {
         try {
             EntidadDistribucion entidadSeleccionada = tabEntidades.getSelectionModel().getSelectedItem();            
             if (entidadSeleccionada == null) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Seleccionar entidad");
-                alert.setHeaderText(null);
-                alert.setContentText("No seleccionó ninguna entidad.");
-                alert.showAndWait();
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_SELECT_ENTITY);
             } else {
                 objetoControlador.seleccionarEntidad(entidadSeleccionada);
                 ((Stage) btnSeleccionar.getScene().getWindow()).close();

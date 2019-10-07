@@ -56,6 +56,16 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
+                  <Hyperlink fx:id="lnkJerarquia" onAction="#lnkJerarquiaAction" text="Jerarquía" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
                   <Hyperlink fx:id="lnkGrupos" onAction="#lnkGruposAction" text="Grupos" textFill="#676a6c">
                      <font>
                         <Font size="13.0" />

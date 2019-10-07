@@ -6,6 +6,7 @@ import controlador.ObjetoControladorInterfaz;
 import controlador.Navegador;
 import controlador.modals.BuscarEntidadControlador;
 import dao.GrupoDAO;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.DriverCentro;
@@ -37,6 +39,7 @@ import modelo.DriverObjeto;
 import modelo.EntidadDistribucion;
 import modelo.Grupo;
 import modelo.Tipo;
+import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
@@ -49,9 +52,11 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Spinner<Integer> spAnho;
     @FXML private JFXButton btnBuscarPeriodo;
     
+    @FXML private JFXButton btnCatalogo;
     @FXML private JFXButton btnAgregar;
     @FXML private JFXButton btnQuitar;
     @FXML private JFXButton btnCargar;
+    @FXML private JFXButton btnDescargar;
     
     @FXML private Label lblTipoGasto;
     @FXML private ComboBox<String> cmbTipoGasto;
@@ -73,10 +78,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     int periodoSeleccionado;
     boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getControlador());
+    String titulo;
+    private List<Grupo> vista;
     
     public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
+        this.titulo = "Grupos de Cuentas Contables";
     }
     
     @Override
@@ -120,7 +128,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(grupoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        
+        vista = grupoDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -147,16 +157,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void lnkGruposAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
     }
     
-    @FXML void lnkAsignacionAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
+    @FXML void btnCatalogoAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_MAESTRO_LISTAR);
     }
     
     @FXML void btnAgregarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar Grupo", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
             return;
         }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "GCTA".equals(item.getCodigo())).findFirst().orElse(null);
@@ -180,21 +190,26 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar Grupo de Cuentas Contables", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
             return;
         }
         
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar Grupo de Cuentas Contables", "Por favor seleccione un Grupo.");
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_SELECTED);
             return;
         }
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Grupo de Cuentas Contables", "¿Está seguro de quitar el Grupo " + item.getNombre() + "?"))
             return;
-                
-        grupoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        
+        if(grupoDAO.verificarObjetoGrupoPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
+            grupoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
+            buscarPeriodo(periodoSeleccionado, false);
+        }else{
+            menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_DELETE_ITEM);
+        }   
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -207,24 +222,43 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Grupo> lista = grupoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Grupos", "No existen Grupos para el periodo seleccionado.");
+        vista = grupoDAO.listar(periodo,cmbTipoGasto.getValue(),menuControlador.repartoTipo);
+        if (vista.isEmpty() && mostrarMensaje)
+            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_TABLE_EMPTY);
         txtBuscar.setText("");
-        filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
         tablaEstaActualizada = true;
     }
     
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                descargaFile = new DescargaServicio("GruposDeCuentasContables", tabListar);
+                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER,menuControlador.usuario.getUsername(), titulo, periodoSeleccionado, Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
+            }else{
+                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+            }
+        }else{
+            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+        }
+    }
+    
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_PRINCIPAL);
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         grupoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), entidad.getCodigo(), Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }
 

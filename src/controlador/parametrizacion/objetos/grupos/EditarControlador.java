@@ -39,6 +39,7 @@ public class EditarControlador implements Initializable {
     List<String> lstCodigos;
     public MenuControlador menuControlador;    
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_MAESTRO_EDITAR.getControlador());
+    String titulo;
     
     public EditarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -52,14 +53,22 @@ public class EditarControlador implements Initializable {
             case "OFI":
                 lblTitulo.setText("Editar Grupo de Oficinas");
                 lnkObjetos.setText("Oficinas");
+                this.titulo = "Oficinas";
                 break;
             case "BAN":
                 lblTitulo.setText("Editar Grupo de Bancas");
                 lnkObjetos.setText("Bancas");
+                this.titulo = "Bancas";
                 break;
             case "PRO":
                 lblTitulo.setText("Editar Grupo de Productos");
                 lnkObjetos.setText("Productos");
+                this.titulo = "Bancas";
+                break;
+            case "SCA":
+                lblTitulo.setText("Editar Grupo de Subcanales");
+                lnkObjetos.setText("Subcanales");
+                this.titulo = "Bancas";
                 break;
             default:
                 break;
@@ -81,7 +90,9 @@ public class EditarControlador implements Initializable {
     @FXML void lnkObjetosAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
     }
-    
+    @FXML void lnkJerarquiaAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA);
+    }
     @FXML void lnkGruposAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
     }
@@ -100,6 +111,7 @@ public class EditarControlador implements Initializable {
         }
         if (objetoGrupoDAO.actualizarObjeto(codigo,nombre,nivel,grupo.getCodigo())==1) {
             menuControlador.navegador.mensajeInformativo("Editar Grupo", "Grupo editado correctamente.");
+            menuControlador.Log.editarItem(LOGGER, menuControlador.usuario.getUsername(), codigo, Navegador.RUTAS_OBJETOS_GRUPOS_EDITAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_GRUPOS_LISTAR);
         } else {
             menuControlador.navegador.mensajeError("Editar Grupo", "No se puede editar el Grupo.");
