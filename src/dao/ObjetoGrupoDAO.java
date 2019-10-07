@@ -59,7 +59,7 @@ public class ObjetoGrupoDAO {
         return lista;
     }
     
-    public List<Grupo> listarJerarquia(int periodo) {
+    public List<Grupo> listarJerarquia(int periodo,int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.CODIGO ENTIDAD_CODIGO,\n" +
                 "       A.NOMBRE ENTIDAD_NOMBRE,\n" +
@@ -111,7 +111,7 @@ public class ObjetoGrupoDAO {
     public List<String> listarCodigoObjetos(int nivelOrigen){
         String queryStr = String.format("" +
                 "SELECT CODIGO\n" +
-                "  FROM %s_GRUPOS\n" +
+                "  FROM MS_%s_GRUPOS\n" +
                 " WHERE ESTA_ACTIVO=1\n",prefixTableName);
         if (nivelOrigen!=-1) queryStr += String.format("   AND NIVEL=%d+1\n",nivelOrigen);
         queryStr += " ORDER BY CODIGO";
@@ -217,15 +217,16 @@ public class ObjetoGrupoDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarGrupoPadre(int periodo, String entidadCodigo, String entidadTipo, int nivel, String entidadPadreCodigo) {
+    public int insertarGrupoPadre(int periodo, String entidadCodigo, String entidadTipo, int nivel, String entidadPadreCodigo, int repartoTipo) {
         String queryStr = String.format("" +
-                "INSERT INTO JERARQUIA(PERIODO,ENTIDAD_CODIGO,ENTIDAD_TIPO,NIVEL,ENTIDAD_PADRE_CODIGO)\n" +
-                "VALUES (%d,'%s','%s',%d,'%s')",
+                "INSERT INTO MS_JERARQUIA(PERIODO,ENTIDAD_CODIGO,ENTIDAD_TIPO,NIVEL,ENTIDAD_PADRE_CODIGO,REPARTO_TIPO)\n" +
+                "VALUES (%d,'%s','%s',%d,'%s','%d')",
                     periodo,
                     entidadCodigo,
                     entidadTipo,
                     nivel,
-                    entidadPadreCodigo);
+                    entidadPadreCodigo,
+                    repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -249,16 +250,16 @@ public class ObjetoGrupoDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public int borrarListaAsignacion(int periodo, String tipo) {
+    public int borrarListaAsignacion(int periodo, String tipo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM JERARQUIA\n" +
-                " WHERE PERIODO=%d AND ENTIDAD_TIPO='%s'",
-                periodo,tipo);
+                "DELETE FROM MS_JERARQUIA\n" +
+                " WHERE PERIODO=%d AND ENTIDAD_TIPO='%s' AND REPARTO_TIPO='%d'",
+                periodo,tipo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarListaAsignacion(int periodo, String tipo, List<Grupo> lista) {
-        borrarListaAsignacion(periodo, tipo);
+    public void insertarListaAsignacion(int periodo, String tipo, List<Grupo> lista, int repartoTipo) {
+        borrarListaAsignacion(periodo, tipo, repartoTipo);
         ConexionBD.crearStatement();
         lista.stream().map((item) -> {
             String codigo = item.getCodigo();
@@ -266,9 +267,9 @@ public class ObjetoGrupoDAO {
             String codigoPadre = item.getGrupoPadre().getCodigo();
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO JERARQUIA(PERIODO,ENTIDAD_CODIGO,ENTIDAD_TIPO,NIVEL,ENTIDAD_PADRE_CODIGO)\n" +
-                    "VALUES (%d,'%s','%s',%d,'%s')",
-                    periodo,codigo,tipo,nivel,codigoPadre);
+                    "INSERT INTO MS_JERARQUIA(PERIODO,ENTIDAD_CODIGO,ENTIDAD_TIPO,NIVEL,ENTIDAD_PADRE_CODIGO,reparto_tipo)\n" +
+                    "VALUES (%d,'%s','%s',%d,'%s','%d')",
+                    periodo,codigo,tipo,nivel,codigoPadre,repartoTipo);
             return queryStr;
         }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);

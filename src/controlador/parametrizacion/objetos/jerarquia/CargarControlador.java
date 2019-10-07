@@ -3,6 +3,7 @@ package controlador.parametrizacion.objetos.jerarquia;
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
+import dao.ObjetoDAO;
 import dao.ObjetoGrupoDAO;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,6 +67,7 @@ public class CargarControlador implements Initializable {
     
     // Variables de la aplicacion
     ObjetoGrupoDAO objetoGrupoDAO;
+    ObjetoDAO objetoDAO;
     public MenuControlador menuControlador;
     int periodoSeleccionado;
     final int anhoSeleccionado;
@@ -73,12 +75,15 @@ public class CargarControlador implements Initializable {
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR.getControlador());
     List<Grupo> listaCargar  = new ArrayList();
     String titulo;
+    String titulo2;
     boolean findError;
     String logName;
+    String logDetails;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
+        objetoDAO = new ObjetoDAO(menuControlador.objetoTipo);
         periodoSeleccionado = (int) menuControlador.objeto;
         anhoSeleccionado = periodoSeleccionado / 100;
         mesSeleccionado = periodoSeleccionado % 100;
@@ -101,14 +106,22 @@ public class CargarControlador implements Initializable {
                 lblTitulo.setText("Cargar Jerarquía de Productos");
                 lnkObjetos.setText("Productos");
                 this.titulo = "Productos";
+                this.titulo2 = "Linea";
                 break;
             case "SCA":
                 lblTitulo.setText("Cargar Jerarquía de Subcanales");
                 lnkObjetos.setText("Subcanales");
                 this.titulo = "Subcanales";
+                this.titulo2 = "Canal";
                 break;
             default:
                 break;
+        }
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
@@ -130,11 +143,13 @@ public class CargarControlador implements Initializable {
         spAnho.getValueFactory().setValue(anhoSeleccionado);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         btnDescargarLog.setVisible(false);
     }
@@ -169,6 +184,14 @@ public class CargarControlador implements Initializable {
 
         File archivoSeleccionado = file_chooser.showOpenDialog(btnCargarRuta.getScene().getWindow());
         if (archivoSeleccionado != null) {
+            btnDescargarLog.setVisible(false);
+            if(menuControlador.repartoTipo == 2){
+                spAnho.setDisable(true);
+            }
+            else{
+                cmbMes.setDisable(true);
+                spAnho.setDisable(true);
+            }
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             List<Grupo> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             if (lista != null) {
@@ -185,7 +208,10 @@ public class CargarControlador implements Initializable {
     }
     
     private List<Grupo> leerArchivo(String rutaArchivo) {
+        List<String> lstCodigo = objetoDAO.listarCodigosPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
         List<Grupo> lista = new ArrayList();
+        listaCargar = new ArrayList();
+        logDetails = "";
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -197,7 +223,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
 
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE","NIVEL","CODIGO PADRE","NOMBRE PADRE","NIVEL PADRE")))) {
-                menuControlador.navegador.mensajeError(titulo,menuControlador.MENSAJE_UPLOAD_HEADER);
+                menuControlador.mensaje.upload_header_error("Jerarquía");
                 return null;
             }
             while (filas.hasNext()) {
@@ -223,14 +249,22 @@ public class CargarControlador implements Initializable {
                 itemHijo.setNivel(nivel);
                 
                 itemHijo.setGrupoPadre(itemPadre);
-                List<String> lstCodigo = objetoGrupoDAO.listarCodigoObjetos(nivel);
-                String itemObjeto = lstCodigo.stream().filter(item ->codigoPadre.equals(item)).findAny().orElse(null);;
-                if(itemObjeto != null){
+                List<String> lstCodigoPadre = objetoGrupoDAO.listarCodigoObjetos(nivel);
+                String itemObjeto = lstCodigo.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);;
+                String itemObjetoPadre = lstCodigoPadre.stream().filter(item ->codigoPadre.equals(item)).findAny().orElse(null);;
+                if(itemObjeto != null && itemObjetoPadre != null){
                     listaCargar.add(itemHijo);
-                    itemHijo.setFlagCargar(true);                    
+                    itemHijo.setFlagCargar(true);
+                    logDetails +=String.format("Se agregó %s %s con %s %s en %s  correctamente.\r\n",titulo, codigo, titulo2, codigoPadre, "Jerarquía");
                 }else {
+                    logDetails +=String.format("No se agregó %s %s con %s %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n",titulo, codigo, titulo2, codigoPadre, periodoSeleccionado, "Jerarquía" );
+                    if(itemObjeto == null){
+                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo,periodoSeleccionado);
+                    }
+                    if(itemObjetoPadre == null){
+                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo2,periodoSeleccionado);
+                    }
                     itemHijo.setFlagCargar(false);
-//                    listaError.add(linea);
                 }
                 lista.add(itemHijo);
             }
@@ -250,17 +284,17 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         findError = false;
         if(tabListar.getItems().isEmpty()){
-            menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
+            menuControlador.mensaje.upload_empty();
         }else {
             if(listaCargar.isEmpty()){
-                menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
+                menuControlador.mensaje.upload_allCharged_now("Jerarquía");
             }else{
-                objetoGrupoDAO.insertarListaAsignacion(periodoSeleccionado, menuControlador.objetoTipo, listaCargar);
+                objetoGrupoDAO.insertarListaAsignacion(periodoSeleccionado, menuControlador.objetoTipo, listaCargar,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
-                    menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
+                    menuControlador.mensaje.upload_success_with_error("Jerarquía");
                 }else {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
+                    menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
             }
@@ -275,14 +309,13 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         tabListar.getItems().forEach((item)->{
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigo()+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }
             else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigo()+ " en "+titulo+", debido a que no existe en Catálogo.");
                 findError = true;
             }
         });
+        menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
