@@ -126,7 +126,7 @@ public class ListarControlador implements Initializable {
         tabListaDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {
             DriverObjeto driver = tabListaDrivers.getSelectionModel().getSelectedItem();
             if (driver != null) {
-                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo());
+                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo(),menuControlador.repartoTipo);
                 tabDetalleDriver.getItems().setAll(listaDriverLinea);
             }
         });

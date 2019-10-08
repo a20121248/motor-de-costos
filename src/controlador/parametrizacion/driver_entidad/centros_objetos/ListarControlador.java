@@ -392,7 +392,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             DriverObjeto driverObjeto = null;
             List<DriverObjetoLinea> lstDriverObjetoLinea;
             // asumimos que es del primer repartoTipo
-            lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo);
+            lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo,menuControlador.repartoTipo);
             driverObjeto = new DriverObjeto(driverCodigo,driverNombre,null,null,lstDriverObjetoLinea,null,null);
                 
             fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_VER_DRIVER_OBJETO.getVista()));

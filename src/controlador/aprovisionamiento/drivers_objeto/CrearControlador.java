@@ -169,7 +169,7 @@ public class CrearControlador implements Initializable {
     private List<DriverObjetoLinea> leerArchivo(String rutaArchivo) {
         List<Banca> listaBancas = bancaDAO.listar(periodoSeleccionado);
         List<Oficina> listaOficinas = oficinaDAO.listar(periodoSeleccionado);
-        List<Producto> listaProductos = productoDAO.listar(periodoSeleccionado);
+        List<Producto> listaProductos = productoDAO.listar(periodoSeleccionado,menuControlador.repartoTipo);
         List<DriverObjetoLinea> lista = new ArrayList();
         double porAcumulado = 0;
         try {

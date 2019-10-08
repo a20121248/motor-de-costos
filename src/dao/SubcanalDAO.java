@@ -51,7 +51,7 @@ public class SubcanalDAO {
         return lista;
     }
     
-    public List<Subcanal> listar(int periodo) {
+    public List<Subcanal> listar(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
@@ -59,10 +59,10 @@ public class SubcanalDAO {
                 "       A.fecha_actualizacion\n" +
                 "  FROM subcanals A\n" +
                 "  JOIN subcanal_lineas B ON B.producto_codigo=A.codigo\n" +
-                " WHERE A.esta_activo=1 AND B.periodo=%d\n" +
+                " WHERE A.esta_activo=1 AND B.periodo=%d and b.reparto_tipo='%d'\n" +
                 " GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                 " ORDER BY A.codigo",
-                periodo);
+                periodo,repartoTipo);
         List<Subcanal> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -183,5 +183,22 @@ public class SubcanalDAO {
                 " WHERE producto_codigo='%s' AND periodo=%d",
                 codigo,periodo);
         ConexionBD.ejecutar(queryStr);
+    }
+
+    public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+            "SELECT a.subcanal_codigo codigo\n" +
+            "  FROM ms_subcanal_lineas A\n" +
+            " WHERE a.periodo = '%d' AND a.reparto_tipo = '%d'",
+            periodo,repartoTipo);
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lista.add(rs.getString("codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
     }
 }

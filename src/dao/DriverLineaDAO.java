@@ -42,12 +42,13 @@ public class DriverLineaDAO {
 //                periodo);
 //        ConexionBD.agregarBatch(queryStr);
 //    }
-    public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo) {
+    public void borrarListaDriverObjetoLinea(String driverCodigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM driver_objeto_lineas\n" +
-                " WHERE driver_codigo='%s' AND periodo=%d",
+                "DELETE FROM MS_driver_objeto_lineas\n" +
+                " WHERE driver_codigo='%s' AND periodo=%d AND reparto_tipo='%d'",
                 driverCodigo,
-                periodo);
+                periodo,
+                repartoTipo);
         ConexionBD.agregarBatch(queryStr);
     }
     
@@ -121,10 +122,10 @@ public class DriverLineaDAO {
 //        ConexionBD.cerrarStatement();
 //    }
     
-    public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
+    public void insertarListaDriverObjetoLinea(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea, int repartoTipo) {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 10000;
-        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+        borrarListaDriverObjetoLinea(driverCodigo, periodo,repartoTipo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
@@ -162,18 +163,19 @@ public class DriverLineaDAO {
 //            ConexionBD.agregarBatch(queryStr);
 //        }
 //    }
-    public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea) {
-        borrarListaDriverObjetoLinea(driverCodigo, periodo);
+    public void insertarListaDriverObjetoLineaBatch(String driverCodigo, int periodo, List<DriverObjetoLinea> listaDriverObjetoLinea, int repartoTipo) {
+        borrarListaDriverObjetoLinea(driverCodigo, periodo,repartoTipo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverObjetoLinea item: listaDriverObjetoLinea) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s','%s',%d,%.4f,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_driver_objeto_lineas(driver_codigo,producto_codigo,subcanal_codigo,periodo,porcentaje,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s','%s','%s',%d,%.4f,'%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     driverCodigo,
                     item.getProducto().getCodigo(),
                     item.getSubcanal().getCodigo(),
                     periodo,
                     item.getPorcentaje(),
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
@@ -203,45 +205,46 @@ public class DriverLineaDAO {
         ConexionBD.cerrarStatement();
     }
 
-    public List<DriverObjetoLinea> obtenerListaDriverObjetoLinea(String driverCodigo, int periodo) {
-        // Cargo los objetos de costos: bancas, oficinas, productos
-        List<Banca> listaBancas = bancaDAO.listar(periodo);
-        List<Oficina> listaOficinas = oficinaDAO.listar(periodo);
-        List<Producto> listaProductos = productoDAO.listar(periodo);
-
-        String queryStr = String.format("" +
-                "SELECT A.banca_codigo,\n" +
-                "       A.oficina_codigo,\n" +
-                "       A.producto_codigo,\n" +
-                "       A.porcentaje,\n" +
-                "       A.fecha_creacion,\n" +
-                "       A.fecha_actualizacion\n" +
-                "  FROM driver_obco_lineas A\n" +
-                "  JOIN drivers B ON B.codigo=A.driver_codigo\n" +
-                " WHERE A.driver_codigo='%s'\n" +
-                "   AND A.periodo=%d",
-                driverCodigo, periodo);
-        List<DriverObjetoLinea> listaDriverObjetoLinea = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            while (rs.next()) {
-                String bancaCodigo = rs.getString("banca_codigo");
-                Banca banca = listaBancas.stream().filter(item -> bancaCodigo.equals(item.getCodigo())).findAny().orElse(null);
-                String oficinaCodigo = rs.getString("oficina_codigo");
-                Oficina oficina = listaOficinas.stream().filter(item -> oficinaCodigo.equals(item.getCodigo())).findAny().orElse(null);
-                String productoCodigo = rs.getString("producto_codigo");
-                Producto producto = listaProductos.stream().filter(item -> productoCodigo.equals(item.getCodigo())).findAny().orElse(null);
-                double porcentaje = rs.getDouble("porcentaje");
-                Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
-                Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
-
-                DriverObjetoLinea driverObjetoLinea = new DriverObjetoLinea(banca, oficina, producto, porcentaje, fechaCreacion, fechaActualizacion);
-                listaDriverObjetoLinea.add(driverObjetoLinea);
-            }
-        } catch (SQLException | ParseException ex) {
-            Logger.getLogger(DriverLineaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listaDriverObjetoLinea;
-    }
+//    public List<DriverObjetoLinea> obtenerListaDriverObjetoLinea(String driverCodigo, int periodo) {
+//        // Cargo los objetos de costos: bancas, oficinas, productos
+//        //borrar funcion
+//        List<Banca> listaBancas = bancaDAO.listar(periodo);
+//        List<Oficina> listaOficinas = oficinaDAO.listar(periodo);
+//        List<Producto> listaProductos = productoDAO.listar(periodo,periodo);
+//
+//        String queryStr = String.format("" +
+//                "SELECT A.banca_codigo,\n" +
+//                "       A.oficina_codigo,\n" +
+//                "       A.producto_codigo,\n" +
+//                "       A.porcentaje,\n" +
+//                "       A.fecha_creacion,\n" +
+//                "       A.fecha_actualizacion\n" +
+//                "  FROM driver_obco_lineas A\n" +
+//                "  JOIN drivers B ON B.codigo=A.driver_codigo\n" +
+//                " WHERE A.driver_codigo='%s'\n" +
+//                "   AND A.periodo=%d",
+//                driverCodigo, periodo);
+//        List<DriverObjetoLinea> listaDriverObjetoLinea = new ArrayList();
+//        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+//            while (rs.next()) {
+//                String bancaCodigo = rs.getString("banca_codigo");
+//                Banca banca = listaBancas.stream().filter(item -> bancaCodigo.equals(item.getCodigo())).findAny().orElse(null);
+//                String oficinaCodigo = rs.getString("oficina_codigo");
+//                Oficina oficina = listaOficinas.stream().filter(item -> oficinaCodigo.equals(item.getCodigo())).findAny().orElse(null);
+//                String productoCodigo = rs.getString("producto_codigo");
+//                Producto producto = listaProductos.stream().filter(item -> productoCodigo.equals(item.getCodigo())).findAny().orElse(null);
+//                double porcentaje = rs.getDouble("porcentaje");
+//                Date fechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_creacion"));
+//                Date fechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("fecha_actualizacion"));
+//
+//                DriverObjetoLinea driverObjetoLinea = new DriverObjetoLinea(banca, oficina, producto, porcentaje, fechaCreacion, fechaActualizacion);
+//                listaDriverObjetoLinea.add(driverObjetoLinea);
+//            }
+//        } catch (SQLException | ParseException ex) {
+//            Logger.getLogger(DriverLineaDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return listaDriverObjetoLinea;
+//    }
     
     public List<DriverLinea> obtenerListaDriverLinea(String driverCodigo, int periodo, int repartoTipo) {
         // Cargo las entidades: centros de costos
