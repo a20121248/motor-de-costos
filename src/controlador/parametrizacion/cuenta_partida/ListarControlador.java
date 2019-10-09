@@ -133,7 +133,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolEsBolsa.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,null,menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPartidaConCuentaContable(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -259,7 +259,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,null,menuControlador.repartoTipo);
+        List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.mensaje.show_table_empty(titulo);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);

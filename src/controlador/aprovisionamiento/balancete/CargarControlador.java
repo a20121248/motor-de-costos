@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import controlador.MenuControlador;
 import controlador.Navegador;
@@ -43,15 +42,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CargarControlador implements Initializable {
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkAprovisionamiento;
-    @FXML private Hyperlink lnkBalancete;
-    @FXML private Hyperlink lnkCargar;
-    
+    // Variables de la vista    
     @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
-    @FXML private Spinner<Integer> spAnho;
-    
+    @FXML private Spinner<Integer> spAnho;    
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
@@ -95,15 +89,18 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         detalleGastoDAO = new DetalleGastoDAO();
         centroDAO = new CentroDAO();
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
         titulo = "Detalle de Gasto";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
+        
+        // Seleccionar mes
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
             cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
@@ -131,7 +128,8 @@ public class CargarControlador implements Initializable {
         } else {
             hbPeriodo.getChildren().remove(cmbMes);
         }
-        // meses
+        
+        // Seleccionar anho
         spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
@@ -141,9 +139,11 @@ public class CargarControlador implements Initializable {
                     periodoSeleccionado = spAnho.getValue()*100;
             }
         });
+        
+        // Ocultar descarga de Log
         btnDescargarLog.setVisible(false);
         
-        // tabla formato
+        // Formato de la tabla
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
@@ -227,7 +227,7 @@ public class CargarControlador implements Initializable {
     private List<DetalleGasto> leerArchivo(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
         List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
-        List<String> listaCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+        List<String> listacodigosCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
         
         try (FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(f);){
@@ -280,7 +280,7 @@ public class CargarControlador implements Initializable {
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
                 String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listaCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
+                String centro = listacodigosCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 if (cuenta!=null && partida!=null && centro!=null) {
                     listaCargar.add(cuentaLeida);
                 } else {
@@ -305,11 +305,11 @@ public class CargarControlador implements Initializable {
     
     // Acción del botón 'Subir'
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
-        if (tabListar.getItems().isEmpty()){
+        if (tabListar.getItems().isEmpty()) {
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         } else {
             boolean findError = crearReporteLOG();
-            if (listaCargar.isEmpty()){
+            if (listaCargar.isEmpty()) {
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             } else {
                 detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado, listaCargar, menuControlador.repartoTipo);
@@ -323,7 +323,7 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private boolean crearReporteLOG(){
+    private boolean crearReporteLOG() {
         boolean findError = false;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DETALLE_GASTO.log";
         menuControlador.Log.crearArchivo(logName);
@@ -332,15 +332,15 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         for (DetalleGasto item: tabListar.getItems()) {
             String mensajeStr;
-            if(item.getEstado()) {
-                mensajeStr = String.format("Se creó el item (%s, %s, %s) en %s correctamente.", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo);
+            if (item.getEstado()) {
+                mensajeStr = String.format("Se agregó item ('%s', %s, %s) en %s correctamente.", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo);
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
                 
-                mensajeStr = String.format("(%s, %s, %s)", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro());
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
+                mensajeStr = String.format("('%s', '%s', '%s')", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro());
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
             } else {
                 findError = true;
-                mensajeStr = String.format("No se creó el item (%s, %s, %s) en %s, debido a los siguientes errores: %s", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo, item.getDetalleError());
+                mensajeStr = String.format("No se agregó el item ('%s', '%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo, item.getDetalleError());
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
             }
         }
@@ -349,6 +349,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         return findError;
     }
+    
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
         String rutaOrigen = menuControlador.Log.getCarpetaLogDay() + logName;
         FileChooser fileChooser = new FileChooser();

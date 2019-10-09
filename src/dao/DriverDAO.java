@@ -10,13 +10,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.Banca;
 import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
-import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
 import modelo.Subcanal;
@@ -359,18 +357,16 @@ public class DriverDAO {
     
     public List<String> listarCodigosDriverPeriodo(int periodo, int repartoTipo, String tipoDriver) {
         String queryStr = String.format("" +
-                "SELECT DISTINCT A.driver_codigo driver_codigo\n" +
-                "  FROM driver_lineas A\n" +
-                "  JOIN drivers B ON B.codigo=A.driver_codigo\n" +
-                " WHERE A.periodo=%d AND B.driver_tipo_codigo='%s' AND B.reparto_tipo=%d\n" +
-                " ORDER BY A.driver_codigo",
-                periodo,tipoDriver, repartoTipo);
+                "SELECT DISTINCT A.DRIVER_CODIGO DRIVER_CODIGO\n" +
+                "  FROM MS_DRIVER_LINEAS A\n" +
+                "  JOIN MS_DRIVERS B ON B.CODIGO=A.DRIVER_CODIGO\n" +
+                " WHERE A.PERIODO=%d AND B.DRIVER_TIPO_CODIGO='%s' AND B.REPARTO_TIPO=%d\n" +
+                " ORDER BY A.DRIVER_CODIGO",
+                periodo, tipoDriver, repartoTipo);
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            while(rs.next()) {
-                String codigo = rs.getString("driver_codigo");
-                lista.add(codigo);
-            }
+            while(rs.next())
+                lista.add(rs.getString("DRIVER_CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

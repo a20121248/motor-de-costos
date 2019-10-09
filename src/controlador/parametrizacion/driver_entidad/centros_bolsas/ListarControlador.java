@@ -28,7 +28,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -49,19 +48,11 @@ import servicios.DriverServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkAsignaciones;
-    
     @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
-    @FXML private Spinner<Integer> spAnho;    
-    @FXML private JFXButton btnCargar;
+    @FXML private Spinner<Integer> spAnho;
     
-    @FXML private JFXButton btnDriver;
-    @FXML private JFXButton btnAsignarDriverCentro;
     @FXML private Tooltip ttAsignarDriverCentro;
-    @FXML private JFXButton btnQuitar;
     
     @FXML private TextField txtBuscar;
     
@@ -117,18 +108,20 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                    buscarPeriodo(periodoSeleccionado, true);
+                    if (menuControlador.repartoTipo == 1)
+                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    else
+                        periodoSeleccionado = spAnho.getValue()*100;
                 }
             });
         } else {
             hbPeriodo.getChildren().remove(cmbMes);
         }
         
-        // Anho seleccionado
+        // Seleccionar anho
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
@@ -140,7 +133,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             }
         });
 
-        // Tabla: Formato        
+        // Formato de la tabla
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
@@ -149,18 +142,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);        
-        tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         
-        // Tabla: Buscar
-        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado);
+        // Funcionalidad para buscar en la tabla
+        List<CentroDriver> listaEntidades = centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodoSeleccionado, menuControlador.repartoTipo);
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
@@ -202,7 +186,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
         List<CentroDriver> listaEntidades = new ArrayList();
-        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo));
+        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo, menuControlador.repartoTipo));
         if (listaEntidades.isEmpty() && mostrarMensaje)
             menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
@@ -276,14 +260,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
-    
-    /*@FXML void tabEntidadesFilaClick(MouseEvent event) {
-        if(event.getButton().equals(MouseButton.PRIMARY)){
-            if(event.getClickCount() == 2){
-                verDriver();
-            }
-        }
-    }*/
     
     private void buscarDriverCentro() {
         try {
