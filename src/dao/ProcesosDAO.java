@@ -31,7 +31,7 @@ public class ProcesosDAO {
    
    public void borrarEjecuciones(int periodo, int fase, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM ejecuciones\n" +
+                "DELETE FROM MS_ejecuciones\n" +
                 " WHERE periodo=%d AND fase>=%d AND reparto_tipo=%d",
                 periodo,fase,repartoTipo);
         ConexionBD.ejecutar(queryStr);
@@ -40,7 +40,7 @@ public class ProcesosDAO {
     public Date obtenerFechaEjecucion(int periodo, int fase, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT fecha_ini\n" +
-                "  FROM ejecuciones\n" +
+                "  FROM MS_ejecuciones\n" +
                 " WHERE periodo=%d AND fase=%d AND reparto_tipo=%d",
                 periodo,fase,repartoTipo);
         Date fecha = null;
