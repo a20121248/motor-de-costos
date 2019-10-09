@@ -253,15 +253,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar el Grupo " + grupoSeleccionado.getGrupoPadre().getNombre() + "?"))
             return;
         
-        if(objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado,menuControlador.repartoTipo)==1){
+        if (objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado,menuControlador.repartoTipo)==1) {
             menuControlador.mensaje.delete_success(titulo);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" del "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             buscarPeriodo(periodoSeleccionado, false);
-        }else{
+        } else {
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }
-        
-        
     }
     
     @FXML void btnCargarAction(ActionEvent event) {

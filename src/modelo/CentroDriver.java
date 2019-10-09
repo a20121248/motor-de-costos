@@ -23,6 +23,7 @@ public class CentroDriver {
     private StringProperty nombreDriver;
     private DoubleProperty saldo;
     private ObjectProperty<Tipo> grupoGasto;
+    private String detalleError;
     
     private BooleanProperty flagCargar;
     
@@ -250,5 +251,13 @@ public class CentroDriver {
     
     public double getSaldo(){
         return this.saldo.get();
+    }
+    
+    public String getDetalleError() {
+        return detalleError;
+    }
+
+    public void setDetalleError(String detalleError) {
+        this.detalleError = detalleError;
     }
 }

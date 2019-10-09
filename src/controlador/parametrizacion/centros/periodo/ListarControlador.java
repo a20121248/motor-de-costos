@@ -32,8 +32,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.Centro;
 import modelo.DriverCentro;
@@ -51,9 +51,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Hyperlink lnkCentros;
     @FXML private Hyperlink lnkAsignacion;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
     
     @FXML private JFXButton btnAgregar;
     @FXML private JFXButton btnQuitar;
@@ -66,9 +66,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<Centro, String> tabcolNombre;
     @FXML private TableColumn<Centro, String> tabcolTipoCentro;
     @FXML private TableColumn<Centro, Double> tabcolSaldo;
-    @FXML private Label lblNumeroRegistros;
     
+    @FXML private Label lblNumeroRegistros;    
     @FXML private JFXButton btnDescargar;
+    
     @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
@@ -79,7 +80,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FilteredList<Centro> filteredData;
     SortedList<Centro> sortedData;
     int periodoSeleccionado;
-    boolean tablaEstaActualizada;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getControlador());
     String titulo, titulo2;
     
@@ -92,36 +92,39 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {    
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
+    public void initialize(URL url, ResourceBundle rb) {
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
             periodoSeleccionado = menuControlador.periodo;
-        }
-//        if (menuControlador.repartoTipo == 2) {
-//            lblTitulo.setText("Centros de Beneficio");
-//            lnkCentros.setText("Centros de Beneficio");
-//        }
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
         
-        // Botones para periodo
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(periodoSeleccionado, true);
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
-        });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(periodoSeleccionado, true);
             }
         });
+
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -146,6 +149,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 50);
         tabcolTipoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -163,7 +167,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
-        tablaEstaActualizada = true;
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -179,10 +182,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnAgregarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.mensaje.add_refresh_error(titulo);
-            return;
-        }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
         menuControlador.codigos = tabListar.getItems().stream().map(i -> "'"+i.getCodigo()+"'").collect(Collectors.joining (","));
         try {
@@ -203,11 +202,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnQuitarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.mensaje.delete_refresh_error(titulo);
-            return;
-        }
-        
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
             menuControlador.mensaje.delete_selected_error(titulo);
@@ -221,10 +215,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
             buscarPeriodo(periodoSeleccionado, false);
-        }else{
+        } else {
             menuControlador.mensaje.delete_item_periodo_error(titulo);
-        }
-        
+        }        
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -241,7 +234,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Centro> lista = centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<Centro> lista = centroDAO.listarPeriodo(periodo, menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
             menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
@@ -249,7 +242,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        tablaEstaActualizada = true;
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{

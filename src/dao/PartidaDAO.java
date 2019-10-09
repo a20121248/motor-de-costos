@@ -195,7 +195,7 @@ public class PartidaDAO {
     }
     
     //TOCHECK: partida_lineas tienen saldo???
-    public List<Partida> listarPartidaConCuentaContable(int periodo, String tipoGasto, int repartoTipo) {
+    public List<Partida> listarPartidaConCuentaContable(int periodo, int repartoTipo) {
 //        actualizarSaldoCuentaPartida(periodo);   
         String queryStr = String.format("" +
                 "SELECT NVL(D.codigo,'Sin CuentaContable asignada') cuenta_contable_codigo,\n" +
