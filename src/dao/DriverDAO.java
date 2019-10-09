@@ -28,21 +28,24 @@ public class DriverDAO {
         driverLineaDAO = new DriverLineaDAO();
     }
     
-    public int eliminarDriverObjeto(String codigo) {
+    public int eliminarDriverObjeto(String codigo, int periodo, int repartoTipo) {
         String queryStr;
         
-        queryStr = String.format("DELETE FROM driver_objetos_lineas WHERE driver_codigo='%s'",codigo);
+        queryStr = String.format(""+
+                "DELETE FROM MS_driver_objeto_lineas \n" +
+                "        WHERE driver_codigo='%s' and periodo ='%d' and reparto_tipo='%d'"
+                ,codigo,periodo,repartoTipo);
         ConexionBD.ejecutar(queryStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int eliminarDriverCentro(String codigo) {
+    public int eliminarDriverCentro(String codigo, int periodo, int repartoTipo) {
         String queryStr;
         
-        queryStr = String.format("DELETE FROM driver_lineas WHERE driver_codigo='%s'",codigo);
-        ConexionBD.ejecutar(queryStr);
-        
-        queryStr = String.format("DELETE FROM drivers WHERE codigo='%s'",codigo);
+        queryStr = String.format(""+ 
+                "DELETE FROM MS_driver_lineas \n" +
+                "      WHERE driver_codigo='%s' and periodo ='%d' and reparto_tipo='%d'"
+                ,codigo,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
