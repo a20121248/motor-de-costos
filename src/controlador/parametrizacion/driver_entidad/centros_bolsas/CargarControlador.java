@@ -220,14 +220,18 @@ public class CargarControlador implements Initializable {
                 // Validar la existencia del Driver en periodo a Cargar
                 String driver = listarcodigosDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
                 CentroDriver linea = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, codigoDriver, nombreDriver, true);
-                if (cuenta != null && partida != null && centro!=null && driver!=null) {
+                if (cuenta!=null && cuenta.charAt(3)=='1' && partida != null && centro!=null && driver!=null) {
                     listaCargar.add(linea);
                 } else {
                     String detalleError = "";
                     String repartoTipoStr = repartoTipo == 1 ? "real" : "presupuesto";
-                    if (cuenta == null) detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
+                    if (cuenta == null)
+                        detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
+                    else if (cuenta.charAt(3)!='1')
+                        detalleError += String.format("\n  - La cuenta contable con código '%s' del periodo %d del %s no está en soles.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
                     if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodoSeleccionado, repartoTipoStr);
                     if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodoSeleccionado, repartoTipoStr);
+                    if (driver == null) detalleError += String.format("\n  - El driver con código '%s' no existe en el periodo %d del %s.", codigoDriver, periodoSeleccionado, repartoTipoStr);
                     linea.setDetalleError(detalleError);
                     linea.setFlagCargar(false);
                 }
@@ -287,7 +291,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
             } else {
                 findError = true;
-                mensajeStr = String.format("No se agregó item ('%s', '%s', '%s', '%s') en %s correctamente.", item.getCodigoCuenta(), item.getCodigoPartida(), item.getCodigoCentro(), item.getCodigoDriver(), titulo);
+                mensajeStr = String.format("No se agregó el item ('%s', '%s', '%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoCuenta(), item.getCodigoPartida(), item.getCodigoCentro(), item.getCodigoDriver(), titulo, item.getDetalleError());
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
             }
         }

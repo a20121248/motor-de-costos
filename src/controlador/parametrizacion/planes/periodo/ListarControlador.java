@@ -9,8 +9,6 @@ import dao.PlanDeCuentaDAO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -198,7 +196,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if(planDeCuentaDAO.verificarObjetoPlanCuentaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             planDeCuentaDAO.eliminarObjetoCuentaPeriodo(item.getCodigo(), periodoSeleccionado);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
-            buscarPeriodo(periodoSeleccionado, false);
+            buscarPeriodo(periodoSeleccionado);
         }else{
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }   
@@ -212,15 +210,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void btnCatalogoAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PLANES_MAESTRO_LISTAR);
     }
-       
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
     
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<CuentaContable> lista = planDeCuentaDAO.listar(periodo,null,menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.mensaje.show_table_empty(titulo);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -260,7 +252,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         planDeCuentaDAO.insertarObjetoCuentaPeriodo(entidad.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
 
     @Override

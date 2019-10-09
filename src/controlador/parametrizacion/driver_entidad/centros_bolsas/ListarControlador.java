@@ -52,8 +52,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     
-    @FXML private Tooltip ttAsignarDriverCentro;
-    
     @FXML private TextField txtBuscar;
     
     @FXML private TableView<CentroDriver> tabListar;
@@ -68,7 +66,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargar;
-    @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
     DriverDAO driverDAO;
@@ -90,7 +87,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         driverDAO = new DriverDAO();
         centroDAO = new CentroDAO();
         centroDriverDAO = new CentroDriverDAO();
-        this.titulo = "Asignar Centros Bolsas";
+        titulo = "Asignar Centros Bolsas";
         titulo1 = "Centros de Costos";
         titulo2 = "Centro de Costos";
     }
@@ -102,8 +99,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             periodoSeleccionado = menuControlador.periodo;
         else
             periodoSeleccionado = menuControlador.periodo / 100 * 100;
-                
-        ttAsignarDriverCentro.setText("Asignar un driver que distribuye a " + titulo1);
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
@@ -129,7 +124,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
                     periodoSeleccionado = spAnho.getValue()*100;
-                buscarPeriodo(periodoSeleccionado, true);
+                buscarPeriodo(periodoSeleccionado);
             }
         });
 
@@ -179,16 +174,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML void lnkAsignacionesAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR);
     }
-
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
     
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<CentroDriver> listaEntidades = new ArrayList();
         listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo, menuControlador.repartoTipo));
-        if (listaEntidades.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -204,39 +193,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
 
     @FXML void btnDriverAction(ActionEvent event) {
         verDriver();
-    }
-    
-    @FXML void btnAsignarDriverCentroAction(ActionEvent event) {        
-        entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
-        if (entidadSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a " + titulo1, "Por favor seleccione una entidad.");
-            return;
-        }
-        if (!entidadSeleccionada.getCodigoDriver().equals("Sin driver asignado")) {
-            if (menuControlador.navegador.mensajeConfirmar("Asignar driver que distribuye a " + titulo1, "La entidad ya cuenta con un driver asignado.\n¿Está seguro que desea reemplazar dicho driver?")) {
-                buscarDriverCentro();
-            }
-            return;
-        }
-        buscarDriverCentro();
-    }
-    
-    @FXML void btnQuitarAction(ActionEvent event) {        
-        entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
-        if (entidadSeleccionada == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar Driver", "Por favor seleccione una entidad.");
-            return;
-        }
-        
-        if (entidadSeleccionada.getCodigoDriver().equals("Sin driver asignado"))
-            return;
-        
-        if (!menuControlador.navegador.mensajeConfirmar("Quitar Driver", "¿Está seguro de quitar el Driver " + entidadSeleccionada.getNombreDriver() + "?"))
-            return;
-        
-        centroDriverDAO.borrarAsignacionBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
@@ -331,9 +287,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.navegador.mensajeInformativo("Asignar Driver que distribuye a Centros de Costos", "Por favor seleccione una entidad.");
             return;
         }
-        centroDriverDAO.asignarDriverBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), driver.getCodigo(), periodoSeleccionado);
+        centroDriverDAO.asignarDriverBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
 
     @Override

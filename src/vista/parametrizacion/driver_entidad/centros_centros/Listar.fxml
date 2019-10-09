@@ -63,7 +63,7 @@
             <ComboBox fx:id="cmbTipoCentro" prefHeight="25.0" prefWidth="159.1" />
          </children>
       </HBox>
-      <HBox alignment="TOP_RIGHT" layoutX="121.0" layoutY="177.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="190.0">
+      <HBox alignment="CENTER_RIGHT" layoutX="121.0" layoutY="177.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="190.0">
          <children>
             <JFXButton fx:id="btnDriver" onAction="#btnDriverAction" text="Ver driver">
                <graphic>

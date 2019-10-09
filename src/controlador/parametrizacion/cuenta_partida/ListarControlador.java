@@ -9,8 +9,6 @@ import dao.PartidaDAO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -182,7 +180,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         partidaDAO.actualizarCuentaPartidaBolsa(partidaSeleccionada, periodoSeleccionado,menuControlador.repartoTipo);
         String item = " de la asignación Cuenta - Partida ("+partidaSeleccionada.getCuentaContable().getCodigo()+","+ partidaSeleccionada.getCodigo()+")";
         menuControlador.Log.editarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),item,periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
         
     }
     
@@ -246,7 +244,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
         partidaDAO.borrarPartidaCuenta(partidaSeleccionada.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(),partidaSeleccionada.getCuentaContable().getCodigo()+ " a la Partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -254,14 +252,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_CARGAR);
     }
     
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
-    
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<Partida> lista = partidaDAO.listarPartidaConCuentaContable(periodo,menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.mensaje.show_table_empty(titulo);
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -301,7 +293,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         partidaDAO.insertarPartidaCuenta(partidaSeleccionada.getCodigo(), entidad.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo()+ " a la partida "+ partidaSeleccionada.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CUENTA_PARTIDA_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
 
     @Override
