@@ -26,15 +26,9 @@ import modelo.DetalleGasto;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
-    @FXML private Hyperlink lnkInicio;    
-    @FXML private Hyperlink lnkAprovisionamiento;
-    @FXML private Hyperlink lnkBalancete;
-
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
 
-    @FXML private JFXButton btnCargar;
-    
     @FXML private TextField txtBuscar;
     @FXML private TableView<DetalleGasto> tabListar;
     @FXML private TableColumn<DetalleGasto, String> tabcolCodigoCuentaContable;
@@ -73,7 +67,7 @@ public class ListarControlador implements Initializable {
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                buscarPeriodo(periodoSeleccionado, true);
+                buscarPeriodo(periodoSeleccionado);
             }
         });
         
@@ -82,7 +76,7 @@ public class ListarControlador implements Initializable {
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                buscarPeriodo(periodoSeleccionado, true);
+                buscarPeriodo(periodoSeleccionado);
             }
         });
         
@@ -166,10 +160,8 @@ public class ListarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_CARGAR);
     }
 
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<DetalleGasto> lista = detalleGastoDAO.listar(periodo, menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);

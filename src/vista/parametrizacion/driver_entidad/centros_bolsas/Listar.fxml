@@ -91,30 +91,6 @@
                   <String fx:value="large" />
                </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnAsignarDriverCentro" onAction="#btnAsignarDriverCentroAction" text="Asignar driver CECO">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PLUS" />
-               </graphic>
-               <tooltip>
-                  <Tooltip fx:id="ttAsignarDriverCentro" text="Asignar un driver que distribuye a Centros de Costos" />
-               </tooltip>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="x-large" />
-               </styleClass>
-            </JFXButton>
-            <JFXButton fx:id="btnQuitar" onAction="#btnQuitarAction" text="Quitar driver">
-               <graphic>
-                  <FontAwesomeIconView glyphName="MINUS" />
-               </graphic>
-               <tooltip>
-                  <Tooltip text="Quitar la asignación del driver" />
-               </tooltip>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="large" />
-               </styleClass>
-            </JFXButton>
          </children>
       </HBox>
       <HBox alignment="CENTER_RIGHT" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="205.0">

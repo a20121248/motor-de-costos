@@ -422,7 +422,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.navegador.mensajeInformativo("Asignar Driver que distribuye a Objetos de Costos", "Por favor seleccione una entidad.");
             return;
         }
-        centroDriverDAO.asignarDriverObjeto(entidadSeleccionada.getCodigoCentro(),entidadSeleccionada.getGrupoGasto().getCodigo(), driver.getCodigo(), periodoSeleccionado);
+        centroDriverDAO.asignarDriverObjeto(entidadSeleccionada.getCodigoCentro(),entidadSeleccionada.getGrupoGasto().getCodigo(), driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a (" + entidadSeleccionada.getCodigoCentro() + ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, false);
     }

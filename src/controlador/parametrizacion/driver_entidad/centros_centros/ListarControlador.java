@@ -57,20 +57,13 @@ import servicios.DescargaServicio;
 import servicios.DriverServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
-    // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkAsignaciones;
-    
+    // Variables de la vista    
     @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnCargar;
     
-    @FXML private Label lblTipoCentro;
     @FXML private ComboBox<Tipo> cmbTipoCentro;
     
-    @FXML private Label lblEntidades;
     @FXML private TextField txtBuscar;
     @FXML private TableView<CentroDriver> tabEntidades;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoEntidad;
@@ -79,13 +72,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
     @FXML private Label lblNumeroRegistros;
     
-    @FXML private JFXButton btnDriver;
     @FXML private JFXButton btnAsignarDriverCentro;
     @FXML private Tooltip ttAsignarDriverCentro;
-    @FXML private JFXButton btnQuitar;
     
-    @FXML private JFXButton btnGuardar;
-    @FXML private JFXButton btnCancelar;
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -111,49 +100,60 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         this.menuControlador = menuControlador;
         driverDAO = new DriverDAO();
         driverServicio = new DriverServicio();
-        planDeCuentaDAO = new PlanDeCuentaDAO();
         centroDAO = new CentroDAO();
-        productoDAO = new ProductoDAO();
-        bancaDAO = new BancaDAO();
         asignacionEntidadDriverDAO = new AsignacionEntidadDriverDAO();
-        this.titulo = "Driver";
+        titulo = "Asignar Centros";
+        titulo1 = "Centros de Costos";
+        titulo2 = "Centro de Costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Cambiar para Ingresos Operativos
-        titulo1 = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            btnAsignarDriverCentro.setText("Asignar Driver CEBE");
-            titulo1 = "Centros de Beneficios";
-            titulo2 = "Centro de Beneficio";
-        }
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = menuControlador.periodo;
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        
+        // Menesaje de ayuda sobre botón de asignar
         ttAsignarDriverCentro.setText("Asignar un driver que distribuye a " + titulo1);
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    if (menuControlador.repartoTipo == 1)
+                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    else
+                        periodoSeleccionado = spAnho.getValue()*100;
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Seleccionar anho
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
-        });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(periodoSeleccionado,false);
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         
         // inicializar el combo de repartoTipo Centro
         List<Tipo> lstCentro = new ArrayList();
         lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"-".equals(item.getCodigo())).findAny().orElse(null));
-        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"A".equals(item.getCodigo())).findAny().orElse(null));
-        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"B".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"STAFF".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"SOPORTE".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"FICTICIO".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"SALUD".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentro.add(menuControlador.lstCentroTipos.stream().filter(item ->"PROYECTO".equals(item.getCodigo())).findAny().orElse(null));
         cmbTipoCentro.setItems(FXCollections.observableList(lstCentro));
         cmbTipoCentro.setConverter(new StringConverter<Tipo>() {
             @Override

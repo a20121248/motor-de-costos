@@ -106,7 +106,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                    buscarPeriodo(periodoSeleccionado, true);
+                    buscarPeriodo(periodoSeleccionado);
                 }
             });
         } else {
@@ -121,7 +121,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
                     periodoSeleccionado = spAnho.getValue()*100;
-                buscarPeriodo(periodoSeleccionado, true);
+                buscarPeriodo(periodoSeleccionado);
             }
         });
 
@@ -214,7 +214,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
             centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
-            buscarPeriodo(periodoSeleccionado, false);
+            buscarPeriodo(periodoSeleccionado);
         } else {
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }        
@@ -229,14 +229,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
     }
     
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
-    
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<Centro> lista = centroDAO.listarPeriodo(periodo, menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
@@ -274,7 +268,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         centroDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
 
     @Override

@@ -363,7 +363,7 @@ public class DriverDAO {
                 "SELECT DISTINCT A.DRIVER_CODIGO DRIVER_CODIGO\n" +
                 "  FROM MS_DRIVER_LINEAS A\n" +
                 "  JOIN MS_DRIVERS B ON B.CODIGO=A.DRIVER_CODIGO\n" +
-                " WHERE A.PERIODO=%d AND B.DRIVER_TIPO_CODIGO='%s' AND B.REPARTO_TIPO=%d\n" +
+                " WHERE A.PERIODO=%d AND B.DRIVER_TIPO_CODIGO='%s' AND A.REPARTO_TIPO=%d\n" +
                 " ORDER BY A.DRIVER_CODIGO",
                 periodo, tipoDriver, repartoTipo);
         List<String> lista = new ArrayList();

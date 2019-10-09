@@ -219,7 +219,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if(partidaDAO.verificarObjetoPartidaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
             partidaDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
             menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
-            buscarPeriodo(periodoSeleccionado, false);
+            buscarPeriodo(periodoSeleccionado);
         }else{
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }   
@@ -230,14 +230,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR);
     }
     
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
-    
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         vista = partidaDAO.listarPeriodo(periodo,null,menuControlador.repartoTipo);
-        if (vista.isEmpty() && mostrarMensaje)
-            menuControlador.mensaje.show_table_empty(titulo);
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(vista), p -> true);
         sortedData = new SortedList(filteredData);
@@ -276,7 +270,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         partidaDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
         menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), entidad.getCodigo(), Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
         System.out.println(periodoSeleccionado);
     }
 
