@@ -76,7 +76,6 @@ public class PrincipalControlador implements Initializable {
     DriverServicio driverServicio;
     CentroDAO centroDAO;
     ProductoDAO productoDAO;
-    BancaDAO bancaDAO;
     ObjetoDAO objetoDAO;
     ProcesosDAO procesosDAO;
     TrazaDAO trazaDAO;
@@ -97,7 +96,6 @@ public class PrincipalControlador implements Initializable {
         driverServicio = new DriverServicio();
         centroDAO = new CentroDAO();
         productoDAO = new ProductoDAO();
-        bancaDAO = new BancaDAO();
         objetoDAO = new ObjetoDAO("");
         procesosDAO = new ProcesosDAO();
         trazaDAO = new TrazaDAO();

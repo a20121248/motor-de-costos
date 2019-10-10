@@ -86,7 +86,7 @@ public class BuscarDriverObjetoControlador implements Initializable {
         tabDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {
             DriverObjeto driver = tabDrivers.getSelectionModel().getSelectedItem();
             if (driver != null) {
-                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo());
+                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo(),menuControlador.repartoTipo);
                 tabEntidades.getItems().setAll(listaDriverLinea);
             }
         });

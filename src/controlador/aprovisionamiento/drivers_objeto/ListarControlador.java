@@ -73,11 +73,11 @@ public class ListarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         titulo = " Driver - Objetos de Costos";
-        if (menuControlador.repartoTipo == 2) { 
-            titulo = "Driver - Objetos de Beneficio";
-            lblTitulo.setText(titulo);
-            lnkDrivers.setText(titulo);
-            lblEntidades.setText(titulo + " a distribuir");
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo - menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -85,16 +85,17 @@ public class ListarControlador implements Initializable {
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
+
         // tabla 1: dimensiones
         tabListaDrivers.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -126,7 +127,7 @@ public class ListarControlador implements Initializable {
         tabListaDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {
             DriverObjeto driver = tabListaDrivers.getSelectionModel().getSelectedItem();
             if (driver != null) {
-                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo());
+                List<DriverObjetoLinea> listaDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo(),menuControlador.repartoTipo);
                 tabDetalleDriver.getItems().setAll(listaDriverLinea);
             }
         });
@@ -147,7 +148,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
         List<DriverObjeto> lista = driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         if (lista.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("Consulta de drivers", "No existen drivers para el periodo seleccionado.");
+            menuControlador.mensaje.show_table_empty(titulo);
             tabListaDrivers.getItems().clear();
             tabDetalleDriver.getItems().clear();
         } else {
@@ -168,7 +169,7 @@ public class ListarControlador implements Initializable {
     @FXML void btnEditarAction(ActionEvent event) {
         DriverObjeto driverObjeto = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (driverObjeto == null) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_EDIT_EMPTY);
+            menuControlador.mensaje.edit_empty_error(titulo);
             return;
         }
         menuControlador.objeto = driverObjeto;
@@ -179,14 +180,14 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         DriverObjeto item = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Eliminar Driver - " + titulo, "Por favor seleccione un Driver.");
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
             return;
         }
-        if (driverDAO.eliminarDriverObjeto(item.getCodigo()) == -1) {
-            menuControlador.navegador.mensajeError("Eliminar Driver - " + titulo, "No se pudo eliminar el Driver pues está siendo utilizado en otros módulos.\nPara eliminarlo, primero debe quitar las asociaciones/asignaciones donde esté siendo utilizado.");
+        if (driverDAO.eliminarDriverObjeto(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo) == -1) {
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
             return;
         }
         menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_OBJETO_LISTAR.getDireccion());

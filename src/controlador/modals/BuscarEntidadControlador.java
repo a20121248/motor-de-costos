@@ -104,21 +104,13 @@ public class BuscarEntidadControlador implements Initializable {
                     if (periodoSeleccionado==-1) lista = centroDAO.listarMaestro(menuControlador.codigos, repartoTipo);
                     else lista = centroDAO.listar(menuControlador.codigos ,periodoSeleccionado, repartoTipo);
                     break;
-                case "BAN": // Banca
-                    if (periodoSeleccionado==-1) lista = bancaDAO.listarMaestro(menuControlador.codigos);
-                    else lista = bancaDAO.listar(periodoSeleccionado);
-                    break;
-                case "OFI": // Oficina
-                    if (periodoSeleccionado==-1) lista = oficinaDAO.listarMaestro(menuControlador.codigos);
-                    else lista = oficinaDAO.listar(periodoSeleccionado);
-                    break;
                 case "PRO": // Producto
                     if (periodoSeleccionado==-1) lista = productoDAO.listarMaestro(menuControlador.codigos);
-                    else lista = productoDAO.listar(periodoSeleccionado);
+                    else lista = productoDAO.listar(periodoSeleccionado,repartoTipo);
                     break;
                 case "SCA": // Subcanal
                     if (periodoSeleccionado==-1) lista = subcanalDAO.listarMaestro(menuControlador.codigos);
-                    else lista = subcanalDAO.listar(periodoSeleccionado);
+                    else lista = subcanalDAO.listar(periodoSeleccionado,repartoTipo);
                     break;
                 case "GOFI": // Grupo de Productos
                     lista = objetoGrupoDAO.listarObjetos(periodoSeleccionado);

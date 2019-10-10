@@ -178,14 +178,14 @@ public class ListarControlador implements Initializable {
     @FXML void btnEliminarAction(ActionEvent event) {
         DriverCentro item = tabListaDrivers.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Driver - " + titulo, menuControlador.MENSAJE_DELETE_EMPTY);
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
             return;
         }
-        if (driverDAO.eliminarDriverCentro(item.getCodigo()) == -1) {
-            menuControlador.navegador.mensajeError("Driver - " + titulo, menuControlador.MENSAJE_DELETE_ITEM);
+        if (driverDAO.eliminarDriverCentro(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo) == -1) {
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
             return;
         }
         menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getDireccion());

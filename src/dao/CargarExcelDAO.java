@@ -23,7 +23,24 @@ public class CargarExcelDAO {
         ConexionBD.ejecutar(queryStr);
     }
     
-    public double porcentajeTotalDriver(String codigoDriver) {
+    public double porcentajeTotalDriverCentro(String codigoDriver) {
+        String queryStr = String.format("" +
+            "SELECT SUM(PORCENTAJE) PORCENTAJE_TOTAL\n" +
+            "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
+            " WHERE A.DRIVER_CODIGO='%s'\n" +
+            "GROUP BY a.DRIVER_CODIGO",codigoDriver);
+        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+        double cnt = 0;
+        try {
+            rs.next();
+            cnt = rs.getDouble("PORCENTAJE_TOTAL");
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cnt;        
+    }
+    
+    public double porcentajeTotalDriverObjeto(String codigoDriver) {
         String queryStr = String.format("" +
             "SELECT SUM(PORCENTAJE) PORCENTAJE_TOTAL\n" +
             "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
@@ -87,65 +104,52 @@ public class CargarExcelDAO {
         return lista;
     }
     
-    public List<DriverObjetoLinea> obtenerListaObjetoLinea(String driverCodigo, int periodo, StringBuilder msj) {
+    public List<DriverObjetoLinea> obtenerListaObjetoLinea(String driverCodigo, int periodo, int repartoTipo, StringBuilder msj) {
         String queryStr = String.format("" +
-                "SELECT A.EXCEL_FILA,\n" +
+                " SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 PRODUCTO_CODIGO,\n" +
                 "       NVL((C.nombre),'NO') PRODUCTO_EXISTE,\n" +
                 "       A.CODIGO_2 SUBCANAL_CODIGO,\n" +
                 "       NVL((E.nombre),'NO') SUBCANAL_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
-                "  FROM CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN producto_lineas B ON  A.CODIGO_1 = B.PRODUCTO_CODIGO AND b.periodo = %d\n" +
-                "  LEFT JOIN productos C ON A.CODIGO_1=C.CODIGO AND b.producto_codigo = c.codigo\n" +
-                "  LEFT JOIN subcanal_lineas D ON A.CODIGO_2 = D.SUBCANAL_CODIGO AND d.periodo = %d\n" +
-                "  LEFT JOIN subcanals E ON A.CODIGO_2=E.CODIGO AND d.subcanal_codigo = e.codigo\n" +
-                " WHERE DRIVER_CODIGO='%s'\n"+
+                "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
+                "  LEFT JOIN MS_producto_lineas B ON  A.CODIGO_1 = B.PRODUCTO_CODIGO AND b.periodo = '%d' AND B.reparto_tipo ='%d'\n" +
+                "  LEFT JOIN MS_productos C ON A.CODIGO_1=C.CODIGO AND b.producto_codigo = c.codigo\n" +
+                "  LEFT JOIN MS_subcanal_lineas D ON A.CODIGO_2 = D.SUBCANAL_CODIGO AND d.periodo = '%d' AND d.reparto_tipo ='%d'\n" +
+                "  LEFT JOIN MS_subcanals E ON A.CODIGO_2=E.CODIGO AND d.subcanal_codigo = e.codigo\n" +
+                " WHERE DRIVER_CODIGO='%s'\n" +
                 " ORDER BY a.excel_fila"
-                ,periodo ,periodo, driverCodigo);
+                ,periodo,repartoTipo,periodo,repartoTipo, driverCodigo);
         List<DriverObjetoLinea> lista = new ArrayList();
         boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            double porcentajeAcc = 0;
             while(rs.next()) {
                 int fila = rs.getInt("EXCEL_FILA");
 
                 String productoCodigo = rs.getString("PRODUCTO_CODIGO");
                 String productoExiste = rs.getString("PRODUCTO_EXISTE");
                 if (productoExiste.equals("NO")) {
-                    msj.append(String.format("- Fila %d: El Producto con código %s no existe."+System.lineSeparator(),fila,productoCodigo));
+                    msj.append(String.format("- Fila %d: El Producto con código %s no existe en el periodo %d.\r\n",fila,productoCodigo,periodo));
                     tieneErrores = true;
                 }
                 
                 String subcanalCodigo = rs.getString("SUBCANAL_CODIGO");
                 String subcanalExiste = rs.getString("SUBCANAL_EXISTE");
                 if (subcanalExiste.equals("NO")) {
-                    msj.append(String.format("- Fila %d: El subcanal con código %s no existe."+System.lineSeparator(),fila,subcanalCodigo));
+                    msj.append(String.format("- Fila %d: El subcanal con código %s no existe en el periodo %d.",fila,subcanalCodigo,periodo));
                     tieneErrores = true;
                 }
                 
                 double porcentaje = rs.getDouble("PORCENTAJE");
-                /*try {
-                    porcentaje = Double.parseDouble(rs.getString("PORCENTAJE"));
-                } catch (NumberFormatException | SQLException ex) {
-                    msj.append(String.format("- Fila %d: El porcentaje es incorrecto. (%s).\n",fila,ex.getMessage()));
-                    tieneErrores = true;
-                }*/
-                porcentajeAcc += porcentaje;
-                
                 Producto producto = new Producto(productoCodigo, productoExiste, null, 0, null, null);
                 Subcanal subcanal = new Subcanal(subcanalCodigo, subcanalExiste, null, 0, null, null);
                 DriverObjetoLinea item = new DriverObjetoLinea(producto, subcanal, porcentaje, null, null);
                 lista.add(item);
             }
-            if (Math.abs(porcentajeAcc - 100) > 0.0001) {
-                msj.append(String.format("- Los porcentajes no suman %d%%, suman %.4f%%."+System.lineSeparator(),100,porcentajeAcc));
-                tieneErrores = true;
-            }
         } catch (SQLException ex) {
             Logger.getLogger(CargarExcelDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (tieneErrores) return null;
+        if (tieneErrores) lista = null;
         return lista;
     }
     
@@ -167,7 +171,7 @@ public class CargarExcelDAO {
     
     public void insertarLineaDriverObjetoBatch(int numFila, String driverCodigo, String productoCodigo, String subcanalCodigo, double porcentaje) {
         String queryStr = String.format(Locale.US,"" +
-                "INSERT INTO CARGAR_HOJA_DRIVER(EXCEL_FILA,DRIVER_CODIGO,CODIGO_1,CODIGO_2,PORCENTAJE)\n" +
+                "INSERT INTO MS_CARGAR_HOJA_DRIVER(EXCEL_FILA,DRIVER_CODIGO,CODIGO_1,CODIGO_2,PORCENTAJE)\n" +
                 "VALUES (%d,'%s','%s','%s',%.4f)",
                 numFila,driverCodigo,productoCodigo,subcanalCodigo,porcentaje);
         ConexionBD.agregarBatch(queryStr);
