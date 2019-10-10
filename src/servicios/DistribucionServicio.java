@@ -44,7 +44,7 @@ public class DistribucionServicio {
             double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
             EntidadDistribucion entidadDestino = item.getEntidadDistribucionDestino();
             if (entidadDestino != null) {
-                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
+//                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
                 //Funcion para trazabilidad
             }
         });
@@ -61,13 +61,13 @@ public class DistribucionServicio {
         });
     }
     
-    public void distribuirCentrosBolsas(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion) {
+    public void distribuirCentrosBolsas(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int repartoTipo) {
         double saldo = entidad.getSaldo();
         lstDriverLinea.forEach((item) -> {
             double saldoDestino = saldo*item.getPorcentaje()/100.0;
             EntidadDistribucion entidadDestino = item.getEntidadDistribucionDestino();
             if (entidadDestino != null) {
-                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
+                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(), entidad.getCodigoCuenta(), entidad.getCodigoPartida(), entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo(),repartoTipo);
             }
         });
     }

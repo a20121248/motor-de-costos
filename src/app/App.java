@@ -30,8 +30,8 @@ public class App extends Application {
     public static void main(String[] args) {
         try {
             Navegador.crearCarpeta("./reportes/");
-            Navegador.crearCarpeta("./reportes/gastos/");
-            Navegador.crearCarpeta("./reportes/ingresos/");
+            Navegador.crearCarpeta("./reportes/real/");
+            Navegador.crearCarpeta("./reportes/presupuesto/");
         } catch (SecurityException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }

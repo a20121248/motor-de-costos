@@ -229,4 +229,26 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void execute_phase_currently_error(int nroPhase){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("La fase se está ejecutando actualmente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_asign_without_driver_singular_error(int nroPhase, int nroSinDriver){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("Existe "+ nroSinDriver +" asociación sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones de Driver y asegúrese que esté asignado correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_asign_without_driver_plural_error(int nroPhase, int nroSinDriver){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("Existen "+ nroSinDriver +" asociaciones sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones de Driver y asegúrese que estén asignados correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
 }

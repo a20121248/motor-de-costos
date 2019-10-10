@@ -39,12 +39,15 @@ public class DistribuirFase1Task extends Task {
         this.principalControlador = principalControlador;
         this.fase = 1;
         this.iteracion = 0;
-        if (principalControlador.menuControlador.repartoTipo == 1) {
-            this.progresoTotal=0.3333;
-        } else {
-            this.progresoTotal=0.5;
-        }
         
+        this.progresoTotal=0.3333;
+        
+//        if (principalControlador.menuControlador.repartoTipo == 1) {
+//            this.progresoTotal=0.3333;
+//        } else {
+//            this.progresoTotal=0.5;
+//        }
+//        
         planDeCuentaDAO = new PlanDeCuentaDAO();
         grupoDAO = new GrupoDAO();
         driverDAO = new DriverDAO();
@@ -68,8 +71,11 @@ public class DistribuirFase1Task extends Task {
         for (int i = 1; i <= max; ++i) {
             // inicio logica
             CentroDriver entidadOrigen = lista.get(i-1);
-            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, entidadOrigen.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
-            distribucionServicio.distribuirCentrosBolsas(entidadOrigen, lstDriverLinea, periodo, iteracion);
+            int periodoRT;
+            if(principalControlador.menuControlador.repartoTipo == 2) periodoRT = (int) periodo/100 * 100;
+            else  periodoRT = periodo;
+            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoRT, entidadOrigen.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+            distribucionServicio.distribuirCentrosBolsas(entidadOrigen, lstDriverLinea, periodo, iteracion, principalControlador.menuControlador.repartoTipo);
             principalControlador.piTotal.setProgress(i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(i*progresoTotal/(max+1));
             // fin logica
@@ -84,8 +90,15 @@ public class DistribuirFase1Task extends Task {
         if (principalControlador.menuControlador.repartoTipo == 1) {
             principalControlador.lblMensajeFase1.setVisible(true);
             
-            reporteNombre = "Reporte 01 - Cuentas Contables a Centros de Costos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Real";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+            reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+            principalControlador.lblMensajeFase1.setVisible(false);
+        } else {
+            principalControlador.lblMensajeFase1.setVisible(true);
+            
+            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Presupuesto";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "presupuesto" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
             reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
             principalControlador.lblMensajeFase1.setVisible(false);
         }

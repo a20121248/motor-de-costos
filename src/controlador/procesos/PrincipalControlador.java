@@ -114,12 +114,12 @@ public class PrincipalControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Cambiar para Ingresos Operativos
-        if (menuControlador.repartoTipo == 2) {
-            tpEjecucionCostos.setVisible(false);
-            tpEjecucionIngresos.setVisible(true);
-            AnchorPane.setTopAnchor(tpEjecucionTotal, AnchorPane.getTopAnchor(tpEjecucionTotal)-75);
-            lblEjecucionTotal.setText("Ejecutar las fases 1 y 2");
-        }
+//        if (menuControlador.repartoTipo == 2) {
+//            tpEjecucionCostos.setVisible(false);
+//            tpEjecucionIngresos.setVisible(true);
+//            AnchorPane.setTopAnchor(tpEjecucionTotal, AnchorPane.getTopAnchor(tpEjecucionTotal)-75);
+//            lblEjecucionTotal.setText("Ejecutar las fases 1 y 2");
+//        }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
@@ -145,8 +145,7 @@ public class PrincipalControlador implements Initializable {
         ejecutandoFase2 = false;
         ejecutandoFase3 = false;
         ejecutandoFaseTotal = false;
-        if (menuControlador.repartoTipo == 1) {
-            // FASE 1
+        // FASE 1
             if (procesosDAO.obtenerFechaEjecucion(periodo, 1, menuControlador.repartoTipo) != null) {
                 pbFase1.setProgress(1);
                 piFase1.setProgress(1);
@@ -188,36 +187,6 @@ public class PrincipalControlador implements Initializable {
                 ejecutoFase3 = false;
                 ejecutoFaseTotal = false;
             }
-        } else {
-            // FASE 1
-            if (procesosDAO.obtenerFechaEjecucion(periodo, 1, menuControlador.repartoTipo) != null) {
-                pbFase1Ingresos.setProgress(1);
-                piFase1Ingresos.setProgress(1);
-                pbTotal.setProgress(progreso);
-                piTotal.setProgress(progreso);
-                ejecutoFase1 = true;
-            } else {
-                pbFase1Ingresos.setProgress(0);
-                piFase1Ingresos.setProgress(0);
-                pbTotal.setProgress(0);
-                piTotal.setProgress(0);
-                ejecutoFase1 = false;
-            }
-            // FASE 2
-            if (procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo) != null) {
-                pbFase2Ingresos.setProgress(1);
-                piFase2Ingresos.setProgress(1);
-                pbTotal.setProgress(1);
-                piTotal.setProgress(1);
-                ejecutoFase2 = true;
-                ejecutoFaseTotal = true;
-            } else {
-                pbFase2Ingresos.setProgress(0);
-                piFase2Ingresos.setProgress(0);
-                ejecutoFase2 = false;
-                ejecutoFaseTotal = false;
-            }
-        }
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -234,15 +203,13 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void btnFase1Action(ActionEvent event) {
         if (ejecutandoFase1) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 1", "La fase se está ejecutando actualmente.");
+            menuControlador.mensaje.execute_phase_currently_error(1);
             return;
         }
         int cantSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
         if (cantSinDriver!=0) {
-            if (cantSinDriver==1) 
-                menuControlador.navegador.mensajeError("Fase 1", "Existe 1 Grupo de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
-            else
-                menuControlador.navegador.mensajeError("Fase 1", "Existen " + cantSinDriver + " Grupos de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
+            if (cantSinDriver==1) menuControlador.mensaje.execute_asign_without_driver_singular_error(1, cantSinDriver);
+            else menuControlador.mensaje.execute_asign_without_driver_plural_error(1, cantSinDriver);
             return;
         }
         
@@ -348,10 +315,10 @@ public class PrincipalControlador implements Initializable {
     public void ejecutarFase1(int periodo) {       
         try {
             if (menuControlador.repartoTipo == 1) {
-                String carpetaReportesYYYY = String.format("./reportes/gastos/%d/",periodoSeleccionado);
+                String carpetaReportesYYYY = String.format("./reportes/real/%d/",periodoSeleccionado);
                 Navegador.crearCarpeta(carpetaReportesYYYY);
             } else {
-                String carpetaReportesYYYY = String.format("./reportes/ingresos/%d/",periodoSeleccionado);
+                String carpetaReportesYYYY = String.format("./reportes/presupuesto/%d/",periodoSeleccionado);
                 Navegador.crearCarpeta(carpetaReportesYYYY);
             }
         } catch (SecurityException ex) {
@@ -393,13 +360,15 @@ public class PrincipalControlador implements Initializable {
         ejecutoFaseTotal = false;
         
         DistribuirFase1Task df1t = new DistribuirFase1Task(periodo, this);
-        if (menuControlador.repartoTipo == 1) {
-            pbFase1.progressProperty().bind(df1t.progressProperty());
-            piFase1.progressProperty().bind(df1t.progressProperty());
-        } else {
-            pbFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-            piFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-        }
+        pbFase1.progressProperty().bind(df1t.progressProperty());
+        piFase1.progressProperty().bind(df1t.progressProperty());
+//        if (menuControlador.repartoTipo == 1) {
+//            pbFase1.progressProperty().bind(df1t.progressProperty());
+//            piFase1.progressProperty().bind(df1t.progressProperty());
+//        } else {
+//            pbFase1Ingresos.progressProperty().bind(df1t.progressProperty());
+//            piFase1Ingresos.progressProperty().bind(df1t.progressProperty());
+//        }
         executor.execute(df1t);
     } 
    

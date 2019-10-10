@@ -105,9 +105,9 @@ public class DetalleGastoDAO {
         borrarListaDetalleGastoPeriodo(periodo, repartoTipo);
         ConexionBD.crearStatement();
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
-        int periodoIter = periodo;
-        if (repartoTipo != 1) ++periodoIter;
         for (DetalleGasto item: lista) {
+            int periodoIter = periodo;
+            if (repartoTipo != 1) ++periodoIter;
             String codigoCuentaContable = item.getCodigoCuentaContable();
             String codigoPartida = item.getCodigoPartida();
             String codigoCentro = item.getCodigoCentro();
@@ -137,7 +137,7 @@ public class DetalleGastoDAO {
         actualizarSaldoCuentaPartidaPeriodo(periodo, repartoTipo);
         
         // actualizo montos por mes
-        periodoIter = periodo;
+        int periodoIter = periodo;
         if (repartoTipo != 1) ++periodoIter;
         for (Double monto: lista.get(0).getMontos())
             actualizarSaldoCentroPeriodo(periodoIter++, repartoTipo);

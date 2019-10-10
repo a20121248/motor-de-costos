@@ -13,7 +13,7 @@ public class ProcesosDAO {
    public void insertarEjecucionIni(int periodo, int fase, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "INSERT INTO ejecuciones(periodo,fase,reparto_tipo,fecha_ini)\n" +
+                "INSERT INTO ms_ejecuciones(periodo,fase,reparto_tipo,fecha_ini)\n" +
                 "VALUES(%d,%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 periodo,fase,repartoTipo,fechaStr);
         ConexionBD.ejecutar(queryStr);
@@ -22,7 +22,7 @@ public class ProcesosDAO {
    public void insertarEjecucionFin(int periodo, int fase, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
-                "UPDATE ejecuciones\n" +
+                "UPDATE MS_ejecuciones\n" +
                 "   SET fecha_fin=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')" +
                 " WHERE periodo=%d AND fase=%d AND reparto_tipo=%d",
                 fechaStr,periodo,fase,repartoTipo);
