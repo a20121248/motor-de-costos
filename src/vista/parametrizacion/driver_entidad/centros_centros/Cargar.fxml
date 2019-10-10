@@ -78,10 +78,14 @@
       <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
          <children>
             <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
-            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" styleClass="btn" text="Descargar LOG">
+            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
                <graphic>
                   <FontAwesomeIconView glyphName="DOWNLOAD" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
             </JFXButton>
             <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">

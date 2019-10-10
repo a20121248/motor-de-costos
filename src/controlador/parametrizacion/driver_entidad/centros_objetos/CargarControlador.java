@@ -25,15 +25,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import modelo.CentroDriver;
-import modelo.DetalleGasto;
 import modelo.Tipo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -43,16 +42,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CargarControlador implements Initializable {
     // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkAsignaciones;
-    @FXML private Hyperlink lnkCargar;
-    
+    @FXML private HBox hbPeriodo;    
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
-    @FXML private JFXButton btnDescargarLog;
 
     @FXML private TableView<CentroDriver> tabCargar;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoCentro;
@@ -60,10 +54,9 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<CentroDriver, String> tabcolGrupoGasto;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoDriver;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
+
     @FXML private Label lblNumeroRegistros;
-    
-    @FXML private JFXButton btnAtras;
-    @FXML private JFXButton btnSubir;    
+    @FXML private JFXButton btnDescargarLog;
     
     // Variables de la aplicacion
     public MenuControlador menuControlador;
@@ -72,14 +65,11 @@ public class CargarControlador implements Initializable {
     CentroDriverDAO centroDriverDAO;
     DetalleGastoDAO detalleGastoDAO;
     
-    List<CentroDriver> listaCargar = new ArrayList();
+    List<CentroDriver> listaCargar;
     int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_CARGAR.getControlador());
     String logName;
     String titulo;
-    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
@@ -88,39 +78,61 @@ public class CargarControlador implements Initializable {
         detalleGastoDAO = new DetalleGastoDAO();
         centroDriverDAO = new CentroDriverDAO();
         periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
-        this.titulo = "Asignar Driver a CECO Bolsa";
+        listaCargar = new ArrayList();
+        titulo = "Asignar Driver Objeto a CECO ";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // tabla dimensiones
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    if (menuControlador.repartoTipo == 1)
+                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    else
+                        periodoSeleccionado = spAnho.getValue()*100;
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Seleccionar anho
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+            }
+        });
+        
+        // Dimensiones de la tabla
         tabCargar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+        // Formato de la tabla
         tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
         tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
-        btnDescargarLog.setVisible(false);
 
+        // Ocultar descarga de Log
+        btnDescargarLog.setVisible(false);
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -148,7 +160,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
+            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado, menuControlador.repartoTipo);
             if (lista != null) {
                 tabCargar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -160,12 +172,13 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<CentroDriver> leerArchivo(String rutaArchivo) {
+    private List<CentroDriver> leerArchivo(String rutaArchivo, int periodo, int repartoTipo) {
         TipoDAO tipoDAO = new TipoDAO();
         List<CentroDriver> lista = new ArrayList();
-        List<CentroDriver> lstEntidades = centroDAO.listarCentrosObjetosConDriver(periodoSeleccionado,"-",menuControlador.repartoTipo,-1);
-        List<String> lstDrivers = driverDAO.listarCodigosDriverObjetosPeriodo(periodoSeleccionado,menuControlador.repartoTipo,"OBCO");
+        List<CentroDriver> lstEntidades = centroDAO.listarCentrosObjetosConDriver(periodo, "-", repartoTipo, -1);
+        List<String> lstDrivers = driverDAO.listarCodigosDriverObjetosPeriodo(periodo, repartoTipo, "OBCO");
         List<Tipo> listaGrupoGasto = tipoDAO.listarGrupoGastos();
+        
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -173,9 +186,9 @@ public class CargarControlador implements Initializable {
 
             Iterator<Row> filas = hoja.iterator();
             Iterator<Cell> celdas;
-            Row fila = null;
-            Cell celda = null;
-            //int numFilasOmitir = 2
+            Row fila;
+            Cell celda;
+            
             //Estructura de la cabecera
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CENTRO","NOMBRE CENTRO","GRUPO GASTO","CODIGO DRIVER","NOMBRE DRIVER")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
@@ -187,29 +200,37 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodoLeido = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String grupoGasto = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoDriver = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreDriver = celda.getStringCellValue();
 
-                if (periodoSeleccionado != periodo) {
+                if (periodo != periodoLeido) {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
                     lista.clear();
                     txtRuta.setText("");
-//                    break;
                     return null;
                 }
-//                Validar la existencia de la llave Cuenta-Partida-Centro
-                CentroDriver entidad = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro()) && grupoGasto.equals(item.getGrupoGasto().getCodigo())).findAny().orElse(null);
-//                Validar la existencia del Driver en periodo a Cargar
+                
+                // Validar la existencia del centro
+                CentroDriver centro = lstEntidades.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro()) && grupoGasto.equals(item.getGrupoGasto().getCodigo())).findAny().orElse(null);
+                // Validar la existencia del Driver en periodo leido a cargar
                 String driver = lstDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
+                // Validar la existencia del Grupo de gasto
                 Tipo tipoGrupoGasto = listaGrupoGasto.stream().filter(item -> grupoGasto.equals(item.getCodigo())).findAny().orElse(null);
-                CentroDriver linea = new CentroDriver(periodo,codigoCentro,nombreCentro,tipoGrupoGasto,codigoDriver,nombreDriver, true);
-                if (entidad != null  && driver!=null) {
+                
+                CentroDriver linea = new CentroDriver(periodoLeido,codigoCentro,nombreCentro,tipoGrupoGasto,codigoDriver,nombreDriver, true);
+                if (centro != null  && driver!=null && tipoGrupoGasto!=null) {
                     listaCargar.add(linea);
                 } else {
+                    String detalleError = "";
+                    String repartoTipoStr = repartoTipo == 1 ? "real" : "presupuesto";
+                    if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodo, repartoTipoStr);
+                    if (driver == null) detalleError += String.format("\n  - El driver con código '%s' no existe en el periodo %d del %s.", codigoDriver, periodo, repartoTipoStr);
+                    if (tipoGrupoGasto == null) detalleError += String.format("\n  - El grupo de gasto con código '%s' no existe en la base de datos.", grupoGasto);
+                    linea.setDetalleError(detalleError);
                     linea.setFlagCargar(false);
                 }
                 lista.add(linea);
@@ -233,43 +254,50 @@ public class CargarControlador implements Initializable {
     }
       
     @FXML void btnSubirAction(ActionEvent event) {
-        findError = false;
-        if(tabCargar.getItems().isEmpty()){
+        if (tabCargar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
-        }else {
-            if(listaCargar.isEmpty()){
+        } else {
+            boolean findError = crearReporteLOG();
+            if (listaCargar.isEmpty()) {
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
-            }else{
+            } else {
                 centroDriverDAO.insertarListaAsignacionesDriverObjeto(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
-                crearReporteLOG();
-                if(findError == true){
+                if (findError == true) {
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
-                }else {
+                } else {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
                 }
-                btnDescargarLog.setVisible(true);
             }
+            btnDescargarLog.setVisible(true);
         }
     }
     
-    void crearReporteLOG(){
+    private boolean crearReporteLOG() {
+        boolean findError = false;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_CENTROOBJETOS_DRIVER.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        tabCargar.getItems().forEach((CentroDriver item)->{
-            if(item.getFlagCargar()){
-                menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
+        
+        for (CentroDriver item: tabCargar.getItems()) {
+            String mensajeStr;
+            if (item.getFlagCargar()) {                
+                mensajeStr = String.format("Se agregó item ('%s', '%s') en %s correctamente.", item.getCodigoDriver(), item.getCodigoCentro(), titulo);
+                menuControlador.Log.agregarLineaArchivo(mensajeStr);
+                
+                mensajeStr = String.format("('%s', '%s')", item.getCodigoDriver(), item.getCodigoCentro());
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
             }
-            else{
-                menuControlador.Log.agregarLineaArchivo("No se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+titulo+", debido a que no existe algún valor en su respectivo catálogo" );
-                findError = true;
+            else {
+                findError = true;                
+                mensajeStr = String.format("No se agregó el item ('%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoDriver(), item.getCodigoCentro(), titulo, item.getDetalleError());
+                menuControlador.Log.agregarLineaArchivo(mensajeStr);
             }
-        });
+        }
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        return findError;
     }  
 }

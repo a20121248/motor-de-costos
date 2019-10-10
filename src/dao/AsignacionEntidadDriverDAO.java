@@ -5,9 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import modelo.CargarEntidadDriver;
 import modelo.CentroDriver;
-import modelo.Driver;
 import modelo.EntidadDistribucion;
 
 public class AsignacionEntidadDriverDAO {
@@ -77,11 +75,12 @@ public class AsignacionEntidadDriverDAO {
         for (EntidadDistribucion item: lstEntidades) {
             if (!item.getDriver().getCodigo().equals("Sin driver asignado")) {
                 String queryStr = String.format(Locale.US, "" +
-                        "INSERT INTO entidad_origen_driver(entidad_origen_codigo,driver_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                        "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                        "INSERT INTO MS_ENTIDAD_ORIGEN_DRIVER(entidad_origen_codigo,driver_codigo,periodo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                        "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                         item.getCodigo(),
                         item.getDriver().getCodigo(),
                         periodo,
+                        repartoTipo,
                         fechaStr,
                         fechaStr);
                 ConexionBD.agregarBatch(queryStr);
@@ -100,11 +99,12 @@ public class AsignacionEntidadDriverDAO {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (CentroDriver item: lstEntidadDriver) {
             String queryStr = String.format(Locale.US, "" +
-                    "INSERT INTO entidad_origen_driver(entidad_origen_codigo,driver_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_ENTIDAD_ORIGEN_DRIVER(ENTIDAD_ORIGEN_CODIGO,DRIVER_CODIGO,PERIODO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s','%s',%d,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     item.getCodigoCentro(),
                     item.getCodigoDriver(),
-                    item.getPeriodo(),
+                    periodo,
+                    repartoTipo,
                     fechaStr,
                     fechaStr);
             ConexionBD.agregarBatch(queryStr);
