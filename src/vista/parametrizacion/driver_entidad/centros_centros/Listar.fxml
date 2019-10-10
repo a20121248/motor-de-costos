@@ -77,7 +77,7 @@
                   <String fx:value="large" />
                </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnAsignarDriverCentro" onAction="#btnAsignarDriverCentroAction" text="Asignar driver CECO">
+            <JFXButton fx:id="btnAsignarDriverCentro" onAction="#btnAsignarDriverCentroAction" text="Asignar driver Centro">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
@@ -108,7 +108,7 @@
             <Label text="Buscar:" />
             <TextField fx:id="txtBuscar" prefHeight="25.0" prefWidth="200.0" />
          </children></HBox>
-      <TableView fx:id="tabEntidades" layoutX="50.0" layoutY="323.0" prefHeight="200.0" prefWidth="265.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="275.0">
+      <TableView fx:id="tabListar" layoutX="50.0" layoutY="323.0" prefHeight="200.0" prefWidth="265.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="275.0">
          <columns>
             <TableColumn fx:id="tabcolCodigoCentro" prefWidth="105.0" styleClass="center" text="CÓDIGO CENTRO" />
             <TableColumn fx:id="tabcolNombreCentro" prefWidth="250.0" styleClass="left" text="NOMBRE CENTRO" />
@@ -116,7 +116,7 @@
             <TableColumn fx:id="tabcolNombreDriver" prefWidth="250.0" styleClass="left" text="NOMBRE DRIVER" />
          </columns>
       </TableView>
-      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="50.0" layoutY="114.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
             <Label text="Periodo:" />
             <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0" />

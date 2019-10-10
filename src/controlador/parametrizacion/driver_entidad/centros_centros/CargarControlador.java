@@ -54,9 +54,9 @@ public class CargarControlador implements Initializable {
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
-    @FXML private TableView<CentroDriver> tabAsignaciones;
-    @FXML private TableColumn<CentroDriver, String> tabcolCodigoEntidad;
-    @FXML private TableColumn<CentroDriver, String> tabcolNombreEntidad;
+    @FXML private TableView<CentroDriver> tabCargar;
+    @FXML private TableColumn<CentroDriver, String> tabcolCodigoCentro;
+    @FXML private TableColumn<CentroDriver, String> tabcolNombreCentro;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoDriver;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
     @FXML private Label lblNumeroRegistros;
@@ -94,14 +94,14 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // tabla dimensiones
-        tabAsignaciones.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoEntidad.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombreEntidad.setMaxWidth(1f * Integer.MAX_VALUE * 35);
+        tabCargar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 35);
         tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 35);
         // tabla formato
-        tabcolCodigoEntidad.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
-        tabcolNombreEntidad.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
+        tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
+        tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
         // meses
@@ -146,7 +146,7 @@ public class CargarControlador implements Initializable {
             spAnho.setDisable(true);
             List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado);
             if (lista != null) {
-                tabAsignaciones.getItems().setAll(lista);
+                tabCargar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
             } else {
                 txtRuta.setText("");
@@ -222,7 +222,7 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
-        if(tabAsignaciones.getItems().isEmpty()){
+        if(tabCargar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             if(listaCargar.isEmpty()){
@@ -246,7 +246,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        tabAsignaciones.getItems().forEach((CentroDriver item)->{
+        tabCargar.getItems().forEach((CentroDriver item)->{
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());

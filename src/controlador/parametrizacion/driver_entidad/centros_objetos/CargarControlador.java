@@ -54,7 +54,7 @@ public class CargarControlador implements Initializable {
     @FXML private JFXButton btnCargarRuta;
     @FXML private JFXButton btnDescargarLog;
 
-    @FXML private TableView<CentroDriver> tabListar;
+    @FXML private TableView<CentroDriver> tabCargar;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoCentro;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreCentro;
     @FXML private TableColumn<CentroDriver, String> tabcolGrupoGasto;
@@ -96,7 +96,7 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // tabla dimensiones
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabCargar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
@@ -150,7 +150,7 @@ public class CargarControlador implements Initializable {
             spAnho.setDisable(true);
             List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             if (lista != null) {
-                tabListar.getItems().setAll(lista);
+                tabCargar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
             } else {
                 txtRuta.setText("");
@@ -234,7 +234,7 @@ public class CargarControlador implements Initializable {
       
     @FXML void btnSubirAction(ActionEvent event) {
         findError = false;
-        if(tabListar.getItems().isEmpty()){
+        if(tabCargar.getItems().isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
             if(listaCargar.isEmpty()){
@@ -258,7 +258,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        tabListar.getItems().forEach((CentroDriver item)->{
+        tabCargar.getItems().forEach((CentroDriver item)->{
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarLineaArchivo("Se agregó item "+ item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")"+ " en "+ titulo +" correctamente.");
                 menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoDriver()+ " a (" +item.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
