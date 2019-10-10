@@ -68,7 +68,7 @@ public class CargarControlador implements Initializable {
     CentroDriverDAO centroDriverDAO;
     DetalleGastoDAO detalleGastoDAO;
     
-    List<CentroDriver> listaCargar = new ArrayList();
+    List<CentroDriver> listaCargar;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getControlador());
     String logName;
@@ -81,7 +81,8 @@ public class CargarControlador implements Initializable {
         driverDAO = new DriverDAO();
         detalleGastoDAO = new DetalleGastoDAO();
         centroDriverDAO = new CentroDriverDAO();
-        this.titulo = "Asignar Driver a Centro Bolsa";
+        listaCargar = new ArrayList();
+        titulo = "Asignar Driver a Centro Bolsa";
     }
     
     @Override
@@ -158,7 +159,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), menuControlador.repartoTipo);
+            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado, menuControlador.repartoTipo);
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -170,11 +171,12 @@ public class CargarControlador implements Initializable {
         }
     }
     
-    private List<CentroDriver> leerArchivo(String rutaArchivo, int repartoTipo) {
+    private List<CentroDriver> leerArchivo(String rutaArchivo, int periodo, int repartoTipo) {
         List<CentroDriver> lista = new ArrayList();
-        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
-        List<String> listarcodigoCentros = centroDAO.listarCodigosCentrosPeriodo(periodoSeleccionado, repartoTipo, Arrays.asList("BOLSA", "OFICINA"));
-        List<String> listarcodigosDrivers = driverDAO.listarCodigosDriverPeriodo(periodoSeleccionado, repartoTipo, "CECO");
+        List<String> lstCodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodo, repartoTipo);
+        List<String> lstCodigosCentros = centroDAO.listarCodigosCentrosPeriodo(periodo, repartoTipo, Arrays.asList("BOLSA", "OFICINA"));
+        List<String> lstCodigosDrivers = driverDAO.listarCodigosDriverPeriodo(periodo, repartoTipo, "CECO");
+        
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -184,8 +186,8 @@ public class CargarControlador implements Initializable {
             Iterator<Cell> celdas;
             Row fila;
             Cell celda;
-            //int numFilasOmitir = 2
-            //Estructura de la cabecera
+            
+            // Estructura de la cabecera
             if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
@@ -196,7 +198,7 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodoLeido = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
@@ -206,32 +208,33 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoDriver = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreDriver = celda.getStringCellValue();
 
-                if (periodoSeleccionado != periodo) {
+                if (periodo != periodoLeido) {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
                     lista.clear();
                     txtRuta.setText("");
                     return null;
                 }
-                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuenta, periodoSeleccionado);
+                
+                List<String> listaCodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuenta, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
-                String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
-                String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listarcodigoCentros.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
-                // Validar la existencia del Driver en periodo a Cargar
-                String driver = listarcodigosDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
-                CentroDriver linea = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, codigoDriver, nombreDriver, true);
+                String cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
+                String partida = listaCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
+                String centro = lstCodigosCentros.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
+                // Validar la existencia del Driver en periodoLeido a Cargar
+                String driver = lstCodigosDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
+                CentroDriver linea = new CentroDriver(periodoLeido, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, codigoDriver, nombreDriver, true);
                 if (cuenta!=null && cuenta.charAt(3)=='1' && partida != null && centro!=null && driver!=null) {
                     listaCargar.add(linea);
                 } else {
                     String detalleError = "";
                     String repartoTipoStr = repartoTipo == 1 ? "real" : "presupuesto";
                     if (cuenta == null)
-                        detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
+                        detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodo, repartoTipoStr);
                     else if (cuenta.charAt(3)!='1')
-                        detalleError += String.format("\n  - La cuenta contable con código '%s' del periodo %d del %s no está en soles.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
-                    if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodoSeleccionado, repartoTipoStr);
-                    if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodoSeleccionado, repartoTipoStr);
-                    if (driver == null) detalleError += String.format("\n  - El driver con código '%s' no existe en el periodo %d del %s.", codigoDriver, periodoSeleccionado, repartoTipoStr);
+                        detalleError += String.format("\n  - La cuenta contable con código '%s' del periodo %d del %s no está en soles.", codigoCuenta, periodo, repartoTipoStr);
+                    if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodo, repartoTipoStr);
+                    if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodo, repartoTipoStr);
+                    if (driver == null) detalleError += String.format("\n  - El driver con código '%s' no existe en el periodo %d del %s.", codigoDriver, periodo, repartoTipoStr);
                     linea.setDetalleError(detalleError);
                     linea.setFlagCargar(false);
                 }

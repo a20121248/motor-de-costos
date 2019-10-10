@@ -703,30 +703,28 @@ public class CentroDAO {
     
     public List<CentroDriver> listarCentrosConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
         String queryStr = String.format("" +
-            "SELECT A.codigo,\n" +
-            "       A.nombre,\n" +
-            "       SUM(B.saldo) saldo,\n" +
-            "       COALESCE(C.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
-            "       COALESCE(D.nombre,'Sin driver asignado') driver_nombre\n" +
-            "  FROM centros A\n" +
-            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
-            "  LEFT JOIN drivers D ON C.driver_codigo=D.codigo\n" +
-            " WHERE A.esta_activo=1 AND B.periodo=%d AND A.reparto_tipo=%d AND A.es_bolsa='NO'\n",
-            periodo,repartoTipo);
-        if (tipo.equals("-")) queryStr += "AND (A.centro_tipo_codigo = 'A' OR A.centro_tipo_codigo = 'B')\n";
-        else if (!tipo.equals("-")) queryStr += String.format("   AND A.centro_tipo_codigo='%s'\n",tipo);
-        if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
-        queryStr += " GROUP BY A.codigo,A.nombre,C.driver_codigo,D.nombre\n" +
-                    " ORDER BY A.codigo";
+            "SELECT B.CODIGO,\n" +
+            "       B.NOMBRE,\n" +
+            "       COALESCE(C.DRIVER_CODIGO,'Sin driver asignado') DRIVER_CODIGO,\n" +
+            "       COALESCE(D.NOMBRE,'Sin driver asignado') DRIVER_NOMBRE\n" +
+            "  FROM MS_CENTRO_LINEAS A\n" +
+            "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+            "  LEFT JOIN MS_ENTIDAD_ORIGEN_DRIVER C ON A.REPARTO_TIPO=C.REPARTO_TIPO AND C.ENTIDAD_ORIGEN_CODIGO=A.CENTRO_CODIGO AND C.PERIODO=A.PERIODO\n" +
+            "  LEFT JOIN MS_DRIVERS D ON C.DRIVER_CODIGO=D.CODIGO\n" +
+            " WHERE A.PERIODO =%d AND A.ITERACION=-2 AND A.REPARTO_TIPO=%d\n",
+            periodo, repartoTipo);
+        if (tipo.equals("-")) queryStr += "AND B.CENTRO_TIPO_CODIGO IN ('STAFF','SOPORTE')\n";
+        else if (!tipo.equals("-")) queryStr += String.format("   AND B.CENTRO_TIPO_CODIGO='%s'\n", tipo);
+        if (nivel!=-1) queryStr += String.format("   AND B.NIVEL=%d\n", nivel);
+        queryStr += " ORDER BY A.CENTRO_CODIGO";
+        
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String codigo = rs.getString("codigo");
-                String nombre = rs.getString("nombre");
-                double saldo = rs.getDouble("saldo");
-                String driverCodigo = rs.getString("driver_codigo");
-                String driverNombre = rs.getString("driver_nombre");
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                String driverCodigo = rs.getString("DRIVER_CODIGO");
+                String driverNombre = rs.getString("DRIVER_NOMBRE");
                 
                 CentroDriver centroDriver = new CentroDriver(periodo, codigo, nombre, driverCodigo, driverNombre);
                 lista.add(centroDriver);
@@ -740,22 +738,23 @@ public class CentroDAO {
     public List<CentroDriver> listarCentrosObjetosConDriver(int periodo, String tipo, int repartoTipo, int nivel) {
         List<Tipo> listaGrupoGasto = tipoDAO.listarGrupoGastos();
         String queryStr = String.format("" +
-            "SELECT A.centro_codigo centro_codigo,\n" +
-            "       B.nombre centro_nombre,\n" +
-            "       C.codigo grupo_gastos,\n" +
-            "       COALESCE(D.driver_codigo,'Sin driver asignado') driver_codigo,\n" +
-            "       COALESCE(E.nombre,'Sin driver asignado') driver_nombre\n" +
-            "  FROM centro_lineas A\n" +
-            "  JOIN centros B ON  B.codigo = A.centro_codigo\n"+
-            "  JOIN grupo_gastos C ON 1=1\n" +
-            "  LEFT JOIN objeto_driver D ON D.centro_codigo = A.centro_codigo AND d.periodo=a.periodo AND D.grupo_gasto = c.codigo\n" +
-            "  LEFT JOIN drivers E ON e.codigo = d.driver_codigo\n" +
-            " WHERE A.periodo =%d AND A.iteracion = -2\n",
-            periodo);
-        if (tipo.equals("-")) queryStr += "AND (B.centro_tipo_codigo = 'D' OR B.centro_tipo_codigo = 'E' OR B.centro_tipo_codigo = 'F')\n";
-        else if (!tipo.equals("-")) queryStr += String.format("   AND B.centro_tipo_codigo='%s'\n",tipo);
-        if (nivel!=-1) queryStr += String.format("   AND A.nivel=%d\n",nivel);
-        queryStr += " ORDER BY A.centro_codigo";
+            "SELECT A.CENTRO_CODIGO CENTRO_CODIGO,\n" +
+            "       B.NOMBRE CENTRO_NOMBRE,\n" +
+            "       C.CODIGO GRUPO_GASTOS,\n" +
+            "       COALESCE(D.DRIVER_CODIGO,'Sin driver asignado') DRIVER_CODIGO,\n" +
+            "       COALESCE(E.NOMBRE,'Sin driver asignado') DRIVER_NOMBRE\n" +
+            "  FROM MS_CENTRO_LINEAS A\n" +
+            "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n"+
+            "  JOIN MS_GRUPO_GASTOS C ON 1=1\n" +
+            "  LEFT JOIN MS_OBJETO_DRIVER D ON A.REPARTO_TIPO=D.REPARTO_TIPO AND D.CENTRO_CODIGO=A.CENTRO_CODIGO AND D.PERIODO=A.PERIODO AND D.GRUPO_GASTO=C.CODIGO\n" +
+            "  LEFT JOIN MS_DRIVERS E ON E.CODIGO=D.DRIVER_CODIGO\n" +
+            " WHERE A.PERIODO=%d AND A.ITERACION=-2 AND A.REPARTO_TIPO=%d\n",
+            periodo, repartoTipo);
+        if (tipo.equals("-")) queryStr += "AND B.CENTRO_TIPO_CODIGO IN ('LINEA','CANAL','FICTICIO','PROYECTO','SALUD')\n";
+        else if (!tipo.equals("-")) queryStr += String.format("   AND B.CENTRO_TIPO_CODIGO='%s'\n",tipo);
+        if (nivel!=-1) queryStr += String.format("   AND A.NIVEL=%d\n", nivel);
+        queryStr += " ORDER BY A.CENTRO_CODIGO";
+        
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

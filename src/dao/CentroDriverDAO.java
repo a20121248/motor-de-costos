@@ -164,7 +164,7 @@ public class CentroDriverDAO {
                     item.getCodigoCentro(),
                     item.getGrupoGasto().getCodigo(),
                     item.getCodigoDriver(),
-                    item.getPeriodo(),
+                    periodo,
                     repartoTipo,
                     fechaStr,
                     fechaStr);

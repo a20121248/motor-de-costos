@@ -67,10 +67,10 @@
             </HBox>
          </children>
       </AnchorPane>
-      <TableView fx:id="tabAsignaciones" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
+      <TableView fx:id="tabCargar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigoEntidad" prefWidth="105.0" styleClass="center" text="CÓDIGO CENTRO" />
-            <TableColumn fx:id="tabcolNombreEntidad" prefWidth="250.0" styleClass="left" text="NOMBRE CENTRO" />
+            <TableColumn fx:id="tabcolCodigoCentro" prefWidth="105.0" styleClass="center" text="CÓDIGO CENTRO" />
+            <TableColumn fx:id="tabcolNombreCentro" prefWidth="250.0" styleClass="left" text="NOMBRE CENTRO" />
             <TableColumn fx:id="tabcolCodigoDriver" prefWidth="100.0" styleClass="center" text="CÓDIGO DRIVER" />
             <TableColumn fx:id="tabcolNombreDriver" prefWidth="250.0" styleClass="left" text="NOMBRE DRIVER" />
          </columns>
@@ -78,10 +78,14 @@
       <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
          <children>
             <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
-            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" styleClass="btn" text="Descargar LOG">
+            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
                <graphic>
                   <FontAwesomeIconView glyphName="DOWNLOAD" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
             </JFXButton>
             <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">

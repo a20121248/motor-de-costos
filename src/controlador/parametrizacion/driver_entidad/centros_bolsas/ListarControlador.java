@@ -110,6 +110,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                         periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                     else
                         periodoSeleccionado = spAnho.getValue()*100;
+                    buscarPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
                 }
             });
         } else {
@@ -124,7 +125,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
                     periodoSeleccionado = spAnho.getValue()*100;
-                buscarPeriodo(periodoSeleccionado);
+                buscarPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
             }
         });
 
@@ -175,9 +176,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR);
     }
     
-    private void buscarPeriodo(int periodo) {
+    private void buscarPeriodo(int periodo, int repartoTipo) {
         List<CentroDriver> listaEntidades = new ArrayList();
-        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo, menuControlador.repartoTipo));
+        listaEntidades.addAll(centroDAO.listarCuentaPartidaCentroBolsaConDriverDirecta(periodo, repartoTipo));
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -289,7 +290,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         centroDriverDAO.asignarDriverBolsa(entidadSeleccionada.getCodigoCuenta(),entidadSeleccionada.getCodigoPartida(),entidadSeleccionada.getCodigoCentro(), driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a ("+ entidadSeleccionada.getCodigoCuenta()+ "," +entidadSeleccionada.getCodigoPartida()+ "," +entidadSeleccionada.getCodigoCentro()+")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado);
+        buscarPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
     }
 
     @Override
@@ -297,4 +298,3 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
-
