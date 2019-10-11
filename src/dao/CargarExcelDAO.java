@@ -69,10 +69,11 @@ public class CargarExcelDAO {
                 "       END CECO_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
                 "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN MS_centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = '%d' AND REPARTO_TIPO = '%d'\n" +
-                "  LEFT JOIN MS_centros C ON A.CODIGO_1=C.CODIGO AND B.CENTRO_CODIGO = C.CODIGO\n" +
+                "  LEFT JOIN MS_centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = '%d' AND REPARTO_TIPO = '%d' AND B.ITERACION = '-2'\n" +
+                "  LEFT JOIN MS_centros C ON C.CODIGO = B.CENTRO_CODIGO\n" +
                 " WHERE A.DRIVER_CODIGO='%s'\n" +
-                " ORDER BY a.excel_fila", periodo,repartoTipo,driverCodigo);
+                " ORDER BY a.excel_fila", 
+                periodo,repartoTipo,driverCodigo);
         List<DriverLinea> lista = new ArrayList();
         boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
