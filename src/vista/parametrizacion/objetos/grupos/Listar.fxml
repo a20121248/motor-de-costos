@@ -2,8 +2,11 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -71,7 +74,7 @@
             </HBox>
          </children>
       </AnchorPane>
-      <HBox alignment="TOP_RIGHT" layoutX="131.0" layoutY="187.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <HBox alignment="CENTER_RIGHT" layoutX="131.0" layoutY="187.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
             <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
                <graphic>
@@ -95,8 +98,12 @@
             </JFXButton>
          </children>
       </HBox>
-      <Label layoutX="420.0" layoutY="173.0" text="Buscar:" AnchorPane.rightAnchor="260.0" AnchorPane.topAnchor="179.0" />
-      <TextField fx:id="txtBuscar" layoutX="496.0" layoutY="169.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0" />
+      <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0">
+         <children>
+            <Label text="Buscar:" />
+            <TextField fx:id="txtBuscar" prefHeight="25.0" prefWidth="200.0" />
+         </children>
+      </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
@@ -104,16 +111,28 @@
             <TableColumn fx:id="tabcolNivel" prefWidth="101.0" styleClass="center" text="NIVEL" />
          </columns>
       </TableView>
-      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnAtras" layoutX="643.0" layoutY="579.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="REPLY" />
-         </graphic>
-      </JFXButton>
-      <JFXButton fx:id="btnDescargar" layoutX="210.0" layoutY="565.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="DOWNLOAD" />
-         </graphic>
-      </JFXButton>
+      <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+         <children>
+            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
+            <JFXButton fx:id="btnDescargar" onAction="#btnDescargarAction" text="Descargar">
+               <graphic>
+                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+               </graphic>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">
+               <graphic>
+                  <FontAwesomeIconView glyphName="REPLY" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

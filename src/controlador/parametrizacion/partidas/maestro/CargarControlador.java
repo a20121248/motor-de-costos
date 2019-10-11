@@ -37,13 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import servicios.LogServicio;
 
 public class CargarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkPartidas;
-    @FXML private Hyperlink lnkCatalogo;
-    @FXML private Hyperlink lnkCargar;
-        
+    // Variables de la vista        
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
@@ -55,8 +49,6 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
-    @FXML private JFXButton btnAtras;
-    @FXML private JFXButton btnSubir;
     
     // Variables de la aplicacion
     PartidaDAO partidaDAO;
@@ -93,6 +85,8 @@ public class CargarControlador implements Initializable {
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
+        
+        btnDescargarLog.setVisible(false);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {

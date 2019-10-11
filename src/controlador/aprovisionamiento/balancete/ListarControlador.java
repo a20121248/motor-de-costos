@@ -79,14 +79,6 @@ public class ListarControlador implements Initializable {
         });
         
         // Tabla: Formato
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCuentaContable.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoPartida.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombrePartida.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolMonto01.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigoCuentaContable.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuentaContable.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());

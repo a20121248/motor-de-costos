@@ -52,7 +52,7 @@ public class MenuControlador implements Initializable {
     public String objetoTipo;
     final TipoDAO tipoDAO;
     public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos, lstGrupoGasto;
-    public List<String> lstEsBolsa, lstNIIF17Atribuible, lstNIIF17Tipo, lstNIIF17Clase, lstTipoGasto;
+    public List<String> lstNIIF17Atribuible, lstNIIF17Tipo, lstNIIF17Clase, lstTipoGasto;
     public String codigos;
     final Image img;
     public List<Integer> lstFases;
@@ -158,11 +158,6 @@ public class MenuControlador implements Initializable {
         lstEntidadTipos = tipoDAO.listarEntidadTipos();
         // grupoGastos de Partidas, Objetos-Drivers
         lstGrupoGasto = tipoDAO.listarGrupoGastos();
-
-        //Caracteristicas de los Gastos de Centros y Cuentas Contables
-        lstEsBolsa = new ArrayList();
-        lstEsBolsa.add("NO");
-        lstEsBolsa.add("SI");
         
         lstTipoGasto = new ArrayList();
         lstTipoGasto.add("INDIRECTO");

@@ -92,16 +92,6 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         switch (menuControlador.objetoTipo) {
-            case "OFI":
-                lblTitulo.setText("Cargar Jerarquía de Oficinas");
-                lnkObjetos.setText("Oficinas");
-                this.titulo = "Oficinas";
-                break;
-            case "BAN":
-                lblTitulo.setText("Cargar Jerarquía de Bancas");
-                lnkObjetos.setText("Bancas");
-                this.titulo = "Bancas";
-                break;
             case "PRO":
                 lblTitulo.setText("Cargar Jerarquía de Productos");
                 lnkObjetos.setText("Productos");
@@ -151,6 +141,8 @@ public class CargarControlador implements Initializable {
                 if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
                 else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        
+        // Ocultar el botón de descarga de LOG
         btnDescargarLog.setVisible(false);
     }
     

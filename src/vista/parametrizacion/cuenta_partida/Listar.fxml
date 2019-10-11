@@ -66,15 +66,6 @@
                </valueFactory>
             </Spinner>
             <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
-            <JFXButton fx:id="btnEsBolsa" onAction="#btnEsBolsaAction" text="Bolsa">
-               <graphic>
-                  <FontAwesomeIconView glyphName="CHECK" />
-               </graphic>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="large" />
-               </styleClass>
-            </JFXButton>
             <JFXButton fx:id="btnAsignar" onAction="#btnAsignarAction" text="Asignar Cuenta">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
@@ -113,7 +104,6 @@
             <TableColumn fx:id="tabcolCodigoPartida" prefWidth="109.0" styleClass="center" text="CÓDIGO PARTIDA" />
             <TableColumn fx:id="tabcolNombrePartida" prefWidth="115.0" styleClass="left" text="NOMBRE PARTIDA" />
             <TableColumn fx:id="tabcolSaldo" prefWidth="66.0" styleClass="right" text="SALDO" />
-            <TableColumn fx:id="tabcolEsBolsa" prefWidth="109.0" styleClass="center" text="¿Es bolsa?" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

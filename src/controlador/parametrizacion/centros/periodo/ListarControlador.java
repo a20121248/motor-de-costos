@@ -25,7 +25,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
@@ -34,6 +33,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.Centro;
 import modelo.DriverCentro;
@@ -43,24 +43,13 @@ import modelo.Tipo;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
-    // Variables de la vista
-    @FXML private Label lblTitulo;
-    
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkCentros;
-    @FXML private Hyperlink lnkAsignacion;
-    
+    // Variables de la vista    
     @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     
-    @FXML private JFXButton btnAgregar;
-    @FXML private JFXButton btnQuitar;
-    @FXML private JFXButton btnCargar;
-    @FXML private JFXButton btnCatalogo;
-    
     @FXML private TextField txtBuscar;
+    
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
     @FXML private TableColumn<Centro, String> tabcolNombre;
@@ -70,10 +59,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private Label lblNumeroRegistros;    
     @FXML private JFXButton btnDescargar;
     
-    @FXML private JFXButton btnAtras;
-    
     // Variables de la aplicacion
-    FXMLLoader fxmlLoader;
     CentroDAO centroDAO;
     DriverLineaDAO driverLineaDAO;
     public MenuControlador menuControlador;
@@ -126,6 +112,11 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         });
 
         // Tabla: Formato
+        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
+        tabcolTipoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 12);
+        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 13);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolTipoCentro.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
@@ -144,11 +135,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 }
             };
         });
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 50);
-        tabcolTipoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
@@ -185,13 +171,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> "CECO".equals(item.getCodigo())).findFirst().orElse(null);
         menuControlador.codigos = tabListar.getItems().stream().map(i -> "'"+i.getCodigo()+"'").collect(Collectors.joining (","));
         try {
-            fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_ENTIDAD.getVista()));
             BuscarEntidadControlador buscarEntidadControlador = new BuscarEntidadControlador(menuControlador, this, tipoSeleccionado, -1, menuControlador.repartoTipo);
             fxmlLoader.setController(buscarEntidadControlador);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-//            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(String.format("Agregar %s para el periodo de %s de %d",titulo2,cmbMes.getValue(),spAnho.getValue()));
             stage.setScene(scene);
             stage.setResizable(false);

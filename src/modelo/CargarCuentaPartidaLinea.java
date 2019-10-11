@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modelo;
 
 import javafx.beans.property.BooleanProperty;
@@ -16,19 +11,17 @@ public class CargarCuentaPartidaLinea {
     private IntegerProperty periodo;
     private StringProperty codigoPartida;
     private StringProperty nombrePartida;
-    private StringProperty esBolsa;
     private StringProperty codigoCuentaContable;
     private StringProperty nombreCuentaContable;
     private BooleanProperty flagCargar;
 
     
-    public CargarCuentaPartidaLinea(int periodo, String codigoCuentaContable, String nombreCuentaContable, String codigoPartida, String nombrePartida, String esBolsa, boolean flagCargar) {
+    public CargarCuentaPartidaLinea(int periodo, String codigoCuentaContable, String nombreCuentaContable, String codigoPartida, String nombrePartida, boolean flagCargar) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoPartida = new SimpleStringProperty(codigoPartida);
         this.nombrePartida = new SimpleStringProperty(nombrePartida);
         this.codigoCuentaContable = new SimpleStringProperty(codigoCuentaContable);
         this.nombreCuentaContable = new SimpleStringProperty(nombreCuentaContable);
-        this.esBolsa =  new SimpleStringProperty(esBolsa);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
@@ -90,17 +83,6 @@ public class CargarCuentaPartidaLinea {
 
     public void setNombreCuentaContable(String nombreCuentaContable) {
         this.nombreCuentaContable.set(nombreCuentaContable);
-    }
-    public StringProperty esBolsaProperty() {
-        return this.esBolsa;
-    }
-
-    public String getEsBolsa() {
-        return esBolsa.get();
-    }
-
-    public void setEsBolsa(String esBolsa) {
-        this.esBolsa.set(esBolsa);
     }
     
     public Boolean getFlagCargar() {

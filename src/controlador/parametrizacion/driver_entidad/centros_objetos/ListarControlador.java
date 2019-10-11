@@ -1,6 +1,5 @@
 package controlador.parametrizacion.driver_entidad.centros_objetos;
 
-
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;

@@ -15,7 +15,6 @@ public class Centro extends EntidadDistribucion {
     private ObjectProperty<Centro> centroPadre;
     private ObjectProperty<Tipo> tipo;
     private BooleanProperty flagCargar;
-    private StringProperty esBolsa;
     private StringProperty niif17_atribuible;
     private StringProperty niif17_tipo;
     private StringProperty niif17_clase;
@@ -51,7 +50,6 @@ public class Centro extends EntidadDistribucion {
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
         this.tipo = new SimpleObjectProperty(tipo);
-        this.esBolsa =  new SimpleStringProperty(esBolsa);
         this.tipoGasto = new SimpleStringProperty(tipoGasto);
         this.niif17_atribuible = new SimpleStringProperty(niif17_atribuible);
         this.niif17_tipo = new SimpleStringProperty(niif17_tipo);
@@ -59,12 +57,11 @@ public class Centro extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String esBolsa,  String niif17_atribuible, String niif17_tipo, String niif17_clase, String tipoGasto, Date fechaCreacion, Date fechaActualizacion) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String niif17_atribuible, String niif17_tipo, String niif17_clase, String tipoGasto, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
         this.tipo = new SimpleObjectProperty(tipo);
-        this.esBolsa =  new SimpleStringProperty(esBolsa);
         this.niif17_atribuible = new SimpleStringProperty(niif17_atribuible);
         this.niif17_tipo = new SimpleStringProperty(niif17_tipo);
         this.niif17_clase = new SimpleStringProperty(niif17_clase);
@@ -105,18 +102,6 @@ public class Centro extends EntidadDistribucion {
 
     public void setTipo(Tipo tipo) {
         this.tipo.set(tipo);
-    }
-    
-    public StringProperty esBolsaProperty() {
-        return this.esBolsa;
-    }
-
-    public String getEsBolsa() {
-        return esBolsa.get();
-    }
-
-    public void setEsBolsa(String esBolsa) {
-        this.esBolsa.set(esBolsa);
     }
     
     public StringProperty NIIF17atribuibleProperty() {

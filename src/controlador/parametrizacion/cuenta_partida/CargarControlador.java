@@ -1,6 +1,5 @@
 package controlador.parametrizacion.cuenta_partida;
 
-
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
@@ -23,14 +22,13 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import modelo.CargarCuentaPartidaLinea;
 import org.apache.poi.ss.usermodel.Cell;
@@ -40,87 +38,86 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CargarControlador implements Initializable {
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkAsignaciones;
-    @FXML private Hyperlink lnkCargar;
-    
+    // Variables de la vista
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
-    @FXML private JFXButton btnDescargarLog;
     
     @FXML private TableView<CargarCuentaPartidaLinea> tabListar;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolCodigoCuenta;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolNombreCuenta;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolCodigoPartida;
     @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolNombrePartida;
-    @FXML private TableColumn<CargarCuentaPartidaLinea, String> tabcolEsBolsa;
     
-    @FXML private Button btnCancelar;
-    @FXML private Button btnSubir;
     @FXML private Label lblNumeroRegistros;
+    @FXML private JFXButton btnDescargarLog;
     
     // Variables de la aplicacion
     PartidaDAO partidaDAO;
     PlanDeCuentaDAO planDeCuentaDAO ;
     public MenuControlador menuControlador;
     int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CUENTA_PARTIDA_CARGAR.getControlador());
     String titulo;
     List<CargarCuentaPartidaLinea> listaCargar;
     String logName;
     String logDetails;
-    Boolean findError;
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         partidaDAO = new PartidaDAO();
         planDeCuentaDAO = new PlanDeCuentaDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
-        this.titulo = "Asignación";
+        titulo = "Asignación";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
             periodoSeleccionado = menuControlador.periodo;
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
         }
-        // tabla formato
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+            }
+        });
+
+        // Tabla: Dimensiones
+        tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
+        tabcolCodigoCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolNombreCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 35);
+        tabcolCodigoPartida.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
+        tabcolNombrePartida.setMaxWidth( 1f * Integer.MAX_VALUE * 35);
+        
+        // Tabla: Formato
         tabcolCodigoCuenta.setCellValueFactory(cellData -> cellData.getValue().codigoCuentaContableProperty());
         tabcolNombreCuenta.setCellValueFactory(cellData -> cellData.getValue().nombreCuentaContableProperty());
         tabcolCodigoPartida.setCellValueFactory(cellData -> cellData.getValue().codigoPartidaProperty());
         tabcolNombrePartida.setCellValueFactory(cellData -> cellData.getValue().nombrePartidaProperty());
-        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
-        // tabla dimensiones
-        tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigoCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombreCuenta.setMaxWidth( 1f * Integer.MAX_VALUE * 30);
-        tabcolCodigoPartida.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNombrePartida.setMaxWidth( 1f * Integer.MAX_VALUE * 30);        
-        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 10);  
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
+
+        // Ocultar el botón de descarga de LOG
         btnDescargarLog.setVisible(false);
     }
     
@@ -167,6 +164,7 @@ public class CargarControlador implements Initializable {
         List<String> listaCodigosCuentaPeriodo = planDeCuentaDAO.listarCodigosPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
         listaCargar = new ArrayList();
         logDetails = "";
+        
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -174,11 +172,11 @@ public class CargarControlador implements Initializable {
 
             Iterator<Row> filas = hoja.iterator();
             Iterator<Cell> celdas;
-            Row fila = null;
-            Cell celda = null;
+            Row fila;
+            Cell celda;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA","BOLSA")))) {
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA","NOMBRE CUENTA","CODIGO PARTIDA","NOMBRE PARTIDA")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -192,7 +190,6 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
                 
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
@@ -203,19 +200,19 @@ public class CargarControlador implements Initializable {
                     break;
                 }
                 
-                CargarCuentaPartidaLinea linea = new CargarCuentaPartidaLinea(periodo,codigoCuenta,nombreCuenta,codigoPartida,nombrePartida,esBolsa,true);
+                CargarCuentaPartidaLinea linea = new CargarCuentaPartidaLinea(periodo,codigoCuenta,nombreCuenta,codigoPartida,nombrePartida,true);
                 String partida = listaCodigosPartidaPeriodo.stream().filter(item ->codigoPartida.equals(item)).findAny().orElse(null);
                 String cuenta = listaCodigosCuentaPeriodo.stream().filter(item ->codigoCuenta.equals(item)).findAny().orElse(null);
-                if(partida!= null && cuenta!=null){
+                if (partida!= null && cuenta!=null) {
                     listaCargar.add(linea);
                     listaCodigosPartidaPeriodo.removeIf(x -> x.equals(linea.getCodigoPartida()));
                     logDetails +=String.format("Se agregó Partida %s con Cuenta Contable %s en %s (Cuenta Contable - Partida) correctamente.\r\n",linea.getCodigoPartida(),linea.getCodigoCuentaContable(),titulo);
                 } else {
                     logDetails +=String.format("No se agregó Partida %s con Cuenta Contable %s al periodo %d de %s Cuenta Contable - Partida. Debido a que existen los siguientes errores:\r\n", linea.getCodigoPartida(),linea.getCodigoCuentaContable(),periodoSeleccionado,titulo);
-                    if(partida == null){
+                    if (partida == null) {
                         logDetails +=String.format("- El código de Partida no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", periodoSeleccionado);
                     }
-                    if(cuenta == null){
+                    if (cuenta == null) {
                         logDetails +=String.format("- El código de Cuenta Contable no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", periodoSeleccionado);
                     }
                     linea.setFlagCargar(false);
@@ -232,18 +229,17 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
-        findError = false;
-        if(tabListar.getItems().isEmpty()){
+        if (tabListar.getItems().isEmpty()) {
             menuControlador.mensaje.upload_empty();
-        }else {
-            if(listaCargar.isEmpty()){
+        } else {
+            if (listaCargar.isEmpty()){
                 menuControlador.mensaje.upload_allCharged_now(titulo);
-            }else{
+            } else {
+                boolean findError = crearReporteLOG();
                 partidaDAO.insertarPartidasCuenta(periodoSeleccionado,listaCargar,menuControlador.repartoTipo);
-                crearReporteLOG();
-                if(findError == true){
+                if (findError == true) {
                     menuControlador.mensaje.upload_success_with_error(titulo);
-                }else {
+                } else {
                     menuControlador.mensaje.upload_success();
                 }
                 btnDescargarLog.setVisible(true);
@@ -260,24 +256,25 @@ public class CargarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_LISTAR);
     }
     
-    void crearReporteLOG(){
+    private boolean crearReporteLOG() {
+        boolean findError = false;
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_ASIGNACIONES_CUENTA_PARTIDA.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        tabListar.getItems().forEach((item)->{
+        for (CargarCuentaPartidaLinea item: tabListar.getItems()) {
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigoCuentaContable() +" con "+ item.getCodigoPartida(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
-            }
-            else{
+            } else {
                 findError = true;
             }
-        });
+        };
         menuControlador.Log.agregarLineaArchivo(logDetails);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        return findError;
     }
 }
 

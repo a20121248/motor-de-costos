@@ -1,12 +1,8 @@
 package dao;
 
 import controlador.ConexionBD;
-import java.sql.BatchUpdateException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -196,28 +192,28 @@ public class CentroDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public int actualizarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, String esBolsa, int tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase) {
+    public int actualizarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, int tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase) {
         niif17Atribuible = convertirPalabraAbreviatura(niif17Atribuible);
         niif17Tipo = convertirPalabraAbreviatura(niif17Tipo);
         niif17Clase = convertirPalabraAbreviatura(niif17Clase);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format("" +
                 "UPDATE MS_centros\n" +
-                "   SET nombre='%s',centro_tipo_codigo='%s',nivel=%d,centro_padre_codigo='%s',es_bolsa='%s',tipo_gasto='%d',niif17_atribuible='%s',niif17_tipo='%s',niif17_clase='%s',fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
+                "   SET nombre='%s',centro_tipo_codigo='%s',nivel=%d,centro_padre_codigo='%s',tipo_gasto='%d',niif17_atribuible='%s',niif17_tipo='%s',niif17_clase='%s',fecha_actualizacion=TO_DATE('%s','yyyy/mm/dd hh24:mi:ss')\n" +
                 " WHERE codigo='%s'",
-                nombre,cecoTipoCodigo,nivel,cecoPadreCodigo,esBolsa,tipoGasto,niif17Atribuible, niif17Tipo, niif17Clase,fechaStr,codigo);
+                nombre,cecoTipoCodigo,nivel,cecoPadreCodigo,tipoGasto,niif17Atribuible, niif17Tipo, niif17Clase,fechaStr,codigo);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, int repartoTipo, String es_bolsa, int tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase ) {
+    public int insertarObjeto(String codigo, String nombre, String cecoTipoCodigo, int nivel, String cecoPadreCodigo, int repartoTipo, int tipoGasto, String niif17Atribuible, String niif17Tipo, String niif17Clase ) {
         niif17Atribuible = convertirPalabraAbreviatura(niif17Atribuible);
         niif17Tipo = convertirPalabraAbreviatura(niif17Tipo);
         niif17Clase = convertirPalabraAbreviatura(niif17Clase);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
                 "INSERT INTO MS_centros(codigo,nombre,esta_activo,centro_tipo_codigo,nivel,centro_padre_codigo,reparto_tipo, es_bolsa, tipo_gasto,niif17_atribuible, niif17_tipo, niif17_clase, fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s',%d,'%s',%d,'%s',%d,'%s','%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,0,es_bolsa,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, fechaStr, fechaStr);
+                "VALUES ('%s','%s',%d,'%s',%d,'%s',%d,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                codigo,nombre,1,cecoTipoCodigo,nivel,cecoPadreCodigo,0,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, fechaStr, fechaStr);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -384,7 +380,6 @@ public class CentroDAO {
             String codigoGrupo = item.getTipo().getCodigo();
             String centroPadreCodigo = "-";
             int nivel = item.getNivel();
-            String esBolsa = item.getEsBolsa();
             String strTipoGasto = item.getTipoGasto();
             String niif17Atribuible = item.getNIIF17Atribuible();
             String niif17Tipo = item.getNIIF17Tipo();
@@ -399,9 +394,9 @@ public class CentroDAO {
             else tipoGasto = 0;
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO MS_CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO, es_bolsa, tipo_gasto, niif17_atribuible, niif17_tipo, niif17_clase,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                    "VALUES ('%s','%s',%d,%d,'%s','%s',%d,'%s','%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,0,esBolsa, tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase,fechaStr,fechaStr);
+                    "INSERT INTO MS_CENTROS(CODIGO,NOMBRE,ESTA_ACTIVO,NIVEL,CENTRO_PADRE_CODIGO,CENTRO_TIPO_CODIGO,REPARTO_TIPO,tipo_gasto,niif17_atribuible,niif17_tipo,niif17_clase,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "VALUES ('%s','%s',%d,%d,'%s','%s',%d,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    codigo,nombre,1,nivel,centroPadreCodigo,codigoGrupo,0,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase,fechaStr,fechaStr);
             return queryStr;
         }).forEachOrdered((queryStr) -> {
             ConexionBD.agregarBatch(queryStr);
@@ -496,7 +491,6 @@ public class CentroDAO {
                 "       A.nombre,\n" +
                 "       A.nivel,\n" +
                 "       A.centro_padre_codigo,\n" +
-                "       A.es_bolsa,\n" +
                 "       A.niif17_atribuible,\n" +
                 "       A.niif17_tipo,\n" +
                 "       A.niif17_clase,\n" +
@@ -510,7 +504,7 @@ public class CentroDAO {
                 "       B.descripcion tipo_descripcion\n" +
                 "  FROM MS_centros A\n" +
                 "  JOIN MS_centro_tipos B ON A.centro_tipo_codigo=B.codigo\n" +
-                " ORDER BY A.codigo",tipoReparto);
+                " ORDER BY A.codigo", tipoReparto);
         List<Centro> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
@@ -518,7 +512,6 @@ public class CentroDAO {
                 String nombre = rs.getString("nombre");
                 int nivel = rs.getInt("nivel");
                 String centroPadreCodigo = rs.getString("centro_padre_codigo");
-                String esBolsa = rs.getString("es_bolsa");
                 String tipoGasto = rs.getString("tipo_gasto");
                 String niif17_atribuible = rs.getString("niif17_atribuible");
                 String niif17_tipo = rs.getString("niif17_tipo");
@@ -530,12 +523,11 @@ public class CentroDAO {
                 String tipoNombre = rs.getString("tipo_nombre");
                 String tipoDescripcion = rs.getString("tipo_descripcion");
                 Tipo tipo = new Tipo(tipoCodigo,tipoNombre,tipoDescripcion);
-                
                 niif17_atribuible = convertirAbreviaturaPalabra(niif17_atribuible);
                 niif17_tipo = convertirAbreviaturaPalabra(niif17_tipo);
                 niif17_clase = convertirAbreviaturaPalabra(niif17_clase);
                 
-                Centro item = new Centro(codigo, nombre, nivel, null, saldo, tipo, esBolsa, niif17_atribuible, niif17_tipo, niif17_clase, tipoGasto, fechaCreacion, fechaActualizacion);
+                Centro item = new Centro(codigo, nombre, nivel, null, saldo, tipo, niif17_atribuible, niif17_tipo, niif17_clase, tipoGasto, fechaCreacion, fechaActualizacion);
                 lista.add(item);
             }
         } catch (SQLException | ParseException ex) {
