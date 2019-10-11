@@ -307,7 +307,7 @@ public class ObjetoDAO {
     
     public void borrarDistribuciones(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM objeto_lineas\n" +
+                "DELETE FROM MS_objeto_lineas\n" +
                 " WHERE periodo=%d AND reparto_tipo=%d",
                 periodo, repartoTipo);
         ConexionBD.ejecutar(queryStr);
