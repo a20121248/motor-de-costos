@@ -57,50 +57,57 @@ public class DistribuirFase2Task extends Task {
         ConexionBD.crearStatement();
         ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
-        updateProgress(centroI, 2*numCentros+1);
+        updateProgress(centroI, maxNivel);
         for (int iter=1; iter<=maxNivel; ++iter) {
             List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
+            int i = 0;
             for (CentroDriver item: lstNivelI) {
                 List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
-                distribucionServicio.distribuirEntidadCascada(item, lstDriverLinea, periodo, iter,maxNivel);                
-                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
-                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
-                // fin logica
-                updateProgress(++centroI, 2*numCentros+1);
+                distribucionServicio.distribuirEntidadCascada(item, lstDriverLinea, periodo, iter,maxNivel, principalControlador.menuControlador.repartoTipo, i);
+                i++;
             }
             ConexionBD.ejecutarBatch();
+            principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
+            principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
+            // fin logica
+            updateProgress(++centroI, maxNivel);
         }        
 
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
         
-        for (int itera=1; itera<=maxNivel; ++itera) {
-            List<CentroDriver> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, itera);
-            String codigoCentro = "";
-            for (CentroDriver item: lista) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
-                if(!item.getCodigoCentro().equals(codigoCentro)){
-                    trazabilidadServicio.ingresarPorcentajesCentros(item,lstDriverLinea,periodo,itera);
-                }
-                codigoCentro = item.getCodigoCentro();
-                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
-                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
-                // fin logica
-                updateProgress(++centroI, 2*numCentros+1);
-            }       
-        }
+//        for (int itera=1; itera<=maxNivel; ++itera) {
+//            List<CentroDriver> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, itera);
+//            String codigoCentro = "";
+//            for (CentroDriver item: lista) {
+//                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+//                if(!item.getCodigoCentro().equals(codigoCentro)){
+//                    trazabilidadServicio.ingresarPorcentajesCentros(item,lstDriverLinea,periodo,itera);
+//                }
+//                codigoCentro = item.getCodigoCentro();
+//                principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
+//                principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/(2*numCentros+1));
+//                // fin logica
+//                updateProgress(++centroI, 2*numCentros+1);
+//            }       
+//        }
         // Generar reportes
         String reporteNombre,rutaOrigen;
         principalControlador.lblMensajeFase2.setVisible(true);
-        
-        reporteNombre = "Reporte 02 - Gasto Propio y Asignado de Centros de Costos";
-        rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-        reportingServicio.crearReporteGastoPropioAsignado(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//        if(principalControlador.menuControlador.repartoTipo ==1){
+//            reporteNombre = "Reporte 02 - Gasto Propio y Asignado de Centros de Costos - Real";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteGastoPropioAsignado(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//        } else {
+//            reporteNombre = "Reporte 02 - Gasto Propio y Asignado de Centros de Costos - Presupuesto";
+//            rutaOrigen = "." + File.separator + "presupuesto" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteGastoPropioAsignado(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//        }
 
-        reporteNombre = "Reporte 03 - Cascada de Staff";
-        rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-        reportingServicio.crearReporteCascada(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//        reporteNombre = "Reporte 03 - Cascada de Staff";
+//        rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//        reportingServicio.crearReporteCascada(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
         
         principalControlador.lblMensajeFase2.setVisible(false);
         // Fin generar reportes
@@ -108,7 +115,7 @@ public class DistribuirFase2Task extends Task {
         principalControlador.ejecutandoFase2 = false;
         principalControlador.piTotal.setProgress(fase*progresoTotal);
         principalControlador.pbTotal.setProgress(fase*progresoTotal);
-        updateProgress(numCentros+1, numCentros+1);
+        updateProgress(maxNivel, maxNivel);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }

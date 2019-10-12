@@ -17,6 +17,10 @@ public class CentroDriver {
     private StringProperty nombreCuenta;
     private StringProperty codigoPartida;
     private StringProperty nombrePartida;
+    private StringProperty codigoCentroOrigen;
+    private StringProperty nombreCentroOrigen;
+    private StringProperty codigoEntidadOrigen;
+    private StringProperty nombreEntidadOrigen;
     private StringProperty codigoCentro;
     private StringProperty nombreCentro;
     private StringProperty codigoDriver;
@@ -99,8 +103,8 @@ public class CentroDriver {
         this.codigoCuenta = new SimpleStringProperty(codigoCuenta);
         this.codigoPartida = new SimpleStringProperty(codigoPartida);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
-        this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.saldo = new SimpleDoubleProperty(saldo);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
     }
     
@@ -108,6 +112,17 @@ public class CentroDriver {
     public CentroDriver(int periodo, String codigoCentro, String codigoDriver, double saldo, Tipo grupoGasto) {
         this.periodo = new SimpleIntegerProperty(periodo);
         this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.codigoDriver = new SimpleStringProperty(codigoDriver);
+        this.saldo = new SimpleDoubleProperty(saldo);
+        this.grupoGasto = new SimpleObjectProperty(grupoGasto);
+    }
+    // Obtener Centros, con Rastro Cuenta, Partida, Centro origen
+    public CentroDriver(int periodo, String codigoCentro, String codigoCuentaOrigen, String codigoPartidaOrigen, String codigoCentroOrigen, String codigoDriver, double saldo, Tipo grupoGasto) {
+        this.periodo = new SimpleIntegerProperty(periodo);
+        this.codigoCentro = new SimpleStringProperty(codigoCentro);
+        this.codigoCuenta = new SimpleStringProperty(codigoCuentaOrigen);
+        this.codigoPartida = new SimpleStringProperty(codigoPartidaOrigen);
+        this.codigoCentroOrigen = new SimpleStringProperty(codigoCentroOrigen);
         this.codigoDriver = new SimpleStringProperty(codigoDriver);
         this.saldo = new SimpleDoubleProperty(saldo);
         this.grupoGasto = new SimpleObjectProperty(grupoGasto);
@@ -259,5 +274,17 @@ public class CentroDriver {
 
     public void setDetalleError(String detalleError) {
         this.detalleError = detalleError;
+    }
+    
+    public StringProperty codigoCentroOrigenProperty() {
+        return codigoCentroOrigen;
+    }
+
+    public String getCodigoCentroOrigen() {
+        return codigoCentroOrigen.get();
+    }
+
+    public void setCodigoCentroOrigen(String codigoEntidad) {
+        this.codigoCentroOrigen.set(codigoEntidad);
     }
 }

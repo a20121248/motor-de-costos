@@ -30,7 +30,7 @@ public class DistribucionServicio {
         trazaDAO = new TrazaDAO();
     }
 
-    public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel) {
+    public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel, int repartoTipo, int reg) {
         double saldo = entidad.getSaldo();
         // obtengo la lista de centros de niveles superiores
         List<DriverLinea> listaDriverLineaSigNiveles = new ArrayList();
@@ -39,15 +39,17 @@ public class DistribucionServicio {
         } else if (iteracion==maxNivel) {
             listaDriverLineaSigNiveles = lstDriverLinea.stream().filter(item -> 0 == ((Centro)item.getEntidadDistribucionDestino()).getNivel()).collect(Collectors.toList());
         }
+        int  i =0;
         double totalSigNiveles = listaDriverLineaSigNiveles.stream().mapToDouble(f -> f.getPorcentaje()).sum();
-        listaDriverLineaSigNiveles.forEach((item) -> {
+        for(DriverLinea item: listaDriverLineaSigNiveles){
             double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
             EntidadDistribucion entidadDestino = item.getEntidadDistribucionDestino();
             if (entidadDestino != null) {
-//                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
-                //Funcion para trazabilidad
+                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getCodigoCuenta(),entidad.getCodigoPartida(),entidad.getCodigoCentroOrigen(),entidad.getGrupoGasto().getCodigo(), repartoTipo);
             }
-        });
+            i++;
+        }
+//        System.out.println(i+" : "+reg);
     }
     
     public void distribuirEntidad(EntidadDistribucion entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion) {
