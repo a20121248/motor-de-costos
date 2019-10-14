@@ -255,7 +255,7 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void btnFase3Action(ActionEvent event) {
         if (ejecutandoFase3) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "La fase se está ejecutando actualmente.");
+            menuControlador.mensaje.execute_phase_currently_error(3);
             return;
         }
         if (!ejecutoFase2) {
