@@ -45,7 +45,7 @@ public class Centro extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String esBolsa, String tipoGasto,String niif17_atribuible, String niif17_tipo, String niif17_clase, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String tipoGasto, String niif17_atribuible, String niif17_tipo, String niif17_clase, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);

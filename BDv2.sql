@@ -303,7 +303,6 @@ CREATE TABLE PACIFICO_DEV.MS_PARTIDA_CUENTA_CONTABLE
   CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PERIODO NUMBER(6,0),
   SALDO NUMBER(35,8) NOT NULL,
-  ES_BOLSA CHAR(2) NOT NULL,
   reparto_tipo NUMBER(1) NOT NULL,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE  
@@ -459,7 +458,6 @@ CREATE TABLE PACIFICO_DEV.MS_centros (
   niif17_tipo CHAR(2 BYTE) NOT NULL ,
   niif17_clase CHAR(2 BYTE) NOT NULL ,
   tipo_gasto NUMBER(1) NOT NULL,
-  ES_BOLSA CHAR(2) NOT NULL,
   CONSTRAINT centros_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
