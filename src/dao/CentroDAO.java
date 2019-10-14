@@ -837,7 +837,7 @@ public class CentroDAO {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO MS_centro_lineas(centro_codigo,periodo,iteracion,saldo,entidad_origen_codigo,CUENTA_CONTABLE_ORIGEN_CODIGO,PARTIDA_ORIGEN_CODIGO,CENTRO_ORIGEN_CODIGO,grupo_gasto,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES('%s',%d,%d,%.8f,'%s','%s','%s','%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "VALUES('%s',%d,%d,%.15f,'%s','%s','%s','%s','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 centroCodigo, periodo, iteracion, saldo, entidadOrigenCodigo, cuentaContableOrigenCodigo, partidaOrigenCodigo, centroOrigenCodigo, grupoGasto, repartoTipo, fechaStr, fechaStr);
         ConexionBD.agregarBatch(queryStr);
     }
