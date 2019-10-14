@@ -92,14 +92,14 @@ public class DistribuirFase1Task extends Task {
             
             reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Real";
             rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
             principalControlador.lblMensajeFase1.setVisible(false);
         } else {
             principalControlador.lblMensajeFase1.setVisible(true);
             
             reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Presupuesto";
             rutaOrigen = "." + File.separator + "reportes" + File.separator + "presupuesto" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteCuentaCentro(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
             principalControlador.lblMensajeFase1.setVisible(false);
         }
         // Fin generar reportes

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.CargarObjetoLinea;
 import modelo.CargarObjetoPeriodoLinea;
 import modelo.Driver;
 import modelo.Grupo;

@@ -10,35 +10,7 @@ public class ReportingDAO {
     
     public ReportingDAO() {
         this.connection = new ConnectionDB();
-    }
-    
-    
-//    public ResultSet dataReporteCuentaCentro(int periodo, int repartoTipo) {
-//        String queryStr = String.format("" +
-//                "SELECT B.codigo CENTRO_CODIGO,\n" +
-//                "       B.nombre CENTRO_NOMBRE,\n" +
-//                "       C.codigo GRUPO_CODIGO,\n" +
-//                "       C.nombre GRUPO_NOMBRE,\n" +
-//                "       E.codigo CUENTA_CONTABLE_CODIGO,\n" +
-//                "       E.nombre CUENTA_CONTABLE_NOMBRE,\n" +
-//                "       CASE WHEN G.saldo_grupo=0 THEN 0\n" +
-//                "            ELSE A.saldo*F.saldo/G.saldo_grupo\n" +
-//                "       END SALDO" +
-//                "  FROM centro_lineas A\n" +
-//                "  JOIN centros B ON A.centro_codigo=B.codigo\n" +
-//                "  JOIN grupos C ON A.entidad_origen_codigo=C.codigo\n" +
-//                "  JOIN grupo_plan_de_cuenta D ON C.codigo=D.grupo_codigo\n" +
-//                "  JOIN plan_de_cuentas E ON D.plan_de_cuenta_codigo=E.codigo\n" +
-//                "  JOIN plan_de_cuenta_lineas F ON E.codigo=F.plan_de_cuenta_codigo\n" +
-//                "  JOIN (SELECT A.codigo,SUM(C.saldo) saldo_grupo FROM grupos A JOIN grupo_plan_de_cuenta B ON A.codigo=B.grupo_codigo JOIN plan_de_cuenta_lineas C ON B.plan_de_cuenta_codigo=C.plan_de_cuenta_codigo WHERE B.periodo=%d AND C.periodo=%d GROUP BY A.codigo) G ON C.codigo=G.codigo\n" +
-//                " WHERE A.iteracion=0\n" +
-//                "   AND A.periodo=%d\n" +
-//                "   AND B.reparto_tipo=%d\n" +
-//                "   AND D.periodo=%d\n" +
-//                "   AND F.periodo=%d",
-//            periodo,periodo,periodo,repartoTipo,periodo,periodo);
-//        return ConexionBD.ejecutarQuery(queryStr);
-//    }
+    }       
     
     public ResultSet dataReporteCuentaPartidaCentroBolsa(int periodo, int repartoTipo) {
         String queryStr = String.format(""+
@@ -66,6 +38,38 @@ public class ReportingDAO {
                 "  LEFT JOIN ms_bolsa_driver F ON SUBSTR(f.cuenta_contable_codigo,1,3) = SUBSTR(a.cuenta_contable_origen_codigo,1,3) AND SUBSTR(f.cuenta_contable_codigo,5,11) = SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND f.partida_codigo = a.partida_origen_codigo AND f.centro_codigo = a.centro_origen_codigo AND f.periodo = a.PERIODO AND f.reparto_tipo = a.reparto_tipo\n" +
                 "  LEFT JOIN ms_drivers G ON g.codigo = f.driver_codigo AND g.driver_tipo_codigo = 'CECO' \n" +
                 "WHERE a.iteracion = 0 OR (a.iteracion = -1 AND b.centro_tipo_codigo!='BOLSA' AND b.centro_tipo_codigo!='OFICINA')",
+                repartoTipo,periodo);
+        return ConexionBD.ejecutarQuery(queryStr);
+    }
+    
+    public ResultSet dataReporteCascada(int periodo, int repartoTipo) {
+        String queryStr = String.format(""+
+                "SELECT  A.PERIODO,\n" +
+                "        A.ITERACION,\n" +
+                "        A.CENTRO_CODIGO,\n" +
+                "        B.NOMBRE CENTRO_NOMBRE,\n" +
+                "        A.CUENTA_CONTABLE_ORIGEN_CODIGO,\n" +
+                "        C.NOMBRE CENTRO_NOMBRE,\n" +
+                "        A.PARTIDA_ORIGEN_CODIGO,\n" +
+                "        D.NOMBRE CENTRO_NOMBRE,\n" +
+                "        A.CENTRO_ORIGEN_CODIGO,\n" +
+                "        E.NOMBRE CENTRO_NOMBRE,\n" +                
+                "        A.ENTIDAD_ORIGEN_CODIGO,\n" +
+                "        F.NOMBRE ENTIDAD_ORIGEN_NOMBRE,\n" +
+                "        A.SALDO MONTO,\n" +
+                "        COALESCE(G.DRIVER_CODIGO,'N/A') CODIGO_DRIVER,\n" +
+                "        COALESCE(H.NOMBRE,'N/A') NOMBRE_DRIVER\n" +
+                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+                "  JOIN MS_PLAN_DE_CUENTAS C ON C.CODIGO=A.CUENTA_CONTABLE_ORIGEN_CODIGO\n" +
+                "  JOIN MS_PARTIDAS D ON D.CODIGO=A.PARTIDA_ORIGEN_CODIGO\n" +
+                "  JOIN MS_CENTROS E ON E.CODIGO=A.CENTRO_ORIGEN_CODIGO\n" +
+                
+                "  LEFT JOIN ms_bolsa_driver F ON SUBSTR(f.cuenta_contable_codigo,1,3) = SUBSTR(a.cuenta_contable_origen_codigo,1,3) AND SUBSTR(f.cuenta_contable_codigo,5,11) = SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND f.partida_codigo = a.partida_origen_codigo AND f.centro_codigo = a.centro_origen_codigo AND f.periodo = a.PERIODO AND f.reparto_tipo = a.reparto_tipo\n" +
+                "  LEFT JOIN ms_drivers G ON g.codigo = f.driver_codigo AND g.driver_tipo_codigo = 'CECO' \n" +
+                " WHERE A.PERIODO=%d\n" +
+                "   AND A.ITERACION!=-2\n" +
+                "   AND A.REPARTO_TIPO=%d OR (a.iteracion = -1 AND b.centro_tipo_codigo!='BOLSA' AND b.centro_tipo_codigo!='OFICINA')",
                 repartoTipo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
@@ -192,7 +196,7 @@ public class ReportingDAO {
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
-    public ResultSet dataReporteCascada(int periodo, int repartoTipo) {
+    /*public ResultSet dataReporteCascada(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT a.centro_codigo CODIGO_CENTRO,\n" +
                 "        E.nombre NOMBRE_CENTRO,\n" +
@@ -268,7 +272,7 @@ public class ReportingDAO {
                 "ORDER BY NIVEL_CENTRO,CODIGO_CENTRO,ITERACION,CODIGO_CENTRO_ORIGEN",
                 periodo,periodo,periodo);
         return ConexionBD.ejecutarQuery(queryStr);
-    }
+    }*/
     
     public int numeroNiveles(int periodo, String objetoTipo) throws SQLException {
         ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT COALESCE(MAX(NIVEL),0)+1 NIVELES FROM JERARQUIA WHERE PERIODO=%d AND ENTIDAD_TIPO='%s'",periodo,objetoTipo));

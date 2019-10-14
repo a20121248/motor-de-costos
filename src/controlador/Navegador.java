@@ -738,9 +738,9 @@ public class Navegador {
             while (celdas.hasNext()) {            
                 Cell celda = celdas.next();
                 celda.setCellType(CellType.STRING);
-                listaLeida.add(celda.getStringCellValue());
+                listaLeida.add(celda.getStringCellValue().trim().toUpperCase());
             }
-        }else{
+        } else {
             return false;
         }
         return listaLeida.subList(0, lista.size()).equals(lista);

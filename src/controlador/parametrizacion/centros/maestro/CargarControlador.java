@@ -150,7 +150,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
             
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" ,"ES BOLSA","TIPO GASTO","NIIF17 ATRIBUIBLE","NIIF17 TIPO","NIIF17 CLASE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO GRUPO", "NOMBRE GRUPO", "NIVEL" , "TIPO GASTO", "NIIF17 ATRIBUIBLE", "NIIF17 TIPO", "NIIF17 CLASE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -164,7 +164,6 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreGrupo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String esBolsa = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Tipo = celda.getStringCellValue();
@@ -176,72 +175,59 @@ public class CargarControlador implements Initializable {
                 String strTipoGasto;
                 if(tipoGasto == 1) strTipoGasto ="DIRECTO";
                 else strTipoGasto ="INDIRECTO";
-                Centro linea = new Centro(codigo,nombre,nivel,null,0,new Tipo(codigoGrupo,nombreGrupo),esBolsa, strTipoGasto,niif17Atribuible,niif17Tipo, niif17Clase, null,null,true);
+                Centro linea = new Centro(codigo, nombre, nivel, null, 0, new Tipo(codigoGrupo,nombreGrupo), strTipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, null, null, true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 Tipo tipoCentro = listaTipoCentro.stream().filter(item ->codigoGrupo.equals(item.getCodigo())).findAny().orElse(null);
                 boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
-                String relación = "";
+                String relacion = "";
                 boolean relacionGrupoNivel = false;
-                if(tipoCentro != null){
-                    if(grupoTipoBolsa.contains(codigoGrupo)){
-                        if(nivel == 0){
-                            if(esBolsa.equals("SI"))relacionGrupoNivel = true;
-                            else {
-                                relacionGrupoNivel = false;
-                                relación += String.format("- El grupo %s es BOLSA = SI.\r\n",codigoGrupo);
-                            }
+                if (tipoCentro != null) {
+                    if (grupoTipoBolsa.contains(codigoGrupo)) {
+                        if (nivel == 0) {
+                            relacionGrupoNivel = true;
                         } else {
                             relacionGrupoNivel = false;
-                            relación += String.format("- El grupo %s es NIVEL = 0.\r\n",codigoGrupo);
+                            relacion += String.format("- El tipo '%s' es NIVEL!=0.\r\n", codigoGrupo);
                         }
                     } else {
-                        if(grupoTipoFicticio.contains(codigoGrupo)){
-                            if(nivel == 99){
-                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
-                                else {
-                                    relacionGrupoNivel = false;
-                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
-                                }
+                        if (grupoTipoFicticio.contains(codigoGrupo)) {
+                            if (nivel == 99) {
+                                relacionGrupoNivel = true;
                             } else {
                                 relacionGrupoNivel = false;
-                                relación += String.format("- El grupo %s es NIVEL = 99.\r\n",codigoGrupo);
+                                relacion += String.format("- El tipo '%s' es NIVEL=99.\r\n", codigoGrupo);
                             }
                         } else {
-                            if(nivel>0 && nivel < 99){
-                                if(esBolsa.equals("NO"))relacionGrupoNivel = true;
-                                else {
-                                    relacionGrupoNivel = false;
-                                    relación += String.format("- El grupo %s es BOLSA = NO.\r\n",codigoGrupo);
-                                }
+                            if (nivel>0 && nivel < 99) {
+                                relacionGrupoNivel = true;
                             } else {
                                 relacionGrupoNivel = false;
-                                relación += String.format("- El grupo %s es NIVEL > 0 Y NIVEL < 99.\r\n",codigoGrupo);
+                                relacion += String.format("- El tipo '%s' es NIVEL>0 y NIVEL<99.\r\n", codigoGrupo);
                             }
                         }
                     }
                 } else {
-                    relación += String.format("- El grupo %s asignado no está listado.\r\n",codigoGrupo);
+                    relacion += String.format("- El tipo '%s' asignado no está listado.\r\n",codigoGrupo);
                 }
                 
-                
-                if( cuenta == null && ptrCodigo && tipoCentro!= null &&relacionGrupoNivel){
+                if (cuenta == null && ptrCodigo && tipoCentro!= null && relacionGrupoNivel) {
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
                     logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
-                }else {
+                } else {
                     logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
-                    if(cuenta!= null){
+                    if(cuenta!= null) {
                         logDetails +=String.format("- Ya existe en Catálogo.\r\n");
-                    }else {
+                    } else {
                         if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");
-                        logDetails += relación;
+                        logDetails += relacion;
                     }
                     linea.setFlagCargar(false);
 //                    listaError.add(linea);
                 }
-                if(niif17Atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
-                if(niif17Tipo == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
-                if(niif17Clase == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
+                if (niif17Atribuible == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el atributo (NIIF).\r\n");
+                if (niif17Tipo == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Tipo Gasto (NIIF).\r\n");
+                if (niif17Clase == null) logDetails +=String.format("* Considerar que no se ha asignado correctamente el Clase Gasto (NIIF) .\r\n");
                 lista.add(linea);
             }
             //cerramos el libro
