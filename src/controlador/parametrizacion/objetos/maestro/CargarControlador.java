@@ -8,10 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,20 +81,6 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         switch (menuControlador.objetoTipo) {
-            case "OFI":
-                lblTitulo.setText("Cargar Oficinas");
-                lnkObjetos.setText("Oficinas");
-                objetoNombre1 = "Oficina";
-                objetoNombre2 = "la Oficina";
-                this.titulo = "Oficinass";
-                break;
-            case "BAN":
-                lblTitulo.setText("Cargar Bancas");
-                lnkObjetos.setText("Bancas");
-                objetoNombre1 = "Banca";
-                objetoNombre2 = "la Banca";
-                this.titulo = "Bancas";
-                break;
             case "PRO":
                 lblTitulo.setText("Cargar Productos");
                 lnkObjetos.setText("Productos");
@@ -123,6 +105,8 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        
+        // Ocultar el botón de descarga de LOG
         btnDescargarLog.setVisible(false);
     }    
     

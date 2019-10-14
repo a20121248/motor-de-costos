@@ -79,7 +79,7 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // tabla dimensiones
+        // Tabla: Dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 30);
@@ -87,13 +87,15 @@ public class CargarControlador implements Initializable {
         tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
         tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        // tabla formato
+        // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17AtribuibleProperty());
         tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
         tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
+        
+        btnDescargarLog.setVisible(false);
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {

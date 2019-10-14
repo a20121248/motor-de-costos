@@ -3,8 +3,10 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -72,6 +74,25 @@
             </HBox>
          </children>
       </AnchorPane>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="40.0" layoutY="40.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Ruta:">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">
+               <graphic>
+                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="small" />
+               </styleClass>
+            </JFXButton>
+         </children>
+      </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
             <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
@@ -80,36 +101,33 @@
             <TableColumn fx:id="tabcolTipoGasto" prefWidth="77.0" styleClass="center" text="TIPO GASTO" />
          </columns>
       </TableView>
-      <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <TextField fx:id="txtRuta" disable="true" layoutX="91.0" layoutY="120.0" prefHeight="25.0" prefWidth="511.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="120.0" />
-      <JFXButton fx:id="btnCargarRuta" layoutX="534.0" layoutY="95.0" onAction="#btnCargarRutaAction" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="FOLDER_OPEN" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
-      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnDescargarLog" layoutX="242.0" layoutY="585.0" onAction="#btnDescargarLogAction" text="Descargar LOG" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="200.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="FILE_TEXT_ALT" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="large" />
-         </styleClass>
-      </JFXButton>
-      <JFXButton fx:id="btnAtras" layoutX="260.0" layoutY="466.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="REPLY" />
-         </graphic>
-      </JFXButton>
-      <JFXButton fx:id="btnSubir" layoutX="365.0" layoutY="466.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="UPLOAD" />
-         </graphic>
-      </JFXButton>
+      <HBox alignment="CENTER_LEFT" layoutX="54.0" layoutY="510.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+         <children>
+            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
+            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
+               <graphic>
+                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </JFXButton>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">
+               <graphic>
+                  <FontAwesomeIconView glyphName="REPLY" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnSubir" onAction="#btnSubirAction" styleClass="btn" text="Subir">
+               <graphic>
+                  <FontAwesomeIconView glyphName="UPLOAD" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

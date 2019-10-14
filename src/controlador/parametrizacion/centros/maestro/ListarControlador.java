@@ -19,7 +19,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.DirectoryChooser;
@@ -29,22 +28,9 @@ import modelo.Tipo;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Label lblTitulo;
-    
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkCentros;
-    @FXML private Hyperlink lnkCatalogo;
-    
+    // Variables de la vista    
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
-    @FXML private JFXButton btnFiltrar;
-
-    @FXML private JFXButton btnCrear;
-    @FXML private JFXButton btnEditar;
-    @FXML private JFXButton btnEliminar;
-    @FXML private JFXButton btnCargar;
     
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
@@ -52,13 +38,12 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<Centro, String> tabcolGrupo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCentroPadre;
-    @FXML private TableColumn<Centro, String> tabcolEsBolsa;
     @FXML private TableColumn<Centro, String> tabcolTipoGasto;
     @FXML private TableColumn<Centro, String> tabcolNIIF17Atribuible;
     @FXML private TableColumn<Centro, String> tabcolNIIF17Tipo;
     @FXML private TableColumn<Centro, String> tabcolNIIF17Clase;
-    @FXML private Label lblNumeroRegistros;
     
+    @FXML private Label lblNumeroRegistros;    
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -75,12 +60,7 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-
-        }
-        
-        ObservableList<Tipo> obsListaTipos;
-        
+        ObservableList<Tipo> obsListaTipos;        
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroTipos);
         cmbTipo.setItems(obsListaTipos);
         cmbTipo.setConverter(new StringConverter<Tipo>() {
@@ -94,6 +74,11 @@ public class ListarControlador implements Initializable {
             }
         });
         cmbTipo.getSelectionModel().select(0);
+        cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                llenarTabla(cmbTipo.getValue().getCodigo(), cmbNivel.getValue().getCodigo());
+            }
+        });
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles);
         cmbNivel.setItems(obsListaTipos);
@@ -108,25 +93,17 @@ public class ListarControlador implements Initializable {
             }
         });
         cmbNivel.getSelectionModel().select(0);
+        cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                llenarTabla(cmbTipo.getValue().getCodigo(), cmbNivel.getValue().getCodigo());
+            }
+        });
         
-        // tabla dimensiones
-        tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 25);
-        tabcolGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
-        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
         tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
@@ -159,10 +136,6 @@ public class ListarControlador implements Initializable {
     
     @FXML void lnkCatalogoAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
-    }
-    
-    @FXML void btnFiltrarAction(ActionEvent event) {
-        llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
     }
     
     @FXML void btnCrearAction(ActionEvent event) {

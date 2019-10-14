@@ -8,10 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +20,6 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -40,15 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import servicios.LogServicio;
 
 public class CargarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Label lblTitulo;    
-    
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkCentros;
-    @FXML private Hyperlink lnkCatalogo;
-    @FXML private Hyperlink lnkCargar;
-        
+    // Variables de la vista        
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
@@ -59,7 +46,6 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<Centro, String> tabcolNombreGrupo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCodigoCentroPadre;
-    @FXML private TableColumn<Centro, String> tabcolEsBolsa;
     @FXML private TableColumn<Centro, String> tabcolTipoGasto;
     @FXML private TableColumn<Centro, String> tabcolNIIF17Atribuible;
     @FXML private TableColumn<Centro, String> tabcolNIIF17Tipo;
@@ -67,9 +53,7 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
-    @FXML private JFXButton btnAtras;
-    @FXML private JFXButton btnSubir;
-    String titulo1,titulo2;    
+    String titulo1, titulo2;
     
     // Variables de la aplicacion
     CentroDAO centroDAO;
@@ -92,18 +76,6 @@ public class CargarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {    
-        // tabla centros
-        tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth( 1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth( 1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoGrupo.setMaxWidth( 1f * Integer.MAX_VALUE * 15);
-        tabcolNivel.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolCodigoCentroPadre.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolEsBolsa.setMaxWidth( 1f * Integer.MAX_VALUE * 5);
-        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -111,11 +83,11 @@ public class CargarControlador implements Initializable {
         tabcolNombreGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);
-        tabcolEsBolsa.setCellValueFactory(cellData -> cellData.getValue().esBolsaProperty());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
         tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
         tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
+        
         btnDescargarLog.setVisible(false);
     }    
     
