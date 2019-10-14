@@ -476,16 +476,17 @@ public class ReportingDAO {
     }
     
     public ResultSet dataReporteObjetosCostos(int periodo, int repartoTipo) {
-        String queryStr = String.format(""+
+        String periodoStr = repartoTipo == 1 ? "A.PERIODO" : "TRUNC(A.PERIODO/100)*100";
+        String queryStr = String.format("" +
                 "SELECT A.PERIODO,\n" +
                 "       A.PRODUCTO_CODIGO CODIGO_PRODUCTO,\n" +
                 "       B.NOMBRE NOMBRE_PRODUCTO,\n" +
-                "       J2.CODIGO CODIGO_LINEA,\n" +
-                "       J2.NOMBRE NOMBRE_LINEA,\n" +
+                "       COALESCE(J2.CODIGO,'N/A') CODIGO_LINEA,\n" +
+                "       COALESCE(J2.NOMBRE,'N/A') NOMBRE_LINEA,\n" +
                 "       A.SUBCANAL_CODIGO CODIGO_SUBCANAL,\n" +
                 "       C.NOMBRE NOMBRE_SUBCANAL,\n" +
-                "       K2.CODIGO CODIGO_CANAL,\n" +
-                "       K2.NOMBRE NOMBRE_CANAL,\n" +
+                "       COALESCE(K2.CODIGO,'N/A') CODIGO_CANAL,\n" +
+                "       COALESCE(K2.NOMBRE,'N/A') NOMBRE_CANAL,\n" +
                 "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_ENTIDAD_ORIGEN,\n" +
                 "       COALESCE(D.NOMBRE,'N/A') NOMBRE_ENTIDAD_ORIGEN,\n" +
                 "       E.NOMBRE GRUPO_GASTO,\n" +
@@ -507,13 +508,13 @@ public class ReportingDAO {
                 "  LEFT JOIN MS_PLAN_DE_CUENTAS G ON A.CUENTA_CONTABLE_ORIGEN_CODIGO=G.CODIGO\n" +
                 "  LEFT JOIN MS_PARTIDAS H ON A.PARTIDA_ORIGEN_CODIGO=H.CODIGO\n" +
                 "  LEFT JOIN MS_CENTROS I ON A.CENTRO_ORIGEN_CODIGO=I.CODIGO\n" +
-                "  JOIN MS_JERARQUIA J1 ON J1.PERIODO=A.PERIODO AND J1.REPARTO_TIPO=A.REPARTO_TIPO AND J1.ENTIDAD_TIPO='PRO'\n" +
-                "  JOIN MS_PRODUCTO_GRUPOS J2 ON J2.CODIGO=J1.ENTIDAD_CODIGO\n" +
-                "  JOIN MS_JERARQUIA K1 ON K1.PERIODO=A.PERIODO AND K1.REPARTO_TIPO=A.REPARTO_TIPO AND K1.ENTIDAD_TIPO='SCA'\n" +
-                "  JOIN MS_SUBCANAL_GRUPOS K2 ON K2.CODIGO=K1.ENTIDAD_CODIGO\n" +
+                "  LEFT JOIN MS_JERARQUIA J1 ON J1.PERIODO=%s AND J1.REPARTO_TIPO=A.REPARTO_TIPO AND J1.ENTIDAD_TIPO='PRO'\n" +
+                "  LEFT JOIN MS_PRODUCTO_GRUPOS J2 ON J2.CODIGO=J1.ENTIDAD_PADRE_CODIGO\n" +
+                "  LEFT JOIN MS_JERARQUIA K1 ON K1.PERIODO=%s AND K1.REPARTO_TIPO=A.REPARTO_TIPO AND K1.ENTIDAD_TIPO='SCA'\n" +
+                "  LEFT JOIN MS_SUBCANAL_GRUPOS K2 ON K2.CODIGO=K1.ENTIDAD_PADRE_CODIGO\n" +
                 "WHERE A.PERIODO=%d\n" +
                 "  AND A.REPARTO_TIPO=%d",
-                periodo, repartoTipo);
+                periodoStr, periodoStr, periodo, repartoTipo);
         return ConexionBD.ejecutarQuery(queryStr);
     }
     
