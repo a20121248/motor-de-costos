@@ -80,6 +80,7 @@ public class DriverDAO {
 //    }
     
     public List<DriverObjetoLinea> obtenerDriverObjetoLinea(int periodo, String codigo,int repartoTipo) {
+        periodo = repartoTipo == 1? periodo: (int)periodo/100 *100;
         String queryStr = String.format("" +
                 "SELECT A.producto_codigo,B.nombre producto_nombre,A.subcanal_codigo, C.nombre subcanal_nombre,A.porcentaje\n" +
                 "  FROM MS_driver_objeto_lineas A\n" +

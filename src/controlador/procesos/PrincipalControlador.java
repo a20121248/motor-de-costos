@@ -229,7 +229,7 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
             return;
         }
-        int cantSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        int cantSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
         if (cantSinDriver!=0) {
             if (cantSinDriver==1) menuControlador.mensaje.execute_asign_without_driver_singular_error(2, cantSinDriver);
             else menuControlador.mensaje.execute_asign_without_driver_plural_error(2, cantSinDriver);
@@ -263,9 +263,10 @@ public class PrincipalControlador implements Initializable {
             return;
         }
         
-        int cantSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        int cantSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
         if (cantSinDriver!=0) {
-            menuControlador.navegador.mensajeError("Fase 3", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
+            if (cantSinDriver==1) menuControlador.mensaje.execute_asign_without_driver_singular_error(3, cantSinDriver);
+            else menuControlador.mensaje.execute_asign_without_driver_plural_error(3, cantSinDriver);
             return;
         }
         Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 3, menuControlador.repartoTipo);
@@ -286,8 +287,8 @@ public class PrincipalControlador implements Initializable {
             return;
         }
         int cantBolsasSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
-        int cantCentrosSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
-        int cantCentroObjetosSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, ">", 0, periodoSeleccionado);
+        int cantCentrosSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
+        int cantCentroObjetosSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
         if (cantBolsasSinDriver != 0 && cantCentrosSinDriver !=0 && cantCentroObjetosSinDriver !=0){
             String msj = null;
             if (cantBolsasSinDriver != 0) msj+= "\n- Existen  "+ cantBolsasSinDriver + " Centros Bolsas sin driver asignado.";

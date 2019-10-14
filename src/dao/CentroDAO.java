@@ -26,15 +26,16 @@ public class CentroDAO {
         this.tipoDAO = new TipoDAO();
     }
     
-    public int cantCentrosSinDriver(int repartoTipo, String operador, int nivel, int periodo) {
-        String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
+    public int cantCentrosSinDriver(int repartoTipo, int periodo) {
+        periodo = repartoTipo == 1 ? periodo : (int)periodo/100 * 100;
         String queryStr = String.format("" +
-            "SELECT COUNT(*) cnt\n" +
-            "  FROM ms_cuenta_partida_centro A\n" +
-            "  JOIN ms_centros B ON A.CENTRO_CODIGO = B.CODIGO AND a.periodo = '%d' AND a.reparto_tipo = '%d' AND (b.centro_tipo_codigo ='SOPORTE' OR b.centro_tipo_codigo ='STAFF')\n" +
-            "  LEFT JOIN ms_entidad_origen_driver  C ON c.entidad_origen_codigo = a.centro_codigo AND c.periodo = %s AND c.reparto_tipo = a.reparto_tipo\n" +
-            "  WHERE c.driver_codigo IS NULL",
-        periodo,repartoTipo,periodoStr);
+            "SELECT COUNT(*) CNT\n" +
+            "  FROM MS_CENTRO_LINEAS A\n" +
+            "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+            "  LEFT JOIN MS_ENTIDAD_ORIGEN_DRIVER C ON A.REPARTO_TIPO=C.REPARTO_TIPO AND C.ENTIDAD_ORIGEN_CODIGO=A.CENTRO_CODIGO AND C.PERIODO=A.PERIODO\n" +
+            "  LEFT JOIN MS_DRIVERS D ON C.DRIVER_CODIGO=D.CODIGO\n" +
+            " WHERE A.PERIODO ='%d' AND A.ITERACION=-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('STAFF','SOPORTE') AND C.DRIVER_CODIGO IS NULL",
+        periodo,repartoTipo);
         ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         int cnt = 0;
         try {
@@ -46,16 +47,17 @@ public class CentroDAO {
         return cnt;
     }
     
-    public int cantCentrosObjetosSinDriver(int repartoTipo, String operador, int nivel, int periodo) {
+    public int cantCentrosObjetosSinDriver(int repartoTipo, int periodo) {
+        periodo = repartoTipo == 1 ? periodo : (int)periodo/100 * 100;
         String queryStr = String.format("" +
-            "SELECT COUNT(1) cnt\n" +
-            "  FROM centros A\n" +
-            "  JOIN centro_lineas B ON A.codigo=B.centro_codigo\n" +
-            "  LEFT JOIN entidad_origen_driver C ON A.codigo=C.entidad_origen_codigo AND B.periodo=C.periodo\n" +
-            " WHERE A.reparto_tipo=%d AND A.nivel%s%d\n" +
-            "   AND B.periodo=%d\n" +
-            "   AND C.entidad_origen_codigo IS NULL\n" +
-            "   AND B.iteracion =-2",repartoTipo,operador,nivel,periodo);
+            "SELECT COUNT(*) CNT\n" +
+        "  FROM MS_CENTRO_LINEAS A\n" +
+        "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+        "  JOIN MS_GRUPO_GASTOS C ON 1=1\n" +
+        "  LEFT JOIN MS_OBJETO_DRIVER D ON A.REPARTO_TIPO=D.REPARTO_TIPO AND D.CENTRO_CODIGO=A.CENTRO_CODIGO AND D.PERIODO=A.PERIODO AND D.GRUPO_GASTO=C.CODIGO\n" +
+        "  LEFT JOIN MS_DRIVERS E ON E.CODIGO=D.DRIVER_CODIGO\n" +
+        " WHERE A.PERIODO='%d' AND A.ITERACION=-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('LINEA','CANAL','FICTICIO','PROYECTO','SALUD') AND D.DRIVER_CODIGO IS NULL",
+        periodo, repartoTipo);
         ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         int cnt = 0;
         try {
@@ -664,28 +666,33 @@ public class CentroDAO {
     }
     
     public List<CentroDriver> listarCentrosObjetosNombresConDriver(int periodo, int repartoTipo) {
+        String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
-                "select a.centro_codigo centro_codigo,\n" +
-                "        SUM(A.saldo) saldo,\n" +
-                "        a.grupo_gasto grupo_gasto,\n" +
-                "        c.driver_codigo driver_codigo\n" +
-                "from centro_lineas A\n" +
-                "join centros B on b.codigo = a.centro_codigo\n" +
-                "join objeto_driver C on c.centro_codigo = a.centro_codigo and A.grupo_gasto = c.grupo_gasto and A.periodo = c.periodo\n" +
-                "join drivers D on d.codigo = c.driver_codigo\n" +
-                "where A. periodo = %d and a.iteracion >=-1\n" +
-                "group by a.centro_codigo,a.grupo_gasto, c.driver_codigo\n" +
+                "SELECT  a.centro_codigo centro_codigo,\n" +
+                "        a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
+                "        a.partida_origen_codigo partida_origen_codigo,\n" +
+                "        a.centro_origen_codigo centro_origen_codigo,\n" +
+                "        a.saldo monto,\n" +
+                "        c.driver_codigo driver_codigo,\n" +
+                "        a.grupo_gasto grupo_gasto\n" +
+                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+                "  JOIN MS_OBJETO_DRIVER C ON C.CENTRO_CODIGO = A.CENTRO_CODIGO AND c.periodo = %s AND c.reparto_tipo = a.reparto_tipo AND c.grupo_gasto = a.grupo_gasto\n" +
+                "WHERE A.PERIODO='%d' AND A.ITERACION >-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('LINEA','CANAL','FICTICIO','PROYECTO','SALUD')\n" +
                 "order by a.centro_codigo",
-                periodo);
+                periodoStr, periodo,repartoTipo);
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String centroCodigo = rs.getString("centro_codigo");
-                double saldo = rs.getDouble("saldo");
-                String grupoGasto = rs.getString("grupo_gasto");
+                String centroCodigo = rs.getString("CENTRO_CODIGO");
+                String cuentaOrigenCodigo = rs.getString("cuenta_contable_origen_codigo");
+                String partidaOrigenCodigo = rs.getString("partida_origen_codigo");
+                String centroOrigenCodigo = rs.getString("centro_origen_codigo");
+                double monto = rs.getDouble("MONTO");
                 String driverCodigo = rs.getString("driver_codigo");
+                String grupoGasto = rs.getString("grupo_gasto");
                 
-                CentroDriver centroDriver = new CentroDriver(periodo, centroCodigo,driverCodigo,saldo,new Tipo(grupoGasto,""));
+                CentroDriver centroDriver = new CentroDriver(periodo, centroCodigo,cuentaOrigenCodigo,partidaOrigenCodigo,centroOrigenCodigo,driverCodigo,monto,new Tipo(grupoGasto,""));
                 lista.add(centroDriver);
             }
         } catch (SQLException ex) {
