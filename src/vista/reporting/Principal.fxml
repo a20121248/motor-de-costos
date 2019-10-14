@@ -146,7 +146,7 @@
                            </children>
                         </HBox>
                         <Label layoutX="64.0" layoutY="6.0" text="Distribución de centros de costos a objetos de costos." wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <HBox alignment="CENTER_LEFT" layoutY="48.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+                        <HBox alignment="CENTER_LEFT" layoutY="48.0" spacing="10.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
                            <children>
                               <Label text="Líneas:" />
                               <CheckComboBox fx:id="cmbReporte3" prefWidth="150.0" />

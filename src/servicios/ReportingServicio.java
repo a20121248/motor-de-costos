@@ -496,7 +496,7 @@ public class ReportingServicio {
             
             // Cabecera de la tabla
             int rowNum = 0;
-            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_PRODUCTO","NOMBRE_PRODUCTO","CODIGO_SUBCANAL","NOMBRE_SUBCANAL","GRUPO_GASTO","SALDO","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER"));
+            List<String> listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_PRODUCTO","NOMBRE_PRODUCTO","CODIGO_LINEA","NOMBRE_LINEA","CODIGO_SUBCANAL","NOMBRE_SUBCANAL","CODIGO_CANAL","NOMBRE_CANAL","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","GRUPO_GASTO","MONTO","CODIGO_CUENTA_CONTABLE_ORIGEN","NOMBRE_CUENTA_CONTABLE_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_DRIVER","NOMBRE_DRIVER"));
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
             // Contenido de la tabla en la fila rowNum+1
@@ -506,10 +506,20 @@ public class ReportingServicio {
                 int periodoReporte = rs.getInt("PERIODO");
                 String codigoProducto = rs.getString("CODIGO_PRODUCTO");
                 String nombreProducto = rs.getString("NOMBRE_PRODUCTO");
+                String codigoLinea = rs.getString("CODIGO_LINEA");
+                String nombreLinea = rs.getString("NOMBRE_LINEA");
                 String codigoSubcanal = rs.getString("CODIGO_SUBCANAL");
                 String nombreSubcanal = rs.getString("NOMBRE_SUBCANAL");
+                String codigoCanal = rs.getString("CODIGO_CANAL");
+                String nombreCanal = rs.getString("NOMBRE_CANAL");
+                String codigoEntidadOrigen = rs.getString("CODIGO_ENTIDAD_ORIGEN");
+                String nombreEntidadOrigen = rs.getString("NOMBRE_ENTIDAD_ORIGEN");
                 String grupoGasto = rs.getString("GRUPO_GASTO");
                 double saldo = rs.getDouble("SALDO");
+                String codigoCuentaContableOrigen = rs.getString("CODIGO_CUENTA_CONTABLE_ORIGEN");
+                String nombreCuentaContableOrigen = rs.getString("NOMBRE_CUENTA_CONTABLE_ORIGEN");
+                String codigoPartidaOrigen = rs.getString("CODIGO_PARTIDA_ORIGEN");
+                String nombrePartidaOrigen = rs.getString("NOMBRE_PARTIDA_ORIGEN");
                 String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
                 String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
                 String codigoDriver = rs.getString("CODIGO_DRIVER");
@@ -518,19 +528,47 @@ public class ReportingServicio {
                 Row row = sh.createRow(rowNum++);
                 int idxColumn = 0;
                 row.createCell(idxColumn++).setCellValue(periodoReporte);
+                // PRODUCTO
                 row.createCell(idxColumn++).setCellValue(codigoProducto);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreProducto);
+                // LINEA
+                row.createCell(idxColumn++).setCellValue(codigoLinea);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreLinea);
+                // SUBCANAL
                 row.createCell(idxColumn++).setCellValue(codigoSubcanal);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreSubcanal);
+                // CANAL
+                row.createCell(idxColumn++).setCellValue(codigoCanal);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreCanal);
+                // ENTIDAD ORIGEN
+                row.createCell(idxColumn++).setCellValue(codigoEntidadOrigen);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreEntidadOrigen);
+                // GRUPO DE GASTO
                 row.createCell(idxColumn++).setCellValue(grupoGasto);
+                // MONTO
                 sh.setColumnWidth(idxColumn, 5000);
                 row.createCell(idxColumn).setCellValue(saldo);
+                // CUENTA CONTABLE ORIGEN
+                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                row.createCell(idxColumn++).setCellValue(codigoCuentaContableOrigen);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombreCuentaContableOrigen);
+                // PARTIDA ORIGEN
+                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                row.createCell(idxColumn++).setCellValue(codigoPartidaOrigen);
+                sh.setColumnWidth(idxColumn, 6000);
+                row.createCell(idxColumn++).setCellValue(nombrePartidaOrigen);
+                // CENTRO ORIGEN
                 row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
                 row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
+                // DRIVER
                 row.createCell(idxColumn++).setCellValue(codigoDriver);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreDriver);
