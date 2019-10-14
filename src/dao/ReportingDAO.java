@@ -477,7 +477,7 @@ public class ReportingDAO {
     
     public ResultSet dataReporteObjetosCostos(int periodo, int repartoTipo) {
         String queryStr = String.format(""+
-                "SELECT A.periodo PERIODO,\n" +
+                "SELECT A.PERIODO,\n" +
                 "       A.producto_codigo CODIGO_PRODUCTO,\n" +
                 "       b.nombre NOMBRE_PRODUCTO,\n" +
                 "       a.subcanal_codigo CODIGO_SUBCANAL,\n" +
@@ -489,11 +489,11 @@ public class ReportingDAO {
                 "       a.driver_codigo CODIGO_DRIVER,\n" +
                 "       f.nombre NOMBRE_DRIVER\n" +
                 "  FROM MS_OBJETO_LINEAS A\n" +
-                "  JOIN MS_PRODUCTOS B ON B.CODIGO = a.producto_codigo\n" +
-                "  JOIN MS_SUBCANALS C ON C.CODIGO = a.subcanal_codigo\n" +
-                "  JOIN MS_CENTROS D ON D.CODIGO = a.entidad_origen_codigo\n" +
-                "  JOIN grupo_gastos E ON e.codigo = a.grupo_gasto\n" +
-                "  JOIN drivers F ON f.codigo = a.driver_codigo\n" +
+                "  JOIN MS_PRODUCTOS B ON B.CODIGO=A.PRODUCTO_CODIGO\n" +
+                "  JOIN MS_SUBCANALS C ON C.CODIGO=A.SUBCANAL_CODIGO\n" +
+                "  JOIN MS_CENTROS D ON D.CODIGO=A.ENTIDAD_ORIGEN_CODIGO\n" +
+                "  JOIN MS_GRUPO_GASTOS E ON E.CODIGO=A.GRUPO_GASTO\n" +
+                "  JOIN drivers F ON F.CODIGO=A.DRIVER_CODIGO\n" +
                 "WHERE A.PERIODO = 201906",
                 periodo);
         return ConexionBD.ejecutarQuery(queryStr);

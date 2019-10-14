@@ -164,7 +164,7 @@ public class ReportingServicio {
             // Cabecera de la tabla
             int rowNum = 0;
             List<String> listaCabecera;
-            listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CUENTA_ORIGEN","NOMBRE_CUENTA_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_CENTRO_DESTINO","NOMBRE_CENTRO_DESTINO","MONTO","CODIGO_DRIVER","NOMBRE_DRIVER","ASIGNACION"));
+            listaCabecera = new ArrayList(Arrays.asList("PERIODO","ITERACION","CODIGO_CUENTA_ORIGEN","NOMBRE_CUENTA_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_CENTRO_DESTINO","NOMBRE_CENTRO_DESTINO","CODIGO_ENTIDAD_ORIGEN","NOMBRE_ENTIDAD_ORIGEN","MONTO","CODIGO_DRIVER","NOMBRE_DRIVER"));
             
             CellStyle headerCellStyle = cabeceraEstilo(wb);
             crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
