@@ -25,7 +25,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
-import modelo.Centro;
 import modelo.Grupo;
 import org.controlsfx.control.CheckComboBox;
 import servicios.ReportingServicio;
@@ -128,7 +127,7 @@ public class PrincipalControlador implements Initializable {
         String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
         String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + periodoSeleccionado;
         Navegador.crearCarpeta(rutaOrigen);//TODO, quitar el static para rendimiento
-        reporteNombre = "Reporte 02 - Cuentas Contables a centros de costos";
+        reporteNombre = "Reporte 02 - Distribución de cascada";
         rutaOrigen += File.separator + reporteNombre +".xlsx";
         reportingServicio.crearReporteCascada(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
         
@@ -152,7 +151,7 @@ public class PrincipalControlador implements Initializable {
         Navegador.crearCarpeta(rutaOrigen);//TODO, quitar el static para rendimiento
         reporteNombre = "Reporte 03 - Centros de costos a objetos de costos";
         rutaOrigen += File.separator + reporteNombre +".xlsx";
-        reportingServicio.crearReporteGastoPropioAsignado(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+        reportingServicio.crearReporteObjetosCostos(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
         
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
