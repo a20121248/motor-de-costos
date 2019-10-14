@@ -313,18 +313,7 @@ public class PrincipalControlador implements Initializable {
         }
     }
     
-    public void ejecutarFase1(int periodo) {       
-        try {
-            if (menuControlador.repartoTipo == 1) {
-                String carpetaReportesYYYY = String.format("./reportes/real/%d/",periodoSeleccionado);
-                Navegador.crearCarpeta(carpetaReportesYYYY);
-            } else {
-                String carpetaReportesYYYY = String.format("./reportes/presupuesto/%d/",periodoSeleccionado);
-                Navegador.crearCarpeta(carpetaReportesYYYY);
-            }
-        } catch (SecurityException ex) {
-            LOGGER.log(Level.SEVERE,ex.getMessage());
-        }
+    public void ejecutarFase1(int periodo) {
         
         procesosDAO.borrarEjecuciones(periodo, 1, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 0, menuControlador.repartoTipo);
