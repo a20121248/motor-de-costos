@@ -158,7 +158,7 @@ public class ListarControlador implements Initializable {
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
     }
-    
+
     // Acción del botón 'Atrás'
     @FXML void btnAtrasAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_APROVISIONAMIENTO);
