@@ -1,15 +1,11 @@
 package controlador.parametrizacion.driver_entidad.centros_objetos;
 
-
 import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import controlador.ObjetoControladorInterfaz;
-import controlador.modals.BuscarDriverCentroControlador;
 import controlador.modals.BuscarDriverObjetoControlador;
-import controlador.modals.VerDriverCentroControlador;
 import controlador.modals.VerDriverObjetoControlador;
-import dao.AsignacionEntidadDriverDAO;
 import dao.BancaDAO;
 import dao.CentroDAO;
 import dao.CentroDriverDAO;
@@ -20,12 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -36,20 +30,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import modelo.CentroDriver;
 import modelo.DriverCentro;
-import modelo.DriverLinea;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
@@ -59,19 +52,12 @@ import servicios.DriverServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkAsignaciones;
-    
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private Label lblTipoCentro;
+    
     @FXML private ComboBox<Tipo> cmbTipoCentro;
-    @FXML private JFXButton btnBuscarPeriodo;
     
-    @FXML private JFXButton btnCargar;
-    
-    @FXML private Label lblEntidades;
     @FXML private TextField txtBuscar;
     @FXML private TableView<CentroDriver> tabListar;
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoCentro;
@@ -80,15 +66,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<CentroDriver, String> tabcolCodigoDriver;
     @FXML private TableColumn<CentroDriver, String> tabcolNombreDriver;
     @FXML private Label lblNumeroRegistros;
-    @FXML private Tooltip ttAsignarDriverObjeto;
-    @FXML private JFXButton btnAtras;
-    @FXML private JFXButton btnDriver;
-    @FXML private JFXButton btnAsignarDriverCentro;
-    @FXML private JFXButton btnAsignarDriverObjeto;
-    @FXML private JFXButton btnQuitar;
     
-    @FXML private JFXButton btnGuardar;
-    @FXML private JFXButton btnCancelar;
+    @FXML private Tooltip ttAsignarDriverObjeto;
+    
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -105,7 +85,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FilteredList<CentroDriver> filteredData;
     SortedList<CentroDriver> sortedData;
     int periodoSeleccionado;
-    boolean tablaEstaActualizada;
     String titulo1, titulo2;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getControlador());
     String titulo;
@@ -124,42 +103,52 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-//        // Ocultar Tipo de Centros
-//        lblTipoCentro.setVisible(false);
-//        cmbTipoCentro.setVisible(false);
-        // Cambiar para Ingresos Operativos
-        titulo1 = "Centros de Costos";
-        titulo2 = "Centro de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            btnAsignarDriverCentro.setText("Asignar Driver CEBE");
-            titulo1 = "Centros de Beneficios";
-            titulo2 = "Centro de Beneficio";
-        }
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
+            periodoSeleccionado = menuControlador.periodo;
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        
+        // Mensaje de ayuda sobre botón de asignar
         ttAsignarDriverObjeto.setText("Asignar un driver que distribuye a " + titulo1);
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    if (menuControlador.repartoTipo == 1)
+                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    else
+                        periodoSeleccionado = spAnho.getValue()*100;
+                    buscarPeriodo(periodoSeleccionado, cmbTipoCentro.getValue().getCodigo(), menuControlador.repartoTipo);
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Seleccionar anho
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
-        });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(periodoSeleccionado, cmbTipoCentro.getValue().getCodigo(), menuControlador.repartoTipo);
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
-        // inicializar el combo de repartoTipo Centro
+        
+        // inicializar el combo de repartoTipo Objeto
         List<Tipo> lstCentroObjeto = new ArrayList();
         lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"-".equals(item.getCodigo())).findAny().orElse(null));
-        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"D".equals(item.getCodigo())).findAny().orElse(null));
-        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"E".equals(item.getCodigo())).findAny().orElse(null));
-        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"F".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"LINEA".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"CANAL".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"FICTICIO".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"PROYECTO".equals(item.getCodigo())).findAny().orElse(null));
+        lstCentroObjeto.add(menuControlador.lstCentroTipos.stream().filter(item ->"SALUD".equals(item.getCodigo())).findAny().orElse(null));
         cmbTipoCentro.setItems(FXCollections.observableList(lstCentroObjeto));
         cmbTipoCentro.setConverter(new StringConverter<Tipo>() {
             @Override
@@ -172,9 +161,12 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             }
         });
         cmbTipoCentro.getSelectionModel().select(0);
-        // fin codigo
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
+        cmbTipoCentro.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                buscarPeriodo(periodoSeleccionado, newValue.getCodigo(), menuControlador.repartoTipo);
+            }
+        });
+
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
@@ -207,7 +199,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
-        tablaEstaActualizada = true;
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -222,22 +213,14 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR);
     }
     
-
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
-    }
-    
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<CentroDriver> listaEntidades = centroDAO.listarCentrosObjetosConDriver(periodoSeleccionado,cmbTipoCentro.getValue().getCodigo(),menuControlador.repartoTipo,-1);
-        if (listaEntidades.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Entidades", "No existen Entidades para el periodo y tipo seleccionado.");
+    private void buscarPeriodo(int periodo, String tipoCentro, int repartoTipo) {
+        List<CentroDriver> listaEntidades = centroDAO.listarCentrosObjetosConDriver(periodo, tipoCentro, repartoTipo, -1);
         filteredData = new FilteredList(FXCollections.observableArrayList(listaEntidades), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
         txtBuscar.setText("");
-        tablaEstaActualizada = true;
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -249,12 +232,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         verDriver();
     }
     
-    @FXML void btnAsignarDriverCentroAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a " + titulo1, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-            return;
-        }
-        
+    @FXML void btnAsignarDriverCentroAction(ActionEvent event) {        
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo("Asignar driver que distribuye a " + titulo1, "Por favor seleccione una entidad.");
@@ -262,19 +240,14 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         if (!entidadSeleccionada.getCodigoDriver().equals("Sin driver asignado")) {
             if (menuControlador.navegador.mensajeConfirmar("Asignar driver que distribuye a " + titulo1, "La entidad ya cuenta con un driver asignado.\n¿Está seguro que desea reemplazar dicho driver?")) {
-                buscarDriverCentro();
+                buscarDriverObjeto();
             }
             return;
         }
-        buscarDriverCentro();
+        buscarDriverObjeto();
     }
     
-    @FXML void btnAsignarDriverObjetoAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_REFRESH);
-            return;
-        }
-        
+    @FXML void btnAsignarDriverObjetoAction(ActionEvent event) {        
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_ADD_EMPTY);
@@ -291,11 +264,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnQuitarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_DELETE_REFRESH);
-            return;
-        }
-        
         entidadSeleccionada = tabListar.getSelectionModel().getSelectedItem();
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_DELETE_EMPTY);
@@ -310,7 +278,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
         centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(),periodoSeleccionado);
         menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de (" + entidadSeleccionada.getCodigoCentro()+ ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado, cmbTipoCentro.getValue().getCodigo(), menuControlador.repartoTipo);
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
@@ -335,14 +303,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PARAMETRIZACION);
     }
     
-    /*@FXML void tabEntidadesFilaClick(MouseEvent event) {
-        if(event.getButton().equals(MouseButton.PRIMARY)){
-            if(event.getClickCount() == 2){
-                verDriver();
-            }
-        }
-    }*/
-    
     private void buscarDriverObjeto() {
         try {
             fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_DRIVER_OBJETO.getVista()));
@@ -352,22 +312,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Buscar driver que distribuye a Objetos de Costos");
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.show();
-        } catch(IOException e) {
-            LOGGER.log(Level.INFO,e.getMessage());
-        }
-    }
-    
-    private void buscarDriverCentro() {
-        try {
-            fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_BUSCAR_DRIVER_CENTRO.getVista()));
-            fxmlLoader.setController(new BuscarDriverCentroControlador(menuControlador, this, periodoSeleccionado));
-            Parent root = fxmlLoader.load();
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setTitle("Buscar driver que distribuye a " + titulo1);
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
@@ -392,7 +336,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             DriverObjeto driverObjeto = null;
             List<DriverObjetoLinea> lstDriverObjetoLinea;
             // asumimos que es del primer repartoTipo
-            lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo);
+            lstDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driverCodigo,menuControlador.repartoTipo);
             driverObjeto = new DriverObjeto(driverCodigo,driverNombre,null,null,lstDriverObjetoLinea,null,null);
                 
             fxmlLoader = new FXMLLoader(getClass().getResource(Navegador.RUTAS_MODALS_VER_DRIVER_OBJETO.getVista()));
@@ -415,25 +359,19 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
     @Override
     public void seleccionarDriverObjeto(DriverObjeto driver) {
         if (entidadSeleccionada == null) {
             menuControlador.navegador.mensajeInformativo("Asignar Driver que distribuye a Objetos de Costos", "Por favor seleccione una entidad.");
             return;
         }
-        centroDriverDAO.asignarDriverObjeto(entidadSeleccionada.getCodigoCentro(),entidadSeleccionada.getGrupoGasto().getCodigo(), driver.getCodigo(), periodoSeleccionado);
+        centroDriverDAO.asignarDriverObjeto(entidadSeleccionada.getCodigoCentro(),entidadSeleccionada.getGrupoGasto().getCodigo(), driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), driver.getCodigo() + " a (" + entidadSeleccionada.getCodigoCentro() + ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado, cmbTipoCentro.getValue().getCodigo(), menuControlador.repartoTipo);
     }
 
     @Override
     public void seleccionarDriverCentro(DriverCentro driver) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-
-    
-
-    
 }

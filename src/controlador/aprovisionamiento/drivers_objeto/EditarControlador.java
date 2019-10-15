@@ -171,7 +171,7 @@ public class EditarControlador implements Initializable {
         });
         
         // completar datos del driver seleccionado
-        List<DriverObjetoLinea> lstDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo());
+        List<DriverObjetoLinea> lstDriverLinea = driverDAO.obtenerDriverObjetoLinea(periodoSeleccionado, driver.getCodigo(),menuControlador.repartoTipo);
         porcentajeTotal = lstDriverLinea.stream().mapToDouble(o -> o.getPorcentaje()).sum();
         driver.setListaDriverObjetoLinea(lstDriverLinea);
         numeroRegistros = driver.getListaDriverObjetoLinea().size();
@@ -214,8 +214,8 @@ public class EditarControlador implements Initializable {
     }
     
     private List<DriverObjetoLinea> leerArchivo(String rutaArchivo) {
-        List<Producto> listaProductos = productoDAO.listar(periodoSeleccionado);
-        List<Subcanal> listaSubcanal = subcanalDAO.listar(periodoSeleccionado);
+        List<Producto> listaProductos = productoDAO.listar(periodoSeleccionado,menuControlador.repartoTipo);
+        List<Subcanal> listaSubcanal = subcanalDAO.listar(periodoSeleccionado,menuControlador.repartoTipo);
         List<DriverObjetoLinea> lista = new ArrayList();
         double porAcumulado = 0;
         boolean archivoEstaBien = true;
@@ -309,7 +309,7 @@ public class EditarControlador implements Initializable {
         DriverObjeto driver = new DriverObjeto(codigo, nombre, descripcion, null, lista, fecha, fecha);
 
         // inicio mensaje informativo
-        if (driverDAO.actualizarDriverObjeto(driver, periodoSeleccionado) != 1) {
+        if (driverDAO.actualizarDriverObjeto(driver, periodoSeleccionado, menuControlador.repartoTipo) != 1) {
             menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "No se pudo guardar el driver.");
         } else {
             menuControlador.navegador.mensajeInformativo("Guardar Driver - " + titulo2, "Driver guardado correctamente.");

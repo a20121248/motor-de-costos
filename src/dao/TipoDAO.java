@@ -19,13 +19,13 @@ public class TipoDAO {
     }
 
     public List<Tipo> listarCentroNiveles() {
-        String queryStr = "SELECT codigo,nombre,descripcion FROM MS_centro_niveles order by nombre";
+        String queryStr = "SELECT CODIGO,NOMBRE,DESCRIPCION FROM MS_CENTRO_NIVELES ORDER BY CAST(CASE WHEN CODIGO='-' THEN '-1' ELSE CODIGO END AS NUMBER(2))";
         List<Tipo> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {
-                String codigo = rs.getString("codigo");
-                String nombre = rs.getString("nombre");
-                String descripcion = rs.getString("descripcion");
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                String descripcion = rs.getString("DESCRIPCION");
                 Tipo tipo = new Tipo(codigo,nombre,descripcion);
                 lista.add(tipo);
             }

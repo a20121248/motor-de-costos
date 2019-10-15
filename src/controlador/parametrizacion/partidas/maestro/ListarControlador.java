@@ -7,11 +7,7 @@ import dao.PartidaDAO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -19,29 +15,16 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import modelo.Partida;
-import modelo.Tipo;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
-    @FXML private Hyperlink lnkPartidas;
-    @FXML private Hyperlink lnkCatalogo;
-
-    @FXML private JFXButton btnCrear;
-    @FXML private JFXButton btnEditar;
-    @FXML private JFXButton btnEliminar;
-    @FXML private JFXButton btnCargar;
-    
+    // Variables de la vista    
     @FXML private TextField txtBuscar;
     @FXML private TableView<Partida> tabListar;
     @FXML private TableColumn<Partida,String> tabcolCodigo;
@@ -51,7 +34,6 @@ public class ListarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargar;
-    @FXML private JFXButton btnAtras;
     
     // Variables de la aplicacion
     PartidaDAO partidaDAO;
@@ -69,15 +51,11 @@ public class ListarControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Ocultar para Ingresos Operativos
-        if (menuControlador.repartoTipo == 2) {
-
-        }
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
-        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());

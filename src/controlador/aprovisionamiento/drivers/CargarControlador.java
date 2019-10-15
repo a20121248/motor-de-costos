@@ -241,7 +241,7 @@ public class CargarControlador implements Initializable {
     }
     
     private void leerHojaDetalleDriver(Workbook wb) {
-        List<String> lstCentrosSinBolsas = centroDAO.listarCodigosWithoutBolsas(periodoSeleccionado);
+        List<String> lstCentrosSinBolsas = centroDAO.listarCodigosWithoutBolsas(periodoSeleccionado,menuControlador.repartoTipo);
         
         String sheetName = "DETALLE";
         Sheet sh = ExcelServicio.abrirHoja(wb, sheetName);
@@ -298,7 +298,7 @@ public class CargarControlador implements Initializable {
                     List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo, sbMsj);
                     String msj = "";
                     msj = sbMsj.toString();
-                    double porcentaje = cargarExcelDAO.porcentajeTotalDriver(driver.getCodigo());
+                    double porcentaje = cargarExcelDAO.porcentajeTotalDriverCentro(driver.getCodigo());
                     if( porcentaje != 100.00){
                         findError = true;
                         msj += String.format("- Para el driver %s, los porcentajes de los centros suman %.4f. Debe sumar 100.00%%.\r\n",driver.getCodigo(),porcentaje);

@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.TableColumn?>
@@ -116,9 +117,9 @@
             <TableColumn fx:id="tabcolMonto12" prefWidth="95.0" styleClass="right" text="DICIEMBRE" />
          </columns>
       </TableView>
-      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="470.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0">
+      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="470.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
          <children>
-            <Label fx:id="lblNumeroRegistros" text="Número de registros: 0" />
+            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
             <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
                <graphic>
                   <FontAwesomeIconView glyphName="DOWNLOAD" />
@@ -127,11 +128,11 @@
                   <String fx:value="btn" />
                   <String fx:value="large" />
                </styleClass>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </JFXButton>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" layoutX="347.0" layoutY="470.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
-         <children>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">
                <graphic>
                   <FontAwesomeIconView glyphName="REPLY" />

@@ -15,14 +15,32 @@ import modelo.CargarObjetoPeriodoLinea;
 import modelo.Producto;
 
 public class ProductoDAO {
+    
+    public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+            "SELECT a.producto_codigo codigo\n" +
+            "  FROM ms_producto_lineas A\n" +
+            " WHERE a.periodo = '%d' AND a.reparto_tipo = '%d'",
+            periodo,repartoTipo);
+        List<String> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                lista.add(rs.getString("codigo"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
+    }
+    
     public List<Producto> listarMaestro(String codigos) {
         String queryStr;
         if (codigos.isEmpty()) {
-            queryStr = "SELECT codigo,nombre FROM productos WHERE esta_activo=1 ORDER BY codigo";
+            queryStr = "SELECT codigo,nombre FROM MS_productos WHERE esta_activo=1 ORDER BY codigo";
         } else {
             queryStr = String.format(""+
                     "SELECT codigo,nombre\n" +
-                    "  FROM productos\n" +
+                    "  FROM MS_productos\n" +
                     " WHERE esta_activo=1 AND codigo NOT IN (%s)\n" +
                     " ORDER BY codigo",
                     codigos);
@@ -41,18 +59,18 @@ public class ProductoDAO {
         return lista;
     }
     
-    public List<Producto> listar(int periodo) {
+    public List<Producto> listar(int periodo,int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
                 "       A.fecha_creacion,\n" +
                 "       A.fecha_actualizacion\n" +
-                "  FROM productos A\n" +
-                "  JOIN producto_lineas B ON B.producto_codigo=A.codigo\n" +
-                " WHERE A.esta_activo=1 AND B.periodo=%d\n" +
+                "  FROM MS_productos A\n" +
+                "  JOIN MS_producto_lineas B ON B.producto_codigo=A.codigo\n" +
+                " WHERE A.esta_activo=1 AND B.periodo=%d and b.reparto_tipo='%d'\n" +
                 " GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                 " ORDER BY A.codigo",
-                periodo);
+                periodo,repartoTipo);
         List<Producto> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) {

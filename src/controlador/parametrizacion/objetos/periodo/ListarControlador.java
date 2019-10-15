@@ -30,6 +30,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -42,26 +43,19 @@ import servicios.DescargaServicio;
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
     // Variables de la vista
     @FXML private Label lblTitulo;
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
     @FXML private Hyperlink lnkObjetos;
-    @FXML private Hyperlink lnkAsignacion;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
-    
-    @FXML private JFXButton btnAgregar;
-    @FXML private JFXButton btnQuitar;
-    @FXML private JFXButton btnCargar;
     
     @FXML private TextField txtBuscar;
+    
     @FXML private TableView<EntidadDistribucion> tabListar;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolCodigo;
     @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
-    @FXML private Label lblNumeroRegistros;
     
-    @FXML private JFXButton btnAtras;
+    @FXML private Label lblNumeroRegistros;    
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -71,7 +65,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     FilteredList<EntidadDistribucion> filteredData;
     SortedList<EntidadDistribucion> sortedData;
     int periodoSeleccionado;
-    boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR.getControlador());
     String titulo;
@@ -84,18 +77,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         switch (menuControlador.objetoTipo) {
-            case "OFI":
-                lblTitulo.setText("Oficinas");
-                lnkObjetos.setText("Oficinas");
-                objetoNombre = "Oficina";
-                this.titulo = "Oficinas";
-                break;
-            case "BAN":
-                lblTitulo.setText("Bancas");
-                lnkObjetos.setText("Bancas");
-                objetoNombre = "Banca";
-                this.titulo = "Bancas";
-                break;
             case "PRO":
                 lblTitulo.setText("Productos");
                 lnkObjetos.setText("Productos");
@@ -112,34 +93,42 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 break;
         }
         
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1)
             periodoSeleccionado = menuControlador.periodo;
+        else
+            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(periodoSeleccionado);
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
         }
         
-        // Botones para periodo
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+        // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
-        });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
+                if (menuControlador.repartoTipo == 1)
+                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(periodoSeleccionado);
             }
         });
+        
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        // Tabla: Dimensiones
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
@@ -159,7 +148,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
-        tablaEstaActualizada = true;
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -179,10 +167,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnAgregarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Agregar " + objetoNombre, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-            return;
-        }
         Tipo tipoSeleccionado = menuControlador.lstEntidadTipos.stream().filter(item -> menuControlador.objetoTipo.equals(item.getCodigo())).findFirst().orElse(null);
         menuControlador.codigos = tabListar.getItems().stream().map(i -> "'"+i.getCodigo()+"'").collect(Collectors.joining (","));
         try {
@@ -202,24 +186,23 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
     }
     
-    @FXML void btnQuitarAction(ActionEvent event) {
-        if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar " + objetoNombre, "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
-            return;
-        }
-        
+    @FXML void btnQuitarAction(ActionEvent event) {        
         EntidadDistribucion item = tabListar.getSelectionModel().getSelectedItem();
         if (item == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar " + objetoNombre, "Por favor seleccione un " + objetoNombre + ".");
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
        
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + objetoNombre, "¿Está seguro de quitar el " + objetoNombre + " " + item.getNombre() + "?"))
             return;
-                
-        objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
-        buscarPeriodo(periodoSeleccionado, false);
+        
+        if(objetoDAO.verificarObjetoDriver(item.getCodigo(),periodoSeleccionado, menuControlador.repartoTipo) == 0 ){
+            objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
+            buscarPeriodo(periodoSeleccionado);
+        }else{
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
+        }
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -232,19 +215,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
+        buscarPeriodo(periodoSeleccionado);
     }
     
-    private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
+    private void buscarPeriodo(int periodo) {
         List<EntidadDistribucion> lista = objetoDAO.listar(periodo,menuControlador.repartoTipo);
-        if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de " + objetoNombre + "s", "No existen " + objetoNombre + "s para el periodo seleccionado.");
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
-        tablaEstaActualizada = true;
     }
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
@@ -258,10 +238,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
@@ -271,9 +251,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
+        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
-        buscarPeriodo(periodoSeleccionado, false);
+        buscarPeriodo(periodoSeleccionado);
     }
 
     @Override

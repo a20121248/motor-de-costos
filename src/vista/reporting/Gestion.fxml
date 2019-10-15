@@ -18,12 +18,12 @@
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" styleClass="page-heading" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="lblTitulo" layoutX="21.0" layoutY="11.0" text="Grupos de Objetos" textFill="#676a6c">
+            <Label layoutX="21.0" layoutY="11.0" text="Reporting" textFill="#676a6c">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER_LEFT" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+            <HBox alignment="CENTER_LEFT" prefWidth="710.0" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0">
                <children>
                   <Hyperlink fx:id="lnkInicio" onAction="#lnkInicioAction" text="Inicio" textFill="#676a6c">
                      <font>
@@ -35,7 +35,7 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Hyperlink fx:id="lnkParametrizacion" onAction="#lnkParametrizacionAction" text="Parametrización" textFill="#676a6c">
+                  <Hyperlink fx:id="lnkReporting" onAction="#lnkReportingAction" text="Reporting" textFill="#676a6c">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -45,27 +45,7 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Hyperlink fx:id="lnkObjetos" onAction="#lnkObjetosAction" text="Objetos" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Hyperlink>
-                  <Label text="/" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Hyperlink fx:id="lnkJerarquia" onAction="#lnkJerarquiaAction" text="Jerarquía" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Hyperlink>
-                  <Label text="/" textFill="#676a6c">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Hyperlink fx:id="lnkGrupos" onAction="#lnkGruposAction" text="Grupos" textFill="#676a6c">
+                  <Hyperlink fx:id="lnkControl" onAction="#lnkControlAction" text="Control" textFill="#676a6c">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
@@ -74,27 +54,43 @@
             </HBox>
          </children>
       </AnchorPane>
-      <HBox alignment="CENTER_RIGHT" layoutX="131.0" layoutY="187.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <HBox alignment="TOP_RIGHT" layoutX="111.0" layoutY="167.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" styleClass="btn" text="Crear">
+            <JFXButton fx:id="btnCrear" onAction="#btnCrearAction" text="Crear">
                <graphic>
                   <FontAwesomeIconView glyphName="PLUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
+            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" text="Editar">
                <graphic>
                   <FontAwesomeIconView glyphName="PENCIL" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
+            <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
-            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" styleClass="btn" text="Cargar">
+            <JFXButton fx:id="btnCargar" onAction="#btnCargarAction" text="Cargar">
                <graphic>
                   <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" />
                </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="catalogo" />
+               </styleClass>
             </JFXButton>
          </children>
       </HBox>
@@ -108,7 +104,10 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="101.0" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="77.0" styleClass="center" text="TIPO GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="70.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="77.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="91.0" styleClass="center" text="NIIF17 GASTO" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

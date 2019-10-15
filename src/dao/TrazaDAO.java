@@ -113,10 +113,10 @@ public class TrazaDAO {
         return lstCodigos;
     }
     
-    public void borrarTrazaCascadaPeriodo(int periodo){
+    public void borrarTrazaCascadaPeriodo(int periodo, int repartoTipo){
         String queryStr = String.format(Locale.US, "" +
-                "DELETE FROM traza_cascada WHERE periodo = %d ",
-                periodo);
+                "DELETE FROM MS_traza_cascada WHERE periodo = %d and reparto_tipo = %d ",
+                periodo,repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
 

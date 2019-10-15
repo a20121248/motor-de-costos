@@ -54,6 +54,13 @@ public class DescargaServicio {
         driverDAO = new DriverDAO();
     }
     
+    public DescargaServicio(String serv, String tipo, int anho){
+        this.servicio = serv;
+        this.tablaEntidadDistribucion = null;
+        this.tablaDriver = null;
+        driverDAO = new DriverDAO();
+    }
+    
     public void descargarTabla(String periodo, String ruta) throws IOException{
         Format formatterLogFile = new SimpleDateFormat("yyyyMMdd");
         String fechaStr = formatterLogFile.format(new Date());
@@ -203,7 +210,7 @@ public class DescargaServicio {
                     String value = tablaDriver.getColumns().get(j).getCellData(i).toString();
                     rowDrivers.createCell(j+k).setCellValue(value); 
                     if(j==0){
-                        List<DriverObjetoLinea> lstDriverLinea = driverDAO.obtenerDriverObjetoLinea(Integer.parseInt(periodo),value);
+                        List<DriverObjetoLinea> lstDriverLinea = driverDAO.obtenerDriverObjetoLinea(Integer.parseInt(periodo),value,reparto);
                         for(DriverObjetoLinea item: lstDriverLinea){
                             rowObjetos = sheet2.createRow(index++);
                             rowObjetos.createCell(0).setCellValue(periodo);
@@ -280,4 +287,5 @@ public class DescargaServicio {
         catch(IOException e){
         }
     }
+    
  }

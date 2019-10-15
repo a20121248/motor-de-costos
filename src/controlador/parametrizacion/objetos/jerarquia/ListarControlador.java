@@ -79,9 +79,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA.getControlador());
-    String titulo;
+    String titulo;    public ListarControlador(MenuControlador menuControlador) {
+
     
-    public ListarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
     }
@@ -105,16 +105,23 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 lblTitulo.setText("Jerarquía de Productos");
                 lnkObjetos.setText("Productos");
                 objetoNombre = "Producto";
-                this.titulo = "Productos";
+                this.titulo = "Líneas";
                 break;
             case "SCA":
                 lblTitulo.setText("Jerarquía de Subcanales");
                 lnkObjetos.setText("Subcanales");
                 objetoNombre = "Subcanal";
-                this.titulo = "Subcanales";
+                this.titulo = "Canales";
                 break;
             default:
                 break;
+        }
+        
+        if (menuControlador.repartoTipo == 2) {
+            cmbMes.setVisible(false);
+            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
+        } else {
+            periodoSeleccionado = menuControlador.periodo;
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -122,18 +129,19 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         spAnho.getValueFactory().setValue(menuControlador.anhoActual);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
+                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 tablaEstaActualizada = false;
             }
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
+
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -149,7 +157,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombrePadre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
         tabcolNivelPadre.setMaxWidth(1f * Integer.MAX_VALUE * 13);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarJerarquia(periodoSeleccionado)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarJerarquia(periodoSeleccionado, menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -187,13 +195,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnAsignarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Asignar Grupo", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.mensaje.add_refresh_error("Grupo");
             return;
         }
         
         grupoSeleccionado = tabListar.getSelectionModel().getSelectedItem();
         if (grupoSeleccionado == null) {
-            menuControlador.navegador.mensajeInformativo("Asignar Grupo", "Por favor seleccione un Grupo.");
+            menuControlador.mensaje.add_empty("Grupo");
             return;
         }
         if (!grupoSeleccionado.getGrupoPadre().getCodigo().equals("SIN ASIGNAR")) {
@@ -229,13 +237,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     
     @FXML void btnQuitarAction(ActionEvent event) {
         if (!tablaEstaActualizada) {
-            menuControlador.navegador.mensajeInformativo("Quitar asignación", "Se realizó un cambio en el periodo y no en la tabla. Por favor haga click en el botón Buscar para continuar.");
+            menuControlador.mensaje.delete_refresh_error(titulo);
             return;
         }
         
         grupoSeleccionado = tabListar.getSelectionModel().getSelectedItem();
         if (grupoSeleccionado == null) {
-            menuControlador.navegador.mensajeInformativo("Quitar asignación", "Por favor seleccione una entidad.");
+            menuControlador.mensaje.delete_selected_error(titulo);
             return;
         }
         
@@ -245,9 +253,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar el Grupo " + grupoSeleccionado.getGrupoPadre().getNombre() + "?"))
             return;
         
-        objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado);
-        menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" del "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
-        buscarPeriodo(periodoSeleccionado, false);
+        if (objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado,menuControlador.repartoTipo)==1) {
+            menuControlador.mensaje.delete_success(titulo);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" del "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
+            buscarPeriodo(periodoSeleccionado, false);
+        } else {
+            menuControlador.mensaje.delete_item_periodo_error(titulo);
+        }
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -264,9 +276,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
-        List<Grupo> lista = objetoGrupoDAO.listarJerarquia(periodo);
+        List<Grupo> lista = objetoGrupoDAO.listarJerarquia(periodo,menuControlador.repartoTipo);
         if (lista.isEmpty() && mostrarMensaje)
-            menuControlador.navegador.mensajeInformativo("Consulta de Jerarquia", "No existe una Jerarquia de " + objetoNombre + "s para el periodo seleccionado.");
+            menuControlador.mensaje.show_table_empty("Jerarquías");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
@@ -287,10 +299,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_OBJETOS_JERARQUIA.getDireccion().replace("/Objetos/", "/"+titulo+"/"));
             }else{
-                menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);
+                menuControlador.mensaje.download_canceled();
             }
         }else{
-            menuControlador.navegador.mensajeError(menuControlador.MENSAJE_DOWNLOAD_EMPTY);
+            menuControlador.mensaje.download_empty();
         }
     }
     
@@ -301,10 +313,10 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
         if (grupoSeleccionado == null) {
-            menuControlador.navegador.mensajeInformativo("Asignar Grupo de " + objetoNombre + "s", "Por favor seleccione un Grupo de " + objetoNombre + "s.");
+            menuControlador.mensaje.add_empty(titulo);
             return;
         }
-        objetoGrupoDAO.insertarGrupoPadre(periodoSeleccionado,grupoSeleccionado.getCodigo(),menuControlador.objetoTipo,grupoSeleccionado.getNivel(),entidad.getCodigo());
+        objetoGrupoDAO.insertarGrupoPadre(periodoSeleccionado,grupoSeleccionado.getCodigo(),menuControlador.objetoTipo,grupoSeleccionado.getNivel(),entidad.getCodigo(),menuControlador.repartoTipo);
         menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), grupoSeleccionado.getGrupoPadre().getCodigo() +" al "+grupoSeleccionado.getCodigo(),periodoSeleccionado,Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getDireccion().replace("/Objetos/", "/"+objetoNombre+"/"));
         buscarPeriodo(periodoSeleccionado, false);
     }

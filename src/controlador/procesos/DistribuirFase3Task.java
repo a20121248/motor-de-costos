@@ -36,13 +36,8 @@ public class DistribuirFase3Task extends Task {
     public DistribuirFase3Task(int periodo, PrincipalControlador principalControlador) {
         this.periodo = periodo;
         this.principalControlador = principalControlador;
-        if (principalControlador.menuControlador.repartoTipo == 1) {
             this.fase = 3;
             this.progresoTotal=0.3333;
-        } else {
-            this.fase = 2;
-            this.progresoTotal=0.5;
-        }
         
         planDeCuentaDAO = new PlanDeCuentaDAO();
         driverDAO = new DriverDAO();
@@ -57,11 +52,7 @@ public class DistribuirFase3Task extends Task {
 
     @Override
     public Void call() {        
-        if (principalControlador.menuControlador.repartoTipo == 1)
-            principalControlador.ejecutandoFase3 = true;
-        else
-            principalControlador.ejecutandoFase2 = true;
-        
+        principalControlador.ejecutandoFase3 = true;
         principalControlador.piTotal.setProgress(progresoTotal*(fase-1));
         principalControlador.pbTotal.setProgress(progresoTotal*(fase-1));
         
@@ -77,7 +68,7 @@ public class DistribuirFase3Task extends Task {
         for (int i = 1; i <= max; ++i) {
             // inicio logica
             CentroDriver entidadOrigen = lista.get(i-1);
-            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver());
+            List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getCodigoDriver(),principalControlador.menuControlador.repartoTipo);
             distribucionServicio.distribuirEntidadObjetos(entidadOrigen, listaDriverObjetoLinea, periodo, principalControlador.menuControlador.repartoTipo);
             principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
@@ -87,50 +78,16 @@ public class DistribuirFase3Task extends Task {
         // los posibles registros que no se hayan ejecutado
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
+       
+        principalControlador.lblMensajeFase3.setVisible(true);
         
-        trazabilidadServicio.ingresarPorcentajesObjetos(periodo);
-        
-        String reporteNombre,rutaOrigen;
+        principalControlador.lblMensajeFase3.setVisible(false);
 
-        if (principalControlador.menuControlador.repartoTipo == 1) {
-            // Generar reportes
-            principalControlador.lblMensajeFase3.setVisible(true);
-            
-//            reporteNombre = "Reporte 04 - Objetos de Costos";
-//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-//            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-//            
-            reporteNombre = "Reporte 04 - Objetos de Costos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteObjetosCostos(periodo, rutaOrigen,principalControlador.menuControlador.repartoTipo);
-
-            principalControlador.lblMensajeFase3.setVisible(false);
-            // Fin generar reportes
-            principalControlador.ejecutoFase3 = true;
-            principalControlador.ejecutandoFase3 = false;
-            principalControlador.piTotal.setProgress(1);
-            principalControlador.pbTotal.setProgress(1);
-        } else {
-            // Generar reportes
-//            principalControlador.lblMensajeFase2Ingresos.setVisible(true);
-//            
-//            reporteNombre = "Reporte 02 - Objetos de Beneficio";
-//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-//            reportingServicio.crearReporteObjetos(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-//            
-//            reporteNombre = "Reporte 03 - Gastos de Operaciones de Cambio";
-//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-//            reportingServicio.crearReporteGastosOperacionesDeCambio(periodo, rutaOrigen);
-//
-//            principalControlador.lblMensajeFase2Ingresos.setVisible(false);
-//            // Fin generar reportes
-//            principalControlador.ejecutoFase2 = true;
-//            principalControlador.ejecutandoFase2 = false;
-//            principalControlador.piTotal.setProgress(1);
-//            principalControlador.pbTotal.setProgress(1);
-        }
-
-        updateProgress(2*max+1, 2*max+1);
+        principalControlador.ejecutoFase3 = true;
+        principalControlador.ejecutandoFase3 = false;
+        principalControlador.piTotal.setProgress(1);
+        principalControlador.pbTotal.setProgress(1);
+        updateProgress(max+1, max+1);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }

@@ -67,8 +67,7 @@ public class PartidaDAO {
         ConexionBD.cerrarStatement();
     }
     
-    public List<Partida> listarPeriodo(int periodo,String tipoGasto, int repartoTipo) {
-        
+    public List<Partida> listarPeriodo(int periodo, int repartoTipo) {        
         String queryStr = String.format("" +
                 "SELECT A.codigo,\n" +
                 "       A.nombre,\n" +
@@ -77,7 +76,7 @@ public class PartidaDAO {
                 "       A.fecha_actualizacion\n" +
                 "  FROM MS_partidas A\n" +
                 "  JOIN MS_partida_lineas B ON B.partida_codigo=A.codigo\n" +
-                " WHERE  B.periodo=%d AND B.reparto_tipo=%d\n",
+                " WHERE B.periodo=%d AND B.reparto_tipo=%d\n",
                 periodo,repartoTipo);
         queryStr += "\n GROUP BY A.codigo,A.nombre,A.fecha_creacion,A.fecha_actualizacion\n" +
                     "\n ORDER BY A.codigo";
@@ -195,7 +194,7 @@ public class PartidaDAO {
     }
     
     //TOCHECK: partida_lineas tienen saldo???
-    public List<Partida> listarPartidaConCuentaContable(int periodo, String tipoGasto, int repartoTipo) {
+    public List<Partida> listarPartidaConCuentaContable(int periodo, int repartoTipo) {
 //        actualizarSaldoCuentaPartida(periodo);   
         String queryStr = String.format("" +
                 "SELECT NVL(D.codigo,'Sin CuentaContable asignada') cuenta_contable_codigo,\n" +
@@ -422,18 +421,16 @@ public class PartidaDAO {
         for (CargarCuentaPartidaLinea item: lista) {
             String codigoPartida = item.getCodigoPartida();
             String codigoCuenta = item.getCodigoCuentaContable();
-            String esBolsa = item.getEsBolsa();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO MS_partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,es_bolsa,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%d','%d','%s','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "INSERT INTO MS_partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,saldo,periodo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                "VALUES ('%s','%s','%d','%d','%d',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigoPartida,
                     codigoCuenta,
                     0,
                     periodo,
-                    esBolsa,
                     repartoTipo,
                     fechaStr,
                     fechaStr);

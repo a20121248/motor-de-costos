@@ -67,7 +67,7 @@ CREATE TABLE PACIFICO_DEV.MS_SEGURIDAD_PERMISOS (
   codigo VARCHAR2(50) NOT NULL,
   nombre VARCHAR2(150) NOT NULL,
   descripcion VARCHAR2(150),
-  CONSTRAINT seguridad_permisos_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_seguridad_permisos_pk PRIMARY KEY(codigo)
 );
 INSERT INTO PACIFICO_DEV.MS_seguridad_permisos(codigo,nombre,descripcion) VALUES('INI_VER','INICIO - VER','Ver el módulo de Inicio.');
 INSERT INTO PACIFICO_DEV.MS_seguridad_permisos(codigo,nombre,descripcion) VALUES('APR_VER','APROVISIONAMIENTO - VER','Ver el módulo de Aprovisionamiento.');
@@ -139,7 +139,7 @@ CREATE TABLE PACIFICO_DEV.MS_seguridad_roles (
   descripcion VARCHAR2(150),
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT seguridad_roles_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_seguridad_roles_pk PRIMARY KEY(codigo)
 );
 INSERT INTO PACIFICO_DEV.MS_seguridad_roles(codigo,nombre,descripcion) VALUES('ADM','Administrador','Rol con permisos de lectura, creación, edición y eliminación.');
 INSERT INTO PACIFICO_DEV.MS_seguridad_roles(codigo,nombre,descripcion) VALUES('USR','Usuario','Rol con permisos de lectura.');
@@ -148,8 +148,8 @@ COMMIT;
 CREATE TABLE PACIFICO_DEV.MS_seguridad_permiso_rol (
   permiso_codigo VARCHAR2(50) NOT NULL,
   rol_codigo VARCHAR2(10) NOT NULL,
-  CONSTRAINT seguridad_permiso_rol_1_fk FOREIGN KEY(permiso_codigo) REFERENCES MS_seguridad_permisos(codigo),
-  CONSTRAINT seguridad_permiso_rol_2_fk FOREIGN KEY(rol_codigo) REFERENCES MS_seguridad_roles(codigo)
+  CONSTRAINT MS_seguridad_permiso_rol_1_fk FOREIGN KEY(permiso_codigo) REFERENCES MS_seguridad_permisos(codigo),
+  CONSTRAINT MS_seguridad_permiso_rol_2_fk FOREIGN KEY(rol_codigo) REFERENCES MS_seguridad_roles(codigo)
 );
 INSERT INTO PACIFICO_DEV.MS_seguridad_permiso_rol(permiso_codigo,rol_codigo) VALUES('INI_VER','ADM');
 INSERT INTO PACIFICO_DEV.MS_seguridad_permiso_rol(permiso_codigo,rol_codigo) VALUES('APR_VER','ADM');
@@ -226,8 +226,8 @@ CREATE TABLE PACIFICO_DEV.MS_seguridad_usuarios (
   nombres VARCHAR2(100),
   apellidos VARCHAR2(100),
   rol_codigo VARCHAR2(10) NOT NULL,
-  CONSTRAINT seguridad_usuarios_pk PRIMARY KEY (usuario),
-  CONSTRAINT seguridad_usuarios_1_fk FOREIGN KEY (rol_codigo) REFERENCES MS_seguridad_roles(codigo)
+  CONSTRAINT MS_seguridad_usuarios_pk PRIMARY KEY (usuario),
+  CONSTRAINT MS_seguridad_usuarios_1_fk FOREIGN KEY (rol_codigo) REFERENCES MS_seguridad_roles(codigo)
 );
 INSERT INTO PACIFICO_DEV.MS_seguridad_usuarios(usuario,contrasenha,rol_codigo) VALUES('admin','secret','ADM');
 INSERT INTO PACIFICO_DEV.MS_seguridad_usuarios(usuario,contrasenha,rol_codigo) VALUES('user','secret','USR');
@@ -247,7 +247,7 @@ CREATE TABLE PACIFICO_DEV.MS_plan_de_cuentas (
   tipo_gasto NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT plan_de_cuentas_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_plan_de_cuentas_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_plan_de_cuenta_lineas (
@@ -257,7 +257,7 @@ CREATE TABLE PACIFICO_DEV.MS_plan_de_cuenta_lineas (
   reparto_tipo NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT plan_de_cuenta_lineas_pk PRIMARY KEY(plan_de_cuenta_codigo,periodo)
+  CONSTRAINT MS_plan_de_cuenta_lineas_pk PRIMARY KEY(plan_de_cuenta_codigo,periodo)
 );
 
 
@@ -303,7 +303,6 @@ CREATE TABLE PACIFICO_DEV.MS_PARTIDA_CUENTA_CONTABLE
   CUENTA_CONTABLE_CODIGO VARCHAR2(15 BYTE) NOT NULL ,
   PERIODO NUMBER(6,0),
   SALDO NUMBER(35,8) NOT NULL,
-  ES_BOLSA CHAR(2) NOT NULL,
   reparto_tipo NUMBER(1) NOT NULL,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE  
@@ -317,19 +316,19 @@ CREATE TABLE PACIFICO_DEV.MS_centro_niveles (
   descripcion VARCHAR2(150) NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT centro_niveles_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_centro_niveles_pk PRIMARY KEY(codigo)
 );
 
 INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('-','TODOS','CENTROS DE COSTOS DE TODOS LOS NIVELES.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('01','01','CENTROS DE COSTOS DE NIVEL 01.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('02','02','CENTROS DE COSTOS DE NIVEL 02.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('03','03','CENTROS DE COSTOS DE NIVEL 03.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('04','04','CENTROS DE COSTOS DE NIVEL 04.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('05','05','CENTROS DE COSTOS DE NIVEL 05.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('06','06','CENTROS DE COSTOS DE NIVEL 06.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('07','07','CENTROS DE COSTOS DE NIVEL 07.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('08','08','CENTROS DE COSTOS DE NIVEL 08.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
-INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('09','09','CENTROS DE COSTOS DE NIVEL 09.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('1','1','CENTROS DE COSTOS DE NIVEL 1.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('2','2','CENTROS DE COSTOS DE NIVEL 2.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('3','3','CENTROS DE COSTOS DE NIVEL 3.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('4','4','CENTROS DE COSTOS DE NIVEL 4.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('5','5','CENTROS DE COSTOS DE NIVEL 5.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('6','6','CENTROS DE COSTOS DE NIVEL 6.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('7','7','CENTROS DE COSTOS DE NIVEL 7.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('8','8','CENTROS DE COSTOS DE NIVEL 8.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
+INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('9','9','CENTROS DE COSTOS DE NIVEL 9.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
 INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('10','10','CENTROS DE COSTOS DE NIVEL 10.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
 INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('11','11','CENTROS DE COSTOS DE NIVEL 11.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
 INSERT INTO PACIFICO_DEV.MS_CENTRO_NIVELES(CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('12','12','CENTROS DE COSTOS DE NIVEL 12.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
@@ -430,7 +429,7 @@ CREATE TABLE PACIFICO_DEV.MS_centro_tipos (
   descripcion VARCHAR2(150) NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT centro_tipos_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_centro_tipos_pk PRIMARY KEY(codigo)
 );
 
 INSERT INTO PACIFICO_DEV.MS_CENTRO_TIPOS (CODIGO,NOMBRE,DESCRIPCION,FECHA_CREACION,FECHA_ACTUALIZACION) VALUES ('-','TODOS','TODOS LOS GRUPOS.',TO_DATE('01/01/18','DD/MM/RR'),TO_DATE('01/01/18','DD/MM/RR'));
@@ -459,15 +458,14 @@ CREATE TABLE PACIFICO_DEV.MS_centros (
   niif17_tipo CHAR(2 BYTE) NOT NULL ,
   niif17_clase CHAR(2 BYTE) NOT NULL ,
   tipo_gasto NUMBER(1) NOT NULL,
-  ES_BOLSA CHAR(2) NOT NULL,
-  CONSTRAINT centros_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_centros_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_centro_lineas (
   centro_codigo VARCHAR2(8) NOT NULL,
   periodo NUMBER(6) NOT NULL,
   iteracion NUMBER(10) NOT NULL,
-  saldo NUMBER(35,8) NOT NULL,
+  saldo NUMBER(35,15) NOT NULL,
   entidad_origen_codigo VARCHAR2(10) NOT NULL,
   grupo_gasto CHAR(2),
   reparto_tipo NUMBER(1) NOT NULL,
@@ -486,7 +484,7 @@ CREATE TABLE PACIFICO_DEV.MS_entidad_tipos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(150) NULL,
-  CONSTRAINT entidad_tipos_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_entidad_tipos_pk PRIMARY KEY(codigo)
 );
 
 INSERT INTO PACIFICO_DEV.MS_entidad_tipos(codigo,nombre) VALUES('-','Todos');
@@ -509,7 +507,7 @@ CREATE TABLE PACIFICO_DEV.MS_CUENTA_PARTIDA_CENTRO (
   REPARTO_TIPO NUMBER(1) NOT NULL,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE,
-  CONSTRAINT CUENTA_PARTIDA_CENTRO_PK PRIMARY KEY (CUENTA_CONTABLE_CODIGO, PARTIDA_CODIGO, CENTRO_CODIGO, REPARTO_TIPO, PERIODO)
+  CONSTRAINT MS_CUENTA_PARTIDA_CENTRO_PK PRIMARY KEY (CUENTA_CONTABLE_CODIGO, PARTIDA_CODIGO, CENTRO_CODIGO, REPARTO_TIPO, PERIODO)
 );
 
 ---------------------------------------------------------------------------------
@@ -521,7 +519,7 @@ CREATE TABLE PACIFICO_DEV.MS_productos (
   esta_activo NUMBER(1) NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT productos_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_productos_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_producto_lineas (
@@ -530,7 +528,7 @@ CREATE TABLE PACIFICO_DEV.MS_producto_lineas (
   reparto_tipo NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT producto_lineas_pk PRIMARY KEY(producto_codigo,periodo)
+  CONSTRAINT MS_producto_lineas_pk PRIMARY KEY(producto_codigo,periodo)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_producto_grupos (
@@ -540,12 +538,12 @@ CREATE TABLE PACIFICO_DEV.MS_producto_grupos (
   esta_activo NUMBER(1) NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT producto_grupos_pk PRIMARY KEY(codigo)
+  CONSTRAINT MS_producto_grupos_pk PRIMARY KEY(codigo)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_SUBCANALS
-( CODIGO VARCHAR2(10 BYTE) NOT NULL ,
-  NOMBRE VARCHAR2(100 BYTE) NOT NULL ,
+( CODIGO VARCHAR2(10 BYTE) NOT NULL,
+  NOMBRE VARCHAR2(100 BYTE) NOT NULL,
   ESTA_ACTIVO NUMBER(1,0),
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE
@@ -566,7 +564,7 @@ CREATE TABLE PACIFICO_DEV.MS_SUBCANAL_GRUPOS
  ESTA_ACTIVO NUMBER(1,0),
  FECHA_CREACION DATE,
  FECHA_ACTUALIZACION DATE,
- CONSTRAINT subcanal_grupos_pk PRIMARY KEY(CODIGO)
+ CONSTRAINT MS_subcanal_grupos_pk PRIMARY KEY(CODIGO)
 );
 ------------------------------------------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_jerarquia (
@@ -576,7 +574,7 @@ CREATE TABLE PACIFICO_DEV.MS_jerarquia (
   nivel NUMBER(2) NOT NULL,
   entidad_padre_codigo VARCHAR2(10) NOT NULL,
   reparto_tipo NUMBER(1) NOT NULL,
-  CONSTRAINT jerarquia_pk PRIMARY KEY(periodo,entidad_codigo,entidad_tipo,nivel,entidad_padre_codigo)
+  CONSTRAINT MS_jerarquia_pk PRIMARY KEY(periodo,entidad_codigo,entidad_tipo,nivel,entidad_padre_codigo)
 );
 ---------------------------------------------------------------------------------
 -------------- DRIVER   ---------------------------------------------------------
@@ -586,7 +584,7 @@ CREATE TABLE PACIFICO_DEV.MS_driver_tipos (
   codigo VARCHAR2(10) NOT NULL,
   nombre VARCHAR2(100) NOT NULL,
   descripcion VARCHAR2(200) NULL,
-  CONSTRAINT driver_tipo_pk PRIMARY KEY (codigo)
+  CONSTRAINT MS_driver_tipo_pk PRIMARY KEY (codigo)
 );
 INSERT INTO PACIFICO_DEV.MS_driver_tipos(codigo,nombre,descripcion) VALUES('CECO','Centros de Costos',null);
 INSERT INTO PACIFICO_DEV.MS_driver_tipos(codigo,nombre,descripcion) VALUES('OBCO','Objetos de Costos',null);
@@ -599,8 +597,8 @@ CREATE TABLE PACIFICO_DEV.MS_drivers (
   reparto_tipo NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT driver_pk PRIMARY KEY (codigo),
-  CONSTRAINT driver_1_fk FOREIGN KEY(driver_tipo_codigo) REFERENCES MS_driver_tipos(codigo)
+  CONSTRAINT MS_driver_pk PRIMARY KEY (codigo),
+  CONSTRAINT MS_driver_1_fk FOREIGN KEY(driver_tipo_codigo) REFERENCES MS_driver_tipos(codigo)
 );
 
 -------------- DRIVER - CENTRO DE COSTOS   ---------------------------------------------------------
@@ -612,8 +610,8 @@ CREATE TABLE PACIFICO_DEV.MS_driver_lineas (
   reparto_tipo NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT driver_lineas_pk PRIMARY KEY(driver_codigo,entidad_destino_codigo,periodo),
-  CONSTRAINT driver_lineas_1_fk FOREIGN KEY(driver_codigo) REFERENCES MS_drivers(codigo)
+  CONSTRAINT MS_driver_lineas_pk PRIMARY KEY(driver_codigo,entidad_destino_codigo,periodo),
+  CONSTRAINT MS_driver_lineas_1_fk FOREIGN KEY(driver_codigo) REFERENCES MS_drivers(codigo)
 );
 -------------- DRIVER - OBJETOS DE COSTOS   ---------------------------------------------------------
 CREATE TABLE PACIFICO_DEV.MS_DRIVER_OBJETO_LINEAS
@@ -657,7 +655,7 @@ CREATE TABLE PACIFICO_DEV.MS_entidad_origen_driver (
   reparto_tipo NUMBER(1) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  CONSTRAINT entidad_origen_driver_pk PRIMARY KEY(entidad_origen_codigo,driver_codigo,periodo)
+  CONSTRAINT MS_entidad_origen_driver_pk PRIMARY KEY(entidad_origen_codigo,driver_codigo,periodo)
 );
 
 CREATE TABLE PACIFICO_DEV.MS_OBJETO_DRIVER
@@ -687,7 +685,10 @@ CREATE TABLE PACIFICO_DEV.MS_OBJETO_LINEAS
   PRODUCTO_CODIGO VARCHAR2(10 BYTE) NOT NULL,
   PERIODO NUMBER(6, 0) NOT NULL,
   ENTIDAD_ORIGEN_CODIGO VARCHAR2(10 BYTE) NOT NULL,
-  SALDO NUMBER(35, 8) NOT NULL,
+  SALDO NUMBER(35, 15) NOT NULL,
+  CUENTA_CONTABLE_ORIGEN_CODIGO VARCHAR2(15 BYTE) NOT NULL,
+  PARTIDA_ORIGEN_CODIGO VARCHAR2(6 BYTE) NOT NULL ,
+  CENTRO_ORIGEN_CODIGO VARCHAR2(8) NOT NULL,
   reparto_tipo NUMBER(1) NOT NULL,
   FECHA_CREACION DATE,
   FECHA_ACTUALIZACION DATE,

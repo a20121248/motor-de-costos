@@ -3,9 +3,11 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.TableColumn?>
@@ -65,51 +67,72 @@
             </HBox>
          </children>
       </AnchorPane>
-      <Label layoutX="80.0" layoutY="154.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <ComboBox fx:id="cmbMes" layoutX="112.0" layoutY="140.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />
-      <Label layoutX="70.0" layoutY="144.0" text="Ruta:" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="124.0" />
-      <TextField fx:id="txtRuta" disable="true" layoutX="101.0" layoutY="130.0" prefHeight="25.0" prefWidth="511.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="120.0" />
-      <JFXButton fx:id="btnCargarRuta" layoutX="544.0" layoutY="105.0" onAction="#btnCargarRutaAction" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="FOLDER_OPEN" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ComboBox>
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Label text="Ruta:">
+               <HBox.margin>
+                  <Insets left="100.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">
+               <graphic>
+                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="small" />
+               </styleClass>
+            </JFXButton>
+         </children>
+      </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigoCuentaContable" prefWidth="75.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
-            <TableColumn fx:id="tabcolNombreCuentaContable" prefWidth="75.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
-            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="75.0" styleClass="center" text="CÓDIGO PARTIDA" />
-            <TableColumn fx:id="tabcolNombrePartida" prefWidth="75.0" styleClass="left" text="NOMBRE  PARTIDA" />
-            <TableColumn fx:id="tabcolCodigoCentro" prefWidth="75.0" styleClass="center" text="CÓDIGO CENTRO" />
-            <TableColumn fx:id="tabcolNombreCentro" prefWidth="75.0" styleClass="left" text="NOMBRE CENTRO" />
-            <TableColumn fx:id="tabcolCodigoDriver" prefWidth="120.0" styleClass="center" text="CÓDIGO DRIVER" />
-            <TableColumn fx:id="tabcolNombreDriver" prefWidth="120.0" styleClass="left" text="NOMBRE DRIVER" />
+            <TableColumn fx:id="tabcolCodigoCuentaContable" prefWidth="170.0" styleClass="center" text="CÓDIGO CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolNombreCuentaContable" prefWidth="250.0" styleClass="left" text="NOMBRE CUENTA CONTABLE" />
+            <TableColumn fx:id="tabcolCodigoPartida" prefWidth="110.0" styleClass="center" text="CÓDIGO PARTIDA" />
+            <TableColumn fx:id="tabcolNombrePartida" prefWidth="250.0" styleClass="left" text="NOMBRE  PARTIDA" />
+            <TableColumn fx:id="tabcolCodigoCentro" prefWidth="110.0" styleClass="center" text="CÓDIGO CENTRO" />
+            <TableColumn fx:id="tabcolNombreCentro" prefWidth="250.0" styleClass="left" text="NOMBRE CENTRO" />
+            <TableColumn fx:id="tabcolCodigoDriver" prefWidth="100.0" styleClass="center" text="CÓDIGO DRIVER" />
+            <TableColumn fx:id="tabcolNombreDriver" prefWidth="250.0" styleClass="left" text="NOMBRE DRIVER" />
          </columns>
       </TableView>
-      <Label fx:id="lblNumeroRegistros" layoutX="96.0" layoutY="494.0" text="Número de registros: 0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" />
-      <JFXButton fx:id="btnAtras" layoutX="285.0" layoutY="458.0" onAction="#btnAtrasAction" styleClass="btn" text="Atrás" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="140.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="REPLY" />
-         </graphic>
-      </JFXButton>
-      <JFXButton fx:id="btnSubir" layoutX="369.0" layoutY="458.0" onAction="#btnSubirAction" styleClass="btn" text="Subir" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="UPLOAD" />
-         </graphic>
-      </JFXButton>
-      <Spinner fx:id="spAnho" layoutX="236.0" layoutY="169.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
-         <valueFactory>
-            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-         </valueFactory>
-      </Spinner>
-      <JFXButton fx:id="btnDescargarLog" layoutX="190.0" layoutY="545.0" onAction="#btnDescargarLogAction" styleClass="btn" text="DescargarLOG" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="DOWNLOAD" />
-         </graphic>
-      </JFXButton>
+      <HBox alignment="CENTER_LEFT" layoutX="266.0" layoutY="518.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+         <children>
+            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
+            <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
+               <graphic>
+                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="large" />
+               </styleClass>
+            </JFXButton>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnAtras" onAction="#btnAtrasAction" styleClass="btn" text="Atrás">
+               <graphic>
+                  <FontAwesomeIconView glyphName="REPLY" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnSubir" onAction="#btnSubirAction" styleClass="btn" text="Subir">
+               <graphic>
+                  <FontAwesomeIconView glyphName="UPLOAD" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

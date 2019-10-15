@@ -1,6 +1,8 @@
 package modelo;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
 
 
 public class Mensaje {
@@ -229,4 +231,43 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    public void execute_phase_currently_error(int nroPhase){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("La fase se está ejecutando actualmente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_asign_without_driver_singular_error(int nroPhase, int nroSinDriver){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("Existe "+ nroSinDriver +" asociación sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones de Driver y asegúrese que esté asignado correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_asign_without_driver_plural_error(int nroPhase, int nroSinDriver){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("Existen "+ nroSinDriver +" asociaciones sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones de Driver y asegúrese que estén asignados correctamente.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_asign_bad_driver_error(int nroPhase, String detail){
+        String mensaje = "Las siguientes asociaciones con Driver presentan inconsistencia.\r\nPor favor, revise el módulo de Asignaciones de Driver y asegúrese que estén asignados correctamente.\r\n\n";
+        mensaje += detail;
+        TextArea textArea = new TextArea(mensaje);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxWidth(Double.MAX_VALUE);
+        gridPane.add(textArea, 0, 0);
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+//        alert.setContentText(mensaje);
+        alert.getDialogPane().setContent(gridPane);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
 }
