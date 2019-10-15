@@ -25,12 +25,11 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int borrarAsignacionDriverObjeto(String centroCodigo, String grupoGasto, int periodo) {
+    public int borrarAsignacionDriverObjeto(String centroCodigo, String grupoGasto, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM objeto_driver \n" +
-                " WHERE centro_codigo='%s' AND grupo_gasto='%s' AND periodo=%d",
-                centroCodigo, grupoGasto,
-                periodo);
+                "DELETE FROM MS_OBJETO_DRIVER\n" +
+                " WHERE centro_codigo='%s' AND grupo_gasto='%s' AND periodo=%d AND reparto_tipo=%d",
+                centroCodigo, grupoGasto, periodo, repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
@@ -52,7 +51,7 @@ public class CentroDriverDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     public int asignarDriverObjeto(String centroCodigo, String grupoGasto, String driverCodigo, int periodo, int repartoTipo) {        
-        borrarAsignacionDriverObjeto(centroCodigo, grupoGasto, periodo);
+        borrarAsignacionDriverObjeto(centroCodigo, grupoGasto, periodo, repartoTipo);
         
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +

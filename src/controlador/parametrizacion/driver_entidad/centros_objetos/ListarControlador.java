@@ -255,7 +255,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         if (!entidadSeleccionada.getCodigoDriver().equals("Sin driver asignado")) {
             if (menuControlador.navegador.mensajeConfirmar("Asignar driver que distribuye a Objetos de Costos", "La entidad ya cuenta con un driver asignado.\n¿Está seguro que desea reemplazar dicho driver?")) {
-                centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(),periodoSeleccionado);
+                centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
                 buscarDriverObjeto();
             }
             return;
@@ -276,7 +276,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Driver", "¿Está seguro de quitar el Driver " + entidadSeleccionada.getNombreDriver()+ "?"))
             return;
         
-        centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(),periodoSeleccionado);
+        centroDriverDAO.borrarAsignacionDriverObjeto(entidadSeleccionada.getCodigoCentro(), entidadSeleccionada.getGrupoGasto().getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), entidadSeleccionada.getCodigoDriver() + " de (" + entidadSeleccionada.getCodigoCentro()+ ")", periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR.getDireccion());
         buscarPeriodo(periodoSeleccionado, cmbTipoCentro.getValue().getCodigo(), menuControlador.repartoTipo);
     }
