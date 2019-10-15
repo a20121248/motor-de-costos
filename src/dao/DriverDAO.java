@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.Centro;
+import modelo.CentroDriver;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
 import modelo.DriverObjeto;
@@ -79,6 +80,7 @@ public class DriverDAO {
 //    }
     
     public List<DriverObjetoLinea> obtenerDriverObjetoLinea(int periodo, String codigo,int repartoTipo) {
+        periodo = repartoTipo == 1? periodo: (int)periodo/100 *100;
         String queryStr = String.format("" +
                 "SELECT A.producto_codigo,B.nombre producto_nombre,A.subcanal_codigo, C.nombre subcanal_nombre,A.porcentaje\n" +
                 "  FROM MS_driver_objeto_lineas A\n" +
@@ -123,6 +125,7 @@ public class DriverDAO {
     }
     
     public List<DriverLinea> obtenerLstDriverLinea(int periodo, String driverCodigo, int repartoTipo) {
+        if(repartoTipo == 2) periodo = (int)periodo/100 * 100;
         String queryStr = String.format("" +
                 "  SELECT B.codigo,B.nombre,B.nivel,A.porcentaje\n" +
                 "    FROM MS_driver_lineas A\n" +
@@ -419,5 +422,50 @@ public class DriverDAO {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return lista;
+    }
+    
+    public String obtenerCentroDriverConError(int periodo, int repartoTipo){
+        String detail = "";
+        String periodoStr = repartoTipo == 1 ? "b.PERIODO" : "TRUNC(b.PERIODO/100)*100";
+        String queryStr = String.format("" +
+                "SELECT  entidad_origen_codigo CENTRO_ORIGEN_CODIGO,\n" +
+                "        driver_codigo driver_codigo,\n" +
+                "        periodo PERIODO\n" +
+                "  FROM (SELECT  a.entidad_origen_codigo,\n" +
+                "                a.driver_codigo,\n" +
+                "                a.periodo,\n" +
+                "                MAX( \n" +
+                "                  CASE\n" +
+                "                    WHEN E.CODIGO IS NULL THEN 1\n" +
+                "                    WHEN E.CODIGO IS NOT NULL THEN 0\n" +
+                "                  END) estado \n" +
+                "          FROM ms_entidad_origen_driver A\n" +
+                "          JOIN ms_cuenta_partida_centro B on %s = a.periodo and b.reparto_tipo = a.reparto_tipo and a.entidad_origen_codigo = b.centro_codigo\n" +
+                "          JOIN ms_centros C ON a.entidad_origen_codigo = C.CODIGO\n" +
+                "        LEFT JOIN ms_driver_lineas D ON d.driver_codigo = a.driver_codigo and d.periodo = a.periodo and b.reparto_tipo = a.reparto_tipo\n" +
+                "        LEFT JOIN ms_centros E ON d.entidad_destino_codigo = E.CODIGO AND E.NIVEL > C.NIVEL\n" +
+                "        where a.periodo = '%d' and a.reparto_tipo = '%d'\n" +
+                "        GROUP BY a.entidad_origen_codigo,a.driver_codigo,a.periodo)\n" +
+                "WHERE ESTADO=1",
+                periodoStr,periodo,repartoTipo);
+        List<CentroDriver> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigoCentro = rs.getString("CENTRO_ORIGEN_CODIGO");
+                String codigoDriver = rs.getString("driver_codigo");
+                int periodoQ = rs.getInt("PERIODO");
+                
+                //List<DriverLinea> listaDriverLinea = driverLineaDAO.obtenerListaDriverLinea(codigo, periodo);
+                CentroDriver cDriver = new CentroDriver(periodoQ, codigoCentro, null, codigoDriver, null);
+                lista.add(cDriver);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for(CentroDriver cDriver: lista){
+            detail += String.format("* Codigo Centro: %s; Codigo Driver: %s; Periodo: %d.\r\n",cDriver.getCodigoCentro(),cDriver.getCodigoDriver(), periodo);
+        }
+        return detail;
     }
 }

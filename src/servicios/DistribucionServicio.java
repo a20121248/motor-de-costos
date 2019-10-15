@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import modelo.Banca;
 import modelo.Centro;
 import modelo.CentroDriver;
 import modelo.DriverLinea;
 import modelo.DriverObjetoLinea;
 import modelo.EntidadDistribucion;
-import modelo.Oficina;
 import modelo.Producto;
 import modelo.Subcanal;
 import modelo.Traza;
@@ -30,7 +28,7 @@ public class DistribucionServicio {
         trazaDAO = new TrazaDAO();
     }
 
-    public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel) {
+    public void distribuirEntidadCascada(CentroDriver entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion, int  maxNivel, int repartoTipo, int reg) {
         double saldo = entidad.getSaldo();
         // obtengo la lista de centros de niveles superiores
         List<DriverLinea> listaDriverLineaSigNiveles = new ArrayList();
@@ -39,15 +37,17 @@ public class DistribucionServicio {
         } else if (iteracion==maxNivel) {
             listaDriverLineaSigNiveles = lstDriverLinea.stream().filter(item -> 0 == ((Centro)item.getEntidadDistribucionDestino()).getNivel()).collect(Collectors.toList());
         }
+        int  i =0;
         double totalSigNiveles = listaDriverLineaSigNiveles.stream().mapToDouble(f -> f.getPorcentaje()).sum();
-        listaDriverLineaSigNiveles.forEach((item) -> {
+        for(DriverLinea item: listaDriverLineaSigNiveles){
             double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
             EntidadDistribucion entidadDestino = item.getEntidadDistribucionDestino();
             if (entidadDestino != null) {
-//                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getGrupoGasto().getCodigo());
-                //Funcion para trazabilidad
+                centroDAO.insertarDistribucionBatchConGrupoGasto(entidadDestino.getCodigo(), periodo, iteracion, saldoDestino, entidad.getCodigoCentro(),entidad.getCodigoCuenta(),entidad.getCodigoPartida(),entidad.getCodigoCentroOrigen(),entidad.getGrupoGasto().getCodigo(), repartoTipo);
             }
-        });
+            i++;
+        }
+//        System.out.println(i+" : "+reg);
     }
     
     public void distribuirEntidad(EntidadDistribucion entidad, List<DriverLinea> lstDriverLinea, int periodo, int iteracion) {
@@ -79,26 +79,8 @@ public class DistribucionServicio {
             Producto producto = item.getProducto();
             Subcanal subcanal = item.getSubcanal();
             if (producto!=null) {
-                objetoDAO.insertarDistribucionBatchObjetos(producto.getCodigo(),subcanal.getCodigo(), periodo, entidad.getCodigoCentro(), entidad.getCodigoDriver(),entidad.getGrupoGasto().getCodigo(), saldoDestino, repartoTipo);
-                //objetoDAO.insertarDistribucion(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino);
+                objetoDAO.insertarDistribucionBatchObjetos(producto.getCodigo(),subcanal.getCodigo(), periodo, entidad.getCodigoCentro(), entidad.getCodigoDriver(),entidad.getGrupoGasto().getCodigo(), saldoDestino, repartoTipo,entidad.getCodigoCuenta(),entidad.getCodigoPartida(),entidad.getCodigoCentroOrigen());
             }
         });
     }
-    
-//    public void distribuirEntidadObjetosOficina(EntidadDistribucion entidad, List<DriverObjetoLinea> lstDriverObjetoLinea, int periodo, String oficinaCodigo, int repartoTipo) {
-//        double saldo = entidad.getSaldoAcumulado();
-//        // obtengo la lista de objetos pero filtrada
-//        List<DriverObjetoLinea> listaFiltradaOficina = lstDriverObjetoLinea.stream().filter(item -> oficinaCodigo.equals(item.getOficina().getCodigo())).collect(Collectors.toList());
-//        double totalSigNiveles = listaFiltradaOficina.stream().mapToDouble(f -> f.getPorcentaje()).sum();
-//        listaFiltradaOficina.forEach((item) -> {
-//            double saldoDestino = saldo*item.getPorcentaje()/totalSigNiveles;
-//            Oficina oficina = item.getOficina();
-//            Banca banca = item.getBanca();
-//            Producto producto = item.getProducto();
-//            if (oficina!=null && banca!=null && producto!=null) {
-//                objetoDAO.insertarDistribucionBatchObjetos(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino, repartoTipo);
-//                //objetoDAO.insertarDistribucion(oficina.getCodigo(), banca.getCodigo(), producto.getCodigo(), periodo, entidad.getCodigo(), saldoDestino);
-//            }
-//        });
-//    }
 }

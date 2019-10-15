@@ -322,12 +322,12 @@ public class ObjetoDAO {
         ConexionBD.ejecutar(queryStr);
     }
     
-    public void insertarDistribucionBatchObjetos(String productoCodigo, String subcanalCodigo, int periodo, String entidadOrigenCodigo, String driverCodigo, String grupoGasto, double saldo, int repartoTipo) {
+    public void insertarDistribucionBatchObjetos(String productoCodigo, String subcanalCodigo, int periodo, String entidadOrigenCodigo, String driverCodigo, String grupoGasto, double saldo, int repartoTipo, String cuentaOrigenCodigo, String partidaOrigenCodigo, String centroOrigenCodigo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format(Locale.US, "" +
-                "INSERT INTO objeto_lineas(producto_codigo,subcanal_codigo,periodo,entidad_origen_codigo,driver_codigo,grupo_gasto,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES('%s','%s',%d,'%s','%s','%s',%.8f,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
-                productoCodigo,subcanalCodigo,periodo,entidadOrigenCodigo,driverCodigo,grupoGasto,saldo,repartoTipo,fechaStr,fechaStr);
+                "INSERT INTO MS_objeto_lineas(producto_codigo,subcanal_codigo,periodo,entidad_origen_codigo,driver_codigo,grupo_gasto,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion,cuenta_contable_origen_codigo,partida_origen_codigo,centro_origen_codigo)\n" +
+                "VALUES('%s','%s',%d,'%s','%s','%s',%.15f,%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),'%s','%s','%s')",
+                productoCodigo,subcanalCodigo,periodo,entidadOrigenCodigo,driverCodigo,grupoGasto,saldo,repartoTipo,fechaStr,fechaStr,cuentaOrigenCodigo,partidaOrigenCodigo,centroOrigenCodigo);
         ConexionBD.agregarBatch(queryStr);
     }
 }

@@ -25,7 +25,7 @@ public class TrazabilidadServicio {
     }
     
     public void limpiarDatosPeriodo(int periodo){
-        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
+//        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
     }
 
     public void ingresarPorcentajesCentros(CentroDriver centroDriver, List<DriverLinea> lstDriverLinea, int periodo, int iter) {
