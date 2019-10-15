@@ -515,9 +515,9 @@ public class ReportingServicio {
                 String codigoEntidadOrigen = rs.getString("CODIGO_ENTIDAD_ORIGEN");
                 String nombreEntidadOrigen = rs.getString("NOMBRE_ENTIDAD_ORIGEN");
                 String grupoGasto = rs.getString("GRUPO_GASTO");
-                double saldo = rs.getDouble("SALDO");
-                String codigoCuentaContableOrigen = rs.getString("CODIGO_CUENTA_CONTABLE_ORIGEN");
-                String nombreCuentaContableOrigen = rs.getString("NOMBRE_CUENTA_CONTABLE_ORIGEN");
+                double saldo = rs.getDouble("MONTO");
+                String codigoCuentaContableOrigen = rs.getString("CODIGO_CUENTA_ORIGEN");
+                String nombreCuentaContableOrigen = rs.getString("NOMBRE_CUENTA_ORIGEN");
                 String codigoPartidaOrigen = rs.getString("CODIGO_PARTIDA_ORIGEN");
                 String nombrePartidaOrigen = rs.getString("NOMBRE_PARTIDA_ORIGEN");
                 String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
@@ -559,12 +559,12 @@ public class ReportingServicio {
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreCuentaContableOrigen);
                 // PARTIDA ORIGEN
-                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                
                 row.createCell(idxColumn++).setCellValue(codigoPartidaOrigen);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombrePartidaOrigen);
                 // CENTRO ORIGEN
-                row.getCell(idxColumn++).setCellStyle(decimalCellStyle);
+                
                 row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
