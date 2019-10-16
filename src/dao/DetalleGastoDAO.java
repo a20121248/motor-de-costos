@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -180,33 +181,33 @@ public class DetalleGastoDAO {
     }
 
     public void actualizarSaldoCentroPeriodo(int periodo, int repartoTipo) {
-        String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-        String queryStr = String.format("" +
-                "DELETE FROM MS_CENTRO_LINEAS\n" +
-                " WHERE PERIODO=%d AND ITERACION=-1 AND REPARTO_TIPO=%d",
-                periodo, repartoTipo);
-        ConexionBD.ejecutar(queryStr);
+        List<String> tablas = Arrays.asList("MS_CENTRO_LINEAS", "MS_CASCADA");
+        for (String tabla: tablas) {
+            String queryStr = String.format("" +
+                    "DELETE FROM %s\n" +
+                    " WHERE PERIODO=%d AND ITERACION=-1 AND REPARTO_TIPO=%d",
+                    tabla, periodo, repartoTipo);
+            ConexionBD.ejecutar(queryStr);
 
-        queryStr = String.format("" +
-                "INSERT INTO MS_CENTRO_LINEAS(PERIODO,CENTRO_CODIGO,ITERACION,SALDO,ENTIDAD_ORIGEN_CODIGO,GRUPO_GASTO,REPARTO_TIPO,CUENTA_CONTABLE_ORIGEN_CODIGO,PARTIDA_ORIGEN_CODIGO,CENTRO_ORIGEN_CODIGO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                "SELECT A.PERIODO,\n" +
-                "       A.CENTRO_CODIGO,\n" +
-                "       -1 ITERACION,\n" +
-                "       SUM(COALESCE(A.SALDO,0)) SALDO,\n" +
-                "       A.CENTRO_CODIGO ENTIDAD_ORIGEN_CODIGO,\n" + // el mismo centro de costos
-                "       B.GRUPO_GASTO,\n" +
-                "       A.REPARTO_TIPO REPARTO_TIPO,\n" +
-                "       A.CUENTA_CONTABLE_CODIGO CUENTA_CONTABLE_ORIGEN_CODIGO,\n" +
-                "       A.PARTIDA_CODIGO PARTIDA_ORIGEN_CODIGO,\n" +
-                "       A.CENTRO_CODIGO CENTRO_ORIGEN_CODIGO,\n" +
-                "       TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') FECHA_CREACION,\n" +
-                "       TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') FECHA_ACTUALIZACION\n" +
-                "  FROM MS_CUENTA_PARTIDA_CENTRO A\n" +
-                "  JOIN MS_PARTIDAS B ON B.CODIGO=A.partida_codigo\n" +
-                " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d\n" +
-                " GROUP BY A.PERIODO,A.CENTRO_CODIGO,B.GRUPO_GASTO,A.REPARTO_TIPO,A.CUENTA_CONTABLE_CODIGO,A.PARTIDA_CODIGO,A.CENTRO_CODIGO",
-                fechaStr, fechaStr, periodo, repartoTipo);
-        ConexionBD.ejecutar(queryStr);
+            queryStr = String.format("" +
+                    "INSERT INTO %s(PERIODO,CENTRO_CODIGO,ITERACION,SALDO,ENTIDAD_ORIGEN_CODIGO,GRUPO_GASTO,REPARTO_TIPO,CUENTA_CONTABLE_ORIGEN_CODIGO,PARTIDA_ORIGEN_CODIGO,CENTRO_ORIGEN_CODIGO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "SELECT A.PERIODO,\n" +
+                    "       A.CENTRO_CODIGO,\n" +
+                    "       -1 ITERACION,\n" +
+                    "       SUM(COALESCE(A.SALDO,0)) SALDO,\n" +
+                    "       A.CENTRO_CODIGO ENTIDAD_ORIGEN_CODIGO,\n" + // el mismo centro de costos
+                    "       B.GRUPO_GASTO,\n" +
+                    "       A.REPARTO_TIPO REPARTO_TIPO,\n" +
+                    "       A.CUENTA_CONTABLE_CODIGO CUENTA_CONTABLE_ORIGEN_CODIGO,\n" +
+                    "       A.PARTIDA_CODIGO PARTIDA_ORIGEN_CODIGO,\n" +
+                    "       A.CENTRO_CODIGO CENTRO_ORIGEN_CODIGO" +
+                    "  FROM MS_CUENTA_PARTIDA_CENTRO A\n" +
+                    "  JOIN MS_PARTIDAS B ON B.CODIGO=A.partida_codigo\n" +
+                    " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d\n" +
+                    " GROUP BY A.PERIODO,A.CENTRO_CODIGO,B.GRUPO_GASTO,A.REPARTO_TIPO,A.CUENTA_CONTABLE_CODIGO,A.PARTIDA_CODIGO,A.CENTRO_CODIGO",
+                    tabla, periodo, repartoTipo);
+            ConexionBD.ejecutar(queryStr);
+        }
     }
 
     public void limpiarSaldosAsociadosPeriodo(int periodo, int repartoTipo) {
