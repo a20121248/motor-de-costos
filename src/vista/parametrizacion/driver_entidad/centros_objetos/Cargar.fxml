@@ -94,7 +94,7 @@
                   <FontAwesomeIconView glyphName="REPLY" />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnSubir" onAction="#btnSubirAction" styleClass="btn" text="Atrás">
+            <JFXButton fx:id="btnSubir" onAction="#btnSubirAction" styleClass="btn" text="Subir">
                <graphic>
                   <FontAwesomeIconView glyphName="UPLOAD" />
                </graphic>

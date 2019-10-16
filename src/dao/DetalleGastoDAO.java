@@ -115,7 +115,7 @@ public class DetalleGastoDAO {
             for (Double monto: montos) {
                 String queryStr = String.format(Locale.US, "" +
                         "INSERT INTO MS_CUENTA_PARTIDA_CENTRO(CUENTA_CONTABLE_CODIGO,PARTIDA_CODIGO,CENTRO_CODIGO,REPARTO_TIPO,PERIODO,SALDO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
-                        "VALUES ('%s','%s','%s',%d,'%d',%.2f,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
+                        "VALUES ('%s','%s','%s',%d,'%d',%.4f,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
                         codigoCuentaContable,
                         codigoPartida,
                         codigoCentro,
