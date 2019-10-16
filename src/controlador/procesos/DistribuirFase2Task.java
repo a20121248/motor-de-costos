@@ -58,7 +58,7 @@ public class DistribuirFase2Task extends Task {
 //        ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
         updateProgress(centroI, maxNivel+1);
-        for (int iter=1; iter<=8; ++iter) {
+        for (int iter=1; iter<=maxNivel; ++iter) {
 //            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
 //            int i = 0;
 //            for (CentroDriver item: lstNivelI) {

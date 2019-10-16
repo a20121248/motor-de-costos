@@ -792,9 +792,10 @@ public class CentroDAO {
     
     public int maxNivelCascada(int periodo, int repartoTipo) {
         int cnt = 0;
+        periodo = repartoTipo == 1 ? periodo : (int)periodo/100 * 100;
         String queryStr = String.format("" +
                 "SELECT MAX(B.NIVEL) CNT\n" +
-                "  FROM ms_cuenta_partida_centro A \n" +
+                "  FROM ms_centro_lineas A \n" +
                 "  JOIN ms_centros B ON A.CENTRO_CODIGO = B.CODIGO AND a.periodo = '%d' AND a.reparto_tipo = '%d' AND (b.centro_tipo_codigo ='SOPORTE' OR b.centro_tipo_codigo ='STAFF')",
                 periodo, repartoTipo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
