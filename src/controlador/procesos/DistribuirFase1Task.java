@@ -63,27 +63,28 @@ public class DistribuirFase1Task extends Task {
     public Void call() {        
         principalControlador.ejecutandoFase1 = true;
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
-        List<CentroDriver> lista = centroDAO.listarCuentaPartidaCentroBolsaConDriverDistribuir(periodo,principalControlador.menuControlador.repartoTipo);
-        final int max = lista.size();
-        updateProgress(0, max+1);
-        ConexionBD.crearStatement();
-        ConexionBD.tamanhoBatchMax = 1000;
-        for (int i = 1; i <= max; ++i) {
-            // inicio logica
-            CentroDriver entidadOrigen = lista.get(i-1);
-            int periodoRT;
-            if(principalControlador.menuControlador.repartoTipo == 2) periodoRT = (int) periodo/100 * 100;
-            else  periodoRT = periodo;
-            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoRT, entidadOrigen.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
-            distribucionServicio.distribuirCentrosBolsas(entidadOrigen, lstDriverLinea, periodo, iteracion, principalControlador.menuControlador.repartoTipo);
-            principalControlador.piTotal.setProgress(i*progresoTotal/(max+1));
-            principalControlador.pbTotal.setProgress(i*progresoTotal/(max+1));
-            // fin logica
-            updateProgress(i, max+1);
-        }
-        // los posibles registros que no se hayan ejecutado
-        ConexionBD.ejecutarBatch();
-        ConexionBD.cerrarStatement();
+//        List<CentroDriver> lista = centroDAO.listarCuentaPartidaCentroBolsaConDriverDistribuir(periodo,principalControlador.menuControlador.repartoTipo);
+//        final int max = lista.size();
+        updateProgress(0, 1);
+//        ConexionBD.crearStatement();
+//        ConexionBD.tamanhoBatchMax = 1000;
+//        for (int i = 1; i <= max; ++i) {
+//            // inicio logica
+//            CentroDriver entidadOrigen = lista.get(i-1);
+//            int periodoRT;
+//            if(principalControlador.menuControlador.repartoTipo == 2) periodoRT = (int) periodo/100 * 100;
+//            else  periodoRT = periodo;
+//            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoRT, entidadOrigen.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+//            distribucionServicio.distribuirCentrosBolsas(entidadOrigen, lstDriverLinea, periodo, iteracion, principalControlador.menuControlador.repartoTipo);
+//            principalControlador.piTotal.setProgress(i*progresoTotal/(max+1));
+//            principalControlador.pbTotal.setProgress(i*progresoTotal/(max+1));
+//            // fin logica
+//            updateProgress(i, max+1);
+//        }
+//        // los posibles registros que no se hayan ejecutado
+//        ConexionBD.ejecutarBatch();
+//        ConexionBD.cerrarStatement();
+        centroDAO.insertarDistribucionBolsas(periodo, principalControlador.menuControlador.repartoTipo);
         
 //        String reporteNombre,rutaOrigen;        
 //        // Generar reportes
@@ -108,7 +109,7 @@ public class DistribuirFase1Task extends Task {
         principalControlador.piTotal.setProgress(progresoTotal);
         principalControlador.pbTotal.setProgress(progresoTotal);
 
-        updateProgress(max+1, max+1);
+        updateProgress(1, 1);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }

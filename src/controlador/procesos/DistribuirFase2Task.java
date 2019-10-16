@@ -5,6 +5,8 @@ import dao.CentroDAO;
 import dao.DriverDAO;
 import dao.ProcesosDAO;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
@@ -67,7 +69,9 @@ public class DistribuirFase2Task extends Task {
 //                i++;
 //            }
 //            ConexionBD.ejecutarBatch();
+//            System.out.println("iter "+iter+" : "+new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             centroDAO.insertarDistribucionCascadaPorNivel(iter, periodo, principalControlador.menuControlador.repartoTipo);
+            
             principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             // fin logica
