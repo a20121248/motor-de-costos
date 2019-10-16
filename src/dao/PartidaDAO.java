@@ -202,7 +202,6 @@ public class PartidaDAO {
                 "       A.codigo partida_codigo,\n" +
                 "       A.nombre partida_nombre,\n" +
                 "       NVL(C.saldo,0) partida_cuenta_contable_saldo,\n" +
-                "       NVL(C.es_bolsa,'-') es_bolsa,\n" +
                 "       A.fecha_creacion partida_fecha_creacion,\n" +
                 "       A.fecha_actualizacion partida_fecha_actualizacion\n" +
                 "  FROM MS_partidas A\n" +
@@ -218,13 +217,12 @@ public class PartidaDAO {
                 String cuentaContableNombre = rs.getString("cuenta_contable_nombre");
                 String partidaCodigo = rs.getString("partida_codigo");
                 String partidaNombre = rs.getString("partida_nombre");
-                String esBolsa = rs.getString("es_bolsa");
                 double Saldo = rs.getDouble("partida_cuenta_contable_saldo");
                 Date partidaFechaCreacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_creacion"));
                 Date partidaFechaActualizacion = new SimpleDateFormat("yyyy-MM-dd H:m:s").parse(rs.getString("partida_fecha_actualizacion"));
 
                 Tipo cuentaContable = new Tipo(cuentaContableCodigo, cuentaContableNombre, null);
-                Partida item = new Partida(partidaCodigo, partidaNombre, null, Saldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable, esBolsa);
+                Partida item = new Partida(partidaCodigo, partidaNombre, null, Saldo, partidaFechaCreacion, partidaFechaActualizacion, cuentaContable);
 
                 lista.add(item);
             }
@@ -456,30 +454,6 @@ public class PartidaDAO {
                 "DELETE FROM MS_partida_cuenta_contable\n" +
                 " WHERE partida_codigo='%s' AND periodo=%d AND reparto_tipo = %d",
                 partidaCodigo,periodo,repartoTipo);
-        return ConexionBD.ejecutar(queryStr);
-    }
-    
-    public int actualizarCuentaPartidaBolsa(Partida cuentaPartida , int periodo, int repartoTipo){
-        String estado=null;
-        switch (cuentaPartida.getEsBolsa()) {
-            case "SI":
-                estado = "NO";
-                break;
-            case "NO":
-                estado = "SI";
-                break;
-            case "-":
-                estado = "NO";
-                break;
-            default:
-                break;
-        }
-        
-        String queryStr = String.format("" +
-                "UPDATE MS_partida_cuenta_contable\n"
-                + " SET es_bolsa = '%s'" +
-                " WHERE partida_codigo='%s' AND cuenta_contable_codigo='%s' AND periodo=%d AND reparto_tipo=%d",
-                estado,cuentaPartida.getCodigo(),cuentaPartida.getCuentaContable().getCodigo(),periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
     
