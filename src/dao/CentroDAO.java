@@ -34,7 +34,7 @@ public class CentroDAO {
             "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
             "  LEFT JOIN MS_ENTIDAD_ORIGEN_DRIVER C ON A.REPARTO_TIPO=C.REPARTO_TIPO AND C.ENTIDAD_ORIGEN_CODIGO=A.CENTRO_CODIGO AND C.PERIODO=A.PERIODO\n" +
             "  LEFT JOIN MS_DRIVERS D ON C.DRIVER_CODIGO=D.CODIGO\n" +
-            " WHERE A.PERIODO ='%d' AND A.ITERACION=-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('STAFF','SOPORTE') AND C.DRIVER_CODIGO IS NULL",
+            " WHERE A.PERIODO =%d AND A.ITERACION=-2 AND A.REPARTO_TIPO=%d AND B.CENTRO_TIPO_CODIGO IN ('STAFF','SOPORTE') AND C.DRIVER_CODIGO IS NULL",
         periodo,repartoTipo);
         ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         int cnt = 0;
@@ -51,12 +51,12 @@ public class CentroDAO {
         periodo = repartoTipo == 1 ? periodo : (int)periodo/100 * 100;
         String queryStr = String.format("" +
             "SELECT COUNT(*) CNT\n" +
-        "  FROM MS_CENTRO_LINEAS A\n" +
-        "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
-        "  JOIN MS_GRUPO_GASTOS C ON 1=1\n" +
-        "  LEFT JOIN MS_OBJETO_DRIVER D ON A.REPARTO_TIPO=D.REPARTO_TIPO AND D.CENTRO_CODIGO=A.CENTRO_CODIGO AND D.PERIODO=A.PERIODO AND D.GRUPO_GASTO=C.CODIGO\n" +
-        "  LEFT JOIN MS_DRIVERS E ON E.CODIGO=D.DRIVER_CODIGO\n" +
-        " WHERE A.PERIODO='%d' AND A.ITERACION=-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('LINEA','CANAL','FICTICIO','PROYECTO','SALUD') AND D.DRIVER_CODIGO IS NULL",
+            "  FROM MS_CENTRO_LINEAS A\n" +
+            "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
+            "  JOIN MS_GRUPO_GASTOS C ON 1=1\n" +
+            "  LEFT JOIN MS_OBJETO_DRIVER D ON A.REPARTO_TIPO=D.REPARTO_TIPO AND D.CENTRO_CODIGO=A.CENTRO_CODIGO AND D.PERIODO=A.PERIODO AND D.GRUPO_GASTO=C.CODIGO\n" +
+            "  LEFT JOIN MS_DRIVERS E ON E.CODIGO=D.DRIVER_CODIGO\n" +
+            " WHERE A.PERIODO='%d' AND A.ITERACION=-2 AND A.REPARTO_TIPO='%d' AND B.CENTRO_TIPO_CODIGO IN ('LINEA','CANAL','FICTICIO','PROYECTO','SALUD') AND D.DRIVER_CODIGO IS NULL",
         periodo, repartoTipo);
         ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         int cnt = 0;
@@ -810,7 +810,7 @@ public class CentroDAO {
     
     public int borrarDistribuciones(int periodo, int iteracion, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE  FROM MS_CENTRO_LINEAS \n" +
+                "DELETE  FROM MS_Cascada \n" +
                 "       WHERE PERIODO =%d AND iteracion >= %d and reparto_tipo = %d",
                 periodo,iteracion,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
@@ -846,25 +846,27 @@ public class CentroDAO {
     public int insertarDistribucionBolsas(int periodo, int repartoTipo) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
-                "INSERT INTO MS_CENTRO_LINEAS \n" +
-                "(centro_codigo, periodo, iteracion, saldo, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, fecha_creacion, fecha_actualizacion)\n" +
-                "SELECT  d.entidad_destino_codigo,\n" +
-                "        a.periodo,\n" +
-                "        0 iteracion,\n" +
-                "        a.saldo * d.porcentaje/100.00 saldo,\n" +
-                "        a.centro_codigo,\n" +
-                "        a.grupo_gasto,\n" +
-                "        a.reparto_tipo,\n" +
-                "        a.cuenta_contable_origen_codigo,\n" +
-                "        a.partida_origen_codigo,\n" +
-                "        a.centro_origen_codigo,\n" +
-                "        sysdate,\n" +
-                "        sysdate\n" +
-                "  FROM MS_CENTRO_LINEAS A\n" +
-                "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
-                "  JOIN ms_bolsa_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.centro_codigo = a.centro_origen_codigo AND c.cuenta_contable_codigo = a.cuenta_contable_origen_codigo AND c.partida_codigo = a.partida_origen_codigo\n" +
-                "  JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
-                "WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo= %d ",
+                "INSERT INTO ms_CASCADA\n" +
+                "(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
+                "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, sum(monto)\n" +
+                "FROM (\n" +
+                "  SELECT  d.entidad_destino_codigo centro_codigo,\n" +
+                "          a.periodo periodo,\n" +
+                "          0 iteracion,\n" +
+                "          a.saldo * d.porcentaje/100.00 monto,\n" +
+                "          a.centro_codigo entidad_origen_codigo,\n" +
+                "          a.grupo_gasto grupo_gasto,\n" +
+                "          a.reparto_tipo reparto_tipo,\n" +
+                "          a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
+                "          a.partida_origen_codigo partida_origen_codigo,\n" +
+                "          a.centro_origen_codigo centro_origen_codigo\n" +
+                "    FROM MS_CASCADA A\n" +
+                "    JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
+                "    JOIN ms_bolsa_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.centro_codigo = a.centro_origen_codigo AND SUBSTR(c.cuenta_contable_codigo,1,3) = SUBSTR(a.cuenta_contable_codigo,1,3) AND SUBSTR(c.cuenta_contable_codigo,5,11) = SUBSTR(a.cuenta_contable_codigo,5,11) AND c.partida_codigo = a.partida_origen_codigo\n" +
+                "    JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
+                "  WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo=%d\n" +
+                ")\n" +
+                "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
                 periodoStr,periodoStr,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -872,25 +874,27 @@ public class CentroDAO {
     public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
-                "INSERT INTO MS_CENTRO_LINEAS \n" +
-                "(centro_codigo, periodo, iteracion, saldo, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, fecha_creacion, fecha_actualizacion)\n" +
-                "SELECT  d.entidad_destino_codigo,\n" +
-                "        a.periodo,\n" +
+                "INSERT INTO ms_CASCADA\n" +
+                "(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
+                "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, sum(monto)\n" +
+                "  FROM (\n" +
+                "    SELECT  d.entidad_destino_codigo centro_codigo,\n" +
+                "        a.periodo periodo,\n" +
                 "        b.nivel iteracion,\n" +
-                "        a.saldo * d.porcentaje/100.00 saldo,\n" +
-                "        a.centro_codigo,\n" +
-                "        a.grupo_gasto,\n" +
-                "        a.reparto_tipo,\n" +
-                "        a.cuenta_contable_origen_codigo,\n" +
-                "        a.partida_origen_codigo,\n" +
-                "        a.centro_origen_codigo,\n" +
-                "        sysdate,\n" +
-                "        sysdate\n" +
-                "  FROM MS_CENTRO_LINEAS A\n" +
+                "        a.saldo * d.porcentaje/100.00 monto,\n" +
+                "        a.centro_codigo entidad_origen_codigo,\n" +
+                "        a.grupo_gasto grupo_gasto,\n" +
+                "        a.reparto_tipo reparto_tipo,\n" +
+                "        a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
+                "        a.partida_origen_codigo partida_origen_codigo,\n" +
+                "        a.centro_origen_codigo centro_origen_codigo\n" +
+                "  FROM MS_cascada A\n" +
                 "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
                 "  JOIN ms_entidad_origen_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.entidad_origen_codigo = a.centro_codigo\n" +
                 "  JOIN ms_driver_lineas D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
-                "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo= %d AND B.NIVEL = %d ",
+                "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo=%d AND B.NIVEL = %d\n" +
+                "  )\n" +
+                "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
                 periodoStr,periodoStr,periodo,repartoTipo,iteracion);
         return ConexionBD.ejecutar(queryStr);
     }
