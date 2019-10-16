@@ -44,19 +44,21 @@ public class PrincipalControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // meses origen
-        cmbMesOrigen.getItems().addAll(menuControlador.lstMeses);
-        cmbMesOrigen.getSelectionModel().select(menuControlador.mesAnterior-1);
-        spAnhoOrigen.getValueFactory().setValue(menuControlador.anhoAnterior);
-        // meses destino
-        cmbMesDestino.getItems().addAll(menuControlador.lstMeses);
-        cmbMesDestino.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnhoDestino.getValueFactory().setValue(menuControlador.anhoActual);
-        
+
         if (menuControlador.repartoTipo == 2) {
-            //tpCentros.setText("CENTROS DE BENEFICIO");
-            //txtareaCentros.setText("- Esta sección permite el mantenimiento de los Centros de Beneficio.");
-            //tpObjetos.setText("OBJETOS DE BENEFICIO");
+            cmbMesDestino.setVisible(false);
+            cmbMesOrigen.setVisible(false);
+            spAnhoOrigen.getValueFactory().setValue(menuControlador.anhoActual-1);
+            spAnhoDestino.getValueFactory().setValue(menuControlador.anhoActual);
+        } else {
+            // meses origen
+            cmbMesOrigen.getItems().addAll(menuControlador.lstMeses);
+            cmbMesOrigen.getSelectionModel().select(menuControlador.mesAnterior-1);
+            spAnhoOrigen.getValueFactory().setValue(menuControlador.anhoAnterior);
+            // meses destino
+            cmbMesDestino.getItems().addAll(menuControlador.lstMeses);
+            cmbMesDestino.getSelectionModel().select(menuControlador.mesActual-1);
+            spAnhoDestino.getValueFactory().setValue(menuControlador.anhoActual);
         }
     }
     
@@ -116,9 +118,10 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnCopiarAction(ActionEvent event) {
-        int periodoOrigen = spAnhoOrigen.getValue()*100 + cmbMesOrigen.getSelectionModel().getSelectedIndex() + 1;
-        int periodoDestino = spAnhoDestino.getValue()*100 + cmbMesDestino.getSelectionModel().getSelectedIndex() + 1;
-        parametrizacionDAO.copiarParametrizacion(periodoOrigen, periodoDestino);
+        int periodoOrigen = menuControlador.repartoTipo == 1 ? spAnhoOrigen.getValue()*100 + cmbMesOrigen.getSelectionModel().getSelectedIndex() + 1:spAnhoOrigen.getValue()*100;
+        int periodoDestino = menuControlador.repartoTipo == 1 ? spAnhoDestino.getValue()*100 + cmbMesDestino.getSelectionModel().getSelectedIndex() + 1:spAnhoDestino.getValue()*100;
+        
+        parametrizacionDAO.copiarParametrizacion(periodoOrigen, periodoDestino, menuControlador.repartoTipo);
         menuControlador.navegador.mensajeInformativo("Parametrización", "Parametrización cargada correctamente.");
     }    
 }
