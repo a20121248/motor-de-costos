@@ -25,7 +25,7 @@ public class CargarExcelDAO {
     
     public double porcentajeTotalDriverCentro(String codigoDriver) {
         String queryStr = String.format("" +
-            "SELECT SUM(PORCENTAJE) PORCENTAJE_TOTAL\n" +
+            "SELECT COALESCE(SUM(PORCENTAJE),0) PORCENTAJE_TOTAL\n" +
             "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
             " WHERE A.DRIVER_CODIGO='%s'\n" +
             "GROUP BY a.DRIVER_CODIGO",codigoDriver);

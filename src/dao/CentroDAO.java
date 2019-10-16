@@ -810,7 +810,7 @@ public class CentroDAO {
     public int borrarDistribuciones(int periodo, int iteracion, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE  FROM MS_CENTRO_LINEAS \n" +
-                "       WHERE PERIODO ='%d' AND iteracion >= '%d' and reparto_tipo = '%d'",
+                "       WHERE PERIODO =%d AND iteracion >= %d and reparto_tipo = %d",
                 periodo,iteracion,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -841,6 +841,59 @@ public class CentroDAO {
                 centroCodigo, periodo, iteracion, saldo, entidadOrigenCodigo, cuentaContableOrigenCodigo, partidaOrigenCodigo, centroOrigenCodigo, grupoGasto, repartoTipo, fechaStr, fechaStr);
         ConexionBD.agregarBatch(queryStr);
     }
+    
+    public int insertarDistribucionBolsas(int periodo, int repartoTipo) {
+        String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
+        String queryStr = String.format(""+
+                "INSERT INTO MS_CENTRO_LINEAS \n" +
+                "(centro_codigo, periodo, iteracion, saldo, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, fecha_creacion, fecha_actualizacion)\n" +
+                "SELECT  d.entidad_destino_codigo,\n" +
+                "        a.periodo,\n" +
+                "        0 iteracion,\n" +
+                "        a.saldo * d.porcentaje/100.00 saldo,\n" +
+                "        a.centro_codigo,\n" +
+                "        a.grupo_gasto,\n" +
+                "        a.reparto_tipo,\n" +
+                "        a.cuenta_contable_origen_codigo,\n" +
+                "        a.partida_origen_codigo,\n" +
+                "        a.centro_origen_codigo,\n" +
+                "        sysdate,\n" +
+                "        sysdate\n" +
+                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
+                "  JOIN ms_bolsa_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.centro_codigo = a.centro_origen_codigo AND c.cuenta_contable_codigo = a.cuenta_contable_origen_codigo AND c.partida_codigo = a.partida_origen_codigo\n" +
+                "  JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
+                "WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo= %d ",
+                periodoStr,periodoStr,periodo,repartoTipo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo) {
+        String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
+        String queryStr = String.format(""+
+                "INSERT INTO MS_CENTRO_LINEAS \n" +
+                "(centro_codigo, periodo, iteracion, saldo, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, fecha_creacion, fecha_actualizacion)\n" +
+                "SELECT  d.entidad_destino_codigo,\n" +
+                "        a.periodo,\n" +
+                "        b.nivel iteracion,\n" +
+                "        a.saldo * d.porcentaje/100.00 saldo,\n" +
+                "        a.centro_codigo,\n" +
+                "        a.grupo_gasto,\n" +
+                "        a.reparto_tipo,\n" +
+                "        a.cuenta_contable_origen_codigo,\n" +
+                "        a.partida_origen_codigo,\n" +
+                "        a.centro_origen_codigo,\n" +
+                "        sysdate,\n" +
+                "        sysdate\n" +
+                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
+                "  JOIN ms_entidad_origen_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.entidad_origen_codigo = a.centro_codigo\n" +
+                "  JOIN ms_driver_lineas D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
+                "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo= %d AND B.NIVEL = %d ",
+                periodoStr,periodoStr,periodo,repartoTipo,iteracion);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
     public String convertirPalabraAbreviatura(String palabra){
         switch(palabra.toLowerCase()){
             case "sí":

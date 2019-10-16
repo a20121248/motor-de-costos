@@ -85,23 +85,23 @@ public class DistribuirFase1Task extends Task {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
         
-        String reporteNombre,rutaOrigen;        
-        // Generar reportes
-        if (principalControlador.menuControlador.repartoTipo == 1) {
-            principalControlador.lblMensajeFase1.setVisible(true);
-            
-            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Real";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            principalControlador.lblMensajeFase1.setVisible(false);
-        } else {
-            principalControlador.lblMensajeFase1.setVisible(true);
-            
-            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Presupuesto";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "presupuesto" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
-            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
-            principalControlador.lblMensajeFase1.setVisible(false);
-        }
+//        String reporteNombre,rutaOrigen;        
+//        // Generar reportes
+//        if (principalControlador.menuControlador.repartoTipo == 1) {
+//            principalControlador.lblMensajeFase1.setVisible(true);
+//            
+//            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Real";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//            principalControlador.lblMensajeFase1.setVisible(false);
+//        } else {
+//            principalControlador.lblMensajeFase1.setVisible(true);
+//            
+//            reporteNombre = "Reporte 01 - Distribución de Centros Bolsas Presupuesto";
+//            rutaOrigen = "." + File.separator + "reportes" + File.separator + "presupuesto" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
+//            reportingServicio.crearReporteBolsasOficinas(periodo, rutaOrigen, principalControlador.menuControlador.repartoTipo);
+//            principalControlador.lblMensajeFase1.setVisible(false);
+//        }
         // Fin generar reportes
         principalControlador.ejecutoFase1 = true;
         principalControlador.ejecutandoFase1 = false;
