@@ -54,28 +54,29 @@ public class DistribuirFase2Task extends Task {
         int numCentros = centroDAO.numeroCentrosCascada(periodo, principalControlador.menuControlador.repartoTipo);
         int maxNivel  =  centroDAO.maxNivelCascada(periodo, principalControlador.menuControlador.repartoTipo);
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
-        ConexionBD.crearStatement();
-        ConexionBD.tamanhoBatchMax = 1000;
+//        ConexionBD.crearStatement();
+//        ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
-        updateProgress(centroI, maxNivel);
+        updateProgress(centroI, maxNivel+1);
         for (int iter=1; iter<=maxNivel; ++iter) {
-            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
-            int i = 0;
-            for (CentroDriver item: lstNivelI) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
-                distribucionServicio.distribuirEntidadCascada(item, lstDriverLinea, periodo, iter,maxNivel, principalControlador.menuControlador.repartoTipo, i);
-                i++;
-            }
-            ConexionBD.ejecutarBatch();
+//            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
+//            int i = 0;
+//            for (CentroDriver item: lstNivelI) {
+//                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, item.getCodigoDriver(), principalControlador.menuControlador.repartoTipo);
+//                distribucionServicio.distribuirEntidadCascada(item, lstDriverLinea, periodo, iter,maxNivel, principalControlador.menuControlador.repartoTipo, i);
+//                i++;
+//            }
+//            ConexionBD.ejecutarBatch();
+            centroDAO.insertarDistribucionCascadaPorNivel(iter, periodo, principalControlador.menuControlador.repartoTipo);
             principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             // fin logica
-            updateProgress(++centroI, maxNivel);
+            updateProgress(++centroI, maxNivel+1);
         }        
 
-        // los posibles registros que no se hayan ejecutado
-        ConexionBD.ejecutarBatch();
-        ConexionBD.cerrarStatement();
+//        // los posibles registros que no se hayan ejecutado
+//        ConexionBD.ejecutarBatch();
+//        ConexionBD.cerrarStatement();
         
 //        for (int itera=1; itera<=maxNivel; ++itera) {
 //            List<CentroDriver> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, itera);
@@ -93,8 +94,8 @@ public class DistribuirFase2Task extends Task {
 //            }       
 //        }
         // Generar reportes
-        String reporteNombre,rutaOrigen;
-        principalControlador.lblMensajeFase2.setVisible(true);
+//        String reporteNombre,rutaOrigen;
+//        principalControlador.lblMensajeFase2.setVisible(true);
 //        if(principalControlador.menuControlador.repartoTipo ==1){
 //            reporteNombre = "Reporte 02 - Gasto Propio y Asignado de Centros de Costos - Real";
 //            rutaOrigen = "." + File.separator + "reportes" + File.separator + "real" + File.separator + periodo + File.separator + reporteNombre +".xlsx";
@@ -115,7 +116,7 @@ public class DistribuirFase2Task extends Task {
         principalControlador.ejecutandoFase2 = false;
         principalControlador.piTotal.setProgress(fase*progresoTotal);
         principalControlador.pbTotal.setProgress(fase*progresoTotal);
-        updateProgress(maxNivel, maxNivel);
+        updateProgress(maxNivel+1, maxNivel+1);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }
