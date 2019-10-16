@@ -12,93 +12,59 @@ public class ParametrizacionDAO {
         this.connection = new ConnectionDB();
     }
         
-    public void copiarCuentasContables(int periodoOrigen, int periodoDestino, String fechaStr) {
+    public void copiarCuentasContables(int periodoOrigen, int periodoDestino, String fechaStr, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM plan_de_cuenta_lineas\n" +
-                " WHERE periodo=%d",
-                periodoDestino);
+                "DELETE FROM MS_plan_de_cuenta_lineas\n" +
+                " WHERE periodo=%d AND reparto_tipo = %d",
+                periodoDestino,repartoTipo);
         ConexionBD.ejecutar(queryStr);
         
         queryStr = String.format("" +
-                    "INSERT INTO plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                    "SELECT plan_de_cuenta_codigo,%d periodo,0 saldo,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
-                    "  FROM plan_de_cuenta_lineas\n" +
-                    " WHERE periodo=%d",
+                    "INSERT INTO MS_plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "SELECT plan_de_cuenta_codigo,%d periodo,0 saldo,%d reparto_tipo, sysdate, sysdate \n" +
+                    "  FROM MS_plan_de_cuenta_lineas\n" +
+                    " WHERE periodo=%d and reparto_tipo=%d",
                     periodoDestino,
-                    fechaStr,
-                    fechaStr,
-                    periodoOrigen);
+                    repartoTipo,
+                    periodoOrigen,
+                    repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
-    public void copiarPartidas(int periodoOrigen, int periodoDestino, String fechaStr) {
+    public void copiarPartidas(int periodoOrigen, int periodoDestino, String fechaStr, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_lineas\n" +
-                " WHERE periodo=%d",
-                periodoDestino);
+                "DELETE FROM MS_partida_lineas\n" +
+                " WHERE periodo=%d AND reparto_tipo=%d",
+                periodoDestino, repartoTipo);
         ConexionBD.ejecutar(queryStr);
         
         queryStr = String.format("" +
-                    "INSERT INTO partida_lineas(partida_codigo,periodo,saldo,fecha_creacion,fecha_actualizacion)\n" +
-                    "SELECT partida_codigo,%d periodo,0 saldo,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
-                    "  FROM partida_lineas\n" +
-                    " WHERE periodo=%d",
+                    "INSERT INTO MS_partida_lineas(partida_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "SELECT partida_codigo,%d periodo,0 saldo,%d reparto_tipo,sysdate,sysdate\n" +
+                    "  FROM MS_partida_lineas\n" +
+                    " WHERE periodo=%d AND reparto_tipo=%d",
                     periodoDestino,
-                    fechaStr,
-                    fechaStr,
-                    periodoOrigen);
+                    repartoTipo,
+                    periodoOrigen,
+                    repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
     
-    public void copiarCuentaPartida(int periodoOrigen, int periodoDestino, String fechaStr) {
+    public void copiarCuentaPartida(int periodoOrigen, int periodoDestino, String fechaStr, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM partida_cuenta_contable\n" +
-                " WHERE periodo=%d",
-                periodoDestino);
+                "DELETE FROM MS_partida_cuenta_contable\n" +
+                " WHERE periodo=%d AND reparto_tipo=%d",
+                periodoDestino,repartoTipo);
         ConexionBD.ejecutar(queryStr);
         
         queryStr = String.format("" +
-                    "INSERT INTO partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,es_bolsa,fecha_creacion,fecha_actualizacion)\n" +
-                    "SELECT partida_codigo,cuenta_contable_codigo,%d periodo,0 saldo,'NO' es_bolsa,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
-                    "  FROM partida_cuenta_contable\n" +
-                    " WHERE periodo=%d",
+                    "INSERT INTO MS_partida_cuenta_contable(partida_codigo,cuenta_contable_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
+                    "SELECT partida_codigo,cuenta_contable_codigo,%d periodo,0 saldo,%d reparto_tipo,sysdate,sysdate\n" +
+                    "  FROM MS_partida_cuenta_contable\n" +
+                    " WHERE periodo=%d AND reparto_tipo=%d",
                     periodoDestino,
-                    fechaStr,
-                    fechaStr,
-                    periodoOrigen);
-        ConexionBD.ejecutar(queryStr);
-    }
-
-    public void copiarGrupoPlanDeCuentas(int periodoOrigen, int periodoDestino, String fechaStr) {
-        String queryStr = String.format("" +
-                "DELETE FROM grupo_lineas\n" +
-                " WHERE periodo=%d",
-                periodoDestino);
-        ConexionBD.ejecutar(queryStr);
-        
-        queryStr = String.format("" +
-                    "INSERT INTO GRUPO_LINEAS(GRUPO_CODIGO,PERIODO)\n" +
-                    "SELECT GRUPO_CODIGO,%d PERIODO\n" +
-                    "  FROM GRUPO_LINEAS\n" +
-                    " WHERE PERIODO=%d",
-                    periodoDestino,
-                    periodoOrigen);
-        ConexionBD.ejecutar(queryStr);
-        
-        queryStr = String.format("" +
-                "DELETE FROM GRUPO_PLAN_DE_CUENTA\n" +
-                " WHERE PERIODO=%d",
-                periodoDestino);
-        ConexionBD.ejecutar(queryStr);
-        
-        queryStr = String.format("" +
-                    "INSERT INTO grupo_plan_de_cuenta(grupo_codigo,plan_de_cuenta_codigo,periodo,fecha_creacion,fecha_actualizacion)\n" +
-                    "SELECT grupo_codigo,plan_de_cuenta_codigo,%d periodo,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_creacion,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss') fecha_actualizacion\n" +
-                    "  FROM grupo_plan_de_cuenta\n" +
-                    " WHERE periodo=%d",
-                    periodoDestino,
-                    fechaStr,
-                    fechaStr,
-                    periodoOrigen);
+                    repartoTipo,
+                    periodoOrigen,
+                    repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
     
@@ -233,29 +199,27 @@ public class ParametrizacionDAO {
         ConexionBD.ejecutar(queryStr);
     }
     
-    public void copiarParametrizacion(int periodoOrigen, int periodoDestino) {
+    public void copiarParametrizacion(int periodoOrigen, int periodoDestino, int repartoTipo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         // copiar las Cuentas Contables
-        copiarCuentasContables(periodoOrigen, periodoDestino, fechaStr);
+        copiarCuentasContables(periodoOrigen, periodoDestino, fechaStr, repartoTipo);
         // copiar las Partidas
-        copiarPartidas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar los grupos x plan de cuentas
-        copiarGrupoPlanDeCuentas(periodoOrigen, periodoDestino, fechaStr);
+        copiarPartidas(periodoOrigen, periodoDestino, fechaStr, repartoTipo);
         // copiar las Asignaciones de Cuenta - Partida
-        copiarCuentaPartida(periodoOrigen, periodoDestino, fechaStr);
-        // copiar los centros de costos
-        copiarCentroLineas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar las oficinas
-        copiarOficinas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar las bancas
-        copiarBancas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar lor productos
-        copiarProductos(periodoOrigen, periodoDestino, fechaStr);
-        // copiar los drivers centro lineas
-        copiarDriverCentroLineas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar los drivers centro lineas
-        copiarDriverObjetoLineas(periodoOrigen, periodoDestino, fechaStr);
-        // copiar los asginacion drivers x entidades
-        copiarDriverAsignacionEntidades(periodoOrigen, periodoDestino, fechaStr);
+        copiarCuentaPartida(periodoOrigen, periodoDestino, fechaStr, repartoTipo);
+//        // copiar los centros de costos
+//        copiarCentroLineas(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar las oficinas
+//        copiarOficinas(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar las bancas
+//        copiarBancas(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar lor productos
+//        copiarProductos(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar los drivers centro lineas
+//        copiarDriverCentroLineas(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar los drivers centro lineas
+//        copiarDriverObjetoLineas(periodoOrigen, periodoDestino, fechaStr);
+//        // copiar los asginacion drivers x entidades
+//        copiarDriverAsignacionEntidades(periodoOrigen, periodoDestino, fechaStr);
     }
 }
