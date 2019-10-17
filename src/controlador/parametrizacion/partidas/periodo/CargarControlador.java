@@ -252,7 +252,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         for (CargarObjetoPeriodoLinea item: tabListar.getItems()) {
             if(item.getFlagCargar()){
-                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
+                menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR.getDireccion());
             } else {
                 findError = true;
             }
