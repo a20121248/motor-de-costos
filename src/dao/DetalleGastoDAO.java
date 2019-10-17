@@ -190,7 +190,7 @@ public class DetalleGastoDAO {
             ConexionBD.ejecutar(queryStr);
 
             queryStr = String.format("" +
-                    "INSERT INTO %s(PERIODO,CENTRO_CODIGO,ITERACION,SALDO,ENTIDAD_ORIGEN_CODIGO,GRUPO_GASTO,REPARTO_TIPO,CUENTA_CONTABLE_ORIGEN_CODIGO,PARTIDA_ORIGEN_CODIGO,CENTRO_ORIGEN_CODIGO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
+                    "INSERT INTO %s(PERIODO,CENTRO_CODIGO,ITERACION,SALDO,ENTIDAD_ORIGEN_CODIGO,GRUPO_GASTO,REPARTO_TIPO,CUENTA_CONTABLE_ORIGEN_CODIGO,PARTIDA_ORIGEN_CODIGO,CENTRO_ORIGEN_CODIGO)\n" +
                     "SELECT A.PERIODO,\n" +
                     "       A.CENTRO_CODIGO,\n" +
                     "       -1 ITERACION,\n" +
@@ -200,7 +200,7 @@ public class DetalleGastoDAO {
                     "       A.REPARTO_TIPO REPARTO_TIPO,\n" +
                     "       A.CUENTA_CONTABLE_CODIGO CUENTA_CONTABLE_ORIGEN_CODIGO,\n" +
                     "       A.PARTIDA_CODIGO PARTIDA_ORIGEN_CODIGO,\n" +
-                    "       A.CENTRO_CODIGO CENTRO_ORIGEN_CODIGO" +
+                    "       A.CENTRO_CODIGO CENTRO_ORIGEN_CODIGO\n" +
                     "  FROM MS_CUENTA_PARTIDA_CENTRO A\n" +
                     "  JOIN MS_PARTIDAS B ON B.CODIGO=A.partida_codigo\n" +
                     " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d\n" +
