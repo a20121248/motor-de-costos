@@ -899,6 +899,33 @@ public class CentroDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
+    public int insertarDistribucionCentrosObjetosCosto(int periodo, int repartoTipo) {
+        String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
+        String queryStr = String.format(""+
+                "INSERT INTO MS_OBJETO_LINEAS\n" +
+                "(subcanal_codigo,producto_codigo,periodo,entidad_origen_codigo,saldo,cuenta_contable_origen_codigo,partida_origen_codigo,centro_origen_codigo,reparto_tipo,grupo_gasto,driver_codigo,fecha_creacion,fecha_actualizacion)\n" +
+                "SELECT  d.subcanal_codigo,\n" +
+                "        d.producto_codigo,\n" +
+                "        a.periodo,\n" +
+                "        a.centro_codigo,\n" +
+                "        a.saldo * d.porcentaje /100.00,\n" +
+                "        a.cuenta_contable_origen_codigo,\n" +
+                "        a.partida_origen_codigo,\n" +
+                "        a.centro_origen_codigo,\n" +
+                "        a.reparto_tipo,\n" +
+                "        a.grupo_gasto,\n" +
+                "        c.driver_codigo,\n" +
+                "        sysdate,\n" +
+                "        sysdate\n" +
+                "  FROM MS_CASCADA A\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
+                "  JOIN MS_OBJETO_DRIVER C ON C.CENTRO_CODIGO = A.CENTRO_CODIGO AND c.periodo = %s AND c.reparto_tipo = a.reparto_tipo AND c.grupo_gasto = a.grupo_gasto\n" +
+                "  JOIN MS_DRIVER_OBJETO_LINEAS D ON d.driver_codigo = c.driver_codigo AND d.periodo = %s AND d.reparto_tipo = a.reparto_tipo\n" +
+                "  WHERE a.periodo =%d AND a.reparto_tipo =%d",
+                periodoStr,periodoStr,periodo,repartoTipo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
     public String convertirPalabraAbreviatura(String palabra){
         switch(palabra.toLowerCase()){
             case "sí":
