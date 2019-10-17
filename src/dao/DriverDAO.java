@@ -440,7 +440,7 @@ public class DriverDAO {
                 "                    WHEN E.CODIGO IS NOT NULL THEN 0\n" +
                 "                  END) estado \n" +
                 "          FROM ms_entidad_origen_driver A\n" +
-                "          JOIN ms_centro_lineas B on %s = a.periodo and b.reparto_tipo = a.reparto_tipo and a.entidad_origen_codigo = b.centro_codigo and and b.iteracion = -2\n" +
+                "          JOIN ms_centro_lineas B on %s = a.periodo and b.reparto_tipo = a.reparto_tipo and a.entidad_origen_codigo = b.centro_codigo and b.iteracion = -2\n" +
                 "          JOIN ms_centros C ON a.entidad_origen_codigo = C.CODIGO\n" +
                 "        LEFT JOIN ms_driver_lineas D ON d.driver_codigo = a.driver_codigo and d.periodo = a.periodo and b.reparto_tipo = a.reparto_tipo\n" +
                 "        LEFT JOIN ms_centros E ON d.entidad_destino_codigo = E.CODIGO AND E.NIVEL > C.NIVEL\n" +
