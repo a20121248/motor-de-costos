@@ -10,29 +10,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProcesosDAO {    
-   public void updateCierreProceso(int periodo, int repartoTipo, int value) {   
+    public void updateCierreProceso(int periodo, int repartoTipo, int value) {   
         String queryStr = String.format("" +
-                "UPDATE MS_cierre_estado\n" +
-                "   SET estado = %d" +
-                " WHERE periodo=%d AND reparto_tipo=%d",
-                ((value + 1)%2), periodo, repartoTipo);
+            "UPDATE MS_cierre_proceso\n" +
+            "   SET estado = %d" +
+            " WHERE periodo=%d AND reparto_tipo=%d",
+            ((value + 1)%2), periodo, repartoTipo);
+        ConexionBD.ejecutar(queryStr);
+    }
+
+    public void insertarCierreProceso(int periodo, int repartoTipo, int value) {        
+        String queryStr = String.format("" +
+            "INSERT INTO MS_cierre_proceso(periodo,reparto_tipo,estado)\n" +
+            "VALUES(%d,%d,%d)",
+            periodo,repartoTipo,value);
         ConexionBD.ejecutar(queryStr);
     }
    
-   public void insertarCierreProceso(int periodo, int repartoTipo, int value) {        
+    public int obtenerEstadoProceso(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "INSERT INTO MS_cierre_estado(periodo,reparto_tipo,estado)\n" +
-                "VALUES(%d,%d,%d)",
-                periodo,repartoTipo,value);
-        ConexionBD.ejecutar(queryStr);
-    }
-   
-   public int obtenerEstadoProceso(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
-                "SELECT estado\n" +
-                "  FROM MS_cierre_estado\n" +
-                " WHERE periodo=%d AND reparto_tipo=%d",
-                periodo,repartoTipo);
+            "SELECT estado\n" +
+            "  FROM MS_cierre_proceso\n" +
+            " WHERE periodo=%d AND reparto_tipo=%d",
+            periodo,repartoTipo);
         int estado = 0;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next())
