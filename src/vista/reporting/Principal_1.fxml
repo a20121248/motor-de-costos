@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.CheckComboBox?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" styleClass="page-heading" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label layoutX="21.0" layoutY="11.0" text="Reporting" textFill="#676a6c">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" prefWidth="710.0" spacing="4.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <Hyperlink fx:id="lnkInicio" onAction="#lnkInicioAction" text="Inicio" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkReporting" onAction="#lnkReportingAction" text="Reporting" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Hyperlink>
+                  <Label text="/" textFill="#676a6c">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <Hyperlink fx:id="lnkControl" onAction="#lnkControlAction" text="Control" textFill="#676a6c">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0" />
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+         </children>
+      </HBox>
+      <GridPane alignment="CENTER" layoutX="330.0" layoutY="120.0" prefHeight="300.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TitledPane animated="false" collapsible="false" prefHeight="200.0" text="REPORTE 1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <JFXButton fx:id="btnReporte1" onAction="#btnReporte1Action" styleClass="btn" text="Generar">
+                                 <graphic>
+                                    <FontAwesomeIconView glyphName="GEAR" />
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                        <Label layoutX="36.0" layoutY="14.0" text="Distribución de centros de costos de tipo bolsa y oficina." wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </TitledPane>
+            <TitledPane animated="false" collapsible="false" prefHeight="200.0" text="REPORTE 2" GridPane.columnIndex="1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <JFXButton fx:id="btnReporte2" onAction="#btnReporte2Action" styleClass="btn" text="Generar">
+                                 <graphic>
+                                    <FontAwesomeIconView glyphName="GEAR" />
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                        <Label layoutX="14.0" layoutY="6.0" text="Distribución entre centros de costos por cascada" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </AnchorPane>
+               </content>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </TitledPane>
+            <TitledPane animated="false" collapsible="false" prefHeight="200.0" text="REPORTE 3" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <JFXButton fx:id="btnReporte3" onAction="#btnReporte3Action" styleClass="btn" text="Generar">
+                                 <graphic>
+                                    <FontAwesomeIconView glyphName="GEAR" />
+                                 </graphic>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                        <Label layoutX="64.0" layoutY="6.0" text="Distribución de centros de costos a objetos de costos." wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <HBox alignment="CENTER_LEFT" layoutY="48.0" spacing="10.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+                           <children>
+                              <Label text="Líneas:" />
+                              <CheckComboBox fx:id="cmbReporte3" prefWidth="150.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </TitledPane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
