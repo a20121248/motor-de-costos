@@ -650,17 +650,30 @@ public class ReportingServicio {
     }
     
     public void crearReporteTrazabilidad(){
+        
+    }
+    
+    public boolean existeInformacionReporteBolsasOficinas(int periodo, int repartoTipo) {
+        return reportingDAO.existeInformacionReporteBolsasOficinas(periodo, repartoTipo);
+    }
+    
+    public boolean existeInformacionReporteCascada(int periodo, int repartoTipo) {
+        return reportingDAO.existeInformacionReporteCascada(periodo, repartoTipo);
+    }
+    
+    public boolean existeInformacionReporteObjetos(int periodo, int repartoTipo) {
+        return reportingDAO.existeInformacionReporteObjetos(periodo, repartoTipo);
     }
     
     public void generarReporteBolsasOficinas(int periodo, int repartoTipo) {
-        
+        reportingDAO.generarReporteBolsasOficinas(periodo, repartoTipo);
     }
     
     public void generarReporteCascada(int periodo, int repartoTipo) {
-        
+        reportingDAO.generarReporteCascada(periodo, repartoTipo);
     }
     
     public void generarReporteObjetos(int periodo, int repartoTipo) {
-        
+        reportingDAO.generarReporteObjetos(periodo, repartoTipo);
     }
 }
