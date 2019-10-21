@@ -651,4 +651,16 @@ public class ReportingServicio {
     
     public void crearReporteTrazabilidad(){
     }
+    
+    public void generarReporteBolsasOficinas(int periodo, int repartoTipo) {
+        
+    }
+    
+    public void generarReporteCascada(int periodo, int repartoTipo) {
+        
+    }
+    
+    public void generarReporteObjetos(int periodo, int repartoTipo) {
+        
+    }
 }

@@ -269,5 +269,34 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
-    
+    public void execute_report_error(String title, String detail){
+        String mensaje = String.format("Se ejecutó el reporte %s\n\n", title);
+        mensaje += detail;
+        TextArea textArea = new TextArea(mensaje);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxWidth(Double.MAX_VALUE);
+        gridPane.add(textArea, 0, 0);
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.getDialogPane().setContent(gridPane);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    public void execute_report_success(String title, String mensaje){
+        TextArea textArea = new TextArea(mensaje);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxWidth(Double.MAX_VALUE);
+        gridPane.add(textArea, 0, 0);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.getDialogPane().setContent(gridPane);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

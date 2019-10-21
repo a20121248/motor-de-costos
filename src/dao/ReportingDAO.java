@@ -46,16 +46,16 @@ public class ReportingDAO {
         String queryStr = String.format(""+
                 "SELECT A.PERIODO,\n" +
                 "       A.ITERACION,\n" +
+                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CODIGO_CUENTA_INICIAL,\n" +
+                "       C.NOMBRE NOMBRE_CUENTA_INICIAL,\n" +
+                "       A.PARTIDA_ORIGEN_CODIGO CODIGO_PARTIDA_INICIAL,\n" +
+                "       D.NOMBRE NOMBRE_PARTIDA_INICIAL,\n" +
+                "       A.CENTRO_ORIGEN_CODIGO CODIGO_CENTRO_INICIAL,\n" +
+                "       E.NOMBRE NOMBRE_CENTRO_INICIAL,\n" +
+                "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_CENTRO_ORIGEN,\n" +
+                "       COALESCE(F.NOMBRE,'N/A') NOMBRE_CENTRO_ORIGEN,\n" +
                 "       A.CENTRO_CODIGO CODIGO_CENTRO_DESTINO,\n" +
                 "       B.NOMBRE NOMBRE_CENTRO_DESTINO,\n" +
-                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CODIGO_CUENTA_ORIGEN,\n" +
-                "       C.NOMBRE NOMBRE_CUENTA_ORIGEN,\n" +
-                "       A.PARTIDA_ORIGEN_CODIGO CODIGO_PARTIDA_ORIGEN,\n" +
-                "       D.NOMBRE NOMBRE_PARTIDA_ORIGEN,\n" +
-                "       A.CENTRO_ORIGEN_CODIGO CODIGO_CENTRO_ORIGEN,\n" +
-                "       E.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
-                "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_ENTIDAD_ORIGEN,\n" +
-                "       COALESCE(F.NOMBRE,'N/A') NOMBRE_ENTIDAD_ORIGEN,\n" +
                 "       A.SALDO MONTO,\n" +
                 "       COALESCE(G.DRIVER_CODIGO,I.DRIVER_CODIGO,'N/A') CODIGO_DRIVER,\n" +
                 "       COALESCE(H.NOMBRE,J.NOMBRE,'N/A') NOMBRE_DRIVER\n" +
@@ -479,6 +479,12 @@ public class ReportingDAO {
         String periodoStr = repartoTipo == 1 ? "A.PERIODO" : "TRUNC(A.PERIODO/100)*100";
         String queryStr = String.format("" +
                 "SELECT A.PERIODO,\n" +
+                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CODIGO_CUENTA_INICIAL,\n" +
+                "       G.NOMBRE NOMBRE_CUENTA_INICIAL,\n" +
+                "       A.PARTIDA_ORIGEN_CODIGO CODIGO_PARTIDA_INICIAL,\n" +
+                "       H.NOMBRE NOMBRE_PARTIDA_INICIAL,\n" +
+                "       A.CENTRO_ORIGEN_CODIGO CODIGO_CENTRO_INICIAL,\n" +
+                "       I.NOMBRE NOMBRE_CENTRO_INICIAL,\n" +
                 "       A.PRODUCTO_CODIGO CODIGO_PRODUCTO,\n" +
                 "       B.NOMBRE NOMBRE_PRODUCTO,\n" +
                 "       COALESCE(J2.CODIGO,'N/A') CODIGO_LINEA,\n" +
@@ -487,16 +493,10 @@ public class ReportingDAO {
                 "       C.NOMBRE NOMBRE_SUBCANAL,\n" +
                 "       COALESCE(K2.CODIGO,'N/A') CODIGO_CANAL,\n" +
                 "       COALESCE(K2.NOMBRE,'N/A') NOMBRE_CANAL,\n" +
-                "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_ENTIDAD_ORIGEN,\n" +
-                "       COALESCE(D.NOMBRE,'N/A') NOMBRE_ENTIDAD_ORIGEN,\n" +
+                "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_CENTRO_ORIGEN,\n" +
+                "       COALESCE(D.NOMBRE,'N/A') NOMBRE_CENTRO_ORIGEN,\n" +
                 "       E.NOMBRE GRUPO_GASTO,\n" +
                 "       A.SALDO MONTO,\n" +
-                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CODIGO_CUENTA_ORIGEN,\n" +
-                "       G.NOMBRE NOMBRE_CUENTA_ORIGEN,\n" +
-                "       A.PARTIDA_ORIGEN_CODIGO CODIGO_PARTIDA_ORIGEN,\n" +
-                "       H.NOMBRE NOMBRE_PARTIDA_ORIGEN,\n" +
-                "       A.CENTRO_ORIGEN_CODIGO CODIGO_CENTRO_ORIGEN,\n" +
-                "       I.NOMBRE NOMBRE_CENTRO_ORIGEN,\n" +
                 "       A.DRIVER_CODIGO CODIGO_DRIVER,\n" +
                 "       F.NOMBRE NOMBRE_DRIVER\n" +
                 "  FROM MS_OBJETO_LINEAS A\n" +
@@ -560,5 +560,23 @@ public class ReportingDAO {
         return ConexionBD.ejecutarQuery("SELECT * FROM TP_OFICINAS_OC_2");
     }
     
+    public boolean existeInformacionReporteBolsasOficinas(int periodo, int repartoTipo) throws SQLException {
+        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_BOLSAS_OFICINAS");
+    }
     
+    public boolean existeInformacionReporteCascada(int periodo, int repartoTipo) throws SQLException {
+        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_CASCADA");
+    }
+    
+    public boolean existeInformacionReporteObjetos(int periodo, int repartoTipo) throws SQLException {
+        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_OBJETOS");
+    }
+    
+    public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, String tabla) throws SQLException {
+        String queryStr = String.format("SELECT COUNT(1) CNT FROM MS_REPORTE_BOLSAS_OFICINAS PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo);
+        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+        while(rs.next())
+            return rs.getInt("CNT") == 1;
+        return false;
+    }
 }
