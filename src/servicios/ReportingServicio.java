@@ -585,7 +585,7 @@ public class ReportingServicio {
     }
     
     public void crearReporteGastosOperacionesDeCambio(int periodo, String ruta) {
-        try {            
+        try {
             SXSSFWorkbook wb = new SXSSFWorkbook(-1);
             SXSSFSheet sh;
             int rowNum;

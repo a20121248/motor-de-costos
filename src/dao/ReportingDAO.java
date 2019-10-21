@@ -560,23 +560,27 @@ public class ReportingDAO {
         return ConexionBD.ejecutarQuery("SELECT * FROM TP_OFICINAS_OC_2");
     }
     
-    public boolean existeInformacionReporteBolsasOficinas(int periodo, int repartoTipo) throws SQLException {
+    public boolean existeInformacionReporteBolsasOficinas(int periodo, int repartoTipo) {
         return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_BOLSAS_OFICINAS");
     }
     
-    public boolean existeInformacionReporteCascada(int periodo, int repartoTipo) throws SQLException {
+    public boolean existeInformacionReporteCascada(int periodo, int repartoTipo)  {
         return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_CASCADA");
     }
     
-    public boolean existeInformacionReporteObjetos(int periodo, int repartoTipo) throws SQLException {
+    public boolean existeInformacionReporteObjetos(int periodo, int repartoTipo) {
         return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_OBJETOS");
     }
     
-    public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, String tabla) throws SQLException {
-        String queryStr = String.format("SELECT COUNT(1) CNT FROM MS_REPORTE_BOLSAS_OFICINAS PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo);
-        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
-        while(rs.next())
-            return rs.getInt("CNT") == 1;
+    public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, String tabla) {
+        try {
+            String queryStr = String.format("SELECT COUNT(1) CNT FROM %s PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo, tabla);
+            ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+            while(rs.next())
+                return rs.getInt("CNT") == 1;
+        } catch (SQLException ex) {
+            
+        }
         return false;
     }
 }
