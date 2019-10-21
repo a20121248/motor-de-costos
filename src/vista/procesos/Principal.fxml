@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
@@ -49,11 +50,7 @@
             </HBox>
          </children>
       </AnchorPane>
-      <JFXButton fx:id="btnGenerarTraza" layoutX="599.0" layoutY="120.0" onAction="#btnGenerarTrazaAction" styleClass="btn" text="GenerarTraza" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
-         </graphic>
-      </JFXButton>
+      <JFXCheckBox fx:id="cbCierreProceso" layoutX="597.0" layoutY="124.0" onAction="#cbCierreProcesoAction" text="Cierre de proceso" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="124.0" />
       <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
       <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
       <Spinner fx:id="spAnho" layoutX="232.0" layoutY="120.0" prefWidth="74" AnchorPane.topAnchor="120.0">
@@ -85,7 +82,7 @@
                            </font>
                         </Label>
                         <Label text="Distribuir Grupos de Cuentas Contables a Centros de Costos" GridPane.columnIndex="1" />
-                        <JFXButton onAction="#btnFase1Action" GridPane.columnIndex="2">
+                        <JFXButton fx:id="btnFase1" onAction="#btnFase1Action" GridPane.columnIndex="2">
                            <graphic>
                               <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
                            </graphic>
@@ -115,7 +112,7 @@
                            </font>
                         </Label>
                         <Label text="Distribuir Centros de Costos de Staff (Cascada)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <JFXButton onAction="#btnFase2Action" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <JFXButton fx:id="btnFase2" onAction="#btnFase2Action" GridPane.columnIndex="2" GridPane.rowIndex="1">
                            <graphic>
                               <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
                            </graphic>
@@ -145,7 +142,7 @@
                            </font>
                         </Label>
                         <Label text="Distribuir Centros de Costos a Objetos de Costos" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <JFXButton onAction="#btnFase3Action" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                        <JFXButton fx:id="btnFase3" onAction="#btnFase3Action" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <graphic>
                               <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
                            </graphic>

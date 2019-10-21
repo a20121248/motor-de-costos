@@ -15,7 +15,7 @@ public class ProcesosDAO {
             "UPDATE MS_cierre_proceso\n" +
             "   SET estado = %d" +
             " WHERE periodo=%d AND reparto_tipo=%d",
-            ((value + 1)%2), periodo, repartoTipo);
+            value, periodo, repartoTipo);
         ConexionBD.ejecutar(queryStr);
     }
 
@@ -33,7 +33,7 @@ public class ProcesosDAO {
             "  FROM MS_cierre_proceso\n" +
             " WHERE periodo=%d AND reparto_tipo=%d",
             periodo,repartoTipo);
-        int estado = 0;
+        int estado = -1;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next())
                 estado = rs.getInt("estado");
@@ -41,7 +41,7 @@ public class ProcesosDAO {
             Logger.getLogger(ProcesosDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return estado;
-    }
+    }    
    
    public void insertarEjecucionIni(int periodo, int fase, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
