@@ -101,7 +101,18 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnReporte1Action(ActionEvent event) throws IOException {
-        String reporteNombre;
+        String mensaje = String.format("" +
+                "El resultado del reporte se ha guardado en la tabla '%s'.\n\nPara acceder a la información, considerar lo siguiente:\n" +
+                "- Utilizar los filtros de PERIODO=%d y REPARTO_TIPO=%d en dicha tabla.\n" +
+                "- Para mayor velocidad, se puede acceder directamente a la partición 'P_%d'.",
+                "MS_REPORTE_BOLSAS_OFICINAS", periodoSeleccionado, menuControlador.repartoTipo, periodoSeleccionado
+        );
+        reportingServicio.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+        menuControlador.mensaje.execute_report_success("Distribución de bolsas y oficinas", mensaje);
+        
+        
+        //menuControlador.mensaje.execute_report_error("Reporte de distribución de bolsas y oficinas", mensaje);
+        /*String reporteNombre;
         String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
         String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + periodoSeleccionado;
         Navegador.crearCarpeta(rutaOrigen);//TODO, quitar el static para rendimiento
@@ -119,10 +130,20 @@ public class PrincipalControlador implements Initializable {
             Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
             menuControlador.navegador.mensajeInformativo(reporteNombre,"Descarga completa.");
-        }
+        }*/
     }
     
     @FXML void btnReporte2Action(ActionEvent event) throws IOException {
+        String mensaje = String.format("" +
+                "El resultado del reporte se ha guardado en la tabla '%s'.\n\nPara acceder a la información, considerar lo siguiente:\n" +
+                "- Utilizar los filtros de PERIODO=%d y REPARTO_TIPO=%d en dicha tabla.\n" +
+                "- Para mayor velocidad, se puede acceder directamente a la partición 'P_%d'.",
+                "MS_REPORTE_CASCADA", periodoSeleccionado, menuControlador.repartoTipo, periodoSeleccionado
+        );
+        reportingServicio.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+        menuControlador.mensaje.execute_report_success("Distribución de cascada de centros de costos", mensaje);
+        
+        /*
         String reporteNombre;
         String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
         String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + periodoSeleccionado;
@@ -142,9 +163,20 @@ public class PrincipalControlador implements Initializable {
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
             menuControlador.navegador.mensajeInformativo(reporteNombre,"Descarga completa.");
         }
+        */
     }
     
     @FXML void btnReporte3Action(ActionEvent event) throws IOException {
+        String mensaje = String.format("" +
+                "El resultado del reporte se ha guardado en la tabla '%s'.\n\nPara acceder a la información, considerar lo siguiente:\n" +
+                "- Utilizar los filtros de PERIODO=%d y REPARTO_TIPO=%d en dicha tabla.\n" +
+                "- Para mayor velocidad, se puede acceder directamente a la partición 'P_%d'.",
+                "MS_REPORTE_OBJETOS", periodoSeleccionado, menuControlador.repartoTipo, periodoSeleccionado
+        );
+        reportingServicio.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+        menuControlador.mensaje.execute_report_success("Distribución de cascada de centros de costos", mensaje);
+        
+        /*
         String reporteNombre;
         String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
         String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + periodoSeleccionado;
@@ -164,5 +196,6 @@ public class PrincipalControlador implements Initializable {
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
             menuControlador.navegador.mensajeInformativo(reporteNombre,"Descarga completa.");
         }
+        */
     }
 }
