@@ -1,5 +1,6 @@
 package controlador.procesos;
 
+import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
@@ -8,6 +9,7 @@ import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProcesosDAO;
 import dao.ProductoDAO;
+import dao.ReportingDAO;
 import dao.TrazaDAO;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -39,19 +42,23 @@ public class PrincipalControlador implements Initializable {
     // Periodo
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
+    @FXML private CheckBox cbCierreProceso;
     // Paneles
     @FXML private TitledPane tpEjecucionCostos;
     @FXML private TitledPane tpEjecucionIngresos;
     @FXML private TitledPane tpEjecucionTotal;
     // Costos: Fase 1
+    @FXML private JFXButton btnFase1;
     @FXML private ProgressBar pbFase1;
     @FXML private ProgressIndicator piFase1;
     @FXML public Label lblMensajeFase1;
     // Costos: Fase 2
+    @FXML private JFXButton btnFase2;
     @FXML private ProgressBar pbFase2;
     @FXML private ProgressIndicator piFase2;
     @FXML public Label lblMensajeFase2;
     // Costos: Fase 3
+    @FXML private JFXButton btnFase3;
     @FXML public Label lblEjecucionTotal;
     @FXML private ProgressBar pbFase3;
     @FXML private ProgressIndicator piFase3;
@@ -65,6 +72,7 @@ public class PrincipalControlador implements Initializable {
     @FXML private ProgressIndicator piFase2Ingresos;
     @FXML public Label lblMensajeFase2Ingresos;
     // Total
+    @FXML private JFXButton btnTotal;
     @FXML public ProgressBar pbTotal;
     @FXML public ProgressIndicator piTotal;
     
@@ -77,11 +85,13 @@ public class PrincipalControlador implements Initializable {
     ObjetoDAO objetoDAO;
     ProcesosDAO procesosDAO;
     TrazaDAO trazaDAO;
+    ReportingDAO reportingDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
-    TrazabilidadServicio trazabilidadServicio;
+//    TrazabilidadServicio trazabilidadServicio;
     int periodoSeleccionado;
+    int estadoProceso;
     final ExecutorService executor;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_MODULO_PROCESOS.getControlador());
     double progreso;
@@ -98,7 +108,8 @@ public class PrincipalControlador implements Initializable {
         procesosDAO = new ProcesosDAO();
         trazaDAO = new TrazaDAO();
         distribucionServicio = new DistribucionServicio();
-        trazabilidadServicio = new TrazabilidadServicio();
+//        trazabilidadServicio = new TrazabilidadServicio();
+        reportingDAO = new ReportingDAO();
         executor = Executors.newSingleThreadExecutor();
         this.progreso = 0.3333;
         this.numFasesTotales = 3;
@@ -130,6 +141,7 @@ public class PrincipalControlador implements Initializable {
             } 
         });
         periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+//        cbCierreProceso.selectedProperty().addListener(listener);
         actualizarEstados(periodoSeleccionado);
     }
     
@@ -138,49 +150,69 @@ public class PrincipalControlador implements Initializable {
         ejecutandoFase2 = false;
         ejecutandoFase3 = false;
         ejecutandoFaseTotal = false;
+        
+        cierreProceso(periodo, menuControlador.repartoTipo);
         // FASE 1
-            if (procesosDAO.obtenerFechaEjecucion(periodo, 1, menuControlador.repartoTipo) != null) {
-                pbFase1.setProgress(1);
-                piFase1.setProgress(1);
-                pbTotal.setProgress(progreso);
-                piTotal.setProgress(progreso);
-                ejecutoFase1 = true;
-            } else {
-                pbFase1.setProgress(0);
-                piFase1.setProgress(0);
-                pbTotal.setProgress(0);
-                piTotal.setProgress(0);
-                ejecutoFase1 = false;
-            }
-            // FASE 2
-            if (procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo) != null) {
-                pbFase2.setProgress(1);
-                piFase2.setProgress(1);
-                pbTotal.setProgress(progreso*2);
-                piTotal.setProgress(progreso*2);
-                ejecutoFase2 = true;
-                ejecutoFaseTotal = true;
-            } else {
-                pbFase2.setProgress(0);
-                piFase2.setProgress(0);
-                ejecutoFase2 = false;
-                ejecutoFaseTotal = false;
-            }
-            // FASE 3
-            if (procesosDAO.obtenerFechaEjecucion(periodo, 3, menuControlador.repartoTipo) != null) {
-                pbFase3.setProgress(1);
-                piFase3.setProgress(1);
-                pbTotal.setProgress(1);
-                piTotal.setProgress(1);
-                ejecutoFase3 = true;
-                ejecutoFaseTotal = true;
-            } else {
-                pbFase3.setProgress(0);
-                piFase3.setProgress(0);
-                ejecutoFase3 = false;
-                ejecutoFaseTotal = false;
-            }
+        if (procesosDAO.obtenerFechaEjecucion(periodo, 1, menuControlador.repartoTipo) != null) {
+            pbFase1.setProgress(1);
+            piFase1.setProgress(1);
+            pbTotal.setProgress(progreso);
+            piTotal.setProgress(progreso);
+            ejecutoFase1 = true;
+        } else {
+            pbFase1.setProgress(0);
+            piFase1.setProgress(0);
+            pbTotal.setProgress(0);
+            piTotal.setProgress(0);
+            ejecutoFase1 = false;
+        }
+        // FASE 2
+        if (procesosDAO.obtenerFechaEjecucion(periodo, 2, menuControlador.repartoTipo) != null) {
+            pbFase2.setProgress(1);
+            piFase2.setProgress(1);
+            pbTotal.setProgress(progreso*2);
+            piTotal.setProgress(progreso*2);
+            ejecutoFase2 = true;
+            ejecutoFaseTotal = true;
+        } else {
+            pbFase2.setProgress(0);
+            piFase2.setProgress(0);
+            ejecutoFase2 = false;
+            ejecutoFaseTotal = false;
+        }
+        // FASE 3
+        if (procesosDAO.obtenerFechaEjecucion(periodo, 3, menuControlador.repartoTipo) != null) {
+            pbFase3.setProgress(1);
+            piFase3.setProgress(1);
+            pbTotal.setProgress(1);
+            piTotal.setProgress(1);
+            ejecutoFase3 = true;
+            ejecutoFaseTotal = true;
+        } else {
+            pbFase3.setProgress(0);
+            piFase3.setProgress(0);
+            ejecutoFase3 = false;
+            ejecutoFaseTotal = false;
+        }
     }
+    
+    public void cierreProceso(int periodo, int repartoTipo){
+//        Cierre de Proceso
+        estadoProceso = procesosDAO.obtenerEstadoProceso(periodo,repartoTipo);
+        if( estadoProceso == 0 || estadoProceso == -1) {
+            btnFase1.setDisable(false);
+            btnFase2.setDisable(false);
+            btnFase3.setDisable(false);
+            btnTotal.setDisable(false);
+            cbCierreProceso.setSelected(false);
+        } else {
+            btnFase1.setDisable(true);
+            btnFase2.setDisable(true);
+            btnFase3.setDisable(true);
+            btnTotal.setDisable(true);
+            cbCierreProceso.setSelected(true);
+        }
+    } 
     
     @FXML void lnkInicioAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_INICIO);
@@ -190,9 +222,9 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PROCESOS);
     }
     
-    @FXML void btnGenerarTrazaAction(ActionEvent event) {
-        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
-    }
+//    @FXML void btnGenerarTrazaAction(ActionEvent event) {
+//        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
+//    }
     
     @FXML void btnFase1Action(ActionEvent event) {
         if (ejecutandoFase1) {
@@ -389,4 +421,86 @@ public class PrincipalControlador implements Initializable {
         piFase3.progressProperty().bind(df3t.progressProperty());
         executor.execute(df3t);
     }
+    
+    @FXML void cbCierreProcesoAction (ActionEvent event) {
+        boolean isSelected = cbCierreProceso.isSelected();
+        String mensaje = ""
+                + "¿Está seguro que desea cerrar el proceso del periodo " + periodoSeleccionado + "?\r\n"
+                + "Tomar en cuenta que este proceso demorará.";
+        String mensaje2 = ""
+                + "Existe información previa.\r\n"
+                + "¿Está seguro que desea sobreescribir los datos del proceso del periodo " + periodoSeleccionado + "?\r\n"
+                + "Considerar que este proceso tomará mucho tiempo.";
+        int value = isSelected? 1 : 0;
+        if(estadoProceso == -1){
+            if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje)){
+                cbCierreProceso.setSelected(false);
+                return;
+            } else {
+                boolean existe1 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                boolean existe2 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                boolean existe3 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                if( existe1 && existe2 && existe3){
+                    reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                    reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                    reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                    procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                    //ingresar mensaje suscess
+                } else {
+                    cbCierreProceso.setSelected(false);
+                    menuControlador.mensaje.execute_close_process_empty_error();
+                }
+            }
+        } else {
+            if (estadoProceso == 0) 
+                if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje)) {
+                    cbCierreProceso.setSelected(false);
+                    return;
+                } else {
+                    boolean existe1 = reportingDAO.existeInformacionReporteBolsasOficinas(periodoSeleccionado,menuControlador.repartoTipo);
+                    boolean existe2 = reportingDAO.existeInformacionReporteCascada(periodoSeleccionado,menuControlador.repartoTipo);
+                    boolean existe3 = reportingDAO.existeInformacionReporteObjetos(periodoSeleccionado,menuControlador.repartoTipo);
+                    if( existe1 || existe2 || existe3){
+                        if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje2)){
+                            procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            return;
+                        } else {
+                            boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            
+                            if( existe4 && existe5 && existe6){
+                                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                                procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                                // insertar mensaje de proceso completado
+                            } else {
+                                cbCierreProceso.setSelected(false);
+                                menuControlador.mensaje.execute_close_process_empty_error();
+                            }
+                        }
+                    }else{
+                        boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                        boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                        boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+
+                        if( existe4 && existe5 && existe6){
+                            reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                            reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                            reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                            procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            //insertar mensaje de proceso completado
+                        } else {
+                            cbCierreProceso.setSelected(false);
+                            menuControlador.mensaje.execute_close_process_empty_error();
+                        }
+                    }
+                }
+            else 
+                procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+        }
+        cierreProceso(periodoSeleccionado, menuControlador.repartoTipo);
+    }
+    
 }

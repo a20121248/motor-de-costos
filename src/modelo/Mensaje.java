@@ -299,4 +299,12 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    
+    public void execute_close_process_empty_error(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar Cierre de Proceso ");
+        alert.setContentText("No hay información de la distribución del presente periodo. Por favor, ejecute las fase 1, 2 y 3.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

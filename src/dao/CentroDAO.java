@@ -457,7 +457,7 @@ public class CentroDAO {
                 cont = rs.getInt("COUNT");
             }    
         } catch (SQLException ex) {
-            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cont;
     }
@@ -474,13 +474,13 @@ public class CentroDAO {
                 cont = rs.getInt("COUNT");
             }    
         } catch (SQLException ex) {
-            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cont;
     }
     
     // POR REVISAR
-    public int verificarObjetoCentroPeriodoDriver(String codigo, int periodo) {
+    public int verificarObjetoCentroPeriodoDriver(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT count(*) as COUNT\n"+
                 "  FROM driver_centro_lineas\n" +
@@ -492,12 +492,62 @@ public class CentroDAO {
                 cont = rs.getInt("COUNT");
             }    
         } catch (SQLException ex) {
-            Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cont;
     }
     
+    public boolean verificarDistribucionBolsasPeriodo(int periodo, int repartoTipo){
+        String queryStr = String.format("" +
+                "SELECT COUNT(1) CNT\n" +
+                "  FROM ms_cascada\n" +
+                " WHERE periodo = %d AND reparto_tipo = %d AND iteracion < 1",
+                periodo,repartoTipo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("cnt");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont>0;
+    }
     
+    public boolean verificarDistribucionStaffPeriodo(int periodo, int repartoTipo){
+        String queryStr = String.format("" +
+                "SELECT COUNT(1) CNT\n" +
+                "  FROM ms_cascada\n" +
+                " WHERE periodo = %d AND reparto_tipo = %d AND iteracion >= 1",
+                periodo,repartoTipo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("cnt");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont>0;
+    }
+    
+    public boolean verificarDistribucionObjetoPeriodo(int periodo, int repartoTipo){
+        String queryStr = String.format("" +
+                "SELECT COUNT(1) CNT\n" +
+                "  FROM ms_objeto_lineas\n" +
+                " WHERE periodo = %d AND reparto_tipo = %d",
+                periodo,repartoTipo);
+        int cont=-1;
+        try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
+            while(rs.next()) {
+                cont = rs.getInt("cnt");
+            }    
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cont>0;
+    }
+        
     public int eliminarObjetoCentro(String codigo) {
         String queryStr = String.format("" +
                 "DELETE FROM MS_centros\n" +
@@ -835,6 +885,8 @@ public class CentroDAO {
                 periodo,iteracion,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
+    
+    
     
     public void insertarDistribucion(String centroCodigo, int periodo, int iteracion, double saldo, String entidadOrigenCodigo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
