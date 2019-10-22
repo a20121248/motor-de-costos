@@ -9,6 +9,7 @@ import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProcesosDAO;
 import dao.ProductoDAO;
+import dao.ReportingDAO;
 import dao.TrazaDAO;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -84,10 +85,11 @@ public class PrincipalControlador implements Initializable {
     ObjetoDAO objetoDAO;
     ProcesosDAO procesosDAO;
     TrazaDAO trazaDAO;
+    ReportingDAO reportingDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
-    TrazabilidadServicio trazabilidadServicio;
+//    TrazabilidadServicio trazabilidadServicio;
     int periodoSeleccionado;
     int estadoProceso;
     final ExecutorService executor;
@@ -106,7 +108,8 @@ public class PrincipalControlador implements Initializable {
         procesosDAO = new ProcesosDAO();
         trazaDAO = new TrazaDAO();
         distribucionServicio = new DistribucionServicio();
-        trazabilidadServicio = new TrazabilidadServicio();
+//        trazabilidadServicio = new TrazabilidadServicio();
+        reportingDAO = new ReportingDAO();
         executor = Executors.newSingleThreadExecutor();
         this.progreso = 0.3333;
         this.numFasesTotales = 3;
@@ -217,9 +220,9 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_PROCESOS);
     }
     
-    @FXML void btnGenerarTrazaAction(ActionEvent event) {
-        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
-    }
+//    @FXML void btnGenerarTrazaAction(ActionEvent event) {
+//        trazabilidadServicio.generarMatriz(periodoSeleccionado, menuControlador.repartoTipo);
+//    }
     
     @FXML void btnFase1Action(ActionEvent event) {
         if (ejecutandoFase1) {
@@ -419,12 +422,50 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void cbCierreProcesoAction (ActionEvent event) {
         boolean isSelected = cbCierreProceso.isSelected();
+        String mensaje = ""
+                + "¿Está seguro que desea cerrar el proceso del periodo " + periodoSeleccionado + "?";
+        String mensaje2 = ""
+                + "Existe información previa.\r\n"
+                + "¿Está seguro que desea sobreescribir los datos del proceso del periodo " + periodoSeleccionado + "?"
+                + "Considerar este proceso puede tomar mucho tiempo.";
         int value = isSelected? 1 : 0;
         if(estadoProceso == -1){
-            procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+            if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje)){
+                cbCierreProceso.setSelected(false);
+                return;
+            } else {
+                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+            }
         } else {
-            procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+            if (estadoProceso == 0) 
+                if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje)) {
+                    cbCierreProceso.setSelected(false);
+                    return;
+                } else {
+                    boolean existe1 = reportingDAO.existeInformacionReporteBolsasOficinas(periodoSeleccionado,menuControlador.repartoTipo);
+                    boolean existe2 = reportingDAO.existeInformacionReporteCascada(periodoSeleccionado,menuControlador.repartoTipo);
+                    boolean existe3 = reportingDAO.existeInformacionReporteObjetos(periodoSeleccionado,menuControlador.repartoTipo);
+                    if( existe1 || existe2 || existe3){
+                        if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje2)){
+                            procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            return;
+                        } else {
+                            reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                            reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                            reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                        }
+                    }else {
+                        
+                    }
+                    procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                }
+            else 
+                procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
         }
         cierreProceso(periodoSeleccionado, menuControlador.repartoTipo);
     }
+    
 }
