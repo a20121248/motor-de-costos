@@ -204,11 +204,13 @@ public class PrincipalControlador implements Initializable {
             btnFase2.setDisable(false);
             btnFase3.setDisable(false);
             btnTotal.setDisable(false);
+            cbCierreProceso.setSelected(false);
         } else {
             btnFase1.setDisable(true);
             btnFase2.setDisable(true);
             btnFase3.setDisable(true);
             btnTotal.setDisable(true);
+            cbCierreProceso.setSelected(true);
         }
     } 
     
@@ -423,21 +425,31 @@ public class PrincipalControlador implements Initializable {
     @FXML void cbCierreProcesoAction (ActionEvent event) {
         boolean isSelected = cbCierreProceso.isSelected();
         String mensaje = ""
-                + "¿Está seguro que desea cerrar el proceso del periodo " + periodoSeleccionado + "?";
+                + "¿Está seguro que desea cerrar el proceso del periodo " + periodoSeleccionado + "?\r\n"
+                + "Tomar en cuenta que este proceso demorará.";
         String mensaje2 = ""
                 + "Existe información previa.\r\n"
-                + "¿Está seguro que desea sobreescribir los datos del proceso del periodo " + periodoSeleccionado + "?"
-                + "Considerar este proceso puede tomar mucho tiempo.";
+                + "¿Está seguro que desea sobreescribir los datos del proceso del periodo " + periodoSeleccionado + "?\r\n"
+                + "Considerar que este proceso tomará mucho tiempo.";
         int value = isSelected? 1 : 0;
         if(estadoProceso == -1){
             if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje)){
                 cbCierreProceso.setSelected(false);
                 return;
             } else {
-                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
-                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
-                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
-                procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                boolean existe1 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                boolean existe2 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                boolean existe3 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                if( existe1 && existe2 && existe3){
+                    reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                    reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                    reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                    procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                    //ingresar mensaje suscess
+                } else {
+                    cbCierreProceso.setSelected(false);
+                    menuControlador.mensaje.execute_close_process_empty_error();
+                }
             }
         } else {
             if (estadoProceso == 0) 
@@ -453,14 +465,37 @@ public class PrincipalControlador implements Initializable {
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                             return;
                         } else {
+                            boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                            
+                            if( existe4 && existe5 && existe6){
+                                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
+                                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
+                                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                                procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                                // insertar mensaje de proceso completado
+                            } else {
+                                cbCierreProceso.setSelected(false);
+                                menuControlador.mensaje.execute_close_process_empty_error();
+                            }
+                        }
+                    }else{
+                        boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                        boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                        boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+
+                        if( existe4 && existe5 && existe6){
                             reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                            procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            //insertar mensaje de proceso completado
+                        } else {
+                            cbCierreProceso.setSelected(false);
+                            menuControlador.mensaje.execute_close_process_empty_error();
                         }
-                    }else {
-                        
                     }
-                    procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                 }
             else 
                 procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);

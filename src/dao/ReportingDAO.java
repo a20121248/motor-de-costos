@@ -574,10 +574,10 @@ public class ReportingDAO {
     
     public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, String tabla) {
         try {
-            String queryStr = String.format("SELECT COUNT(1) CNT FROM %s PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo, tabla);
+            String queryStr = String.format("SELECT COUNT(1) CNT FROM %s PARTITION (P_%d) WHERE REPARTO_TIPO=%d", tabla, periodo, repartoTipo);
             ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
             while(rs.next())
-                return rs.getInt("CNT") == 1;
+                return rs.getInt("CNT") >= 1;
         } catch (SQLException ex) {
             
         }

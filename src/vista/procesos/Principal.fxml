@@ -81,7 +81,7 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Label>
-                        <Label text="Distribuir Grupos de Cuentas Contables a Centros de Costos" GridPane.columnIndex="1" />
+                        <Label text="Distribuir Bolsas a Centros de Costos" GridPane.columnIndex="1" />
                         <JFXButton fx:id="btnFase1" onAction="#btnFase1Action" GridPane.columnIndex="2">
                            <graphic>
                               <FontAwesomeIconView glyphName="PLAY_CIRCLE" />
