@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
+import dao.DetalleGastoDAO;
 import dao.DriverDAO;
 import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
@@ -86,6 +87,7 @@ public class PrincipalControlador implements Initializable {
     ProcesosDAO procesosDAO;
     TrazaDAO trazaDAO;
     ReportingDAO reportingDAO;
+    DetalleGastoDAO detalleGastoDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
@@ -110,6 +112,7 @@ public class PrincipalControlador implements Initializable {
         distribucionServicio = new DistribucionServicio();
 //        trazabilidadServicio = new TrazabilidadServicio();
         reportingDAO = new ReportingDAO();
+        detalleGastoDAO = new DetalleGastoDAO();
         executor = Executors.newSingleThreadExecutor();
         this.progreso = 0.3333;
         this.numFasesTotales = 3;
@@ -347,35 +350,27 @@ public class PrincipalControlador implements Initializable {
         
         procesosDAO.borrarEjecuciones(periodo, 1, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 0, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
+        
         //pbFase1.setProgress(0);
         //piFase1.setProgress(0);
         // COSTOS
-        if (menuControlador.repartoTipo == 1) {
-            ejecutoFase1 = false;
-            pbFase2.progressProperty().unbind();
-            piFase2.progressProperty().unbind();
-            pbFase2.setProgress(0);
-            piFase2.setProgress(0);
-            ejecutoFase2 = false;
-            pbFase3.progressProperty().unbind();
-            piFase3.progressProperty().unbind();
-            pbFase3.setProgress(0);
-            piFase3.setProgress(0);
-            ejecutoFase3 = false;
-            pbTotal.progressProperty().unbind();
-            piTotal.progressProperty().unbind();
-            pbTotal.setProgress(0);
-            piTotal.setProgress(0);
-        } else {
-            // INGRESOS
-            ejecutoFase1 = false;
-            pbFase2.progressProperty().unbind();
-            piFase2.progressProperty().unbind();
-            pbFase2.setProgress(0);
-            piFase2.setProgress(0);
-            ejecutoFase2 = false;
-        }
+        
+        ejecutoFase1 = false;
+        pbFase2.progressProperty().unbind();
+        piFase2.progressProperty().unbind();
+        pbFase2.setProgress(0);
+        piFase2.setProgress(0);
+        ejecutoFase2 = false;
+        pbFase3.progressProperty().unbind();
+        piFase3.progressProperty().unbind();
+        pbFase3.setProgress(0);
+        piFase3.setProgress(0);
+        ejecutoFase3 = false;
+        pbTotal.progressProperty().unbind();
+        piTotal.progressProperty().unbind();
+        pbTotal.setProgress(0);
+        piTotal.setProgress(0);
         // FLAG DE EJECUCION TOTAL
         ejecutoFaseTotal = false;
         
@@ -394,8 +389,8 @@ public class PrincipalControlador implements Initializable {
    
     public void ejecutarFase2(int periodo) {
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
-        centroDAO.borrarDistribuciones(periodo, 1, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        centroDAO.borrarDistribucionesCascada(periodo, 1, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
 //        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
         //pbFase2.setProgress(0);
         //piFase2.setProgress(0);
