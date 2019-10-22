@@ -585,39 +585,45 @@ public class ReportingDAO {
     }
     
     public void generarReporteBolsasOficinas(int periodo, int repartoTipo) {
+        ConexionBD.ejecutarQuery(String.format("DELETE FROM MS_REPORTE_BOLSAS_OFICINAS PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo));
         String queryStr = String.format("" +
-                "INSERT INTO MS_REPORTE_BOLSAS_OFICINAS(REPARTO_TIPO,PERIODO,CUENTA_CONTABLE_ORIGEN_CODIGO,CUENTA_CONTABLE_ORIGEN_NOMBRE,PARTIDA_ORIGEN_CODIGO,PARTIDA_ORIGEN_NOMBRE,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,CENTRO_DESTINO_CODIGO,CENTRO_DESTINO_NOMBRE,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE,ASIGNACION)\n" +
+                "INSERT INTO MS_REPORTE_BOLSAS_OFICINAS(REPARTO_TIPO,PERIODO,CUENTA_CONTABLE_ORIGEN_CODIGO,CUENTA_CONTABLE_ORIGEN_NOMBRE,PARTIDA_ORIGEN_CODIGO,PARTIDA_ORIGEN_NOMBRE,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,CENTRO_ORIGEN_NIVEL,CENTRO_ORIGEN_TIPO,CENTRO_DESTINO_CODIGO,CENTRO_DESTINO_NOMBRE,CENTRO_DESTINO_NIVEL,CENTRO_DESTINO_TIPO,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE,ASIGNACION)\n" +
                 "SELECT A.REPARTO_TIPO,\n" +
-                "       a.periodo PERIODO,\n" +
-                "       a.cuenta_contable_origen_codigo CODIGO_CUENTA_ORIGEN,\n" +
-                "       c.nombre NOMBRE_CUENTA_ORIGEN,\n" +
-                "       a.partida_origen_codigo CODIGO_PARTIDA_ORIGEN,\n" +
-                "       d.nombre NOMBRE_PARTIDA_ORIGEN,\n" +
-                "       a.centro_origen_codigo CODIGO_CENTRO_ORIGEN,\n" +
-                "       e.nombre NOMBRE_CENTRO_ORIGEN,\n" +
-                "       a.centro_codigo CODIGO_CENTRO_DESTINO,\n" +
-                "       b.nombre NOMBRE_CENTRO_DESTINO,\n" +
-                "       a.saldo MONTO,\n" +
-                "       coalesce(f.driver_codigo,'N/A') CODIGO_DRIVER,\n" +
-                "       coalesce(g.nombre,'N/A') NOMBRE_DRIVER,\n" +
-                "       CASE WHEN a.centro_origen_codigo = a.centro_codigo THEN 'SEMBRADO'\n" +
-                "            WHEN a.centro_origen_codigo != a.centro_codigo THEN 'BOLSA'\n" +
+                "       A.PERIODO PERIODO,\n" +
+                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CUENTA_CONTABLE_ORIGEN_CODIGO,\n" +
+                "       C.NOMBRE CUENTA_CONTABLE_ORIGEN_NOMBRE,\n" +
+                "       A.PARTIDA_ORIGEN_CODIGO PARTIDA_ORIGEN_CODIGO,\n" +
+                "       D.NOMBRE PARTIDA_ORIGEN_NOMBRE,\n" +
+                "       A.CENTRO_ORIGEN_CODIGO CENTRO_ORIGEN_CODIGO,\n" +
+                "       E.NOMBRE CENTRO_ORIGEN_NOMBRE,\n" +
+                "       E.NIVEL CENTRO_ORIGEN_NIVEL,\n" +
+                "       E.CENTRO_TIPO_CODIGO CENTRO_ORIGEN_TIPO,\n" +
+                "       A.CENTRO_CODIGO CENTRO_DESTINO_CODIGO,\n" +
+                "       B.NOMBRE CENTRO_DESTINO_NOMBRE,\n" +
+                "       B.NIVEL CENTRO_DESTINO_NIVEL,\n" +
+                "       B.CENTRO_TIPO_CODIGO CENTRO_DESTINO_TIPO,\n" +
+                "       A.SALDO MONTO,\n" +
+                "       COALESCE(F.DRIVER_CODIGO,'N/A') DRIVER_CODIGO,\n" +
+                "       COALESCE(G.NOMBRE,'N/A') DRIVER_NOMBRE,\n" +
+                "       CASE WHEN A.CENTRO_ORIGEN_CODIGO=A.CENTRO_CODIGO THEN 'SEMBRADO'\n" +
+                "            WHEN A.CENTRO_ORIGEN_CODIGO!=A.CENTRO_CODIGO THEN 'BOLSA'\n" +
                 "       END ASIGNACION\n" +
-                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  FROM MS_CASCADA A\n" +
                 "  JOIN MS_CENTROS B ON A.REPARTO_TIPO=%d AND A.PERIODO=%d AND B.CODIGO=A.CENTRO_CODIGO\n" +
                 "  JOIN MS_PLAN_DE_CUENTAS C ON C.CODIGO=A.CUENTA_CONTABLE_ORIGEN_CODIGO\n" +
                 "  JOIN MS_PARTIDAS D ON D.CODIGO=A.PARTIDA_ORIGEN_CODIGO\n" +
                 "  JOIN MS_CENTROS E ON E.CODIGO=A.CENTRO_ORIGEN_CODIGO\n" +
                 "  LEFT JOIN MS_BOLSA_DRIVER F ON SUBSTR(F.CUENTA_CONTABLE_CODIGO,1,3)=SUBSTR(A.CUENTA_CONTABLE_ORIGEN_CODIGO,1,3) AND SUBSTR(F.CUENTA_CONTABLE_CODIGO,5,11)=SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND F.PARTIDA_CODIGO=A.PARTIDA_ORIGEN_CODIGO AND F.CENTRO_CODIGO=A.CENTRO_ORIGEN_CODIGO AND F.PERIODO=A.PERIODO AND F.REPARTO_TIPO=A.REPARTO_TIPO\n" +
-                "  LEFT JOIN MS_DRIVERS G ON G.CODIGO = F.DRIVER_CODIGO AND G.DRIVER_TIPO_CODIGO='CECO'\n" +
-                "WHERE A.ITERACION=0 OR (A.ITERACION=-1 AND B.CENTRO_TIPO_CODIGO!='BOLSA' AND B.CENTRO_TIPO_CODIGO!='OFICINA')",
+                "  LEFT JOIN MS_DRIVERS G ON G.CODIGO=F.DRIVER_CODIGO AND G.DRIVER_TIPO_CODIGO='CECO'\n" +
+                " WHERE A.ITERACION=0 OR (A.ITERACION=-1 AND B.CENTRO_TIPO_CODIGO!='BOLSA' AND B.CENTRO_TIPO_CODIGO!='OFICINA')",
                 repartoTipo, periodo);
         ConexionBD.ejecutarQuery(queryStr);
     }
     
     public void generarReporteCascada(int periodo, int repartoTipo) {
+        ConexionBD.ejecutarQuery(String.format("DELETE FROM MS_REPORTE_CASCADA PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo));
         String queryStr = String.format("" +
-                "INSERT INTO MS_REPORTE_CASCADA(REPARTO_TIPO,PERIODO,ITERACION,CUENTA_CONTABLE_INICIAL_CODIGO,CUENTA_CONTABLE_INICIAL_NOMBRE,PARTIDA_INICIAL_CODIGO,PARTIDA_INICIAL_NOMBRE,CENTRO_INICIAL_CODIGO,CENTRO_INICIAL_NOMBRE,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,CENTRO_DESTINO_CODIGO,CENTRO_DESTINO_NOMBRE,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE)\n" +
+                "INSERT INTO MS_REPORTE_CASCADA(REPARTO_TIPO,PERIODO,ITERACION,CUENTA_CONTABLE_INICIAL_CODIGO,CUENTA_CONTABLE_INICIAL_NOMBRE,PARTIDA_INICIAL_CODIGO,PARTIDA_INICIAL_NOMBRE,CENTRO_INICIAL_CODIGO,CENTRO_INICIAL_NOMBRE,CENTRO_INICIAL_NIVEL,CENTRO_INICIAL_TIPO,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,CENTRO_ORIGEN_NIVEL,CENTRO_ORIGEN_TIPO,CENTRO_DESTINO_CODIGO,CENTRO_DESTINO_NOMBRE,CENTRO_DESTINO_NIVEL,CENTRO_DESTINO_TIPO,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE)\n" +
                 "SELECT A.REPARTO_TIPO,\n" +
                 "       A.PERIODO,\n" +
                 "       A.ITERACION,\n" +
@@ -627,14 +633,20 @@ public class ReportingDAO {
                 "       D.NOMBRE PARTIDA_INICIAL_NOMBRE,\n" +
                 "       A.CENTRO_ORIGEN_CODIGO CENTRO_INICIAL_CODIGO,\n" +
                 "       E.NOMBRE CENTRO_INICIAL_NOMBRE,\n" +
+                "       E.NIVEL CENTRO_INICIAL_NIVEL,\n" +
+                "       E.CENTRO_TIPO_CODIGO CENTRO_INICIAL_TIPO,\n" +
                 "       A.ENTIDAD_ORIGEN_CODIGO CENTRO_ORIGEN_CODIGO,\n" +
                 "       COALESCE(F.NOMBRE,'N/A') CENTRO_ORIGEN_NOMBRE,\n" +
+                "       COALESCE(F.NIVEL,-1) CENTRO_ORIGEN_NIVEL,\n" +
+                "       COALESCE(F.CENTRO_TIPO_CODIGO,'N/A') CENTRO_ORIGEN_TIPO,\n" +
                 "       A.CENTRO_CODIGO CENTRO_DESTINO_CODIGO,\n" +
                 "       B.NOMBRE CENTRO_DESTINO_NOMBRE,\n" +
+                "       B.NIVEL CENTRO_DESTINO_NIVEL,\n" +
+                "       B.CENTRO_TIPO_CODIGO CENTRO_DESTINO_TIPO,\n" +
                 "       A.SALDO MONTO,\n" +
                 "       COALESCE(G.DRIVER_CODIGO,I.DRIVER_CODIGO,'N/A') DRIVER_CODIGO,\n" +
                 "       COALESCE(H.NOMBRE,J.NOMBRE,'N/A') DRIVER_NOMBRE\n" +
-                "  FROM MS_CENTRO_LINEAS A\n" +
+                "  FROM MS_CASCADA A\n" +
                 "  JOIN MS_CENTROS B ON B.CODIGO=A.CENTRO_CODIGO\n" +
                 "  JOIN MS_PLAN_DE_CUENTAS C ON C.CODIGO=A.CUENTA_CONTABLE_ORIGEN_CODIGO\n" +
                 "  JOIN MS_PARTIDAS D ON D.CODIGO=A.PARTIDA_ORIGEN_CODIGO\n" +
@@ -649,39 +661,46 @@ public class ReportingDAO {
                 "    ON I.ENTIDAD_ORIGEN_CODIGO=A.ENTIDAD_ORIGEN_CODIGO AND I.PERIODO=A.PERIODO AND I.REPARTO_TIPO=A.REPARTO_TIPO\n" +
                 "  LEFT JOIN MS_DRIVERS J\n" +
                 "    ON J.CODIGO=I.DRIVER_CODIGO AND J.DRIVER_TIPO_CODIGO='CECO'\n" +
-                " WHERE A.PERIODO=%d\n" +
-                "   AND A.ITERACION!=-2\n" +
-                "   AND A.REPARTO_TIPO=%d",
+                " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d",
                 periodo, repartoTipo);
         ConexionBD.ejecutarQuery(queryStr);
     }
     
     public void generarReporteObjetos(int periodo, int repartoTipo) {
+        ConexionBD.ejecutarQuery(String.format("DELETE FROM MS_REPORTE_OBJETOS PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo));
         String periodoStr = repartoTipo == 1 ? "A.PERIODO" : "TRUNC(A.PERIODO/100)*100";
         String queryStr = String.format("" +
-                "INSERT INTO MS_REPORTE_OBJETOS(REPARTO_TIPO,PERIODO,CUENTA_CONTABLE_INICIAL_CODIGO,CUENTA_CONTABLE_INICIAL_NOMBRE,PARTIDA_INICIAL_CODIGO,PARTIDA_INICIAL_NOMBRE,CENTRO_INICIAL_CODIGO,CENTRO_INICIAL_NOMBRE,PRODUCTO_CODIGO,PRODUCTO_NOMBRE,LINEA_CODIGO,LINEA_NOMBRE,SUBCANAL_CODIGO,SUBCANAL_NOMBRE,CANAL_CODIGO,CANAL_NOMBRE,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,GRUPO_GASTO,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE)\n" +
+                "INSERT INTO MS_REPORTE_OBJETOS(REPARTO_TIPO,PERIODO,CUENTA_CONTABLE_INICIAL_CODIGO,CUENTA_CONTABLE_INICIAL_NOMBRE,PARTIDA_INICIAL_CODIGO,PARTIDA_INICIAL_NOMBRE,CENTRO_INICIAL_CODIGO,CENTRO_INICIAL_NOMBRE,CENTRO_INICIAL_NIVEL,CENTRO_INICIAL_TIPO,PRODUCTO_CODIGO,PRODUCTO_NOMBRE,LINEA_CODIGO,LINEA_NOMBRE,SUBCANAL_CODIGO,SUBCANAL_NOMBRE,CANAL_CODIGO,CANAL_NOMBRE,CENTRO_ORIGEN_CODIGO,CENTRO_ORIGEN_NOMBRE,CENTRO_ORIGEN_NIVEL,CENTRO_ORIGEN_TIPO,CENTRO_CODIGO,CENTRO_NOMBRE,CENTRO_NIVEL,CENTRO_TIPO,GRUPO_GASTO,MONTO,DRIVER_CODIGO,DRIVER_NOMBRE)\n" +
                 "SELECT A.REPARTO_TIPO,\n" +
                 "       A.PERIODO,\n" +
-                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CODIGO_CUENTA_INICIAL,\n" +
-                "       G.NOMBRE NOMBRE_CUENTA_INICIAL,\n" +
-                "       A.PARTIDA_ORIGEN_CODIGO CODIGO_PARTIDA_INICIAL,\n" +
-                "       H.NOMBRE NOMBRE_PARTIDA_INICIAL,\n" +
-                "       A.CENTRO_ORIGEN_CODIGO CODIGO_CENTRO_INICIAL,\n" +
-                "       I.NOMBRE NOMBRE_CENTRO_INICIAL,\n" +
-                "       A.PRODUCTO_CODIGO CODIGO_PRODUCTO,\n" +
-                "       B.NOMBRE NOMBRE_PRODUCTO,\n" +
-                "       COALESCE(J2.CODIGO,'N/A') CODIGO_LINEA,\n" +
-                "       COALESCE(J2.NOMBRE,'N/A') NOMBRE_LINEA,\n" +
-                "       A.SUBCANAL_CODIGO CODIGO_SUBCANAL,\n" +
-                "       C.NOMBRE NOMBRE_SUBCANAL,\n" +
-                "       COALESCE(K2.CODIGO,'N/A') CODIGO_CANAL,\n" +
-                "       COALESCE(K2.NOMBRE,'N/A') NOMBRE_CANAL,\n" +
-                "       A.ENTIDAD_ORIGEN_CODIGO CODIGO_CENTRO_ORIGEN,\n" +
-                "       COALESCE(D.NOMBRE,'N/A') NOMBRE_CENTRO_ORIGEN,\n" +
+                "       A.CUENTA_CONTABLE_ORIGEN_CODIGO CUENTA_INICIAL_CODIGO,\n" +
+                "       G.NOMBRE CUENTA_INICIAL_NOMBRE,\n" +
+                "       A.PARTIDA_ORIGEN_CODIGO PARTIDA_INICIAL_CODIGO,\n" +
+                "       H.NOMBRE PARTIDA_INICIAL_NOMBRE,\n" +
+                "       A.CENTRO_ORIGEN_CODIGO CENTRO_INICIAL_CODIGO,\n" +
+                "       I.NOMBRE CENTRO_INICIAL_NOMBRE,\n" +
+                "       I.NIVEL CENTRO_INICIAL_NIVEL,\n" +
+                "       I.CENTRO_TIPO_CODIGO CENTRO_INICIAL_TIPO,\n" +
+                "       A.PRODUCTO_CODIGO PRODUCTO_CODIGO,\n" +
+                "       B.NOMBRE PRODUCTO_NOMBRE,\n" +
+                "       COALESCE(J2.CODIGO,'N/A') LINEA_CODIGO,\n" +
+                "       COALESCE(J2.NOMBRE,'N/A') LINEA_NOMBRE,\n" +
+                "       A.SUBCANAL_CODIGO SUBCANAL_CODIGO,\n" +
+                "       C.NOMBRE SUBCANAL_NOMBRE,\n" +
+                "       COALESCE(K2.CODIGO,'N/A') CANAL_CODIGO,\n" +
+                "       COALESCE(K2.NOMBRE,'N/A') CANAL_NOMBRE,\n" +
+                "       A.ENTIDAD_ORIGEN_CODIGO CENTRO_ORIGEN_CODIGO,\n" +
+                "       COALESCE(D.NOMBRE,'N/A') CENTRO_ORIGEN_NOMBRE,\n" +
+                "       COALESCE(D.NIVEL,-1) CENTRO_ORIGEN_NIVEL,\n" +
+                "       COALESCE(D.CENTRO_TIPO_CODIGO,'N/A') CENTRO_ORIGEN_TIPO,\n" +
+                "       A.CENTRO_CODIGO CENTRO_CODIGO,\n" +
+                "       COALESCE(L.NOMBRE,'N/A') CENTRO_NOMBRE,\n" +
+                "       COALESCE(L.NIVEL,-1) CENTRO_NIVEL,\n" +
+                "       COALESCE(L.CENTRO_TIPO_CODIGO,'N/A') CENTRO_TIPO,\n" +
                 "       E.NOMBRE GRUPO_GASTO,\n" +
                 "       A.SALDO MONTO,\n" +
-                "       A.DRIVER_CODIGO CODIGO_DRIVER,\n" +
-                "       F.NOMBRE NOMBRE_DRIVER\n" +
+                "       A.DRIVER_CODIGO DRIVER_CODIGO,\n" +
+                "       F.NOMBRE DRIVER_NOMBRE\n" +
                 "  FROM MS_OBJETO_LINEAS A\n" +
                 "  JOIN MS_PRODUCTOS B ON B.CODIGO=A.PRODUCTO_CODIGO\n" +
                 "  JOIN MS_SUBCANALS C ON C.CODIGO=A.SUBCANAL_CODIGO\n" +
@@ -691,6 +710,7 @@ public class ReportingDAO {
                 "  LEFT JOIN MS_PLAN_DE_CUENTAS G ON A.CUENTA_CONTABLE_ORIGEN_CODIGO=G.CODIGO\n" +
                 "  LEFT JOIN MS_PARTIDAS H ON A.PARTIDA_ORIGEN_CODIGO=H.CODIGO\n" +
                 "  LEFT JOIN MS_CENTROS I ON A.CENTRO_ORIGEN_CODIGO=I.CODIGO\n" +
+                "  LEFT JOIN MS_CENTROS L ON A.CENTRO_CODIGO=L.CODIGO\n" +
                 "  LEFT JOIN MS_JERARQUIA J1 ON J1.PERIODO=%s AND J1.REPARTO_TIPO=A.REPARTO_TIPO AND J1.ENTIDAD_TIPO='PRO' AND J1.ENTIDAD_CODIGO = A.PRODUCTO_CODIGO\n" +
                 "  LEFT JOIN MS_PRODUCTO_GRUPOS J2 ON J2.CODIGO=J1.ENTIDAD_PADRE_CODIGO\n" +
                 "  LEFT JOIN MS_JERARQUIA K1 ON K1.PERIODO=%s AND K1.REPARTO_TIPO=A.REPARTO_TIPO AND K1.ENTIDAD_TIPO='SCA' AND K1.ENTIDAD_CODIGO = A.SUBCANAL_CODIGO\n" +
