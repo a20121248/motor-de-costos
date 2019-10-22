@@ -131,6 +131,12 @@ public class ParametrizacionDAO {
         ConexionBD.ejecutar(queryStr);
         
         queryStr = String.format("" +
+                "DELETE FROM MS_jerarquia\n" +
+                " WHERE periodo=%d and reparto_tipo=%d and entidad_tipo='PRO'",
+                periodoDestino,repartoTipo);
+        ConexionBD.ejecutar(queryStr);
+        
+        queryStr = String.format("" +
                     "INSERT INTO MS_producto_lineas(producto_codigo,periodo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
                     "SELECT producto_codigo,%d periodo,reparto_tipo,sysdate,sysdate\n" +
                     "  FROM MS_producto_lineas\n" +
@@ -155,6 +161,12 @@ public class ParametrizacionDAO {
         String queryStr = String.format("" +
                 "DELETE FROM MS_subcanal_lineas\n" +
                 " WHERE periodo=%d and reparto_tipo=%d",
+                periodoDestino,repartoTipo);
+        ConexionBD.ejecutar(queryStr);
+        
+        queryStr = String.format("" +
+                "DELETE FROM MS_jerarquia\n" +
+                " WHERE periodo=%d and reparto_tipo=%d and entidad_tipo='SCA'",
                 periodoDestino,repartoTipo);
         ConexionBD.ejecutar(queryStr);
         

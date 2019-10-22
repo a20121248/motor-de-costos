@@ -283,7 +283,9 @@ public class PrincipalControlador implements Initializable {
                     2);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
         }
-        ejecutarFase2(periodoSeleccionado);
+        boolean existeDistBolsa = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado, menuControlador.repartoTipo);
+        if(existeDistBolsa) ejecutarFase2(periodoSeleccionado);
+        else menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(2);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -351,6 +353,7 @@ public class PrincipalControlador implements Initializable {
         procesosDAO.borrarEjecuciones(periodo, 1, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 0, menuControlador.repartoTipo);
         objetoDAO.borrarDistribucionesObjeto();
+        detalleGastoDAO.insertarMontoTablaCascada(periodo, menuControlador.repartoTipo);
         
         //pbFase1.setProgress(0);
         //piFase1.setProgress(0);

@@ -238,6 +238,15 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    
+    public void execute_phase_currently_dontexist_dist_previus_error(int nroPhase){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("No hay información de la distribucion actual. Por favor, ejecutar las fase anteriores.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
     public void execute_asign_without_driver_singular_error(int nroPhase, int nroSinDriver){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ejecutar FASE "+ nroPhase);
