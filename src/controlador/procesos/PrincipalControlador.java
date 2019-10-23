@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
+import dao.DetalleGastoDAO;
 import dao.DriverDAO;
 import dao.ObjetoDAO;
 import dao.PlanDeCuentaDAO;
@@ -86,6 +87,7 @@ public class PrincipalControlador implements Initializable {
     ProcesosDAO procesosDAO;
     TrazaDAO trazaDAO;
     ReportingDAO reportingDAO;
+    DetalleGastoDAO detalleGastoDAO;
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
@@ -110,6 +112,7 @@ public class PrincipalControlador implements Initializable {
         distribucionServicio = new DistribucionServicio();
 //        trazabilidadServicio = new TrazabilidadServicio();
         reportingDAO = new ReportingDAO();
+        detalleGastoDAO = new DetalleGastoDAO();
         executor = Executors.newSingleThreadExecutor();
         this.progreso = 0.3333;
         this.numFasesTotales = 3;
@@ -231,6 +234,12 @@ public class PrincipalControlador implements Initializable {
             menuControlador.mensaje.execute_phase_currently_error(1);
             return;
         }
+        
+        if(!detalleGastoDAO.verificarInputPeriodo(periodoSeleccionado, menuControlador.repartoTipo)){
+            menuControlador.mensaje.execute_phase_without_input_error(1);
+            return;
+        }
+        
         int cantSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
         if (cantSinDriver!=0) {
             if (cantSinDriver==1) menuControlador.mensaje.execute_asign_without_driver_singular_error(1, cantSinDriver);
@@ -256,7 +265,12 @@ public class PrincipalControlador implements Initializable {
             return;
         }
         if (!ejecutoFase1) {
-            menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(2);
+            return;
+        }
+        
+        if (!procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 2)) {
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(2);
             return;
         }
         int cantSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
@@ -280,7 +294,6 @@ public class PrincipalControlador implements Initializable {
                     2);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
         }
-        ejecutarFase2(periodoSeleccionado);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -289,7 +302,12 @@ public class PrincipalControlador implements Initializable {
             return;
         }
         if (!ejecutoFase2) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "Necesita ejecutar las fases previas a la FASE 3.");
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(3);
+            return;
+        }
+        
+        if(!procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 3)){
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(3);
             return;
         }
         
@@ -345,37 +363,31 @@ public class PrincipalControlador implements Initializable {
     
     public void ejecutarFase1(int periodo) {
         
+        procesosDAO.borrarEjecucionesTemporal(1);
         procesosDAO.borrarEjecuciones(periodo, 1, menuControlador.repartoTipo);
         centroDAO.borrarDistribuciones(periodo, 0, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
+        detalleGastoDAO.insertarMontoTablaCascada(periodo, menuControlador.repartoTipo);
+        
         //pbFase1.setProgress(0);
         //piFase1.setProgress(0);
         // COSTOS
-        if (menuControlador.repartoTipo == 1) {
-            ejecutoFase1 = false;
-            pbFase2.progressProperty().unbind();
-            piFase2.progressProperty().unbind();
-            pbFase2.setProgress(0);
-            piFase2.setProgress(0);
-            ejecutoFase2 = false;
-            pbFase3.progressProperty().unbind();
-            piFase3.progressProperty().unbind();
-            pbFase3.setProgress(0);
-            piFase3.setProgress(0);
-            ejecutoFase3 = false;
-            pbTotal.progressProperty().unbind();
-            piTotal.progressProperty().unbind();
-            pbTotal.setProgress(0);
-            piTotal.setProgress(0);
-        } else {
-            // INGRESOS
-            ejecutoFase1 = false;
-            pbFase2.progressProperty().unbind();
-            piFase2.progressProperty().unbind();
-            pbFase2.setProgress(0);
-            piFase2.setProgress(0);
-            ejecutoFase2 = false;
-        }
+        
+        ejecutoFase1 = false;
+        pbFase2.progressProperty().unbind();
+        piFase2.progressProperty().unbind();
+        pbFase2.setProgress(0);
+        piFase2.setProgress(0);
+        ejecutoFase2 = false;
+        pbFase3.progressProperty().unbind();
+        piFase3.progressProperty().unbind();
+        pbFase3.setProgress(0);
+        piFase3.setProgress(0);
+        ejecutoFase3 = false;
+        pbTotal.progressProperty().unbind();
+        piTotal.progressProperty().unbind();
+        pbTotal.setProgress(0);
+        piTotal.setProgress(0);
         // FLAG DE EJECUCION TOTAL
         ejecutoFaseTotal = false;
         
@@ -393,9 +405,10 @@ public class PrincipalControlador implements Initializable {
     } 
    
     public void ejecutarFase2(int periodo) {
+        procesosDAO.borrarEjecucionesTemporal(2);
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
-        centroDAO.borrarDistribuciones(periodo, 1, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        centroDAO.borrarDistribucionesCascada(periodo, 1, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
 //        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
         //pbFase2.setProgress(0);
         //piFase2.setProgress(0);
@@ -437,10 +450,9 @@ public class PrincipalControlador implements Initializable {
                 cbCierreProceso.setSelected(false);
                 return;
             } else {
-                boolean existe1 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                boolean existe2 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                boolean existe3 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                if( existe1 && existe2 && existe3){
+                boolean existe1 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
+
+                if( existe1 ){
                     reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
                     reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                     reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
@@ -465,11 +477,9 @@ public class PrincipalControlador implements Initializable {
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                             return;
                         } else {
-                            boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                            boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                            boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                            
-                            if( existe4 && existe5 && existe6){
+                            boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
+
+                            if( existe4 ){
                                 reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
                                 reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                                 reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
@@ -481,11 +491,9 @@ public class PrincipalControlador implements Initializable {
                             }
                         }
                     }else{
-                        boolean existe4 = centroDAO.verificarDistribucionBolsasPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                        boolean existe5 = centroDAO.verificarDistribucionStaffPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-                        boolean existe6 = centroDAO.verificarDistribucionObjetoPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+                        boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
 
-                        if( existe4 && existe5 && existe6){
+                        if( existe4 ){
                             reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);

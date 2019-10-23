@@ -313,6 +313,12 @@ public class ObjetoDAO {
         ConexionBD.ejecutar(queryStr);
     }
     
+    public void borrarDistribucionesObjeto() {
+        String queryStr = String.format("" +
+                "TRUNCATE TABLE MS_objeto_lineas");
+        ConexionBD.ejecutar(queryStr);
+    }
+    
     public void insertarDistribucion(String oficinaCodigo, String bancaCodigo, String productoCodigo, int periodo, String entidadOrigenCodigo, double saldo, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         String queryStr = String.format(Locale.US, "" +

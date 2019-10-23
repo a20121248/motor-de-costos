@@ -236,4 +236,20 @@ public class DetalleGastoDAO {
         ConexionBD.ejecutarBatch();
         ConexionBD.cerrarStatement();
     }
+    
+    public boolean verificarInputPeriodo(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+            "SELECT count(1) cnt\n" +
+            "  FROM MS_CUENTA_PARTIDA_CENTRO\n" +
+            " WHERE periodo=%d AND reparto_tipo=%d",
+            periodo,repartoTipo);
+//        int cnt = -1;
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next())
+                return rs.getInt("cnt") > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(DetalleGastoDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 }

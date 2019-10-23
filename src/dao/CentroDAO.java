@@ -880,13 +880,17 @@ public class CentroDAO {
     
     public int borrarDistribuciones(int periodo, int iteracion, int repartoTipo) {
         String queryStr = String.format("" +
-                "DELETE FROM MS_CASCADA\n" +
-                " WHERE PERIODO=%d AND ITERACION>=%d AND REPARTO_TIPO=%d",
-                periodo, iteracion, repartoTipo);
+                "TRUNCATE TABLE MS_Cascada");
         return ConexionBD.ejecutar(queryStr);
     }
     
-    
+    public int borrarDistribucionesCascada(int periodo, int iteracion, int repartoTipo) {
+        String queryStr = String.format("" +
+                "DELETE  FROM MS_Cascada \n" +
+                "       WHERE PERIODO =%d AND iteracion >= %d and reparto_tipo = %d",
+                periodo,iteracion,repartoTipo);
+        return ConexionBD.ejecutar(queryStr);
+    }
     
     public void insertarDistribucion(String centroCodigo, int periodo, int iteracion, double saldo, String entidadOrigenCodigo) {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
