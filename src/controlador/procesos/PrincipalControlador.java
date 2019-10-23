@@ -294,6 +294,7 @@ public class PrincipalControlador implements Initializable {
                     2);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
         }
+        ejecutarFase2(periodoSeleccionado);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -353,12 +354,9 @@ public class PrincipalControlador implements Initializable {
             String mensaje = "Existe ejecución previa. \n¿Está seguro que desea reprocesar?";
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE TOTAL", mensaje)) return;
         }
-        if (menuControlador.repartoTipo == 1) {
-            ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2(periodoSeleccionado);
-            ejecutarFase3(periodoSeleccionado);
-        } else {
-        }
+        ejecutarFase1(periodoSeleccionado);
+        ejecutarFase2(periodoSeleccionado);
+        ejecutarFase3(periodoSeleccionado);
     }
     
     public void ejecutarFase1(int periodo) {
@@ -425,9 +423,10 @@ public class PrincipalControlador implements Initializable {
         executor.execute(df2t);
     }
     
-    public void ejecutarFase3(int periodo) {       
+    public void ejecutarFase3(int periodo) {
+        procesosDAO.borrarEjecucionesTemporal(3);
         procesosDAO.borrarEjecuciones(periodo, 3, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
                
         DistribuirFase3Task df3t = new DistribuirFase3Task(periodo, this);
         pbFase3.progressProperty().bind(df3t.progressProperty());
