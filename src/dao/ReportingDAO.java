@@ -561,19 +561,28 @@ public class ReportingDAO {
     }
     
     public boolean existeInformacionReporteBolsasOficinas(int periodo, int repartoTipo) {
-        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_BOLSAS_OFICINAS");
+        return existeInformacionReporteTabla(periodo, repartoTipo, 1);
     }
     
     public boolean existeInformacionReporteCascada(int periodo, int repartoTipo)  {
-        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_CASCADA");
+        return existeInformacionReporteTabla(periodo, repartoTipo, 2);
     }
     
     public boolean existeInformacionReporteObjetos(int periodo, int repartoTipo) {
-        return existeInformacionReporteTabla(periodo, repartoTipo, "MS_REPORTE_OBJETOS");
+        return existeInformacionReporteTabla(periodo, repartoTipo, 3);
     }
     
-    public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, String tabla) {
+    public boolean existeInformacionReporteTabla(int periodo, int repartoTipo, int nroReporte) {
         try {
+            String queryStr = String.format("SELECT COUNT(1) CNT FROM MS_EJECUCIONES_REPORTES WHERE PERIODO=%d AND REPARTO_TIPO=%d AND NRO_REPORTE=%d", periodo, repartoTipo, nroReporte);
+            ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+            while(rs.next())
+                return rs.getInt("CNT") != 0;
+        } catch (SQLException ex) {
+            
+        }
+        return false;
+        /*try {
             String queryStr = String.format("SELECT COUNT(1) CNT FROM %s PARTITION (P_%d) WHERE REPARTO_TIPO=%d", tabla, periodo, repartoTipo);
             ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
             while(rs.next())
@@ -581,8 +590,23 @@ public class ReportingDAO {
         } catch (SQLException ex) {
             
         }
-        return false;
+        return false;*/
     }
+    
+    public void insertarGeneracionReporte(int periodo, int repartoTipo, int nroReporte) {
+        String queryStr = String.format("" +
+                "DELETE FROM MS_EJECUCIONES_REPORTES\n" +
+                " WHERE PERIODO=%d AND REPARTO_TIPO=%d AND NRO_REPORTE=%d",
+                periodo, repartoTipo, nroReporte);
+        ConexionBD.ejecutarQuery(queryStr);
+        
+        queryStr = String.format("" +
+                "INSERT INTO MS_EJECUCIONES_REPORTES(PERIODO,REPARTO_TIPO,NRO_REPORTE,FECHA)\n" +
+                "SELECT %d PERIODO, %d REPARTO_TIPO, %d NRO_REPORTE, SYSDATE FECHA\n" +
+                "  FROM DUAL",
+                periodo, repartoTipo, nroReporte);
+        ConexionBD.ejecutarQuery(queryStr);
+    }    
     
     public void generarReporteBolsasOficinas(int periodo, int repartoTipo) {
         ConexionBD.ejecutarQuery(String.format("DELETE FROM MS_REPORTE_BOLSAS_OFICINAS PARTITION (P_%d) WHERE REPARTO_TIPO=%d", periodo, repartoTipo));
@@ -618,6 +642,8 @@ public class ReportingDAO {
                 " WHERE A.ITERACION=0 OR (A.ITERACION=-1 AND B.CENTRO_TIPO_CODIGO!='BOLSA' AND B.CENTRO_TIPO_CODIGO!='OFICINA')",
                 repartoTipo, periodo);
         ConexionBD.ejecutarQuery(queryStr);
+        
+        insertarGeneracionReporte(periodo, repartoTipo, 1);
     }
     
     public void generarReporteCascada(int periodo, int repartoTipo) {
@@ -664,6 +690,8 @@ public class ReportingDAO {
                 " WHERE A.PERIODO=%d AND A.REPARTO_TIPO=%d",
                 periodo, repartoTipo);
         ConexionBD.ejecutarQuery(queryStr);
+        
+        insertarGeneracionReporte(periodo, repartoTipo, 2);
     }
     
     public void generarReporteObjetos(int periodo, int repartoTipo) {
@@ -719,5 +747,7 @@ public class ReportingDAO {
                 "  AND A.REPARTO_TIPO=%d",
                 periodoStr, periodoStr, periodo, repartoTipo);
         ConexionBD.ejecutarQuery(queryStr);
+        
+        insertarGeneracionReporte(periodo, repartoTipo, 3);
     }
 }
