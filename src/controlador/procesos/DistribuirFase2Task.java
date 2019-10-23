@@ -122,6 +122,7 @@ public class DistribuirFase2Task extends Task {
         principalControlador.pbTotal.setProgress(fase*progresoTotal);
         updateProgress(maxNivel+1, maxNivel+1);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
+        procesosDAO.insertarEjecucionTemporal(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }
 }

@@ -70,6 +70,43 @@ public class ProcesosDAO {
         ConexionBD.ejecutar(queryStr);
     }
    
+   public void borrarEjecucionesTemporal(int fase) {
+        String queryStr = fase == 1 ? 
+                String.format("" +
+                "TRUNCATE TABLE MS_ejecucion_temporal",
+                fase)
+                :
+                String.format("" +
+                "DELETE FROM MS_ejecucion_temporal\n" +
+                " WHERE fase>=%d",
+                fase);
+        ConexionBD.ejecutar(queryStr);
+    }
+   
+    public boolean verificarProcesosEjecutadosPreviamenteTemporal(int periodo, int repartoTipo, int fase) {
+        String queryStr = String.format("" +
+            "SELECT count(1) cnt\n" +
+            "  FROM MS_ejecucion_temporal\n" +
+            " WHERE periodo=%d AND reparto_tipo=%d AND fase<%d",
+            periodo,repartoTipo,fase);
+//        int cnt = -1;
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next())
+                return rs.getInt("cnt") == (fase - 1);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProcesosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+   
+   public void insertarEjecucionTemporal(int periodo, int fase, int repartoTipo) {      
+        String queryStr = String.format("" +
+                "INSERT INTO MS_ejecucion_temporal(periodo,fase,reparto_tipo)\n" +
+                "VALUES(%d,%d,%d)",
+                periodo,fase,repartoTipo);
+        ConexionBD.ejecutar(queryStr);
+    }
+   
     public Date obtenerFechaEjecucion(int periodo, int fase, int repartoTipo) {
         String queryStr = String.format("" +
                 "SELECT fecha_ini\n" +

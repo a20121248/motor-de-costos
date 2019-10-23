@@ -239,10 +239,18 @@ public class Mensaje {
         alert.showAndWait();
     }
     
+    public void execute_phase_without_input_error(int nroPhase){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ejecutar FASE "+ nroPhase);
+        alert.setContentText("Necesita ingresar primero el Input del presente periodo.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+    
     public void execute_phase_currently_dontexist_dist_previus_error(int nroPhase){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ejecutar FASE "+ nroPhase);
-        alert.setContentText("No hay información de la distribucion actual. Por favor, ejecutar las fase anteriores.");
+        alert.setContentText("Necesita ejecutar las fases previas a la FASE " + nroPhase +".");
         alert.setHeaderText(null);
         alert.showAndWait();
     }

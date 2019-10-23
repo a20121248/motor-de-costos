@@ -83,6 +83,7 @@ public class DistribuirFase3Task extends Task {
         principalControlador.pbTotal.setProgress(1);
         updateProgress(1, 1);
         procesosDAO.insertarEjecucionFin(periodo, fase, principalControlador.menuControlador.repartoTipo);
+        procesosDAO.insertarEjecucionTemporal(periodo, fase, principalControlador.menuControlador.repartoTipo);
         return null;
     }
 }
