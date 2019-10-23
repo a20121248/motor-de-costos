@@ -456,7 +456,8 @@ public class PrincipalControlador implements Initializable {
                     reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                     reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                     procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                    //ingresar mensaje suscess
+                    
+                    menuControlador.mensaje.execute_close_process_success();
                 } else {
                     cbCierreProceso.setSelected(false);
                     menuControlador.mensaje.execute_close_process_empty_error();
@@ -474,6 +475,7 @@ public class PrincipalControlador implements Initializable {
                     if( existe1 || existe2 || existe3){
                         if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje2)){
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            menuControlador.mensaje.execute_close_process_success();
                             return;
                         } else {
                             boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
@@ -483,7 +485,8 @@ public class PrincipalControlador implements Initializable {
                                 reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                                 reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                                 procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                                // insertar mensaje de proceso completado
+                                
+                                menuControlador.mensaje.execute_close_process_success();
                             } else {
                                 cbCierreProceso.setSelected(false);
                                 menuControlador.mensaje.execute_close_process_empty_error();
@@ -497,7 +500,8 @@ public class PrincipalControlador implements Initializable {
                             reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                            //insertar mensaje de proceso completado
+                            
+                            menuControlador.mensaje.execute_close_process_success();
                         } else {
                             cbCierreProceso.setSelected(false);
                             menuControlador.mensaje.execute_close_process_empty_error();
