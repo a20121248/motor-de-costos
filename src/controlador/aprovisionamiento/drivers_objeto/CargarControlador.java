@@ -263,7 +263,7 @@ public class CargarControlador implements Initializable {
         Cell celda;
         menuControlador.navegador.omitirFilas(filas, 6);
         
-        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO PRODUCTO","NOMBRE PRODUCTO","CODIGO SUBCANAL","NOMBRE SUBCANAL","PORCENTAJE")))) {
+        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO LINEA","NOMBRE LINEA","CODIGO PRODUCTO","NOMBRE PRODUCTO","CODIGO CANAL","NOMBRE CANAL","CODIGO SUBCANAL","NOMBRE SUBCANAL","PORCENTAJE")))) {
             menuControlador.mensaje.upload_header_error(titulo);
             return;
         }
@@ -276,8 +276,12 @@ public class CargarControlador implements Initializable {
             
             celda = celdas.next();String codigoDriver = celda.getStringCellValue();
             celda = celdas.next();String nombreDriver = celda.getStringCellValue();
+            celda = celdas.next();
+            celda = celdas.next();
             celda = celdas.next();String codigoProducto = celda.getStringCellValue();
             celda = celdas.next();String nombreProducto = celda.getStringCellValue();
+            celda = celdas.next();
+            celda = celdas.next();
             celda = celdas.next();String codigoSubcanal = celda.getStringCellValue();
             celda = celdas.next();String nombreSubcanal = celda.getStringCellValue();
             celda = celdas.next();double porcentaje = (double)celda.getNumericCellValue();
