@@ -760,6 +760,13 @@ CREATE TABLE PACIFICO_DEV.MS_TRAZA
 ---------------------------------------------------------------------------------
 -------------- REPORTES ---------------------------------------------------------
 ---------------------------------------------------------------------------------
+CREATE TABLE PACIFICO_DEV.MS_EJECUCIONES_REPORTES (
+  PERIODO NUMBER(6) NOT NULL,
+  REPARTO_TIPO NUMBER(1) NOT NULL,
+  NRO_REPORTE NUMBER(1) NOT NULL,
+  FECHA DATE NOT NULL
+);
+
 CREATE TABLE PACIFICO_DEV.MS_REPORTE_BOLSAS_OFICINAS (
   REPARTO_TIPO NUMBER(1),
   PERIODO NUMBER(6),

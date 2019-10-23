@@ -29,10 +29,10 @@ public class ProcesosDAO {
    
     public int obtenerEstadoProceso(int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-            "SELECT estado\n" +
-            "  FROM MS_cierre_proceso\n" +
-            " WHERE periodo=%d AND reparto_tipo=%d",
-            periodo,repartoTipo);
+            "SELECT ESTADO\n" +
+            "  FROM MS_CIERRE_PROCESO\n" +
+            " WHERE PERIODO=%d AND REPARTO_TIPO=%d",
+            periodo, repartoTipo);
         int estado = -1;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next())
