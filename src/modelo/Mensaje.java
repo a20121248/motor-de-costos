@@ -324,4 +324,12 @@ public class Mensaje {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
+    
+    public void execute_close_process_success(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Ejecutar Cierre de Proceso ");
+        alert.setContentText("El cierre del proceso terminó con exito.");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

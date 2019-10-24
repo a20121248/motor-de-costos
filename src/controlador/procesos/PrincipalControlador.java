@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,10 +31,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
-import servicios.TrazabilidadServicio;
 
 public class PrincipalControlador implements Initializable {
     @FXML private Hyperlink lnkInicio;
@@ -294,6 +291,7 @@ public class PrincipalControlador implements Initializable {
                     2);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 2", mensaje)) return;
         }
+        ejecutarFase2(periodoSeleccionado);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -353,12 +351,9 @@ public class PrincipalControlador implements Initializable {
             String mensaje = "Existe ejecución previa. \n¿Está seguro que desea reprocesar?";
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE TOTAL", mensaje)) return;
         }
-        if (menuControlador.repartoTipo == 1) {
-            ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2(periodoSeleccionado);
-            ejecutarFase3(periodoSeleccionado);
-        } else {
-        }
+        ejecutarFase1(periodoSeleccionado);
+        ejecutarFase2(periodoSeleccionado);
+        ejecutarFase3(periodoSeleccionado);
     }
     
     public void ejecutarFase1(int periodo) {
@@ -394,13 +389,6 @@ public class PrincipalControlador implements Initializable {
         DistribuirFase1Task df1t = new DistribuirFase1Task(periodo, this);
         pbFase1.progressProperty().bind(df1t.progressProperty());
         piFase1.progressProperty().bind(df1t.progressProperty());
-//        if (menuControlador.repartoTipo == 1) {
-//            pbFase1.progressProperty().bind(df1t.progressProperty());
-//            piFase1.progressProperty().bind(df1t.progressProperty());
-//        } else {
-//            pbFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-//            piFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-//        }
         executor.execute(df1t);
     } 
    
@@ -409,9 +397,6 @@ public class PrincipalControlador implements Initializable {
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
         centroDAO.borrarDistribucionesCascada(periodo, 1, menuControlador.repartoTipo);
         objetoDAO.borrarDistribucionesObjeto();
-//        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
-        //pbFase2.setProgress(0);
-        //piFase2.setProgress(0);
         ejecutoFase2 = false;
         pbFase3.progressProperty().unbind();
         piFase3.progressProperty().unbind();
@@ -425,9 +410,10 @@ public class PrincipalControlador implements Initializable {
         executor.execute(df2t);
     }
     
-    public void ejecutarFase3(int periodo) {       
+    public void ejecutarFase3(int periodo) {
+        procesosDAO.borrarEjecucionesTemporal(3);
         procesosDAO.borrarEjecuciones(periodo, 3, menuControlador.repartoTipo);
-        objetoDAO.borrarDistribuciones(periodo, menuControlador.repartoTipo);
+        objetoDAO.borrarDistribucionesObjeto();
                
         DistribuirFase3Task df3t = new DistribuirFase3Task(periodo, this);
         pbFase3.progressProperty().bind(df3t.progressProperty());
@@ -457,7 +443,8 @@ public class PrincipalControlador implements Initializable {
                     reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                     reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                     procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                    //ingresar mensaje suscess
+                    
+                    menuControlador.mensaje.execute_close_process_success();
                 } else {
                     cbCierreProceso.setSelected(false);
                     menuControlador.mensaje.execute_close_process_empty_error();
@@ -475,6 +462,7 @@ public class PrincipalControlador implements Initializable {
                     if( existe1 || existe2 || existe3){
                         if (!menuControlador.navegador.mensajeConfirmar("Cierre de Proceso", mensaje2)){
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
+                            menuControlador.mensaje.execute_close_process_success();
                             return;
                         } else {
                             boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
@@ -484,7 +472,8 @@ public class PrincipalControlador implements Initializable {
                                 reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                                 reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                                 procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                                // insertar mensaje de proceso completado
+                                
+                                menuControlador.mensaje.execute_close_process_success();
                             } else {
                                 cbCierreProceso.setSelected(false);
                                 menuControlador.mensaje.execute_close_process_empty_error();
@@ -498,7 +487,8 @@ public class PrincipalControlador implements Initializable {
                             reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
                             reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
-                            //insertar mensaje de proceso completado
+                            
+                            menuControlador.mensaje.execute_close_process_success();
                         } else {
                             cbCierreProceso.setSelected(false);
                             menuControlador.mensaje.execute_close_process_empty_error();

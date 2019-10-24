@@ -112,11 +112,6 @@
       </SplitPane>
       <HBox alignment="TOP_RIGHT" layoutX="122.0" layoutY="183.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
-            <JFXButton fx:id="btnEditar" onAction="#btnEditarAction" styleClass="btn" text="Editar">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PENCIL" />
-               </graphic>
-            </JFXButton>
             <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
@@ -129,10 +124,14 @@
             </JFXButton>
          </children>
       </HBox>
-      <JFXButton fx:id="btnDescargar" layoutX="343.0" layoutY="571.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="50.0">
+      <JFXButton fx:id="btnDescargar" layoutX="343.0" layoutY="571.0" onAction="#btnDescargarAction" text="Descargar" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
       </JFXButton>
    </children>
 </AnchorPane>

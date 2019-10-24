@@ -4,11 +4,9 @@ import com.jfoenix.controls.JFXButton;
 import controlador.ConexionBD;
 import controlador.MenuControlador;
 import controlador.Navegador;
-import dao.BancaDAO;
 import dao.CargarExcelDAO;
 import dao.DriverDAO;
 import dao.DriverLineaDAO;
-import dao.OficinaDAO;
 import dao.ProductoDAO;
 import dao.SubcanalDAO;
 import java.io.File;
@@ -16,10 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -263,7 +257,7 @@ public class CargarControlador implements Initializable {
         Cell celda;
         menuControlador.navegador.omitirFilas(filas, 6);
         
-        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO PRODUCTO","NOMBRE PRODUCTO","CODIGO SUBCANAL","NOMBRE SUBCANAL","PORCENTAJE")))) {
+        if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","CODIGO LINEA","NOMBRE LINEA","CODIGO PRODUCTO","NOMBRE PRODUCTO","CODIGO CANAL","NOMBRE CANAL","CODIGO SUBCANAL","NOMBRE SUBCANAL","PORCENTAJE")))) {
             menuControlador.mensaje.upload_header_error(titulo);
             return;
         }
@@ -276,8 +270,12 @@ public class CargarControlador implements Initializable {
             
             celda = celdas.next();String codigoDriver = celda.getStringCellValue();
             celda = celdas.next();String nombreDriver = celda.getStringCellValue();
+            celda = celdas.next();
+            celda = celdas.next();
             celda = celdas.next();String codigoProducto = celda.getStringCellValue();
             celda = celdas.next();String nombreProducto = celda.getStringCellValue();
+            celda = celdas.next();
+            celda = celdas.next();
             celda = celdas.next();String codigoSubcanal = celda.getStringCellValue();
             celda = celdas.next();String nombreSubcanal = celda.getStringCellValue();
             celda = celdas.next();double porcentaje = (double)celda.getNumericCellValue();

@@ -139,8 +139,9 @@ public class ListarControlador implements Initializable {
             }
         });
         
-               List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
+        lblNumeroRegistros.setText("Número de registos: " + lista.size());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -191,6 +192,7 @@ public class ListarControlador implements Initializable {
         menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getDireccion());
         List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
+        lblNumeroRegistros.setText("Número de registos: " + lista.size());
         tabDetalleDriver.getItems().clear();
     }
     
