@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,10 +31,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
-import servicios.TrazabilidadServicio;
 
 public class PrincipalControlador implements Initializable {
     @FXML private Hyperlink lnkInicio;
@@ -392,13 +389,6 @@ public class PrincipalControlador implements Initializable {
         DistribuirFase1Task df1t = new DistribuirFase1Task(periodo, this);
         pbFase1.progressProperty().bind(df1t.progressProperty());
         piFase1.progressProperty().bind(df1t.progressProperty());
-//        if (menuControlador.repartoTipo == 1) {
-//            pbFase1.progressProperty().bind(df1t.progressProperty());
-//            piFase1.progressProperty().bind(df1t.progressProperty());
-//        } else {
-//            pbFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-//            piFase1Ingresos.progressProperty().bind(df1t.progressProperty());
-//        }
         executor.execute(df1t);
     } 
    
@@ -407,9 +397,6 @@ public class PrincipalControlador implements Initializable {
         procesosDAO.borrarEjecuciones(periodo, 2, menuControlador.repartoTipo);
         centroDAO.borrarDistribucionesCascada(periodo, 1, menuControlador.repartoTipo);
         objetoDAO.borrarDistribucionesObjeto();
-//        trazaDAO.borrarTrazaCascadaPeriodo(periodo);
-        //pbFase2.setProgress(0);
-        //piFase2.setProgress(0);
         ejecutoFase2 = false;
         pbFase3.progressProperty().unbind();
         piFase3.progressProperty().unbind();

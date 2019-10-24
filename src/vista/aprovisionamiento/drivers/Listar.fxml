@@ -133,10 +133,14 @@
             <String fx:value="small" />
          </styleClass>
       </JFXButton>
-      <JFXButton fx:id="btnDescargar" layoutX="333.0" layoutY="561.0" onAction="#btnDescargarAction" styleClass="btn" text="Descargar" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="50.0">
+      <JFXButton fx:id="btnDescargar" layoutX="333.0" layoutY="561.0" onAction="#btnDescargarAction" text="Descargar" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>
+         <styleClass>
+            <String fx:value="btn" />
+            <String fx:value="large" />
+         </styleClass>
       </JFXButton>
    </children>
 </AnchorPane>
