@@ -81,7 +81,7 @@ public class DriverLineaDAO {
     }
 
     public void insertarListaDriverCentroLineaBatch(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea, int repartoTipo) {
-        borrarListaDriverLinea(driverCodigo, periodo,repartoTipo);
+//        borrarListaDriverLinea(driverCodigo, periodo,repartoTipo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverLinea item: listaDriverLinea) {
             String queryStr = String.format(Locale.US, "" +
