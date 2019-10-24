@@ -75,13 +75,11 @@ public class PlanDeCuentaDAO {
     }
     
     public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
-        String queryStr = String.format(String.format("SELECT plan_de_cuenta_codigo FROM MS_PLAN_DE_CUENTA_LINEAS WHERE periodo=%d and reparto_tipo=%d", periodo,repartoTipo));
+        String queryStr = String.format(String.format("SELECT PLAN_DE_CUENTA_CODIGO FROM MS_PLAN_DE_CUENTA_LINEAS WHERE PERIODO=%d AND REPARTO_TIPO=%d", periodo, repartoTipo));
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            while(rs.next()) {
-                String codigo = rs.getString("plan_de_cuenta_codigo");
-                lista.add(codigo);
-            }
+            while(rs.next())
+                lista.add(rs.getString("PLAN_DE_CUENTA_CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -152,8 +150,8 @@ public class PlanDeCuentaDAO {
             else tipoGasto = 0;
             // inserto el nombre
             String queryStr = String.format("" +
-                    "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo,tipo_gasto, niif17_atribuible, niif17_tipo, niif17_clase, fecha_creacion,fecha_actualizacion)\n" +
-                    "VALUES ('%s','%s',%d,%d,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                    "INSERT INTO MS_plan_de_cuentas(codigo,nombre,esta_activo,reparto_tipo,tipo_gasto,niif17_atribuible,niif17_tipo,niif17_clase,fecha_creacion,fecha_actualizacion)\n" +
+                    "VALUES ('%s',q'[%s]',%d,%d,'%d','%s','%s','%s',TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigo,nombre,1,0,tipoGasto,niif17Atribuible, niif17Tipo, niif17Clase, fechaStr,fechaStr);
             ConexionBD.agregarBatch(queryStr);
         }

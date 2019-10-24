@@ -13,10 +13,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,25 +20,20 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
-import modelo.EntidadDistribucion;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -50,14 +41,7 @@ import servicios.ExcelServicio;
 import servicios.LogServicio;
 
 public class CargarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Label lblTitulo;
-    
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkAprovisionamiento;
-    @FXML private Hyperlink lnkDrivers;
-    @FXML private Hyperlink lnkCargar;
-    
+    // Variables de la vista    
     @FXML public ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
@@ -69,8 +53,6 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
-    @FXML private JFXButton btnAtras;
-    @FXML private JFXButton btnSubir;
     
     // Variables de la aplicacion
     public MenuControlador menuControlador;

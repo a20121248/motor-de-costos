@@ -11,6 +11,8 @@ import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
 import dao.DetalleGastoDAO;
+import dao.PartidaDAO;
+import dao.PlanDeCuentaDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,6 +82,8 @@ public class CargarControlador implements Initializable {
     public MenuControlador menuControlador;
     public DetalleGastoDAO detalleGastoDAO;
     CentroDAO centroDAO;
+    PlanDeCuentaDAO cuentaDAO;
+    PartidaDAO partidaDAO;
     int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
     String titulo;
@@ -88,6 +92,8 @@ public class CargarControlador implements Initializable {
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         detalleGastoDAO = new DetalleGastoDAO();
+        cuentaDAO = new PlanDeCuentaDAO();
+        partidaDAO = new PartidaDAO();
         centroDAO = new CentroDAO();
         titulo = "Detalle de Gasto";
     }
@@ -226,8 +232,9 @@ public class CargarControlador implements Initializable {
     
     private List<DetalleGasto> leerArchivo(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
-        List<String> listacodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodoSeleccionado, repartoTipo);
-        List<String> listacodigosCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+        List<String> lstCodigosCuentaPeriodo = cuentaDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+        List<String> lstCodigosPartidaPeriodo = partidaDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+        List<String> lstCodigosCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
         
         try (FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(f);){
@@ -251,7 +258,7 @@ public class CargarControlador implements Initializable {
                 fila = filas.next();
                 celdas = fila.cellIterator();
                 
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuentaContable = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
@@ -261,7 +268,7 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);double monto01 = Double.valueOf(celda.getStringCellValue());
                 DetalleGasto cuentaLeida;
                 if (repartoTipo == 1) {
-                    cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, true);
+                    cuentaLeida = new DetalleGasto(codigoCuenta, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, true);
                 } else {
                     celda = celdas.next();celda.setCellType(CellType.STRING);double monto02 = Double.valueOf(celda.getStringCellValue());
                     celda = celdas.next();celda.setCellType(CellType.STRING);double monto03 = Double.valueOf(celda.getStringCellValue());
@@ -274,19 +281,19 @@ public class CargarControlador implements Initializable {
                     celda = celdas.next();celda.setCellType(CellType.STRING);double monto10 = Double.valueOf(celda.getStringCellValue());
                     celda = celdas.next();celda.setCellType(CellType.STRING);double monto11 = Double.valueOf(celda.getStringCellValue());
                     celda = celdas.next();celda.setCellType(CellType.STRING);double monto12 = Double.valueOf(celda.getStringCellValue());
-                    cuentaLeida = new DetalleGasto(codigoCuentaContable, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, monto02, monto03, monto04, monto05, monto06, monto07, monto08, monto09, monto10, monto11, monto12, true);
+                    cuentaLeida = new DetalleGasto(codigoCuenta, nombreCuentaContable, codigoPartida, nombrePartida, codigoCentro, nombreCentro, monto01, monto02, monto03, monto04, monto05, monto06, monto07, monto08, monto09, monto10, monto11, monto12, true);
                 }                
-                List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuentaContable, periodoSeleccionado);
+                //List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuenta, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
-                String cuenta = listacodigosCuentaPeriodo.stream().filter(item -> codigoCuentaContable.equals(item)).findAny().orElse(null);
-                String partida = listacodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = listacodigosCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
+                String cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
+                String partida = lstCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
+                String centro = lstCodigosCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 if (cuenta!=null && partida!=null && centro!=null) {
                     listaCargar.add(cuentaLeida);
                 } else {
                     String detalleError = "";
                     String repartoTipoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
-                    if (cuenta == null) detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuentaContable, periodoSeleccionado, repartoTipoStr);
+                    if (cuenta == null) detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
                     if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodoSeleccionado, repartoTipoStr);
                     if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodoSeleccionado, repartoTipoStr);
                     cuentaLeida.setDetalleError(detalleError);

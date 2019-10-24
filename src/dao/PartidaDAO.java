@@ -25,8 +25,9 @@ import modelo.Tipo;
 public class PartidaDAO {
     public List<String> listarCodigos() {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT codigo FROM MS_partidas")) {
-            while(rs.next()) lista.add(rs.getString("codigo"));
+        try (ResultSet rs = ConexionBD.ejecutarQuery("SELECT CODIGO FROM MS_PARTIDAS")) {
+            while(rs.next())
+                lista.add(rs.getString("CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -35,8 +36,9 @@ public class PartidaDAO {
     
     public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
         List<String> lista = new ArrayList();
-        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT partida_codigo FROM MS_partida_lineas WHERE periodo=%d and reparto_tipo=%d", periodo,repartoTipo))) {
-            while(rs.next()) lista.add(rs.getString("partida_codigo"));
+        try (ResultSet rs = ConexionBD.ejecutarQuery(String.format("SELECT PARTIDA_CODIGO FROM MS_PARTIDA_LINEAS WHERE PERIODO=%d AND REPARTO_TIPO=%d", periodo,repartoTipo))) {
+            while(rs.next())
+                lista.add(rs.getString("PARTIDA_CODIGO"));
         } catch (SQLException ex) {
             Logger.getLogger(PartidaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -59,7 +61,6 @@ public class PartidaDAO {
                     "INSERT INTO MS_PARTIDAS(CODIGO,NOMBRE,GRUPO_GASTO,TIPO_GASTO,REPARTO_TIPO,FECHA_CREACION,FECHA_ACTUALIZACION)\n" +
                     "VALUES ('%s',q'[%s]','%s','%d',0,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                     codigo,nombre,grupoGasto,tipoGasto,fechaStr,fechaStr);
-//            System.out.println(queryStr+";");
             ConexionBD.agregarBatch(queryStr);
             
         }

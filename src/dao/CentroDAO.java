@@ -120,17 +120,11 @@ public class CentroDAO {
     }
     
     public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
-                "SELECT CENTRO_CODIGO\n" +
-                "  FROM MS_CENTRO_LINEAS\n" +
-                " WHERE PERIODO=%d\n" +
-                "   AND REPARTO_TIPO=%d", periodo, repartoTipo);
-
+        String queryStr = String.format("SELECT CENTRO_CODIGO FROM MS_CENTRO_LINEAS WHERE PERIODO=%d AND REPARTO_TIPO=%d", periodo, repartoTipo);
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            while(rs.next()) {
+            while(rs.next())
                 lista.add(rs.getString("CENTRO_CODIGO"));
-            }
         } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
