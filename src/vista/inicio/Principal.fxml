@@ -89,7 +89,7 @@
                   </SplitPane>
                   <AnchorPane fx:id="apFase1" layoutX="28.0" layoutY="232.0" prefHeight="45.0" styleClass="seccion-titulo" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="290.0">
                      <children>
-                        <Label layoutX="31.0" layoutY="15.0" text="FASE 1:  Parametría de Cuentas Contables, Partidas y Centros de Costo." />
+                        <Label layoutX="31.0" layoutY="15.0" text="Maestros" />
                      </children>
                   </AnchorPane>
                   <SplitPane fx:id="spGrupos" dividerPositions="0.5" layoutX="377.0" layoutY="260.0" prefHeight="135.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="355.0">
@@ -100,7 +100,7 @@
                                 <items>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                        <children>
-                                          <JFXButton fx:id="btnF1Grupos1" onAction="#btnF1GruposAction" text="Cuentas Contables" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="20.0">
+                                          <JFXButton fx:id="btnCuentasContables" onAction="#btnCuentasContablesAction" text="Cuentas Contables" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="20.0">
                                              <graphic>
                                                 <FontAwesomeIconView glyphName="CUBES" />
                                              </graphic>
@@ -114,7 +114,7 @@
                                     </AnchorPane>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                        <children>
-                                          <JFXButton fx:id="btnF1Grupos2" onAction="#btnF1GruposAction" text="Partidas" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="20.0">
+                                          <JFXButton fx:id="btnPartidas" onAction="#btnPartidasAction" text="Partidas" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="20.0">
                                              <graphic>
                                                 <FontAwesomeIconView glyphName="CUBES" />
                                              </graphic>
@@ -133,7 +133,7 @@
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
                               <TextArea layoutX="127.0" layoutY="17.0" prefHeight="90.0" prefWidth="171.0" text="XXXX" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                              <JFXButton fx:id="btnF1Grupos" layoutX="46.0" layoutY="64.0" onAction="#btnF1GruposAction" text="Centros" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
+                              <JFXButton fx:id="btnCentros" layoutX="46.0" layoutY="64.0" onAction="#btnCentrosAction" text="Centros" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -150,7 +150,7 @@
                      <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <JFXButton fx:id="btnF2CECO1" layoutX="46.0" layoutY="64.0" onAction="#btnF2CECOAction" text="Productos" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
+                              <JFXButton fx:id="btnProductos" layoutX="46.0" layoutY="64.0" onAction="#btnProductosAction" text="Productos" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -164,7 +164,7 @@
                         </AnchorPane>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <JFXButton fx:id="btnF2CECO111" layoutX="56.0" layoutY="74.0" onAction="#btnF2CECOAction" text="Subcanales" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
+                              <JFXButton fx:id="btnSubcanles" layoutX="56.0" layoutY="74.0" onAction="#btnSubcanlesAction" text="Subcanales" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="17.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -180,14 +180,14 @@
                   </SplitPane>
                   <AnchorPane fx:id="apFase2" layoutX="6.0" layoutY="434.0" prefHeight="45.0" styleClass="seccion-titulo" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="570.0">
                      <children>
-                        <Label layoutX="30.0" layoutY="15.0" text="FASE 2: Asignación Drivers a Centros de Costos" />
+                        <Label layoutX="30.0" layoutY="15.0" text="Asignación Drivers a Centros de Costos" />
                      </children>
                   </AnchorPane>
                   <SplitPane fx:id="spGastos" dividerPositions="0.33, 0.67" layoutX="387.0" layoutY="270.0" prefHeight="135.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="620.0">
                      <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <JFXButton layoutX="46.0" layoutY="64.0" text="Centros&#10;Bolsas u Oficinas" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
+                              <JFXButton fx:id="btnBolsasDriver" layoutX="46.0" layoutY="64.0" onAction="#btnBolsasDriverAction" text="Centros&#10;Bolsas u Oficinas" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="45.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -201,7 +201,7 @@
                         </AnchorPane>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <JFXButton layoutX="46.0" layoutY="64.0" text="Centros &#10;Staff y Soporte" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
+                              <JFXButton fx:id="btnCentroDriver" layoutX="46.0" layoutY="64.0" onAction="#btnCentroDriverAction" text="Centros &#10;Staff y Soporte" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="45.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>
@@ -215,7 +215,7 @@
                         </AnchorPane>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <JFXButton layoutX="46.0" layoutY="64.0" text="Centros&#10;Objetos de Costo." AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="55.0">
+                              <JFXButton fx:id="btnObjetosDriver" layoutX="46.0" layoutY="64.0" onAction="#btnObjetosDriverAction" text="Centros&#10;Objetos de Costo." AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="45.0">
                                  <graphic>
                                     <FontAwesomeIconView glyphName="CUBES" />
                                  </graphic>

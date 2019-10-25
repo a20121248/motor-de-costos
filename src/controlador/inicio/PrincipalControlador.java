@@ -99,30 +99,47 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }
     
-    @FXML void btnF1GruposAction(ActionEvent event) {
-//        menuControlador.objeto = "Todos";
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO);
-    }
-    
-    @FXML void btnF1AdministrativosAction(ActionEvent event) {
-//        menuControlador.objeto = "Administrativo";
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
-    }
-    
-    @FXML void btnF1OperativosAction(ActionEvent event) {
-//        menuControlador.objeto = "Operativo";
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_GRUPO_CUENTA_LISTAR);
+    @FXML
+    void btnBolsasDriverAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_LISTAR);
     }
 
-    @FXML void btnF2AdministrativosAction(ActionEvent event) {
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
+    @FXML
+    void btnCentroDriverAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
     }
-    
-    @FXML void btnF2OperativosAction(ActionEvent event) {
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR);
+
+    @FXML
+    void btnCentrosAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO);
     }
-    
-    @FXML void btnF2CECOAction(ActionEvent event) {
-//        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR);
+
+    @FXML
+    void btnCuentasContablesAction(ActionEvent event) {
+        menuControlador.objeto = "Todos";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_CUENTA_PARTIDA_LISTAR);
     }
+
+    @FXML
+    void btnObjetosDriverAction(ActionEvent event) {
+    menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_OBJETOS_LISTAR);
+    }
+
+    @FXML
+    void btnPartidasAction(ActionEvent event) {
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO);
+    }
+
+    @FXML
+    void btnProductosAction(ActionEvent event) {
+        menuControlador.objetoTipo = "PRO";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    }
+
+    @FXML
+    void btnSubcanlesAction(ActionEvent event) {
+        menuControlador.objetoTipo = "SCA";
+        menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_PRINCIPAL);
+    }
+
 }
