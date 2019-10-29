@@ -108,7 +108,7 @@
             <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
             <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
                <graphic>
-                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+                  <FontAwesomeIconView glyphName="FILE_TEXT_ALT" />
                </graphic>
                <styleClass>
                   <String fx:value="btn" />

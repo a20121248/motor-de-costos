@@ -61,8 +61,6 @@ public class CargarControlador implements Initializable {
     CentroDAO centroDAO;
     List<DriverCentro> lstDriversCargar;
     int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     
     CargarExcelDAO cargarExcelDAO;
     LogServicio logServicio;
@@ -77,11 +75,12 @@ public class CargarControlador implements Initializable {
         driverDAO = new DriverDAO();
         driverLineaDAO = new DriverLineaDAO();
         centroDAO = new CentroDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
         cargarExcelDAO = new CargarExcelDAO();
-        this.titulo = "Drivers";
+        titulo = "Drivers";
+        if (menuControlador.objeto != null)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
@@ -89,10 +88,9 @@ public class CargarControlador implements Initializable {
         titulo1 = "Centros de Costos";
         if (menuControlador.repartoTipo == 2) {
             cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
-            periodoSeleccionado = menuControlador.periodo;
+            periodoSeleccionado = periodoSeleccionado / 100 * 100;
         }
+        
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
@@ -102,8 +100,8 @@ public class CargarControlador implements Initializable {
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
@@ -270,7 +268,7 @@ public class CargarControlador implements Initializable {
         findError = false;
         if(tabListar.getItems().isEmpty()){
             menuControlador.mensaje.upload_empty();
-        }else{
+        } else {
             for (DriverCentro driver: tabListar.getItems()) {
                 if(driver.getFlagCargar()){
                     if (driver.getEsNuevo()) {
@@ -278,10 +276,9 @@ public class CargarControlador implements Initializable {
                     }
                     StringBuilder sbMsj = new StringBuilder("");
                     List<DriverLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo, sbMsj);
-                    String msj = "";
-                    msj = sbMsj.toString();
+                    String msj = sbMsj.toString();
                     double porcentaje = cargarExcelDAO.porcentajeTotalDriverCentro(driver.getCodigo());
-                    if( porcentaje != 100.00){
+                    if (porcentaje != 100.00){
                         findError = true;
                         msj += String.format("- Para el driver %s, los porcentajes de los centros suman %.4f. Debe sumar 100.00%%.\r\n",driver.getCodigo(),porcentaje);
                         logDetail += String.format("Driver %s: No se pudo cargar. Existen los siguientes errores:\r\n",driver.getCodigo());
@@ -303,7 +300,7 @@ public class CargarControlador implements Initializable {
                     }
                 }
             }
-            crearReporteLOG();
+            crearReporteLOG(periodoSeleccionado);
             if(findError == true){
                 menuControlador.mensaje.upload_success_with_error(titulo);
             }else {
@@ -321,11 +318,11 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
-    void crearReporteLOG(){
+    void crearReporteLOG(int periodo){
         logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_CENTRO.log";
         menuControlador.Log.crearArchivo(logName);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA: PERIODO " + periodo);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivo(logDetail);
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
