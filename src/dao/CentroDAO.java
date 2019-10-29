@@ -933,7 +933,7 @@ public class CentroDAO {
                 "    JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
                 "    JOIN ms_bolsa_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.centro_codigo = a.centro_origen_codigo AND SUBSTR(c.cuenta_contable_codigo,1,3) = SUBSTR(a.cuenta_contable_origen_codigo,1,3) AND SUBSTR(c.cuenta_contable_codigo,5,11) = SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND c.partida_codigo = a.partida_origen_codigo\n" +
                 "    JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
-                "  WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo=%d\n" +
+                "  WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo=%d AND A.SALDO>=0.0001\n" +
                 ")\n" +
                 "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
                 periodoStr,periodoStr,periodo,repartoTipo);
