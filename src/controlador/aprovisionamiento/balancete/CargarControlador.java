@@ -36,7 +36,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import modelo.Centro;
+import modelo.CuentaContable;
 import modelo.DetalleGasto;
+import modelo.Partida;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -232,9 +235,9 @@ public class CargarControlador implements Initializable {
     
     private List<DetalleGasto> leerArchivo(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
-        List<String> lstCodigosCuentaPeriodo = cuentaDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
-        List<String> lstCodigosPartidaPeriodo = partidaDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
-        List<String> lstCodigosCentroPeriodo = centroDAO.listarCodigosPeriodo(periodoSeleccionado, repartoTipo);
+        List<CuentaContable> lstCodigosCuentaPeriodo = cuentaDAO.listar(periodoSeleccionado,null,menuControlador.repartoTipo);
+        List<Partida> lstCodigosPartidaPeriodo = partidaDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<Centro> lstCodigosCentroPeriodo = centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
         
         try (FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(f);){
@@ -285,17 +288,17 @@ public class CargarControlador implements Initializable {
                 }                
                 //List<String> listacodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuenta, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
-                String cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
-                String partida = lstCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
-                String centro = lstCodigosCentroPeriodo.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
+                CuentaContable cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item.getCodigo()) && nombreCuentaContable.equals(item.getNombre())).findAny().orElse(null);
+                Partida partida = lstCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item.getCodigo()) && nombrePartida.equals(item.getNombre())).findAny().orElse(null);
+                Centro centro = lstCodigosCentroPeriodo.stream().filter(item -> codigoCentro.equals(item.getCodigo()) && nombreCentro.equals(item.getNombre())).findAny().orElse(null);
                 if (cuenta!=null && partida!=null && centro!=null) {
                     listaCargar.add(cuentaLeida);
                 } else {
                     String detalleError = "";
                     String repartoTipoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
-                    if (cuenta == null) detalleError += String.format("\n  - La cuenta contable con código '%s' no existe en el periodo %d del %s.", codigoCuenta, periodoSeleccionado, repartoTipoStr);
-                    if (partida == null) detalleError += String.format("\n  - La partida con código '%s' no existe en el periodo %d del %s.", codigoPartida, periodoSeleccionado, repartoTipoStr);
-                    if (centro == null) detalleError += String.format("\n  - El centro de costos con código '%s' no existe en el periodo %d del %s.", codigoCentro, periodoSeleccionado, repartoTipoStr);
+                    if (cuenta == null) detalleError += String.format("\r\n  - La cuenta contable '%s' con código '%s' no existe en el periodo %d del %s.",nombreCuentaContable, codigoCuenta, periodoSeleccionado, repartoTipoStr);
+                    if (partida == null) detalleError += String.format("\r\n  - La partida '%s' con código '%s' no existe en el periodo %d del %s.", nombrePartida, codigoPartida, periodoSeleccionado, repartoTipoStr);
+                    if (centro == null) detalleError += String.format("\r\n  - El centro '%s' de costos con código '%s' no existe en el periodo %d del %s.", nombreCentro, codigoCentro, periodoSeleccionado, repartoTipoStr);
                     cuentaLeida.setDetalleError(detalleError);
                     cuentaLeida.setEstado(false);
                 }
@@ -374,6 +377,7 @@ public class CargarControlador implements Initializable {
 
     // Acción del botón 'Cancelar'    
     @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }
 }

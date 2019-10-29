@@ -134,6 +134,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkCargarAction(ActionEvent event) {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_CARGAR);
     }
     
@@ -329,6 +330,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_LISTAR);
     }
     

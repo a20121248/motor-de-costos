@@ -73,10 +73,12 @@ public class PrincipalControlador implements Initializable {
                         menuControlador.lblTitulo.setText(opcion);
                         if (opcion.equals("GASTOS")) {
                             menuControlador.repartoTipo = 1;
+                            menuControlador.objeto = null;
                             menuControlador.apHeader.getStyleClass().remove("ingresos");
                             menuControlador.apSidebar.getStyleClass().remove("ingresos");
                         } else if (opcion.equals("PRESUPUESTO")) {
                             menuControlador.repartoTipo = 2;
+                            menuControlador.objeto = null;
                             menuControlador.apHeader.getStyleClass().add("ingresos");
                             menuControlador.apSidebar.getStyleClass().add("ingresos");
                         }

@@ -68,6 +68,10 @@ public class ListarControlador implements Initializable {
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
         this.menuControlador = menuControlador;
+        if (menuControlador.objeto != null)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
@@ -75,14 +79,12 @@ public class ListarControlador implements Initializable {
         titulo = " Driver - Objetos de Costos";
         if (menuControlador.repartoTipo == 2) {
             cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo - menuControlador.periodo%100;
-        } else {
-            periodoSeleccionado = menuControlador.periodo;
+            periodoSeleccionado = periodoSeleccionado / 100 * 100;
         }
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
