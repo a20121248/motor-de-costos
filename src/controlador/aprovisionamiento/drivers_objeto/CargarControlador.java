@@ -44,14 +44,7 @@ import servicios.ExcelServicio;
 import servicios.LogServicio;
 
 public class CargarControlador implements Initializable {
-    // Variables de la vista
-    @FXML private Label lblTitulo;
-    
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkAprovisionamiento;
-    @FXML private Hyperlink lnkDrivers;
-    @FXML private Hyperlink lnkCargar;
-    
+    // Variables de la vista    
     @FXML public ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
@@ -62,9 +55,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableColumn<DriverObjeto, String> tabcolNombre;
     @FXML private Label lblNumeroRegistros;
     
-    @FXML private JFXButton btnDescargarLog;    
-    @FXML private JFXButton btnSubir;
-    @FXML private JFXButton btnAtras;
+    @FXML private JFXButton btnDescargarLog;
     
     // Variables de la aplicacion
     public MenuControlador menuControlador;
@@ -75,8 +66,6 @@ public class CargarControlador implements Initializable {
     ProductoDAO productoDAO;
     SubcanalDAO subcanalDAO;
     int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     CargarExcelDAO cargarExcelDAO;
     LogServicio logServicio;
     String logName;
@@ -92,11 +81,12 @@ public class CargarControlador implements Initializable {
         driverLineaDAO = new DriverLineaDAO();
         productoDAO = new ProductoDAO();
         subcanalDAO = new SubcanalDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
         cargarExcelDAO = new CargarExcelDAO();
         this.titulo = "Drivers - Objetos de Costos";
+        if (menuControlador.objeto != null)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
@@ -104,9 +94,7 @@ public class CargarControlador implements Initializable {
         titulo1 = "Objetos de Costos";
         if (menuControlador.repartoTipo == 2) {
             cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
-            periodoSeleccionado = menuControlador.periodo;
+            periodoSeleccionado = periodoSeleccionado / 100 * 100;
         }
         // tabla dimensiones
         tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
@@ -117,8 +105,8 @@ public class CargarControlador implements Initializable {
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         // meses
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;

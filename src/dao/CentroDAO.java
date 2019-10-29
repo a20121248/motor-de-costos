@@ -120,17 +120,11 @@ public class CentroDAO {
     }
     
     public List<String> listarCodigosPeriodo(int periodo, int repartoTipo) {
-        String queryStr = String.format("" +
-                "SELECT CENTRO_CODIGO\n" +
-                "  FROM MS_CENTRO_LINEAS\n" +
-                " WHERE PERIODO=%d\n" +
-                "   AND REPARTO_TIPO=%d", periodo, repartoTipo);
-
+        String queryStr = String.format("SELECT CENTRO_CODIGO FROM MS_CENTRO_LINEAS WHERE PERIODO=%d AND REPARTO_TIPO=%d", periodo, repartoTipo);
         List<String> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
-            while(rs.next()) {
+            while(rs.next())
                 lista.add(rs.getString("CENTRO_CODIGO"));
-            }
         } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -429,15 +423,14 @@ public class CentroDAO {
 //    Verifica si esta siendo usado en las lineas
     public int verificarObjetoEnDetalleGasto(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "SELECT count(*) as COUNT\n"+
-                "  FROM MS_cuenta_partida_centro\n" +
-                " WHERE centro_codigo='%s' AND periodo = '%s' AND reparto_tipo='%d' ",
+                "SELECT COUNT(1) COUNT\n"+
+                "  FROM MS_CUENTA_PARTIDA_CENTRO\n" +
+                " WHERE CENTRO_CODIGO='%s' AND PERIODO=%d AND REPARTO_TIPO=%d",
                 codigo,periodo,repartoTipo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
-            while(rs.next()) {
+            while(rs.next())
                 cont = rs.getInt("COUNT");
-            }    
         } catch (SQLException ex) {
             Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

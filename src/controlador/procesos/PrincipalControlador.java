@@ -332,6 +332,10 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE TOTAL", "La FASE TOTAL se está ejecutando actualmente.");
             return;
         }
+        if(!detalleGastoDAO.verificarInputPeriodo(periodoSeleccionado, menuControlador.repartoTipo)){
+            menuControlador.mensaje.execute_phase_without_input_error(1);
+            return;
+        }
         int cantBolsasSinDriver = centroDAO.enumerarListaCentroBolsaSinDriver(periodoSeleccionado,menuControlador.repartoTipo);
         int cantCentrosSinDriver = centroDAO.cantCentrosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
         int cantCentroObjetosSinDriver = centroDAO.cantCentrosObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);

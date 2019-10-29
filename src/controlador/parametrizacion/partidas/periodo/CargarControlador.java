@@ -21,7 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -65,20 +64,22 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         partidaDAO = new PartidaDAO();
         titulo = "Partidas";
+        if (menuControlador.objeto != null)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = menuControlador.periodo;
-        else
-            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        if (menuControlador.repartoTipo != 1)
+            periodoSeleccionado = periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
@@ -89,7 +90,7 @@ public class CargarControlador implements Initializable {
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
@@ -154,7 +155,6 @@ public class CargarControlador implements Initializable {
         List<String> listaCodigos = partidaDAO.listarCodigos();
         listaCargar = new ArrayList();
         logDetails = "";
-        
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -176,6 +176,7 @@ public class CargarControlador implements Initializable {
                 
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
+                if (periodo == 0) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 
@@ -217,6 +218,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO);
     }
     

@@ -64,21 +64,22 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         titulo = "Centro de Costos";
-
+        if (menuControlador.objeto != null)
+            periodoSeleccionado = (int) menuControlador.objeto;
+        else
+            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = menuControlador.periodo;
-        else
-            periodoSeleccionado = menuControlador.periodo / 100 * 100;
+        if (menuControlador.repartoTipo != 1)
+            periodoSeleccionado = periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
+            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
@@ -89,7 +90,7 @@ public class CargarControlador implements Initializable {
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)

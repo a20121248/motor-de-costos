@@ -8,6 +8,7 @@ import dao.CentroDriverDAO;
 import dao.DetalleGastoDAO;
 import dao.DriverDAO;
 import dao.PartidaDAO;
+import dao.PlanDeCuentaDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,8 +63,9 @@ public class CargarControlador implements Initializable {
     
     // Variables de la aplicacion
     public MenuControlador menuControlador;
-    CentroDAO centroDAO;
+    PlanDeCuentaDAO cuentaDAO;
     PartidaDAO partidaDAO;
+    CentroDAO centroDAO;
     DriverDAO driverDAO;
     CentroDriverDAO centroDriverDAO;
     DetalleGastoDAO detalleGastoDAO;
@@ -76,8 +78,9 @@ public class CargarControlador implements Initializable {
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
-        centroDAO = new CentroDAO();
+        cuentaDAO = new PlanDeCuentaDAO();
         partidaDAO = new PartidaDAO();
+        centroDAO = new CentroDAO();
         driverDAO = new DriverDAO();
         detalleGastoDAO = new DetalleGastoDAO();
         centroDriverDAO = new CentroDriverDAO();
@@ -173,7 +176,8 @@ public class CargarControlador implements Initializable {
     
     private List<CentroDriver> leerArchivo(String rutaArchivo, int periodo, int repartoTipo) {
         List<CentroDriver> lista = new ArrayList();
-        List<String> lstCodigosCuentaPeriodo = detalleGastoDAO.listarCodigosCuenta_CuentaPartida(periodo, repartoTipo);
+        List<String> lstCodigosCuentaPeriodo = cuentaDAO.listarCodigosPeriodo(periodo, repartoTipo);
+        List<String> lstCodigosPartidaPeriodo = partidaDAO.listarCodigosPeriodo(periodo, repartoTipo);
         List<String> lstCodigosCentros = centroDAO.listarCodigosCentrosPeriodo(periodo, repartoTipo, Arrays.asList("BOLSA", "OFICINA"));
         List<String> lstCodigosDrivers = driverDAO.listarCodigosDriverPeriodo(periodo, repartoTipo, "CECO");
         
@@ -215,10 +219,9 @@ public class CargarControlador implements Initializable {
                     return null;
                 }
                 
-                List<String> listaCodigosPartidaPeriodo = detalleGastoDAO.listarCodigosPartidas_CuentaPartida(codigoCuenta, periodoSeleccionado);
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
-                String partida = listaCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
+                String partida = lstCodigosPartidaPeriodo.stream().filter(item -> codigoPartida.equals(item)).findAny().orElse(null);
                 String centro = lstCodigosCentros.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 // Validar la existencia del Driver en periodoLeido a Cargar
                 String driver = lstCodigosDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);

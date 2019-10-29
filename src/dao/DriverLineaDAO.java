@@ -55,7 +55,7 @@ public class DriverLineaDAO {
     public void borrarListaDriverLinea(String driverCodigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
                 "DELETE FROM MS_driver_lineas\n" +
-                " WHERE driver_codigo='%s' AND periodo=%d and reparto_tipo = '%d' ",
+                " WHERE driver_codigo='%s' AND PERIODO=%d AND REPARTO_TIPO=%d",
                 driverCodigo,
                 periodo,
                 repartoTipo);
@@ -65,15 +65,14 @@ public class DriverLineaDAO {
     //    Verifica si esta siendo usado en las lineas
     public int verificarObjetoEnDriver(String codigo, int periodo, int repartoTipo) {
         String queryStr = String.format("" +
-                "SELECT count(*) as COUNT\n"+
-                "  FROM MS_driver_lineas\n" +
-                " WHERE ENTIDAD_DESTINO_CODIGO='%s' AND periodo = '%s' AND reparto_tipo='%d'",
+                "SELECT COUNT(1) COUNT\n"+
+                "  FROM MS_DRIVER_LINEAS\n" +
+                " WHERE ENTIDAD_DESTINO_CODIGO='%s' AND PERIODO=%d AND REPARTO_TIPO=%d",
                 codigo,periodo,repartoTipo);
         int cont=-1;
         try(ResultSet rs = ConexionBD.ejecutarQuery(queryStr);) {
-            while(rs.next()) {
+            while(rs.next())
                 cont = rs.getInt("COUNT");
-            }    
         } catch (SQLException ex) {
             Logger.getLogger(PlanDeCuentaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -81,7 +80,6 @@ public class DriverLineaDAO {
     }
 
     public void insertarListaDriverCentroLineaBatch(String driverCodigo, int periodo, List<DriverLinea> listaDriverLinea, int repartoTipo) {
-//        borrarListaDriverLinea(driverCodigo, periodo,repartoTipo);
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DriverLinea item: listaDriverLinea) {
             String queryStr = String.format(Locale.US, "" +
