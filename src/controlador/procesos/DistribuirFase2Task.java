@@ -70,7 +70,7 @@ public class DistribuirFase2Task extends Task {
 //            }
 //            ConexionBD.ejecutarBatch();
 //            System.out.println("iter "+iter+" : "+new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-            centroDAO.insertarDistribucionCascadaPorNivel(iter, periodo, principalControlador.menuControlador.repartoTipo);
+            centroDAO.insertarDistribucionCascadaPorNivel(iter, periodo, principalControlador.menuControlador.repartoTipo,0.0001);
             
             principalControlador.piTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);

@@ -940,7 +940,7 @@ public class CentroDAO {
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo) {
+    public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo, double precision) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
                 "INSERT INTO ms_CASCADA\n" +
@@ -963,13 +963,13 @@ public class CentroDAO {
                 "  JOIN ms_driver_lineas D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
                 "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo=%d AND B.NIVEL = %d\n" +
                 "  )\n" +
-                "  WHERE abs(MONTO)>=0.00001\n" +
+                "  WHERE abs(MONTO)>= %f\n" +
                 "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
-                periodoStr,periodoStr,periodo,repartoTipo,iteracion);
+                periodoStr,periodoStr,periodo,repartoTipo,iteracion, precision);
         return ConexionBD.ejecutar(queryStr);
     }
     
-    public int insertarDistribucionCentrosObjetosCosto(String codigo,int periodo, int repartoTipo) {
+    public int insertarDistribucionCentrosObjetosCosto(String codigo,int periodo, int repartoTipo, double precision) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
                 "INSERT INTO MS_OBJETO_LINEAS\n" +
@@ -992,8 +992,8 @@ public class CentroDAO {
                 "  JOIN MS_OBJETO_DRIVER C ON C.CENTRO_CODIGO = A.CENTRO_CODIGO AND c.periodo = %s AND c.reparto_tipo = a.reparto_tipo AND c.grupo_gasto = a.grupo_gasto\n" +
                 "  JOIN MS_DRIVER_OBJETO_LINEAS D ON d.driver_codigo = c.driver_codigo AND d.periodo = %s AND d.reparto_tipo = a.reparto_tipo\n" +
                 "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
-                "  WHERE a.periodo =%d AND a.reparto_tipo =%d AND a.centro_codigo = '%s'",
-                periodoStr,periodoStr,periodo,repartoTipo, codigo);
+                "  WHERE a.periodo =%d AND a.reparto_tipo =%d AND a.centro_codigo = '%s' and abs( a.saldo * d.porcentaje /100.00) >= %f",
+                periodoStr,periodoStr,periodo,repartoTipo, codigo, precision);
         return ConexionBD.ejecutar(queryStr);
     }
     
