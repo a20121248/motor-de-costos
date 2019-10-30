@@ -329,6 +329,7 @@ public class CargarControlador implements Initializable {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
                 }
             }
+            btnSubir.setDisable(true);
             btnDescargarLog.setVisible(true);
         }
     }
