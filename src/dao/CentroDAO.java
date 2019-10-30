@@ -963,6 +963,7 @@ public class CentroDAO {
                 "  JOIN ms_driver_lineas D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
                 "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo=%d AND B.NIVEL = %d\n" +
                 "  )\n" +
+                "  WHERE abs(MONTO)>=0.00001\n" +
                 "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
                 periodoStr,periodoStr,periodo,repartoTipo,iteracion);
         return ConexionBD.ejecutar(queryStr);

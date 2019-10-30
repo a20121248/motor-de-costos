@@ -285,8 +285,9 @@ public class CargarControlador implements Initializable {
                         logDetail += msj + "\r\n";
                     } else {
                         if (lista != null) {
+                            driverLineaDAO.borrarListaDriverLinea(driver.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
                             ConexionBD.crearStatement();
-                            ConexionBD.tamanhoBatchMax = 10000;
+                            ConexionBD.tamanhoBatchMax = 1000;
                             driverLineaDAO.insertarListaDriverCentroLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
                             ConexionBD.ejecutarBatch();
                             ConexionBD.cerrarStatement();
@@ -311,6 +312,7 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
+        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR);
     }
     
