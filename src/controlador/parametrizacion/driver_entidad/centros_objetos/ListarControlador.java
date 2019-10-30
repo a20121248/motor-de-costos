@@ -168,12 +168,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         });
 
         // Tabla: Formato
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoCentro.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombreCentro.setMaxWidth(1f * Integer.MAX_VALUE * 25);
-        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolCodigoDriver.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombreDriver.setMaxWidth(1f * Integer.MAX_VALUE * 25);
         tabcolCodigoCentro.setCellValueFactory(cellData -> cellData.getValue().codigoCentroProperty());
         tabcolNombreCentro.setCellValueFactory(cellData -> cellData.getValue().nombreCentroProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());

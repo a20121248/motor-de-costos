@@ -111,9 +111,9 @@
       <TableView fx:id="tabListar" layoutX="50.0" layoutY="323.0" prefHeight="200.0" prefWidth="265.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="275.0">
          <columns>
             <TableColumn fx:id="tabcolCodigoCentro" prefWidth="105.0" styleClass="center" text="CÓDIGO CENTRO" />
-            <TableColumn fx:id="tabcolNombreCentro" prefWidth="250.0" styleClass="left" text="NOMBRE CENTRO" />
+            <TableColumn fx:id="tabcolNombreCentro" prefWidth="400.0" styleClass="left" text="NOMBRE CENTRO" />
             <TableColumn fx:id="tabcolCodigoDriver" prefWidth="100.0" styleClass="center" text="CÓDIGO DRIVER" />
-            <TableColumn fx:id="tabcolNombreDriver" prefWidth="250.0" styleClass="left" text="NOMBRE DRIVER" />
+            <TableColumn fx:id="tabcolNombreDriver" prefWidth="400.0" styleClass="left" text="NOMBRE DRIVER" />
          </columns>
       </TableView>
       <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="50.0" layoutY="114.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">

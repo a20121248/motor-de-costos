@@ -459,7 +459,7 @@ CREATE TABLE PACIFICO_DEV.MS_centros (
   centro_tipo_codigo VARCHAR2(8) NOT NULL,
   fecha_creacion DATE,
   fecha_actualizacion DATE,
-  reparto_tipo NUMBER(1) NOT NULL,
+  reparto_tipo NUMBER(1),
   niif17_atribuible CHAR(2 BYTE) NOT NULL ,
   niif17_tipo CHAR(2 BYTE) NOT NULL ,
   niif17_clase CHAR(2 BYTE) NOT NULL ,

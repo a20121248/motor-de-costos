@@ -282,9 +282,9 @@ public class CargarControlador implements Initializable {
     @FXML void btnSubirAction(ActionEvent event) {
         logDetail = "";
         findError = false;
-        if(tabListar.getItems().isEmpty()){
+        if (tabListar.getItems().isEmpty()) {
             menuControlador.mensaje.upload_empty();
-        }else{
+        } else {
             for (DriverObjeto driver: tabListar.getItems()) {
                 if(driver.getFlagCargar()){
                     if (driver.getEsNuevo()) {
@@ -337,14 +337,14 @@ public class CargarControlador implements Initializable {
     }
     
     void crearReporteLOG(){
-            logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_OBJETOS.log";
-            menuControlador.Log.crearArchivo(logName);
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            menuControlador.Log.agregarLineaArchivo(logDetail);
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
-            menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
-            menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        logName = new SimpleDateFormat("yyyyMMdd_HHmmss_").format(new Date()) + "CARGAR_DRIVERS_OBJETOS.log";
+        menuControlador.Log.crearArchivo(logName);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivo(logDetail);
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
+        menuControlador.Log.agregarLineaArchivoTiempo("FIN DEL PROCESO DE CARGA");
+        menuControlador.Log.agregarSeparadorArchivo('=', 100);
     } 
 }

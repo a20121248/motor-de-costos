@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +22,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 import modelo.Centro;
@@ -30,6 +33,8 @@ public class ListarControlador implements Initializable {
     // Variables de la vista    
     @FXML private ComboBox<Tipo> cmbTipo;
     @FXML private ComboBox<Tipo> cmbNivel;
+    
+    @FXML private TextField txtBuscar;
     
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
@@ -48,6 +53,9 @@ public class ListarControlador implements Initializable {
     // Variables de la aplicacion
     CentroDAO centroDAO;
     public MenuControlador menuControlador;    
+    FilteredList<Centro> filteredData;
+    SortedList<Centro> sortedData;
+    String tipoCodigo, nivelCodigo, buscar;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getControlador());
     String titulo;
     
@@ -55,6 +63,9 @@ public class ListarControlador implements Initializable {
         this.menuControlador = menuControlador;
         centroDAO = new CentroDAO();
         titulo = "Centro de Costos";
+        tipoCodigo = "-";
+        nivelCodigo = "-";
+        buscar = "";
     }
     
     @Override
@@ -75,7 +86,11 @@ public class ListarControlador implements Initializable {
         cmbTipo.getSelectionModel().select(0);
         cmbTipo.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                llenarTabla(cmbTipo.getValue().getCodigo(), cmbNivel.getValue().getCodigo());
+                tipoCodigo = cmbTipo.getValue().getCodigo();
+                filteredData.setPredicate(item -> {
+                    return validarTipo(item, tipoCodigo) && validarNivel(item, nivelCodigo) && validarBuscar(item, buscar);
+                });
+                lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
             }
         });
         
@@ -94,7 +109,11 @@ public class ListarControlador implements Initializable {
         cmbNivel.getSelectionModel().select(0);
         cmbNivel.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                llenarTabla(cmbTipo.getValue().getCodigo(), cmbNivel.getValue().getCodigo());
+                nivelCodigo = cmbNivel.getValue().getCodigo();
+                filteredData.setPredicate(item -> {
+                    return validarTipo(item, tipoCodigo) && validarNivel(item, nivelCodigo) && validarBuscar(item, buscar);
+                });
+                lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
             }
         });
         
@@ -107,19 +126,52 @@ public class ListarControlador implements Initializable {
         tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
         tabcolNIIF17Tipo.setCellValueFactory(cellData -> cellData.getValue().NIIF17TipoProperty());
         tabcolNIIF17Clase.setCellValueFactory(cellData -> cellData.getValue().NIIF17ClaseProperty());
-        // tabla completar items
-        llenarTabla("-", "-");
+        
+        // Tabla: Buscar
+        filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarObjetos()), p -> true);
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(item -> {
+                buscar = newValue;
+                return validarTipo(item, tipoCodigo) && validarNivel(item, nivelCodigo) && validarBuscar(item, buscar);
+            });
+            lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+        });
+        sortedData = new SortedList(filteredData);
+        sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
+        tabListar.setItems(sortedData);
+        lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
+    }
+
+    private boolean validarTipo(Centro item, String tipo) {
+        if (tipo.equals("-")) return true;
+        else if (item.getTipo().getCodigo().equals(tipoCodigo)) return true;
+        return false;
+    }
+
+    private boolean validarNivel(Centro item, String nivel) {
+        if (nivel.equals("-")) return true;
+        else if (item.getNivel() == Integer.parseInt(nivel)) return true;
+        return false;
     }
     
-    private void llenarTabla(String tipoCodigo, String nivelCodigo) {
-        List<Centro> lista = centroDAO.listarObjetos(menuControlador.repartoTipo);
+    private boolean validarBuscar(Centro item, String buscar) {
+        if (buscar == null || buscar.isEmpty()) return true;
+        String buscarMinuscula = buscar.toLowerCase();
+        if (item.getCodigo().toLowerCase().contains(buscarMinuscula)) return true;
+        else if (item.getNombre().toLowerCase().contains(buscarMinuscula)) return true;
+        else if (item.getTipo().getNombre().toLowerCase().contains(buscarMinuscula)) return true;
+        return false;
+    }
+    
+    /*private void llenarTabla(String tipoCodigo, String nivelCodigo) {
+        List<Centro> lista = centroDAO.listarObjetos();
         if (!"-".equals(tipoCodigo))
             lista = lista.stream().filter(item -> tipoCodigo.equals(item.getTipo().getCodigo())).collect(Collectors.toList());
         if (!"-".equals(nivelCodigo))
             lista = lista.stream().filter(item -> nivelCodigo.equals(String.valueOf(item.getNivel()))).collect(Collectors.toList());
         tabListar.getItems().setAll(lista);
         lblNumeroRegistros.setText("Número de registros: " + lista.size());
-    }
+    }*/
     
     @FXML void lnkInicioAction(ActionEvent event) {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_INICIO);
@@ -162,7 +214,9 @@ public class ListarControlador implements Initializable {
         }
         if(centroDAO.verificarObjetoCentroLineas(centro.getCodigo()) == 0){
             centroDAO.eliminarObjetoCentro(centro.getCodigo());
-            llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
+            //TODO:
+            filteredData.getSource().remove(centro);
+            //llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
             menuControlador.mensaje.delete_success(titulo);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),centro.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
         }else{

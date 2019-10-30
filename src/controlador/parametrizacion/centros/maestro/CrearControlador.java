@@ -1,6 +1,5 @@
 package controlador.parametrizacion.centros.maestro;
 
-import com.jfoenix.controls.JFXButton;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.CentroDAO;
