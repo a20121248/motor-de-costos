@@ -52,11 +52,6 @@ public class ListarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Tabla: Formato
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 60);
-        tabcolGrupoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 20);
-        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolGrupoGasto.setCellValueFactory(cellData -> cellData.getValue().getGrupoGasto().nombreProperty());

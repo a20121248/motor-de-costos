@@ -212,16 +212,14 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar " + titulo, "¿Está seguro de eliminar el " + titulo + " " + centro.getCodigo() + "?")) {
             return;
         }
-        if(centroDAO.verificarObjetoCentroLineas(centro.getCodigo()) == 0){
+        if (centroDAO.verificarObjetoCentroLineas(centro.getCodigo()) == 0) {
             centroDAO.eliminarObjetoCentro(centro.getCodigo());
-            //TODO:
             filteredData.getSource().remove(centro);
-            //llenarTabla(cmbTipo.getValue().getCodigo(),cmbNivel.getValue().getCodigo());
             menuControlador.mensaje.delete_success(titulo);
             menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),centro.getCodigo(), Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
-        }else{
+        } else {
             menuControlador.mensaje.delete_item_maestro_error(titulo);
-        }     
+        }
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
@@ -230,7 +228,7 @@ public class ListarControlador implements Initializable {
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
         DescargaServicio descargaFile;
-        if(!tabListar.getItems().isEmpty()){
+        if (!tabListar.getItems().isEmpty()) {
             DirectoryChooser directory_chooser = new DirectoryChooser();
             directory_chooser.setTitle("Directorio a Descargar:");
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
@@ -238,7 +236,7 @@ public class ListarControlador implements Initializable {
                 descargaFile = new DescargaServicio("CentrosDeCostos-Catálogo", tabListar);
                 descargaFile.descargarTabla(null,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
-            }else{
+            } else {
                 menuControlador.mensaje.download_canceled();
             }
         }else{

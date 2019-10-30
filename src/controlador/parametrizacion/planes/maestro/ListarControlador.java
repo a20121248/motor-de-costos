@@ -79,15 +79,7 @@ public class ListarControlador implements Initializable {
         if (menuControlador.repartoTipo == 2) {
 
         }
-        // Tabla: Formato
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 30);
-        tabcolTipoGasto.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNIIF17Atribuible.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNIIF17Tipo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNIIF17Clase.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        //tabcolEstado.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());

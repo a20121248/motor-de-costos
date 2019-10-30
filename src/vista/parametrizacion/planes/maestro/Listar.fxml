@@ -112,12 +112,12 @@
       </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="91.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="101.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolTipoGasto" prefWidth="77.0" styleClass="center" text="TIPO GASTO" />
-            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="70.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
-            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="77.0" styleClass="center" text="NIIF17 TIPO" />
-            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="91.0" styleClass="center" text="NIIF17 GASTO" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="110.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="600.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolTipoGasto" prefWidth="120.0" styleClass="center" text="TIPO GASTO" />
+            <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="120.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
+            <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="120.0" styleClass="center" text="NIIF17 TIPO" />
+            <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="110.0" styleClass="center" text="NIIF17 GASTO" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

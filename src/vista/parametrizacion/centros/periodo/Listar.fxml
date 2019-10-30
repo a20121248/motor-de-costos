@@ -101,10 +101,10 @@
       </HBox>
       <TableView fx:id="tabListar" prefHeight="200.0" prefWidth="339.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="210.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" prefWidth="105.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="110.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolTipoCentro" prefWidth="120.0" styleClass="center" text="TIPO" />
-            <TableColumn fx:id="tabcolSaldo" prefWidth="101.0" styleClass="right" text="SALDO" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="600.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolTipoCentro" prefWidth="130.0" styleClass="center" text="TIPO" />
+            <TableColumn fx:id="tabcolSaldo" prefWidth="121.0" styleClass="right" text="SALDO" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

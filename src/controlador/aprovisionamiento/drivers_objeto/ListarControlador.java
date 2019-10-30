@@ -46,7 +46,6 @@ public class ListarControlador implements Initializable {
     @FXML private TableView<DriverObjeto> tabListaDrivers;
     @FXML private TableColumn<DriverObjeto, String> tabcolCodigo;
     @FXML private TableColumn<DriverObjeto, String> tabcolNombre;
-    @FXML private TableColumn<DriverObjeto, String> tabcolDescripcion;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private Label lblEntidades;
@@ -98,26 +97,13 @@ public class ListarControlador implements Initializable {
             }
         });
 
-        // tabla 1: dimensiones
-        tabListaDrivers.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 40);
-        tabcolDescripcion.setMaxWidth(1f * Integer.MAX_VALUE * 50);
         // tabla 1: formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
         List<DriverObjeto> lista = driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         lblNumeroRegistros.setText("Número de registros: " + lista.size());
         
-        // tabla 2: dimensiones
-        tabDetalleDriver.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigoProducto.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreProducto.setMaxWidth(1f * Integer.MAX_VALUE * 35);
-        tabcolCodigoSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 10);
-        tabcolNombreSubcanal.setMaxWidth(1f * Integer.MAX_VALUE * 35);
-        tabcolPorcentajeDestino.setMaxWidth(1f * Integer.MAX_VALUE * 10);        
         // tabla 2: formato
         tabcolCodigoProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().codigoProperty());
         tabcolNombreProducto.setCellValueFactory(cellData -> cellData.getValue().getProducto().nombreProperty());

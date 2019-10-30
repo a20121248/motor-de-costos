@@ -134,7 +134,7 @@ public class CrearControlador implements Initializable {
             menuControlador.mensaje.create_exist_error(titulo);
             return;
         }
-        if(cecoPadreCodigo.equals("")){
+        if (cecoPadreCodigo.equals("")) {
             cecoPadreCodigo = "-";
         }
         if (centroDAO.insertarObjeto(codigo, nombre,codigoGrupo,nivel,cecoPadreCodigo,menuControlador.repartoTipo,tipoGasto, niif17Atribuible, niif17Tipo, niif17Clase)==1) {

@@ -215,7 +215,7 @@
             <FontAwesomeIconView glyphName="CLOSE" />
          </graphic>
       </JFXButton>
-      <JFXButton fx:id="btnCrear" layoutX="633.0" layoutY="569.0" onAction="#btnCrearAction" styleClass="btn" text="Guardar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
+      <JFXButton fx:id="btnGuardar" layoutX="633.0" layoutY="569.0" onAction="#btnGuardarAction" styleClass="btn" text="Guardar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="SAVE" />
          </graphic>

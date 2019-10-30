@@ -121,7 +121,7 @@ public class EditarControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_MAESTRO_EDITAR);
     }
     
-    @FXML void btnCrearAction(ActionEvent event) {
+    @FXML void btnGuardarAction(ActionEvent event) {
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String codigoGrupo = cmbTipo.getValue().getCodigo();

@@ -77,9 +77,8 @@
                <children>
                   <TableView fx:id="tabListaDrivers" layoutX="91.0" layoutY="-6.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                      <columns>
-                        <TableColumn fx:id="tabcolCodigo" prefWidth="75.0" styleClass="center" text="CÓDIGO" />
-                        <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE" />
-                        <TableColumn fx:id="tabcolDescripcion" prefWidth="75.0" styleClass="left" text="DESCRIPCIÓN" />
+                        <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
+                        <TableColumn fx:id="tabcolNombre" prefWidth="900.0" styleClass="left" text="NOMBRE" />
                      </columns>
                   </TableView>
                   <Label layoutX="14.0" layoutY="14.0" text="Lista de drivers" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -94,10 +93,10 @@
                <children>
                   <TableView fx:id="tabDetalleDriver" layoutX="24.0" layoutY="-22.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                     <columns>
-                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="110.0" styleClass="center" text="CÓDIGO PRODUCTO" />
-                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="119.0" styleClass="left" text="NOMBRE PRODUCTO" />
-                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="130.0" styleClass="center" text="CÓDIGO SUBCANAL" />
-                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="138.0" styleClass="left" text="NOMBRE SUBCANAL" />
+                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="120.0" styleClass="center" text="CÓDIGO PRODUCTO" />
+                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="300.0" styleClass="left" text="NOMBRE PRODUCTO" />
+                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="120.0" styleClass="center" text="CÓDIGO SUBCANAL" />
+                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="300.0" styleClass="left" text="NOMBRE SUBCANAL" />
                         <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="120.0" styleClass="center" text="PORCENTAJE (%)" />
                     </columns>
                   </TableView>

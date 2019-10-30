@@ -106,11 +106,7 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
             }
         });
         
-        // Tabla: Formato        
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 70);
-        tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
+        // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
