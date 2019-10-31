@@ -54,6 +54,7 @@ public class CargarControlador implements Initializable {
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargarLog;
+    @FXML private JFXButton btnSubir;
     
     // Variables de la aplicacion
     ObjetoDAO objetoDAO;
@@ -259,6 +260,7 @@ public class CargarControlador implements Initializable {
                 }else {
                     menuControlador.mensaje.upload_success();
                 }
+                btnSubir.setDisable(true);
                 btnDescargarLog.setVisible(true);
             }
         }
