@@ -30,25 +30,25 @@
                                  <children>
                                     <Label layoutX="14.0" layoutY="18.0" text="Periodo origen:" AnchorPane.leftAnchor="10.0" />
                                     <ComboBox fx:id="cmbMesOrigen" layoutX="117.0" layoutY="14.0" prefHeight="25.0" prefWidth="113.0" />
-                                    <Label layoutX="14.0" layoutY="54.0" text="Periodo destino:" AnchorPane.leftAnchor="10.0" />
-                                    <ComboBox fx:id="cmbMesDestino" layoutX="117.0" layoutY="50.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="50.0" />
-                                    <TextArea editable="false" layoutX="463.0" layoutY="4.0" prefHeight="61.0" prefWidth="173.0" text="- El botón copia la configuración de un periodo anterior al periodo actual." wrapText="true" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0" />
-                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="427.0" layoutY="55.0" size="30" text="" />
-                                    <JFXButton fx:id="btnCopiar" layoutX="343.0" layoutY="32.0" onAction="#btnCopiarAction" styleClass="btn" text="Copiar">
-                                       <graphic>
-                                          <FontAwesomeIconView glyphName="COPY" />
-                                       </graphic>
-                                    </JFXButton>
                                     <Spinner fx:id="spAnhoOrigen" layoutX="280.0" layoutY="9.0" prefWidth="74" AnchorPane.leftAnchor="247.0" AnchorPane.topAnchor="14.0">
                                        <valueFactory>
                                           <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
                                        </valueFactory>
                                     </Spinner>
+                                    <Label layoutX="14.0" layoutY="54.0" text="Periodo destino:" AnchorPane.leftAnchor="10.0" />
+                                    <ComboBox fx:id="cmbMesDestino" layoutX="117.0" layoutY="50.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="50.0" />
                                     <Spinner fx:id="spAnhoDestino" layoutX="242.0" layoutY="56.0" prefWidth="74" AnchorPane.leftAnchor="247.0" AnchorPane.topAnchor="50.0">
                                        <valueFactory>
                                           <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
                                        </valueFactory>
                                     </Spinner>
+                                    <JFXButton fx:id="btnCopiar" layoutX="343.0" layoutY="32.0" onAction="#btnCopiarAction" styleClass="btn" text="Copiar">
+                                       <graphic>
+                                          <FontAwesomeIconView glyphName="COPY" />
+                                       </graphic>
+                                    </JFXButton>
+                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="427.0" layoutY="55.0" size="30" text="" />
+                                    <TextArea editable="false" layoutX="463.0" layoutY="4.0" prefHeight="61.0" prefWidth="173.0" text="- El botón copia la configuración de un periodo anterior al periodo actual." wrapText="true" AnchorPane.leftAnchor="465.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0" />
                                  </children>
                               </AnchorPane>
                            </items>
@@ -114,8 +114,8 @@
                                           <String fx:value="large" />
                                        </styleClass>
                                     </JFXButton>
-                                    <TextArea fx:id="txtareaCentros" editable="false" layoutX="134.0" layoutY="11.0" prefHeight="30.0" prefWidth="350.0" text="- Esta sección permite el mantenimiento de los Centros de Costos." wrapText="true" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="4.0" />
                                     <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="37.0" size="30" text="" />
+                                    <TextArea fx:id="txtareaCentros" editable="false" layoutX="134.0" layoutY="11.0" prefHeight="30.0" prefWidth="350.0" text="- Esta sección permite el mantenimiento de los Centros de Costos." wrapText="true" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="4.0" />
                                  </children>
                               </AnchorPane>
                            </items>
@@ -131,8 +131,6 @@
                            <items>
                               <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
                                  <children>
-                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
-                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                     <JFXButton fx:id="btnDriverCentrosBolsas" layoutX="10.0" layoutY="10.0" onAction="#btnDriverCentrosBolsasAction" text="Asignaciones &#10;CECO - BOLSAS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="CUBES" />
@@ -142,12 +140,11 @@
                                           <String fx:value="x-large" />
                                        </styleClass>
                                     </JFXButton>
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                  </children>
                               </AnchorPane>
                               <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
                                  <children>
-                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
-                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                     <JFXButton fx:id="btnDriverCentrosCentros" layoutX="-63.0" layoutY="17.0" onAction="#btnDriverCentrosCentrosAction" text="Asignaciones &#10;CECOs - CECOs" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="CUBES" />
@@ -157,12 +154,11 @@
                                           <String fx:value="x-large" />
                                        </styleClass>
                                     </JFXButton>
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxx" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                  </children>
                               </AnchorPane>
                               <AnchorPane maxHeight="65.0" minHeight="0.0" minWidth="0.0" prefHeight="65.0" prefWidth="100.0">
                                  <children>
-                                    <FontAwesomeIconView fill="#676a6c" glyphName="LONG_ARROW_RIGHT" layoutX="125.0" layoutY="44.0" size="30" text="" />
-                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxxxxxxxxxxx&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                     <JFXButton fx:id="btnDriverCentrosObjetos" layoutX="-63.0" layoutY="17.0" onAction="#btnDriverCentrosObjetosAction" text="Asignaciones &#10;CECOs - OBJETOS" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="CUBES" />
@@ -172,6 +168,7 @@
                                           <String fx:value="x-large" />
                                        </styleClass>
                                     </JFXButton>
+                                    <TextArea editable="false" layoutX="67.0" layoutY="2.0" prefHeight="30.0" prefWidth="350.0" text="- xxxxxxxxxxxxxxxxx&#10;" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                  </children>
                               </AnchorPane>
                            </items>
