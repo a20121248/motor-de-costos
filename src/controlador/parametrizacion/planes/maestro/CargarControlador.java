@@ -226,6 +226,7 @@ public class CargarControlador implements Initializable {
                 }else {
                     menuControlador.mensaje.upload_success();
                 }
+                btnSubir.setDisable(true);
                 btnDescargarLog.setVisible(true);
             }
         }

@@ -60,6 +60,7 @@ public class CargarControlador implements Initializable {
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargarLog;    
+    @FXML private JFXButton btnSubir;    
     
     // Variables de la aplicacion
     public MenuControlador menuControlador;
@@ -276,6 +277,7 @@ public class CargarControlador implements Initializable {
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_SUCCESS);
                 }
             }
+            btnSubir.setDisable(true);
             btnDescargarLog.setVisible(true);
         }
     }
