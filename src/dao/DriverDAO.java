@@ -241,7 +241,7 @@ public class DriverDAO {
         String fechaStr = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
         String queryStr = String.format("" +
                 "INSERT INTO MS_drivers(codigo,nombre,driver_tipo_codigo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%s','%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
+                "VALUES ('%s',q'[%s],'%s',%d,TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s','yyyy/mm/dd hh24:mi:ss'))",
                 codigo,
                 nombre,
                 driverTipoCodigo,
