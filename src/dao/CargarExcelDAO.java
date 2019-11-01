@@ -29,14 +29,21 @@ public class CargarExcelDAO {
             "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
             " WHERE A.DRIVER_CODIGO='%s'\n" +
             "GROUP BY a.DRIVER_CODIGO",codigoDriver);
-        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
+//        ResultSet rs = ConexionBD.ejecutarQuery(queryStr);
         double cnt = 0;
-        try {
-            rs.next();
-            cnt = rs.getDouble("PORCENTAJE_TOTAL");
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                cnt = rs.getDouble("PORCENTAJE_TOTAL");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+//        try {
+//            rs.next();
+//            cnt = rs.getDouble("PORCENTAJE_TOTAL");
+//        } catch (SQLException ex) {
+//            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         return cnt;        
     }
     
