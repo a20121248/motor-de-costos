@@ -942,7 +942,7 @@ public class CentroDAO {
     
     public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo, double precision) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
-        String queryStr = String.format(""+
+        String queryStr = String.format(Locale.US, ""+
                 "INSERT INTO ms_CASCADA\n" +
                 "(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
                 "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, sum(monto)\n" +
@@ -971,7 +971,7 @@ public class CentroDAO {
     
     public int insertarDistribucionCentrosObjetosCosto(String codigo,int periodo, int repartoTipo, double precision) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
-        String queryStr = String.format(""+
+        String queryStr = String.format(Locale.US, ""+
                 "INSERT INTO MS_OBJETO_LINEAS\n" +
                 "(subcanal_codigo,producto_codigo,periodo,centro_codigo,entidad_origen_codigo,saldo,cuenta_contable_origen_codigo,partida_origen_codigo,centro_origen_codigo,reparto_tipo,grupo_gasto,driver_codigo,fecha_creacion,fecha_actualizacion)\n" +
                 "SELECT  d.subcanal_codigo,\n" +
