@@ -60,7 +60,6 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
     public MenuControlador menuControlador;    
     FilteredList<Partida> filteredData;
     SortedList<Partida> sortedData;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR.getControlador());
     String titulo;
     
@@ -68,26 +67,22 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         this.menuControlador = menuControlador;
         partidaDAO = new PartidaDAO();
         titulo = "Partidas";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
         if (menuControlador.repartoTipo != 1)
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                    buscarPeriodo(periodoSeleccionado);
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(menuControlador.periodoSeleccionado);
                 }
             });
         } else {
@@ -95,14 +90,14 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
-                buscarPeriodo(periodoSeleccionado);
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(menuControlador.periodoSeleccionado);
             }
         });
         
@@ -126,7 +121,7 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         });
         
         // Tabla: Buscar        
-        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(partidaDAO.listarPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -189,17 +184,16 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         if (!menuControlador.navegador.mensajeConfirmar("Quitar Partidas de Cuentas Contables", "¿Está seguro de quitar la Partida " + item.getNombre() + "?"))
             return;
         
-        if(partidaDAO.verificarObjetoPartidaPeriodoAsignacion(item.getCodigo(),periodoSeleccionado) == 0){
-            partidaDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
-            buscarPeriodo(periodoSeleccionado);
+        if(partidaDAO.verificarObjetoPartidaPeriodoAsignacion(item.getCodigo(),menuControlador.periodoSeleccionado) == 0){
+            partidaDAO.eliminarObjetoPeriodo(item.getCodigo(), menuControlador.periodoSeleccionado);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),menuControlador.periodoSeleccionado,Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
+            buscarPeriodo(menuControlador.periodoSeleccionado);
         }else{
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }   
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR);
     }
     
@@ -221,8 +215,8 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
             if(directorioSeleccionado != null){
                 if(menuControlador.repartoTipo ==1){
                     descargaFile = new DescargaServicio("Partidas", tabListar);
-                    descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
-                    menuControlador.Log.descargarTablaPeriodo(LOGGER,menuControlador.usuario.getUsername(), titulo, periodoSeleccionado, Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
+                    descargaFile.descargarTabla(Integer.toString(menuControlador.periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                    menuControlador.Log.descargarTablaPeriodo(LOGGER,menuControlador.usuario.getUsername(), titulo, menuControlador.periodoSeleccionado, Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
                 } else {
                     /*generar descarga con todos las columnas por mes*/
                 }
@@ -240,10 +234,9 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        partidaDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado,menuControlador.repartoTipo);
+        partidaDAO.insertarObjetoPeriodo(entidad.getCodigo(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
         menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), entidad.getCodigo(), Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado);
-        System.out.println(periodoSeleccionado);
+        buscarPeriodo(menuControlador.periodoSeleccionado);
     }
 
     @Override

@@ -34,6 +34,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
@@ -45,7 +46,8 @@ import servicios.ExcelServicio;
 import servicios.LogServicio;
 
 public class CargarControlador implements Initializable {
-    // Variables de la vista    
+    // Variables de la vista
+    @FXML private HBox hbPeriodo;
     @FXML public ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     @FXML private TextField txtRuta;
@@ -67,7 +69,6 @@ public class CargarControlador implements Initializable {
     DriverLineaDAO driverLineaDAO;
     ProductoDAO productoDAO;
     SubcanalDAO subcanalDAO;
-    int periodoSeleccionado;
     CargarExcelDAO cargarExcelDAO;
     LogServicio logServicio;
     String logName;
@@ -84,43 +85,43 @@ public class CargarControlador implements Initializable {
         productoDAO = new ProductoDAO();
         subcanalDAO = new SubcanalDAO();
         cargarExcelDAO = new CargarExcelDAO();
-        this.titulo = "Drivers - Objetos de Costos";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
+        titulo = "Drivers - Objetos de Costos";
+        titulo1 = "Objetos de Costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        titulo1 = "Objetos de Costos";
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
         }
-        // tabla dimensiones
-        tabListar.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 85);
-        // tabla formato
-        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
-        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
-        });
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if (menuControlador.repartoTipo == 1)
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
+        
+        // Tabla: Formato
+        tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
+        tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -136,7 +137,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void lnkCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_CARGAR);
     }
     
@@ -232,8 +232,8 @@ public class CargarControlador implements Initializable {
     }
     
     private void leerHojaDetalleDriver(Workbook wb) {
-        List<String> lstProductosPeriodo = productoDAO.listarCodigosPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-        List<String> lstSubcanalesPeriodo = subcanalDAO.listarCodigosPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<String> lstProductosPeriodo = productoDAO.listarCodigosPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
+        List<String> lstSubcanalesPeriodo = subcanalDAO.listarCodigosPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         
         String sheetName = "DETALLE";
         Sheet sh = ExcelServicio.abrirHoja(wb, sheetName);
@@ -260,6 +260,7 @@ public class CargarControlador implements Initializable {
             int index;
             
             celda = celdas.next();String codigoDriver = celda.getStringCellValue();
+            if (codigoDriver.equals("")) break;
             celda = celdas.next();String nombreDriver = celda.getStringCellValue();
             celda = celdas.next();
             celda = celdas.next();
@@ -294,7 +295,7 @@ public class CargarControlador implements Initializable {
                         driverDAO.insertarDriverCabecera(driver.getCodigo(), driver.getNombre(), "OBCO", menuControlador.repartoTipo);
                     }
                     StringBuilder sbMsj = new StringBuilder("");
-                    List<DriverObjetoLinea> lista = cargarExcelDAO.obtenerListaObjetoLinea(driver.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo, sbMsj);
+                    List<DriverObjetoLinea> lista = cargarExcelDAO.obtenerListaObjetoLinea(driver.getCodigo(),menuControlador.periodoSeleccionado,menuControlador.repartoTipo, sbMsj);
 //                    List<DriverObjetoLinea> lista = cargarExcelDAO.obtenerListaCentroLinea(driver.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo, sbMsj);
                     String msj = "";
                     msj = sbMsj.toString();
@@ -308,7 +309,7 @@ public class CargarControlador implements Initializable {
                         if (lista != null) {
                             ConexionBD.crearStatement();
                             ConexionBD.tamanhoBatchMax = 10000;
-                            driverLineaDAO.insertarListaDriverObjetoLineaBatch(driver.getCodigo(), periodoSeleccionado, lista, menuControlador.repartoTipo);
+                            driverLineaDAO.insertarListaDriverObjetoLineaBatch(driver.getCodigo(), menuControlador.periodoSeleccionado, lista, menuControlador.repartoTipo);
                             ConexionBD.ejecutarBatch();
                             ConexionBD.cerrarStatement();
                             logDetail += String.format("Driver %s: Se cargó correctamente con %s items.\r\n\r\n",driver.getCodigo(),lista.size());
@@ -333,7 +334,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_OBJETO_LISTAR);
     }
     

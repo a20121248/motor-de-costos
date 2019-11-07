@@ -1,19 +1,26 @@
 package modelo;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class CargarObjetoLinea {
     private final StringProperty codigo;
     private final StringProperty nombre;
-    private final StringProperty descripcion;
+    private BooleanProperty flagCargar;
     
-    public CargarObjetoLinea(String codigo, String nombre, String descripcion) {
+    public CargarObjetoLinea(String codigo, String nombre) {
         this.codigo = new SimpleStringProperty(codigo);
         this.nombre = new SimpleStringProperty(nombre);
-        this.descripcion = new SimpleStringProperty(descripcion);
     }
-
+    
+    public CargarObjetoLinea(String codigo, String nombre, Boolean flagCargar) {
+        this.codigo = new SimpleStringProperty(codigo);
+        this.nombre = new SimpleStringProperty(nombre);
+        this.flagCargar = new SimpleBooleanProperty(flagCargar);
+    }
+    
     public StringProperty codigoProperty() {
         return codigo;
     }
@@ -37,16 +44,12 @@ public class CargarObjetoLinea {
     public void setNombre(String nombre) {
         this.nombre.set(nombre);
     }
-
-    public StringProperty descripcionProperty() {
-        return descripcion;
+    
+    public Boolean getFlagCargar() {
+        return flagCargar.get();
     }
 
-    public String getDescripcion() {
-        return descripcion.get();
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion.set(descripcion);
+    public void setFlagCargar(Boolean flagCargar) {
+        this.flagCargar.set(flagCargar);
     }
 }

@@ -72,7 +72,6 @@ public class CargarControlador implements Initializable {
     DetalleGastoDAO detalleGastoDAO;
     
     List<CentroDriver> listaCargar;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getControlador());
     String logName;
     String titulo;
@@ -92,21 +91,19 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     if (menuControlador.repartoTipo == 1)
-                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                     else
-                        periodoSeleccionado = spAnho.getValue()*100;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100;
                 }
             });
         } else {
@@ -114,13 +111,13 @@ public class CargarControlador implements Initializable {
         }
         
         // Seleccionar anho
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
         
@@ -163,7 +160,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado, menuControlador.repartoTipo);
+            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
             if (lista != null) {
                 tabListar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -193,7 +190,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             // Estructura de la cabecera
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO CUENTA CONTABLE","NOMBRE CUENTA CONTABLE","CODIGO PARTIDA","NOMBRE PARTIDA","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -203,8 +200,8 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodoLeido = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuenta = celda.getStringCellValue();
+                if (codigoCuenta.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuenta = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
@@ -212,13 +209,6 @@ public class CargarControlador implements Initializable {
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoDriver = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreDriver = celda.getStringCellValue();
-
-                if (periodo != periodoLeido) {
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
-                    lista.clear();
-                    txtRuta.setText("");
-                    return null;
-                }
                 
                 // Verifica que exista la cuenta para poder agregarla
                 String cuenta = lstCodigosCuentaPeriodo.stream().filter(item -> codigoCuenta.equals(item)).findAny().orElse(null);
@@ -226,7 +216,7 @@ public class CargarControlador implements Initializable {
                 String centro = lstCodigosCentros.stream().filter(item -> codigoCentro.equals(item)).findAny().orElse(null);
                 // Validar la existencia del Driver en periodoLeido a Cargar
                 String driver = lstCodigosDrivers.stream().filter(item -> codigoDriver.equals(item)).findAny().orElse(null);
-                CentroDriver linea = new CentroDriver(periodoLeido, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, codigoDriver, nombreDriver, true);
+                CentroDriver linea = new CentroDriver(periodo, codigoCuenta, nombreCuenta, codigoPartida, nombrePartida, codigoCentro, nombreCentro, codigoDriver, nombreDriver, true);
                 if (cuenta!=null && cuenta.charAt(3)=='1' && partida != null && centro!=null && driver!=null) {
                     listaCargar.add(linea);
                 } else {
@@ -254,7 +244,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnDescargarLogAction(ActionEvent event) throws IOException {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.Log.descargarLog(btnDescargarLog, logName, menuControlador);
     }
     
@@ -270,7 +259,7 @@ public class CargarControlador implements Initializable {
             if (listaCargar.isEmpty()) {
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             } else {
-                centroDriverDAO.insertarListaAsignacionesDriverBolsa(listaCargar,periodoSeleccionado,menuControlador.repartoTipo);
+                centroDriverDAO.insertarListaAsignacionesDriverBolsa(listaCargar,menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
                 if (findError == true) {
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
                 } else {
@@ -296,7 +285,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
                 
                 mensajeStr = String.format("('%s', '%s', '%s', '%s')", item.getCodigoCuenta(), item.getCodigoPartida(), item.getCodigoCentro(), item.getCodigoDriver());
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, menuControlador.periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_BOLSAS_CARGAR.getDireccion());
             } else {
                 findError = true;
                 mensajeStr = String.format("No se agregó el item ('%s', '%s', '%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoCuenta(), item.getCodigoPartida(), item.getCodigoCentro(), item.getCodigoDriver(), titulo, item.getDetalleError());

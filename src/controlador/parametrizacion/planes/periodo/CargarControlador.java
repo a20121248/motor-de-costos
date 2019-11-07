@@ -22,7 +22,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -30,7 +29,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import modelo.CargarObjetoPeriodoLinea;
+import modelo.CargarObjetoLinea;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -45,9 +44,9 @@ public class CargarControlador implements Initializable {
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
-    @FXML private TableView<CargarObjetoPeriodoLinea> tabListar;
-    @FXML private TableColumn<CargarObjetoPeriodoLinea, String> tabcolCodigo;
-    @FXML private TableColumn<CargarObjetoPeriodoLinea, String> tabcolNombre;
+    @FXML private TableView<CargarObjetoLinea> tabListar;
+    @FXML private TableColumn<CargarObjetoLinea, String> tabcolCodigo;
+    @FXML private TableColumn<CargarObjetoLinea, String> tabcolNombre;
     
     @FXML private Label lblNumeroRegistros;
     @FXML private JFXButton btnDescargarLog;
@@ -56,10 +55,9 @@ public class CargarControlador implements Initializable {
     // Variables de la aplicacion
     PlanDeCuentaDAO planDeCuentaDAO;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getControlador());
     String titulo;
-    List<CargarObjetoPeriodoLinea> listaCargar = new ArrayList() ;
+    List<CargarObjetoLinea> listaCargar = new ArrayList() ;
     String logName;
     String logDetails;
     
@@ -67,25 +65,21 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
         titulo = "Cuentas Contables";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
         if (menuControlador.repartoTipo != 1)
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 }
             });
         } else {
@@ -93,13 +87,13 @@ public class CargarControlador implements Initializable {
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
         
@@ -147,14 +141,14 @@ public class CargarControlador implements Initializable {
                 spAnho.setDisable(true);
             }
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
-            List<CargarObjetoPeriodoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
+            List<CargarObjetoLinea> lista = leerArchivo(archivoSeleccionado.getAbsolutePath());
             tabListar.getItems().setAll(lista);
             lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
         }
     }
     
-    private List<CargarObjetoPeriodoLinea> leerArchivo(String rutaArchivo) {
-        List<CargarObjetoPeriodoLinea> lista = new ArrayList();
+    private List<CargarObjetoLinea> leerArchivo(String rutaArchivo) {
+        List<CargarObjetoLinea> lista = new ArrayList();
         List<String> listaCodigos = planDeCuentaDAO.listarCodigos();
         listaCargar = new ArrayList();
         logDetails = "";
@@ -170,7 +164,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -180,27 +174,18 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
+                if (codigo.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 
-                // Valida que los items del archivo tengan el periodo correcto
-                // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
-                    menuControlador.mensaje.upload_periodo_fail_error();
-                    lista.clear();
-                    txtRuta.setText("");
-                    break;
-                }
-                
-                CargarObjetoPeriodoLinea linea = new CargarObjetoPeriodoLinea(periodo,codigo,nombre,true);
+                CargarObjetoLinea linea = new CargarObjetoLinea(codigo, nombre, true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if (cuenta != null) {
                     listaCargar.add(linea);
                     listaCodigos.removeIf(x -> x.equals(linea.getCodigo()));
-                    logDetails +=String.format("Se agregó item %s al periodo %d de %s. \r\n",linea.getCodigo(),periodoSeleccionado,titulo);
+                    logDetails +=String.format("Se agregó item %s al periodo %d de %s. \r\n",linea.getCodigo(),menuControlador.periodoSeleccionado,titulo);
                 } else {
-                    logDetails +=String.format("No se agregó item %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),periodoSeleccionado,titulo);
+                    logDetails +=String.format("No se agregó item %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),menuControlador.periodoSeleccionado,titulo);
                     if (cuenta == null) {
                         logDetails +=String.format("- No existe en Catálogo.\r\n");
                     }
@@ -233,7 +218,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.mensaje.upload_allCharged_now(titulo);
             } else {
                 boolean findError = crearReporteLOG();
-                planDeCuentaDAO.insertarListaObjetoCuentaPeriodo(listaCargar,menuControlador.repartoTipo);
+                planDeCuentaDAO.insertarListaObjetoCuentaPeriodo(listaCargar, menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
                 if (findError == true) {
                     menuControlador.mensaje.upload_success_with_error(titulo);
                 } else {
@@ -256,7 +241,7 @@ public class CargarControlador implements Initializable {
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
         menuControlador.Log.agregarLineaArchivoTiempo("INICIO DEL PROCESO DE CARGA");
         menuControlador.Log.agregarSeparadorArchivo('=', 100);
-        for (CargarObjetoPeriodoLinea item: tabListar.getItems()) {
+        for (CargarObjetoLinea item: tabListar.getItems()) {
             if(item.getFlagCargar()){
                 menuControlador.Log.agregarItem(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(), Navegador.RUTAS_PLANES_ASIGNAR_PERIODO_CARGAR.getDireccion());
             } else {

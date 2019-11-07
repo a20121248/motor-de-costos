@@ -171,18 +171,17 @@ public class PlanDeCuentaDAO {
         return ConexionBD.ejecutar(queryStr);
     }
 
-    public void insertarListaObjetoCuentaPeriodo(List<CargarObjetoPeriodoLinea> lista, int repartoTipo) {
-        borrarListaObjetoCuentaPeriodo(lista.get(0).getPeriodo(), repartoTipo);
+    public void insertarListaObjetoCuentaPeriodo(List<CargarObjetoLinea> lista, int periodo, int repartoTipo) {
+        borrarListaObjetoCuentaPeriodo(periodo, repartoTipo);
         ConexionBD.crearStatement();
-        for (CargarObjetoPeriodoLinea item: lista) {
-            int periodo = item.getPeriodo();
+        for (CargarObjetoLinea item: lista) {
             String codigo = item.getCodigo();
             String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
 
             // inserto una linea dummy
             String queryStr = String.format(Locale.US, "" +
                 "INSERT INTO MS_plan_de_cuenta_lineas(plan_de_cuenta_codigo,periodo,saldo,reparto_tipo,fecha_creacion,fecha_actualizacion)\n" +
-                "VALUES ('%s','%d',%d,%d,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
+                "VALUES ('%s',%d,%d,%d,TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('%s', 'yyyy/mm/dd hh24:mi:ss'))",
                     codigo,
                     periodo,
                     0,

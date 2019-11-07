@@ -87,7 +87,6 @@ public class CargarControlador implements Initializable {
     CentroDAO centroDAO;
     PlanDeCuentaDAO cuentaDAO;
     PartidaDAO partidaDAO;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
     String titulo;
     String logName;
@@ -104,21 +103,19 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Seleccionar mes
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     if (menuControlador.repartoTipo == 1)
-                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                     else
-                        periodoSeleccionado = spAnho.getValue()*100;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100;
                 }
             });
             
@@ -139,13 +136,13 @@ public class CargarControlador implements Initializable {
         }
         
         // Seleccionar anho
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
         
@@ -235,9 +232,9 @@ public class CargarControlador implements Initializable {
     
     private List<DetalleGasto> leerArchivo(String rutaArchivo, int repartoTipo) {
         List<DetalleGasto> lista = new ArrayList();
-        List<CuentaContable> lstCodigosCuentaPeriodo = cuentaDAO.listar(periodoSeleccionado,null,menuControlador.repartoTipo);
-        List<Partida> lstCodigosPartidaPeriodo = partidaDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
-        List<Centro> lstCodigosCentroPeriodo = centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<CuentaContable> lstCodigosCuentaPeriodo = cuentaDAO.listar(menuControlador.periodoSeleccionado,null,menuControlador.repartoTipo);
+        List<Partida> lstCodigosPartidaPeriodo = partidaDAO.listarPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
+        List<Centro> lstCodigosCentroPeriodo = centroDAO.listarPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         
         try (FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(f);){
@@ -262,6 +259,7 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCuenta = celda.getStringCellValue();
+                if (codigoCuenta.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCuentaContable = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPartida = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombrePartida = celda.getStringCellValue();
@@ -296,9 +294,9 @@ public class CargarControlador implements Initializable {
                 } else {
                     String detalleError = "";
                     String repartoTipoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
-                    if (cuenta == null) detalleError += String.format("\r\n  - La cuenta contable '%s' con código '%s' no existe en el periodo %d del %s.",nombreCuentaContable, codigoCuenta, periodoSeleccionado, repartoTipoStr);
-                    if (partida == null) detalleError += String.format("\r\n  - La partida '%s' con código '%s' no existe en el periodo %d del %s.", nombrePartida, codigoPartida, periodoSeleccionado, repartoTipoStr);
-                    if (centro == null) detalleError += String.format("\r\n  - El centro '%s' de costos con código '%s' no existe en el periodo %d del %s.", nombreCentro, codigoCentro, periodoSeleccionado, repartoTipoStr);
+                    if (cuenta == null) detalleError += String.format("\r\n  - La cuenta contable '%s' con código '%s' no existe en el periodo %d del %s.",nombreCuentaContable, codigoCuenta, menuControlador.periodoSeleccionado, repartoTipoStr);
+                    if (partida == null) detalleError += String.format("\r\n  - La partida '%s' con código '%s' no existe en el periodo %d del %s.", nombrePartida, codigoPartida, menuControlador.periodoSeleccionado, repartoTipoStr);
+                    if (centro == null) detalleError += String.format("\r\n  - El centro '%s' de costos con código '%s' no existe en el periodo %d del %s.", nombreCentro, codigoCentro, menuControlador.periodoSeleccionado, repartoTipoStr);
                     cuentaLeida.setDetalleError(detalleError);
                     cuentaLeida.setEstado(false);
                 }
@@ -322,7 +320,7 @@ public class CargarControlador implements Initializable {
             if (listaCargar.isEmpty()) {
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             } else {
-                detalleGastoDAO.insertarDetalleGasto(periodoSeleccionado, listaCargar, menuControlador.repartoTipo);
+                detalleGastoDAO.insertarDetalleGasto(menuControlador.periodoSeleccionado, listaCargar, menuControlador.repartoTipo);
                 if (findError == true) {
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
                 } else {
@@ -348,7 +346,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
                 
                 mensajeStr = String.format("('%s', '%s', '%s')", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro());
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, menuControlador.periodoSeleccionado, Navegador.RUTAS_BALANCETE_CARGAR.getDireccion());
             } else {
                 findError = true;
                 mensajeStr = String.format("No se agregó el item ('%s', '%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoCuentaContable(), item.getCodigoPartida(), item.getCodigoCentro(), titulo, item.getDetalleError());
@@ -378,7 +376,6 @@ public class CargarControlador implements Initializable {
 
     // Acción del botón 'Cancelar'    
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_LISTAR);
     }
 }

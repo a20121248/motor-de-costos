@@ -10,33 +10,34 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable {
     // Variables de la vista
-    @FXML private Label lblTitulo;
-    
-    @FXML private Hyperlink lnkInicio;    
-    @FXML private Hyperlink lnkAprovisionamiento;
-    @FXML private Hyperlink lnkDriversCentro;   
-    
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
-    @FXML private JFXButton btnBuscarPeriodo;
+    
+    @FXML private TextField txtBuscar;
     
     @FXML private JFXButton btnCargar;
     @FXML private JFXButton btnCrear;
@@ -47,7 +48,6 @@ public class ListarControlador implements Initializable {
     @FXML private TableView<DriverCentro> tabListaDrivers;
     @FXML private TableColumn<DriverCentro, String> tabcolCodigo;
     @FXML private TableColumn<DriverCentro, String> tabcolNombre;
-//    @FXML private TableColumn<DriverCentro, String> tabcolDescripcion;
     @FXML private Label lblNumeroRegistros;
     
     @FXML private Label lblEntidades;
@@ -62,56 +62,55 @@ public class ListarControlador implements Initializable {
     DriverDAO driverDAO;
     FXMLLoader fxmlLoader;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getControlador());
     String titulo;
+    FilteredList<DriverCentro> filteredData;
+    SortedList<DriverCentro> sortedData;
     
     public ListarControlador(MenuControlador menuControlador) {
         driverDAO = new DriverDAO();
         this.menuControlador = menuControlador;
-        titulo = "Driver";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
+        titulo = "Driver - Centros de costos";
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
-        }
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
-        });
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(menuControlador.periodoSeleccionado);
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }        
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                if (menuControlador.repartoTipo == 1)
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(menuControlador.periodoSeleccionado);
             }
         });
-        // tabla 1
-        tabListaDrivers.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 40);
-//        tabcolDescripcion.setMaxWidth(1f * Integer.MAX_VALUE * 45);
+        
+        // Tabla Maestro: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-//        tabcolDescripcion.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
-        // tabla 2
-        tabDetalleDriver.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
-        tabcolCodigoDestino.setMaxWidth(1f * Integer.MAX_VALUE * 12);
-        tabcolNombreDestino.setMaxWidth(1f * Integer.MAX_VALUE * 60);
-        tabcolPorcentajeDestino.setMaxWidth(1f * Integer.MAX_VALUE * 28);
+
+        // tabla Detalle: Formato
         tabcolCodigoDestino.setCellValueFactory(cellData -> cellData.getValue().getEntidadDistribucionDestino().codigoProperty());
         tabcolNombreDestino.setCellValueFactory(cellData -> cellData.getValue().getEntidadDistribucionDestino().nombreProperty());
         tabcolPorcentajeDestino.setCellValueFactory(cellData -> cellData.getValue().porcentajeProperty().asObject());
@@ -129,21 +128,36 @@ public class ListarControlador implements Initializable {
                 }
             };
         });
-        // tabla 2: evento de click
+        
+        // Tabla 2: evento de click
         tabListaDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {
             DriverCentro driver = tabListaDrivers.getSelectionModel().getSelectedItem();
             if (driver != null) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoSeleccionado, driver.getCodigo(), menuControlador.repartoTipo);
+                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(menuControlador.periodoSeleccionado, driver.getCodigo(), menuControlador.repartoTipo);
                 tabDetalleDriver.getItems().setAll(lstDriverLinea);
                 porcentajeTotal = lstDriverLinea.stream().mapToDouble(o -> o.getPorcentaje()).sum();
+                lblEntidades.setText("DETALLE DEL DRIVER " + driver.getCodigo());
                 lblNumeroCentros.setText("Número de registos: " + lstDriverLinea.size());
                 lblSuma.setText(String.format("Suma: %,.4f%%",porcentajeTotal));
             }
         });
         
-        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
-        tabListaDrivers.getItems().setAll(lista);
-        lblNumeroRegistros.setText("Número de registos: " + lista.size());
+        // Tabla: Buscar
+        filteredData = new FilteredList(FXCollections.observableArrayList(driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(item -> {
+                if (newValue == null || newValue.isEmpty()) return true;
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                return false;
+            });
+            lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+        });
+        sortedData = new SortedList(filteredData);
+        sortedData.comparatorProperty().bind(tabListaDrivers.comparatorProperty());
+        tabListaDrivers.setItems(sortedData);
+        lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -159,7 +173,6 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_CARGAR);
     }
     
@@ -174,7 +187,6 @@ public class ListarControlador implements Initializable {
             return;
         }
         menuControlador.objeto = driver;
-        menuControlador.periodoSeleccionado = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_EDITAR);
     }
     
@@ -187,31 +199,28 @@ public class ListarControlador implements Initializable {
         if (!menuControlador.navegador.mensajeConfirmar("Eliminar Driver - " + titulo, "¿Está seguro de eliminar el Driver " + item.getCodigo() + "?")) {
             return;
         }
-        if (driverDAO.eliminarDriverCentro(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo) == -1) {
+        if (driverDAO.eliminarDriverCentro(item.getCodigo(), menuControlador.periodoSeleccionado,menuControlador.repartoTipo) == -1) {
             menuControlador.mensaje.delete_item_periodo_error(titulo);
             return;
         }
         menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getDireccion());
-        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         lblNumeroRegistros.setText("Número de registos: " + lista.size());
         tabDetalleDriver.getItems().clear();
     }
     
-    @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
-        if (lista.isEmpty()) {
-            menuControlador.navegador.mensajeInformativo("drivers", menuControlador.MENSAJE_TABLE_EMPTY);
-            tabListaDrivers.getItems().clear();
-            tabDetalleDriver.getItems().clear();
-        } else {
-            tabListaDrivers.getItems().setAll(lista);
-            lblNumeroRegistros.setText("Número de registros : " + lista.size());
-        }
-    }
+    private void buscarPeriodo(int periodo) {
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodo, menuControlador.repartoTipo);
+        txtBuscar.setText("");
+        filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
+        sortedData = new SortedList(filteredData);
+        tabListaDrivers.setItems(sortedData);
+        lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+    }    
     
     @FXML void btnDescargarAction(ActionEvent event) throws IOException{
-        if (menuControlador.navegador.mensajeConfirmar("Descargar Driver", "¿Está seguro que desea descargar el driver del periodo " + periodoSeleccionado + "?")) {
+        if (menuControlador.navegador.mensajeConfirmar("Descargar Driver", "¿Está seguro que desea descargar el driver del periodo " + menuControlador.periodoSeleccionado + "?")) {
             DescargaServicio descargaFile;
             if(!tabListaDrivers.getItems().isEmpty()){
                 DirectoryChooser directory_chooser = new DirectoryChooser();
@@ -219,7 +228,7 @@ public class ListarControlador implements Initializable {
                 File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
                 if(directorioSeleccionado != null){
                     descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
-                    descargaFile.descargarTablaDriverCentros(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                    descargaFile.descargarTablaDriverCentros(Integer.toString(menuControlador.periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
                     menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
                 }else{
                     menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);

@@ -104,6 +104,7 @@ public class DetalleGastoDAO {
         limpiarSaldosAsociadosPeriodo(periodo, repartoTipo);
         borrarListaDetalleGastoPeriodo(periodo, repartoTipo);
         ConexionBD.crearStatement();
+        ConexionBD.tamanhoBatchMax = 1000;
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());
         for (DetalleGasto item: lista) {
             int periodoIter = periodo;
@@ -144,7 +145,7 @@ public class DetalleGastoDAO {
     }
     
     public int actualizarSaldoCuentaPeriodo(int periodo, int repartoTipo) {        
-        String periodoStr = repartoTipo == 1 ? "PERIODO" : "TRUNC(PERIODO/100)*100";
+        String periodoStr = repartoTipo == 1 ? "A.PERIODO" : "TRUNC(A.PERIODO/100)*100";
         String queryStr = String.format("" +
                 "UPDATE MS_PLAN_DE_CUENTA_LINEAS A\n" +
                 "   SET A.SALDO=(SELECT SUM(COALESCE(B.SALDO,0)) FROM MS_CUENTA_PARTIDA_CENTRO B WHERE A.PLAN_DE_CUENTA_CODIGO=B.CUENTA_CONTABLE_CODIGO AND %s=%d AND B.REPARTO_TIPO=%d GROUP BY B.CUENTA_CONTABLE_CODIGO)\n" +

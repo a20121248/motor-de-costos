@@ -1,18 +1,12 @@
 package controlador.procesos;
 
-import controlador.ConexionBD;
 import dao.CentroDAO;
 import dao.DriverDAO;
 import dao.PlanDeCuentaDAO;
 import dao.ProcesosDAO;
-import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
-import modelo.Centro;
-import modelo.CentroDriver;
-import modelo.DriverObjetoLinea;
-import modelo.EntidadDistribucion;
 import servicios.DistribucionServicio;
 import servicios.DriverServicio;
 import servicios.ReportingServicio;

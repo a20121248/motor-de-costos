@@ -665,15 +665,15 @@ public class ReportingServicio {
         return reportingDAO.existeInformacionReporteObjetos(periodo, repartoTipo);
     }
     
-    public void generarReporteBolsasOficinas(int periodo, int repartoTipo) {
-        reportingDAO.generarReporteBolsasOficinas(periodo, repartoTipo);
+    public void generarReporteBolsasOficinas(int periodo, int repartoTipo, String nombreTabla) {
+        reportingDAO.generarReporteBolsasOficinas(periodo, repartoTipo, nombreTabla);
     }
     
-    public void generarReporteCascada(int periodo, int repartoTipo) {
-        reportingDAO.generarReporteCascada(periodo, repartoTipo);
+    public void generarReporteCascada(int periodo, int repartoTipo, String nombreTabla) {
+        reportingDAO.generarReporteCascada(periodo, repartoTipo, nombreTabla);
     }
     
-    public void generarReporteObjetos(int periodo, int repartoTipo) {
-        reportingDAO.generarReporteObjetos(periodo, repartoTipo);
+    public void generarReporteObjetos(int periodo, int repartoTipo, String nombreTabla) {
+        reportingDAO.generarReporteObjetos(periodo, repartoTipo, nombreTabla);
     }
 }

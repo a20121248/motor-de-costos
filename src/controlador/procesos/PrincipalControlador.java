@@ -426,6 +426,10 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void cbCierreProcesoAction (ActionEvent event) {
+        String nombreTablaBolsasOficinas = menuControlador.tablaReporteBolsasOficinas + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
+        String nombreTablaCascada = menuControlador.tablaReporteCascada + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
+        String nombreTablaObjetos = menuControlador.tablaReporteObjetos + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
+        
         boolean isSelected = cbCierreProceso.isSelected();
         String mensaje = ""
                 + "¿Está seguro que desea cerrar el proceso del periodo " + periodoSeleccionado + "?\r\n"
@@ -443,9 +447,9 @@ public class PrincipalControlador implements Initializable {
                 boolean existe1 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
 
                 if( existe1 ){
-                    reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
-                    reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
-                    reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                    reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaBolsasOficinas);
+                    reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaCascada);
+                    reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaObjetos);
                     procesosDAO.insertarCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                     
                     menuControlador.mensaje.execute_close_process_success();
@@ -472,9 +476,9 @@ public class PrincipalControlador implements Initializable {
                             boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
 
                             if( existe4 ){
-                                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
-                                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
-                                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                                reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaBolsasOficinas);
+                                reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaCascada);
+                                reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaObjetos);
                                 procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                                 
                                 menuControlador.mensaje.execute_close_process_success();
@@ -486,10 +490,10 @@ public class PrincipalControlador implements Initializable {
                     }else{
                         boolean existe4 = procesosDAO.verificarProcesosEjecutadosPreviamenteTemporal(periodoSeleccionado, menuControlador.repartoTipo, 4);
 
-                        if( existe4 ){
-                            reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo);
-                            reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo);
-                            reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo);
+                        if( existe4 ){                            
+                            reportingDAO.generarReporteBolsasOficinas(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaBolsasOficinas);
+                            reportingDAO.generarReporteCascada(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaCascada);
+                            reportingDAO.generarReporteObjetos(periodoSeleccionado, menuControlador.repartoTipo, nombreTablaObjetos);
                             procesosDAO.updateCierreProceso(periodoSeleccionado, menuControlador.repartoTipo,value);
                             
                             menuControlador.mensaje.execute_close_process_success();

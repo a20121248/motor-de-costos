@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
@@ -15,7 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
@@ -65,28 +66,10 @@
             </HBox>
          </children>
       </AnchorPane>
-      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="130.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />
-      <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <Spinner fx:id="spAnho" layoutX="226.0" layoutY="159.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
-         <valueFactory>
-            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-         </valueFactory>
-      </Spinner>
-      <Label layoutX="60.0" layoutY="134.0" text="Ruta:" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="124.0" />
-      <TextField fx:id="txtRuta" disable="true" layoutX="91.0" layoutY="120.0" prefHeight="25.0" prefWidth="511.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="120.0" />
-      <JFXButton fx:id="btnCargarRuta" layoutX="534.0" layoutY="95.0" onAction="#btnCargarRutaAction" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="FOLDER_OPEN" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO DRIVER" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="75.0" styleClass="left" text="NOMBRE DRIVER" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO DRIVER" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="800.0" styleClass="left" text="NOMBRE DRIVER" />
          </columns>
       </TableView>
       <Label fx:id="lblNumeroRegistros" layoutX="50.0" layoutY="549.0" text="Número de registros: 0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="50.0" />
@@ -109,5 +92,35 @@
             <FontAwesomeIconView glyphName="UPLOAD" />
          </graphic>
       </JFXButton>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="30.0" layoutY="30.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ComboBox>
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Label text="Ruta:">
+               <HBox.margin>
+                  <Insets left="100.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">
+               <graphic>
+                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="small" />
+               </styleClass>
+            </JFXButton>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

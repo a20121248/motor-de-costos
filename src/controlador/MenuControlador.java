@@ -54,6 +54,7 @@ public class MenuControlador implements Initializable {
     public List<Tipo> lstCentroTipos, lstCentroNiveles, lstEntidadTipos, lstGrupoGasto;
     public List<String> lstNIIF17Atribuible, lstNIIF17Tipo, lstNIIF17Clase, lstTipoGasto;
     public String codigos;
+    public String tablaReporteBolsasOficinas, tablaReporteCascada, tablaReporteObjetos;
     final Image img;
     public List<Integer> lstFases;
     public Object objeto;
@@ -66,9 +67,7 @@ public class MenuControlador implements Initializable {
     public Mensaje mensaje = new Mensaje();
     // =========================================================
     // *************************** MENSAJES*********************
-    // =========================================================
-   
-    
+    // =========================================================    
     public final String MENSAJE_UPLOAD_HEADER = "UPLOAD_HEADER";
     public final String MENSAJE_DOWNLOAD = "DOWNLOAD";
     public final String MENSAJE_DOWNLOAD_LOG = "DOWNLOAD_LOG";
@@ -145,9 +144,15 @@ public class MenuControlador implements Initializable {
         anhoActual = periodo / 100;
         mesActual = periodo % 100;
         
+        periodoSeleccionado = periodo;
+        
         periodoAnterior = Integer.parseInt(new SimpleDateFormat("yyyyMM").format(fechaAnt));
         anhoAnterior = periodoAnterior / 100;
         mesAnterior = periodoAnterior % 100;
+        
+        tablaReporteBolsasOficinas = "MS_REPORTE_BOLSAS_OFICINAS";
+        tablaReporteCascada = "MS_REPORTE_CASCADA";
+        tablaReporteObjetos = "MS_REPORTE_OBJETOS";
         
         tipoDAO = new TipoDAO();
         // repartoTipo de entidades

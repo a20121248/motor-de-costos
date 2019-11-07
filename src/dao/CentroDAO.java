@@ -979,7 +979,7 @@ public class CentroDAO {
                 "        a.periodo,\n" +
                 "        a.centro_codigo,\n" +
                 "        a.entidad_origen_codigo,\n" +
-                "        a.saldo * d.porcentaje /100.00,\n" +
+                "        a.saldo*d.porcentaje /100.00,\n" +
                 "        a.cuenta_contable_origen_codigo,\n" +
                 "        a.partida_origen_codigo,\n" +
                 "        a.centro_origen_codigo,\n" +
@@ -989,7 +989,7 @@ public class CentroDAO {
                 "        sysdate,\n" +
                 "        sysdate\n" +
                 "  FROM MS_CASCADA A \n" +
-                "  JOIN MS_OBJETO_DRIVER C ON C.CENTRO_CODIGO = A.CENTRO_CODIGO AND c.periodo = %s AND c.reparto_tipo = a.reparto_tipo AND c.grupo_gasto = a.grupo_gasto\n" +
+                "  JOIN MS_OBJETO_DRIVER C ON C.CENTRO_CODIGO=A.CENTRO_CODIGO AND c.periodo=%s AND c.reparto_tipo = a.reparto_tipo AND c.grupo_gasto = a.grupo_gasto\n" +
                 "  JOIN MS_DRIVER_OBJETO_LINEAS D ON d.driver_codigo = c.driver_codigo AND d.periodo = %s AND d.reparto_tipo = a.reparto_tipo\n" +
                 "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
                 "  WHERE a.periodo =%d AND a.reparto_tipo =%d AND a.centro_codigo = '%s' and abs( a.saldo * d.porcentaje /100.00) >= %f",

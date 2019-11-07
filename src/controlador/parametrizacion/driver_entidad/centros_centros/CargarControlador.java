@@ -24,7 +24,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -65,7 +64,6 @@ public class CargarControlador implements Initializable {
     AsignacionEntidadDriverDAO asignacionEntidadDriverDAO;
     
     List<CentroDriver> listaCargar;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getControlador());
     String logName;
     String titulo;
@@ -83,21 +81,19 @@ public class CargarControlador implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
-        if (menuControlador.repartoTipo == 1)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = (int) menuControlador.objeto / 100 * 100;
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
                     if (menuControlador.repartoTipo == 1)
-                        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                     else
-                        periodoSeleccionado = spAnho.getValue()*100;
+                        menuControlador.periodoSeleccionado = spAnho.getValue()*100;
                 }
             });
         } else {
@@ -105,13 +101,13 @@ public class CargarControlador implements Initializable {
         }
         
         // Seleccionar anho
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
                 
@@ -156,7 +152,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado, menuControlador.repartoTipo);
+            List<CentroDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
             if (lista != null) {
                 tabCargar.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -184,7 +180,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             
             // Estructura de la cabecera
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO CENTRO","NOMBRE CENTRO","CODIGO DRIVER","NOMBRE DRIVER")))) {
                 menuControlador.navegador.mensajeError(titulo, menuControlador.MENSAJE_UPLOAD_HEADER);
                 return null;
             }
@@ -194,18 +190,11 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodoLeido = (int) celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoCentro = celda.getStringCellValue();
+                if (codigoCentro.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreCentro = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoDriver = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombreDriver = celda.getStringCellValue();
-
-                if (periodo != periodoLeido) {                    
-                    menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
-                    lista.clear();
-                    txtRuta.setText("");
-                    return null;
-                }
                 
                 // Validar la existencia del centro
                 CentroDriver centro = lstCentros.stream().filter(item -> codigoCentro.equals(item.getCodigoCentro())).findAny().orElse(null);
@@ -250,7 +239,7 @@ public class CargarControlador implements Initializable {
             if (listaCargar.isEmpty()) {
                 menuControlador.navegador.mensajeInformativo(titulo, menuControlador.MENSAJE_UPLOAD_ITEM_DONTEXIST);
             } else {
-                asignacionEntidadDriverDAO.insertarListaAsignaciones(listaCargar, periodoSeleccionado, menuControlador.repartoTipo);
+                asignacionEntidadDriverDAO.insertarListaAsignaciones(listaCargar, menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
                 if (findError == true){
                     menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);
                 } else {
@@ -277,7 +266,7 @@ public class CargarControlador implements Initializable {
                 menuControlador.Log.agregarLineaArchivo(mensajeStr);
                 
                 mensajeStr = String.format("('%s', '%s')", item.getCodigoDriver(), item.getCodigoCentro());
-                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());
+                menuControlador.Log.agregarItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), mensajeStr, menuControlador.periodoSeleccionado, menuControlador.navegador.RUTAS_DRIVER_ENTIDAD_CENTROS_CENTROS_LISTAR.getDireccion());
             } else {
                 findError = true;
                 mensajeStr = String.format("No se agregó el item ('%s', '%s') en %s, debido a los siguientes errores: %s", item.getCodigoDriver(), item.getCodigoCentro(), titulo, item.getDetalleError());

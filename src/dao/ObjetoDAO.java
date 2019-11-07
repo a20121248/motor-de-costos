@@ -44,7 +44,7 @@ public class ObjetoDAO {
         String queryStr = String.format("" +
                 "SELECT %s_CODIGO CODIGO\n" +
                 "  FROM MS_%s_LINEAS\n" +
-                "WHERE PERIODO = %d AND REPARTO_TIPO=%d",
+                "WHERE PERIODO=%d AND REPARTO_TIPO=%d",
                 prefixTableName,prefixTableName,periodo,repartoTipo);
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             while(rs.next()) lista.add(rs.getString("CODIGO"));

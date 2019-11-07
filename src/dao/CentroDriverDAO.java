@@ -133,7 +133,7 @@ public class CentroDriverDAO {
                     item.getCodigoCuenta(),
                     item.getCodigoPartida(),
                     item.getCodigoCentro(),
-                    item.getPeriodo(),
+                    periodo,
                     repartoTipo,
                     fechaStr,
                     fechaStr);

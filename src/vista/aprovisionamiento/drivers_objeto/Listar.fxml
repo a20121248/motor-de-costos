@@ -3,14 +3,17 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -55,62 +58,16 @@
             </HBox>
          </children>
       </AnchorPane>
-      <Label layoutX="50.0" layoutY="120.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
-      <Spinner fx:id="spAnho" layoutX="216.0" layoutY="149.0" prefWidth="74" AnchorPane.leftAnchor="232.0" AnchorPane.topAnchor="120.0">
-         <valueFactory>
-            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-         </valueFactory>
-      </Spinner>
-      <JFXButton fx:id="btnBuscarPeriodo" layoutX="322.0" layoutY="120.0" onAction="#btnBuscarPeriodoAction" AnchorPane.topAnchor="120.0">
-         <graphic>
-            <FontAwesomeIconView glyphName="SEARCH" />
-         </graphic>
-         <styleClass>
-            <String fx:value="btn" />
-            <String fx:value="small" />
-         </styleClass>
-      </JFXButton>
-      <SplitPane dividerPositions="0.55" layoutX="86.0" layoutY="178.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" style="-fx-box-border: transparent;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <TableView fx:id="tabListaDrivers" layoutX="91.0" layoutY="-6.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
-                     <columns>
-                        <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
-                        <TableColumn fx:id="tabcolNombre" prefWidth="900.0" styleClass="left" text="NOMBRE" />
-                     </columns>
-                  </TableView>
-                  <Label layoutX="14.0" layoutY="14.0" text="Lista de drivers" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="lblNumeroRegistros" layoutX="360.0" layoutY="17.0" text="Número de registros: 0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" />
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <TableView fx:id="tabDetalleDriver" layoutX="24.0" layoutY="-22.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
-                    <columns>
-                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="120.0" styleClass="center" text="CÓDIGO PRODUCTO" />
-                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="300.0" styleClass="left" text="NOMBRE PRODUCTO" />
-                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="120.0" styleClass="center" text="CÓDIGO SUBCANAL" />
-                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="300.0" styleClass="left" text="NOMBRE SUBCANAL" />
-                        <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="120.0" styleClass="center" text="PORCENTAJE (%)" />
-                    </columns>
-                  </TableView>
-                  <Label fx:id="lblEntidades" layoutX="29.0" layoutY="12.0" text="Objetos de Costos a distribuir" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
-      <HBox alignment="TOP_RIGHT" layoutX="122.0" layoutY="183.0" spacing="12.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="122.0" layoutY="183.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
          <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0" />
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="btnEliminar" onAction="#btnEliminarAction" styleClass="btn" text="Eliminar">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
@@ -123,7 +80,57 @@
             </JFXButton>
          </children>
       </HBox>
-      <JFXButton fx:id="btnDescargar" layoutX="343.0" layoutY="571.0" onAction="#btnDescargarAction" text="Descargar" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="50.0">
+      <SplitPane dividerPositions="0.5" layoutX="86.0" layoutY="178.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" style="-fx-box-border: transparent;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="175.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label text="DRIVERS" textFill="#676a6c">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+                        <Label text="Buscar:" />
+                        <TextField fx:id="txtBuscar" prefHeight="25.0" prefWidth="200.0" />
+                     </children>
+                  </HBox>
+                  <TableView fx:id="tabListaDrivers" layoutX="91.0" layoutY="-6.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                     <columns>
+                        <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
+                        <TableColumn fx:id="tabcolNombre" prefWidth="900.0" styleClass="left" text="NOMBRE" />
+                     </columns>
+                  </TableView>
+                  <Label fx:id="lblNumeroRegistros" layoutX="360.0" layoutY="17.0" text="Número de registros: 0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <Label fx:id="lblEntidades" layoutX="29.0" layoutY="12.0" text="DETALLE DEL DRIVER" textFill="#676a6c" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="tabDetalleDriver" layoutX="24.0" layoutY="-22.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                    <columns>
+                        <TableColumn fx:id="tabcolCodigoProducto" prefWidth="120.0" styleClass="center" text="CÓDIGO PRODUCTO" />
+                        <TableColumn fx:id="tabcolNombreProducto" prefWidth="300.0" styleClass="left" text="NOMBRE PRODUCTO" />
+                      <TableColumn fx:id="tabcolCodigoSubcanal" prefWidth="120.0" styleClass="center" text="CÓDIGO SUBCANAL" />
+                      <TableColumn fx:id="tabcolNombreSubcanal" prefWidth="300.0" styleClass="left" text="NOMBRE SUBCANAL" />
+                        <TableColumn fx:id="tabcolPorcentajeDestino" prefWidth="120.0" styleClass="center" text="PORCENTAJE (%)" />
+                    </columns>
+                  </TableView>
+                  <Label fx:id="lblNumeroObjetos" text="Número de registros: 0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+                  <Label fx:id="lblSuma" layoutX="521.0" layoutY="173.0" text="Suma: 0,0000%" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <JFXButton fx:id="btnDescargar" layoutX="343.0" layoutY="571.0" onAction="#btnDescargarAction" text="Descargar" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="50.0">
          <graphic>
             <FontAwesomeIconView glyphName="DOWNLOAD" />
          </graphic>

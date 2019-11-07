@@ -65,7 +65,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public MenuControlador menuControlador;
     FilteredList<Centro> filteredData;
     SortedList<Centro> sortedData;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getControlador());
     String titulo, titulo2;
     
@@ -75,26 +74,22 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         driverLineaDAO = new DriverLineaDAO();
         titulo = "Centros de Costos";
         titulo2 = "Centro de Costos";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
         if (menuControlador.repartoTipo != 1)
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                    buscarPeriodo(periodoSeleccionado);
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    buscarPeriodo(menuControlador.periodoSeleccionado);
                 }
             });
         } else {
@@ -102,14 +97,14 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
-                buscarPeriodo(periodoSeleccionado);
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
+                buscarPeriodo(menuControlador.periodoSeleccionado);
             }
         });
 
@@ -134,7 +129,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         });
         
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarPeriodo(periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(centroDAO.listarPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -194,17 +189,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + titulo2, "¿Está seguro de quitar el " + titulo2 + " " + item.getNombre() + "?"))
             return;        
         
-        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),periodoSeleccionado,menuControlador.repartoTipo)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo)==0 ){
-            centroDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
-            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
-            buscarPeriodo(periodoSeleccionado);
+        if(centroDAO.verificarObjetoEnDetalleGasto(item.getCodigo(),menuControlador.periodoSeleccionado,menuControlador.repartoTipo)==0 && driverLineaDAO.verificarObjetoEnDriver(item.getCodigo(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo)==0 ){
+            centroDAO.eliminarObjetoPeriodo(item.getCodigo(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
+            menuControlador.Log.deleteItemPeriodo(LOGGER, menuControlador.usuario.getUsername(), item.getCodigo(),menuControlador.periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
+            buscarPeriodo(menuControlador.periodoSeleccionado);
         } else {
             menuControlador.mensaje.delete_item_periodo_error(titulo);
         }        
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO_CARGAR);
     }
     
@@ -230,8 +224,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             if(directorioSeleccionado != null){
                 if(menuControlador.repartoTipo ==1){
                     descargaFile = new DescargaServicio("CentrosDeCostos", tabListar);
-                descargaFile.descargarTabla(Integer.toString(periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
-                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
+                descargaFile.descargarTabla(Integer.toString(menuControlador.periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, menuControlador.periodoSeleccionado,Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
                 } else {
                     /*generar descarga con todos las columnas por mes*/
                 }
@@ -249,9 +243,9 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        centroDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado, menuControlador.repartoTipo);
-        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),periodoSeleccionado, Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
-        buscarPeriodo(periodoSeleccionado);
+        centroDAO.insertarObjetoPeriodo(entidad.getCodigo(), menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
+        menuControlador.Log.agregarItemPeriodo(LOGGER,menuControlador.usuario.getUsername(), entidad.getCodigo(),menuControlador.periodoSeleccionado, Navegador.RUTAS_CENTROS_ASIGNAR_PERIODO.getDireccion());
+        buscarPeriodo(menuControlador.periodoSeleccionado);
     }
 
     @Override

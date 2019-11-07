@@ -55,7 +55,6 @@ public class CargarControlador implements Initializable {
     // Variables de la aplicacion
     PartidaDAO partidaDAO;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO_CARGAR.getControlador());
     String titulo;
     List<CargarObjetoPeriodoLinea> listaCargar ;
@@ -66,25 +65,21 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         partidaDAO = new PartidaDAO();
         titulo = "Partidas";
-        if (menuControlador.objeto != null)
-            periodoSeleccionado = (int) menuControlador.objeto;
-        else
-            periodoSeleccionado = menuControlador.periodo;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Periodo seleccionado
         if (menuControlador.repartoTipo != 1)
-            periodoSeleccionado = periodoSeleccionado / 100 * 100;
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
         
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
-            cmbMes.getSelectionModel().select(periodoSeleccionado % 100 - 1);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
             cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (!oldValue.equals(newValue)) {
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 }
             });
         } else {
@@ -92,13 +87,13 @@ public class CargarControlador implements Initializable {
         }
         
         // Anho seleccionado
-        spAnho.getValueFactory().setValue(periodoSeleccionado / 100);
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 if (menuControlador.repartoTipo == 1)
-                    periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 else
-                    periodoSeleccionado = spAnho.getValue()*100;
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
             }
         });
         
@@ -168,7 +163,7 @@ public class CargarControlador implements Initializable {
             Cell celda;
             //int numFilasOmitir = 2
             //Estructura de la cabecera
-            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE")))) {
+            if (!menuControlador.navegador.validarFila(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE")))) {
                 menuControlador.mensaje.upload_header_error(titulo);
                 return null;
             }
@@ -177,28 +172,18 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
-                if (periodo == 0) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
+                if (codigo.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 
-                // Valida que los items del archivo tengan el periodo correcto
-                // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
-                    menuControlador.mensaje.upload_periodo_fail_error();
-                    lista.clear();
-                    txtRuta.setText("");
-                    break;
-                }
-                
-                CargarObjetoPeriodoLinea linea = new CargarObjetoPeriodoLinea(periodo,codigo,nombre,true);
+                CargarObjetoPeriodoLinea linea = new CargarObjetoPeriodoLinea(menuControlador.periodoSeleccionado,codigo,nombre,true);
                 String partida = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
                 if (partida != null) {
                     listaCargar.add(linea);
                     listaCodigos.removeIf(x -> x.equals(linea.getCodigo()));
-                    logDetails +=String.format("Se agregó item %s al periodo %d de %s. \r\n",linea.getCodigo(),periodoSeleccionado,titulo);
+                    logDetails +=String.format("Se agregó item %s al periodo %d de %s. \r\n",linea.getCodigo(),menuControlador.periodoSeleccionado,titulo);
                 } else {
-                    logDetails +=String.format("No se agregó item %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),periodoSeleccionado,titulo);
+                    logDetails +=String.format("No se agregó item %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),menuControlador.periodoSeleccionado,titulo);
                     if (partida == null) {
                         logDetails +=String.format("- No existe en Catálogo.\r\n");
                     }
@@ -220,7 +205,6 @@ public class CargarControlador implements Initializable {
     }
     
     @FXML void btnAtrasAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_PARTIDAS_ASOCIAR_PERIODO);
     }
     
