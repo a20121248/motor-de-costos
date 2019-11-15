@@ -48,7 +48,7 @@
                      <items>
                         <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="496.0" spacing="60.0">
                            <children>
-                              <JFXRadioButton fx:id="rbGasto" text="GASTOS">
+                              <JFXRadioButton fx:id="rbGasto" text="REAL">
                                  <HBox.margin>
                                     <Insets left="15.0" />
                                  </HBox.margin>

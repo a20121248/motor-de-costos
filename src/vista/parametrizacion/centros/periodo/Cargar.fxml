@@ -99,8 +99,8 @@
       </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="800.0" styleClass="left" text="NOMBRE" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" layoutX="24.0" layoutY="480.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

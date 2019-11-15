@@ -43,7 +43,7 @@ import modelo.Tipo;
 import servicios.DescargaServicio;
 
 public class ListarControlador implements Initializable,ObjetoControladorInterfaz {
-    // Variables de la vista    
+    // Variables de la vista
     @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
@@ -56,7 +56,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableColumn<Centro, String> tabcolTipoCentro;
     @FXML private TableColumn<Centro, Double> tabcolSaldo;
     
-    @FXML private Label lblNumeroRegistros;    
+    @FXML private Label lblNumeroRegistros;
+    @FXML private Label lblMontoTotal;
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -140,11 +141,13 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
         });
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
+        lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {

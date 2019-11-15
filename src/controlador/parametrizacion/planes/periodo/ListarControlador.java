@@ -26,6 +26,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -52,7 +53,8 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
     @FXML private TableColumn<EntidadDistribucion, String> tabcolNombre;
     @FXML private TableColumn<EntidadDistribucion, Double> tabcolSaldo;
     
-    @FXML private Label lblNumeroRegistros;    
+    @FXML private Label lblNumeroRegistros;
+    @FXML private Label lblMontoTotal;
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -105,6 +107,20 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
+        tabcolSaldo.setCellFactory(column -> {
+                return new TableCell<EntidadDistribucion, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(String.format("%,.2f", item));
+                    }
+                }
+            };
+        });
         
         // Tabla: Buscar
         filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(menuControlador.periodoSeleccionado,null,menuControlador.repartoTipo)), p -> true);
@@ -117,11 +133,13 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
         });
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
+        lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {

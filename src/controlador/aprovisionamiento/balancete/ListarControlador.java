@@ -1,5 +1,6 @@
 package controlador.aprovisionamiento.balancete;
 
+import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -8,7 +9,9 @@ import javafx.fxml.Initializable;
 import controlador.MenuControlador;
 import controlador.Navegador;
 import dao.DetalleGastoDAO;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -38,6 +41,8 @@ public class ListarControlador implements Initializable {
     @FXML private TableColumn<DetalleGasto, Double> tabcolMonto01;
     
     @FXML private Label lblNumeroRegistros;
+    @FXML private Label lblMontoTotal;
+    @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
     DetalleGastoDAO detalleGastoDAO;
@@ -72,9 +77,11 @@ public class ListarControlador implements Initializable {
         
         // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+        spAnho.valueProperty().addListener((obs, oldValue, newValue) -> {
+            LOGGER.log(Level.INFO,"M1");
             if (!oldValue.equals(newValue)) {
-                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                LOGGER.log(Level.INFO,"M2");
+                menuControlador.periodoSeleccionado = newValue*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 buscarPeriodo(menuControlador.periodoSeleccionado);
             }
         });
@@ -117,11 +124,13 @@ public class ListarControlador implements Initializable {
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getMonto01()).sum()));
         });
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
+        lblMontoTotal.setText(String.format("Monto total: %,.4f", filteredData.stream().mapToDouble(o -> o.getMonto01()).sum()));
     }
 
     // Acción de la pestaña 'Inicio'
@@ -152,11 +161,34 @@ public class ListarControlador implements Initializable {
 
     private void buscarPeriodo(int periodo) {
         List<DetalleGasto> lista = detalleGastoDAO.listar(periodo, menuControlador.repartoTipo);
+        LOGGER.log(Level.INFO,"M3");
         txtBuscar.setText("");
         filteredData = new FilteredList(FXCollections.observableArrayList(lista), p -> true);
         sortedData = new SortedList(filteredData);
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+    }
+    
+    @FXML void btnDescargarAction(ActionEvent event) throws IOException{
+        /*DescargaServicio descargaFile;
+        if(!tabListar.getItems().isEmpty()){
+            DirectoryChooser directory_chooser = new DirectoryChooser();
+            directory_chooser.setTitle("Directorio a Descargar:");
+            File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
+            if(directorioSeleccionado != null){
+                if(menuControlador.repartoTipo ==1){
+                    descargaFile = new DescargaServicio("CuentasContables", tabListar);
+                    descargaFile.descargarTabla(Integer.toString(menuControlador.periodoSeleccionado),directorioSeleccionado.getAbsolutePath());
+                    menuControlador.Log.descargarTablaPeriodo(LOGGER, menuControlador.usuario.getUsername(), titulo, menuControlador.periodoSeleccionado,Navegador.RUTAS_PLANES_ASIGNAR_PERIODO.getDireccion());
+                }else{
+                    //generar descarga con todos las columnas por mes
+                }   
+            }else{
+                menuControlador.mensaje.download_canceled();
+            }
+        }else{
+            menuControlador.mensaje.download_empty();
+        }*/
     }
 
     // Acción del botón 'Atrás'

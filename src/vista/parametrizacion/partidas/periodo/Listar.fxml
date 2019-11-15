@@ -14,6 +14,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
@@ -105,9 +106,14 @@
             <TableColumn fx:id="tabcolSaldo" prefWidth="121.0" styleClass="right" text="SALDO" />
          </columns>
       </TableView>
-      <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+      <HBox alignment="CENTER_LEFT" layoutX="236.0" layoutY="159.0" spacing="10.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
          <children>
-            <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
+            <VBox alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <Label fx:id="lblNumeroRegistros" minWidth="170.0" text="Número de registros: 0" />
+                  <Label fx:id="lblMontoTotal" minWidth="170.0" text="Monto total: 0" />
+               </children>
+            </VBox>
             <JFXButton fx:id="btnDescargar" onAction="#btnDescargarAction" text="Descargar">
                <graphic>
                   <FontAwesomeIconView glyphName="DOWNLOAD" />

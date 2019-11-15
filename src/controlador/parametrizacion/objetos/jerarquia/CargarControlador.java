@@ -30,6 +30,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import modelo.Grupo;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,14 +42,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class CargarControlador implements Initializable {
     // Variables de la vista
     @FXML private Label lblTitulo;
-    @FXML private Hyperlink lnkInicio;
-    @FXML private Hyperlink lnkParametrizacion;
     @FXML private Hyperlink lnkObjetos;
-    @FXML private Hyperlink lnkJerarquia;
-    @FXML private Hyperlink lnkCargar;
     
+    @FXML private HBox hbPeriodo;
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
+    
     @FXML private TextField txtRuta;
     @FXML private JFXButton btnCargarRuta;
     
@@ -62,16 +61,12 @@ public class CargarControlador implements Initializable {
     @FXML private Label lblNumeroRegistros;
     
     @FXML private JFXButton btnDescargarLog;
-    @FXML private JFXButton btnAtras;
     @FXML private Button btnSubir;
     
     // Variables de la aplicacion
     ObjetoGrupoDAO objetoGrupoDAO;
     ObjetoDAO objetoDAO;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR.getControlador());
     List<Grupo> listaCargar  = new ArrayList();
     String titulo;
@@ -84,13 +79,38 @@ public class CargarControlador implements Initializable {
         this.menuControlador = menuControlador;
         objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
         objetoDAO = new ObjetoDAO(menuControlador.objetoTipo);
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo != 1)
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        
+        // Mes seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            cmbMes.getItems().addAll(menuControlador.lstMeses);
+            cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
+            cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
+                if (!oldValue.equals(newValue)) {
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                }
+            });
+        } else {
+            hbPeriodo.getChildren().remove(cmbMes);
+        }
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
+        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (menuControlador.repartoTipo == 1)
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                else
+                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
+            }
+        });
+        
         switch (menuControlador.objetoTipo) {
             case "PRO":
                 lblTitulo.setText("Cargar Jerarquía de Productos");
@@ -107,12 +127,7 @@ public class CargarControlador implements Initializable {
             default:
                 break;
         }
-        if (menuControlador.repartoTipo == 2) {
-            cmbMes.setVisible(false);
-            periodoSeleccionado = menuControlador.periodo-menuControlador.periodo%100;
-        } else {
-            periodoSeleccionado = menuControlador.periodo;
-        }
+        
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -120,27 +135,6 @@ public class CargarControlador implements Initializable {
         tabcolCodigoPadre.setCellValueFactory(cellData -> cellData.getValue().getGrupoPadre().codigoProperty());
         tabcolNombrePadre.setCellValueFactory(cellData -> cellData.getValue().getGrupoPadre().nombreProperty());
         tabcolNivelPadre.setCellValueFactory(cellData -> cellData.getValue().getGrupoPadre().nivelProperty().asObject());
-        tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 12);
-        tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
-        tabcolNivel.setMaxWidth(1f * Integer.MAX_VALUE * 13);
-        tabcolCodigoPadre.setMaxWidth(1f * Integer.MAX_VALUE * 12);
-        tabcolNombrePadre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
-        tabcolNivelPadre.setMaxWidth(1f * Integer.MAX_VALUE * 13);        
-        // meses
-        cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
-        cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                if(menuControlador.repartoTipo == 2) periodoSeleccionado = spAnho.getValue()*100;
-                else periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        });
         
         // Ocultar el botón de descarga de LOG
         btnDescargarLog.setVisible(false);
@@ -200,7 +194,7 @@ public class CargarControlador implements Initializable {
     }
     
     private List<Grupo> leerArchivo(String rutaArchivo) {
-        List<String> lstCodigo = objetoDAO.listarCodigosPeriodo(periodoSeleccionado,menuControlador.repartoTipo);
+        List<String> lstCodigo = objetoDAO.listarCodigosPeriodo(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         List<Grupo> lista = new ArrayList();
         listaCargar = new ArrayList();
         logDetails = "";
@@ -214,7 +208,7 @@ public class CargarControlador implements Initializable {
             Row fila;
             Cell celda;
 
-            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("PERIODO","CODIGO","NOMBRE","NIVEL","CODIGO PADRE","NOMBRE PADRE","NIVEL PADRE")))) {
+            if (!menuControlador.navegador.validarFilaNormal(filas.next(), new ArrayList(Arrays.asList("CODIGO","NOMBRE","NIVEL","CODIGO PADRE","NOMBRE PADRE","NIVEL PADRE")))) {
                 menuControlador.mensaje.upload_header_error("Jerarquía");
                 return null;
             }
@@ -223,11 +217,8 @@ public class CargarControlador implements Initializable {
                 celdas = fila.cellIterator();
                 
                 // leemos una fila completa                
-                celda = celdas.next();celda.setCellType(CellType.NUMERIC);int periodo = (int) celda.getNumericCellValue();
-                if(periodo == 0){
-                    break;
-                }
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
+                if (codigo.equals("")) break;
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigoPadre = celda.getStringCellValue();
@@ -242,19 +233,19 @@ public class CargarControlador implements Initializable {
                 
                 itemHijo.setGrupoPadre(itemPadre);
                 List<String> lstCodigoPadre = objetoGrupoDAO.listarCodigoObjetos(nivel);
-                String itemObjeto = lstCodigo.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);;
-                String itemObjetoPadre = lstCodigoPadre.stream().filter(item ->codigoPadre.equals(item)).findAny().orElse(null);;
+                String itemObjeto = lstCodigo.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
+                String itemObjetoPadre = lstCodigoPadre.stream().filter(item ->codigoPadre.equals(item)).findAny().orElse(null);
                 if(itemObjeto != null && itemObjetoPadre != null){
                     listaCargar.add(itemHijo);
                     itemHijo.setFlagCargar(true);
                     logDetails +=String.format("Se agregó %s %s con %s %s en %s  correctamente.\r\n",titulo, codigo, titulo2, codigoPadre, "Jerarquía");
                 }else {
-                    logDetails +=String.format("No se agregó %s %s con %s %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n",titulo, codigo, titulo2, codigoPadre, periodoSeleccionado, "Jerarquía" );
+                    logDetails +=String.format("No se agregó %s %s con %s %s al periodo %d de %s. Debido a que existen los siguientes errores:\r\n",titulo, codigo, titulo2, codigoPadre, menuControlador.periodoSeleccionado, "Jerarquía" );
                     if(itemObjeto == null){
-                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo,periodoSeleccionado);
+                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo, menuControlador.periodoSeleccionado);
                     }
                     if(itemObjetoPadre == null){
-                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo2,periodoSeleccionado);
+                        logDetails +=String.format("- El código de %s no esta asignado en el periodo %d o no existe en su Catálogo.\r\n", titulo2, menuControlador.periodoSeleccionado);
                     }
                     itemHijo.setFlagCargar(false);
                 }
@@ -275,13 +266,13 @@ public class CargarControlador implements Initializable {
     
     @FXML void btnSubirAction(ActionEvent event) throws SQLException {
         findError = false;
-        if(tabListar.getItems().isEmpty()){
+        if(tabListar.getItems().isEmpty()) {
             menuControlador.mensaje.upload_empty();
         }else {
-            if(listaCargar.isEmpty()){
+            if(listaCargar.isEmpty()) {
                 menuControlador.mensaje.upload_allCharged_now("Jerarquía");
-            }else{
-                objetoGrupoDAO.insertarListaAsignacion(periodoSeleccionado, menuControlador.objetoTipo, listaCargar,menuControlador.repartoTipo);
+            } else {
+                objetoGrupoDAO.insertarListaAsignacion(menuControlador.periodoSeleccionado, menuControlador.objetoTipo, listaCargar,menuControlador.repartoTipo);
                 crearReporteLOG();
                 if(findError == true){
                     menuControlador.mensaje.upload_success_with_error("Jerarquía");

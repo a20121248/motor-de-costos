@@ -109,9 +109,8 @@
       </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
-            <TableColumn fx:id="tabcolPeriodo" minWidth="0.0" styleClass="center" text="PERIODO" />
-            <TableColumn fx:id="tabcolCodigo" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="600.0" styleClass="left" text="NOMBRE" />
          </columns>
       </TableView>
       <JFXButton fx:id="btnDescargarLog" layoutX="232.0" layoutY="575.0" onAction="#btnDescargarLogAction" text="Descargar LOG" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="190.0">
@@ -128,7 +127,7 @@
             <Label fx:id="lblNumeroRegistros" minWidth="150.0" text="Número de registros: 0" />
             <JFXButton fx:id="btnDescargarLog" onAction="#btnDescargarLogAction" text="Descargar LOG">
                <graphic>
-                  <FontAwesomeIconView glyphName="DOWNLOAD" />
+                  <FontAwesomeIconView glyphName="FILE_TEXT_ALT" />
                </graphic>
                <styleClass>
                   <String fx:value="btn" />

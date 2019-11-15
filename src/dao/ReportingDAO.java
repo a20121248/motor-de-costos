@@ -10,7 +10,18 @@ public class ReportingDAO {
     
     public ReportingDAO() {
         this.connection = new ConnectionDB();
-    }       
+    }
+    
+    public ResultSet dataFechaFase(int periodo, int repartoTipo, int fase) {
+        String queryStr = String.format(""+
+                "SELECT TO_CHAR(FECHA_FIN,'YYYYMMDD_HH24MISS') FECHA_FIN_STR\n" +
+                "  FROM MS_EJECUCIONES\n" +
+                " WHERE PERIODO=%d\n" +
+                "   AND REPARTO_TIPO=%d\n" +
+                "   AND FASE=%d",
+                periodo,repartoTipo,fase);
+        return ConexionBD.ejecutarQuery(queryStr);
+    }    
     
     public ResultSet dataReporteCuentaPartidaCentroBolsa(int periodo, int repartoTipo) {
         String queryStr = String.format(""+
@@ -748,5 +759,24 @@ public class ReportingDAO {
         ConexionBD.ejecutarQuery(queryStr);
         
         insertarGeneracionReporte(periodo, repartoTipo, 3);
+    }
+    
+    public ResultSet dataReporteLineaCanal(int periodo) {
+        String queryStr = String.format("" +
+                "SELECT CENTRO_INICIAL_CODIGO, CENTRO_INICIAL_NOMBRE,\n" +
+                "       CUENTA_CONTABLE_INICIAL_CODIGO, CUENTA_CONTABLE_INICIAL_NOMBRE,\n" +
+                "       PARTIDA_INICIAL_CODIGO, PARTIDA_INICIAL_NOMBRE,\n" +
+                "       LINEA_CODIGO, LINEA_NOMBRE,\n" +
+                "       CANAL_CODIGO, CANAL_NOMBRE,\n" +
+                "       SUM(MONTO) MONTO\n" +
+                "  FROM MS_REPORTE_OBJETOS_P PARTITION (P_%d)\n" +
+                " WHERE ROWNUM<100\n" +
+                " GROUP BY CUENTA_CONTABLE_INICIAL_CODIGO,CUENTA_CONTABLE_INICIAL_NOMBRE,\n" +
+                "          PARTIDA_INICIAL_CODIGO,PARTIDA_INICIAL_NOMBRE,\n" +
+                "          CENTRO_INICIAL_CODIGO,CENTRO_INICIAL_NOMBRE,\n" +
+                "          LINEA_CODIGO,LINEA_NOMBRE,\n" +
+                "          CANAL_CODIGO,CANAL_NOMBRE",
+                periodo);
+        return ConexionBD.ejecutarQuery(queryStr);
     }
 }

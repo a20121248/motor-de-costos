@@ -118,6 +118,10 @@
             <TableColumn fx:id="tabcolNIIF17Atribuible" prefWidth="120.0" styleClass="center" text="NIIF17 ATRIBUIBLE" />
             <TableColumn fx:id="tabcolNIIF17Tipo" prefWidth="120.0" styleClass="center" text="NIIF17 TIPO" />
             <TableColumn fx:id="tabcolNIIF17Clase" prefWidth="110.0" styleClass="center" text="NIIF17 GASTO" />
+            <TableColumn fx:id="tabcolAgrupacion" prefWidth="110.0" styleClass="center" text="AGRUPACION" />
+            <TableColumn fx:id="tabcolRubro" prefWidth="110.0" styleClass="center" text="RUBRO" />
+            <TableColumn fx:id="tabcolSubconcepto" prefWidth="110.0" styleClass="center" text="SUBCONCEPTO" />
+            <TableColumn fx:id="tabcolTendencia" prefWidth="110.0" styleClass="center" text="TENDENCIA" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">

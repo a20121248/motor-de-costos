@@ -77,14 +77,45 @@
             </HBox>
          </children>
       </AnchorPane>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ComboBox>
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <Label text="Ruta:">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">
+               <graphic>
+                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="small" />
+               </styleClass>
+            </JFXButton>
+         </children>
+      </HBox>
       <TableView fx:id="tabListar" layoutX="68.0" layoutY="173.0" prefHeight="262.0" prefWidth="600.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="120.0" styleClass="center" text="CÓDIGO" />
-            <TableColumn fx:id="tabcolNombre" prefWidth="120.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolNivel" prefWidth="120.0" styleClass="center" text="NIVEL" />
-            <TableColumn fx:id="tabcolCodigoPadre" prefWidth="120.0" styleClass="center" text="CÓDIGO PADRE" />
-            <TableColumn fx:id="tabcolNombrePadre" prefWidth="120.0" styleClass="left" text="NOMBRE PADRE" />
-            <TableColumn fx:id="tabcolNivelPadre" prefWidth="120.0" styleClass="center" text="NIVEL PADRE" />
+            <TableColumn fx:id="tabcolNombre" prefWidth="400.0" styleClass="left" text="NOMBRE" />
+            <TableColumn fx:id="tabcolNivel" styleClass="center" text="NIVEL" />
+            <TableColumn fx:id="tabcolCodigoPadre" prefWidth="100.0" styleClass="center" text="CÓDIGO PADRE" />
+            <TableColumn fx:id="tabcolNombrePadre" prefWidth="400.0" styleClass="left" text="NOMBRE PADRE" />
+            <TableColumn fx:id="tabcolNivelPadre" styleClass="center" text="NIVEL PADRE" />
          </columns>
       </TableView>
       <HBox alignment="CENTER_LEFT" layoutX="34.0" layoutY="490.0" spacing="10.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
@@ -109,36 +140,6 @@
                <graphic>
                   <FontAwesomeIconView glyphName="UPLOAD" />
                </graphic>
-            </JFXButton>
-         </children>
-      </HBox>
-      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="20.0" layoutY="20.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
-         <children>
-            <Label text="Periodo:" />
-            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </ComboBox>
-            <Spinner fx:id="spAnho" prefWidth="74">
-               <valueFactory>
-                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-               </valueFactory>
-            </Spinner>
-            <Label text="Ruta:">
-               <HBox.margin>
-                  <Insets left="100.0" />
-               </HBox.margin>
-            </Label>
-            <TextField fx:id="txtRuta" disable="true" prefHeight="25.0" HBox.hgrow="ALWAYS" />
-            <JFXButton fx:id="btnCargarRuta" onAction="#btnCargarRutaAction">
-               <graphic>
-                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
-               </graphic>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="small" />
-               </styleClass>
             </JFXButton>
          </children>
       </HBox>

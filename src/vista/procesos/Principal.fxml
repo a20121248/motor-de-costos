@@ -10,6 +10,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.TitledPane?>
@@ -50,14 +51,19 @@
             </HBox>
          </children>
       </AnchorPane>
-      <JFXCheckBox fx:id="cbCierreProceso" layoutX="597.0" layoutY="124.0" onAction="#cbCierreProcesoAction" text="Cierre de proceso" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <Label layoutX="70.0" layoutY="144.0" text="Periodo:" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="124.0" />
-      <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="120.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.topAnchor="120.0" />
-      <Spinner fx:id="spAnho" layoutX="232.0" layoutY="120.0" prefWidth="74" AnchorPane.topAnchor="120.0">
-         <valueFactory>
-            <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
-         </valueFactory>
-      </Spinner>
+      <HBox fx:id="hbPeriodo" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <Label text="Periodo:" />
+            <ComboBox fx:id="cmbMes" prefHeight="25.0" prefWidth="113.0" />
+            <Spinner fx:id="spAnho" prefWidth="74">
+               <valueFactory>
+                  <SpinnerValueFactory.IntegerSpinnerValueFactory max="2100" min="1990" />
+               </valueFactory>
+            </Spinner>
+            <Separator disable="true" opacity="0.0" HBox.hgrow="ALWAYS" />
+            <JFXCheckBox fx:id="cbCierreProceso" onAction="#cbCierreProcesoAction" text="Cierre de proceso" />
+         </children>
+      </HBox>
       <TitledPane fx:id="tpEjecucionCostos" animated="false" collapsible="false" layoutX="21.0" layoutY="341.0" prefHeight="250.0" text="EJECUCIÓN POR FASES" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="170.0">
          <content>
             <AnchorPane>

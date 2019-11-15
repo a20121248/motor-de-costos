@@ -53,6 +53,7 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
     @FXML private TableColumn<Partida, Double> tabcolSaldo;
 
     @FXML private Label lblNumeroRegistros;
+    @FXML private Label lblMontoTotal;
     @FXML private JFXButton btnDescargar;
     
     // Variables de la aplicacion
@@ -131,11 +132,13 @@ public class ListarControlador implements Initializable, ObjetoControladorInterf
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());
+            lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
         });
         sortedData = new SortedList(filteredData);
         sortedData.comparatorProperty().bind(tabListar.comparatorProperty());
         tabListar.setItems(sortedData);
         lblNumeroRegistros.setText("Número de registros: " + sortedData.size());
+        lblMontoTotal.setText(String.format("Total: %,.4f", filteredData.stream().mapToDouble(o -> o.getSaldoAcumulado()).sum()));
     }    
     
     @FXML void lnkInicioAction(ActionEvent event) {

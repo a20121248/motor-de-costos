@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modelo.Cabecera;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -88,6 +89,19 @@ public class ReportingServicio {
             Cell cell = row.createCell(i);
             cell.setCellValue(listaCabecera.get(i));
             cell.setCellStyle(headerCellStyle);
+        }
+    }
+    
+    private void crearCabecera2(List<Cabecera> lstCabecera, Sheet sh, int numFila, CellStyle headerCellStyle) {
+        Row row = sh.createRow(numFila);
+        int i = 0;
+        for (Cabecera cabecera : lstCabecera) {
+            Cell cell = row.createCell(i);
+            cell.setCellValue(cabecera.getNombre());
+            if (cabecera.getAncho() != 0)
+                sh.setColumnWidth(i, cabecera.getAncho());
+            cell.setCellStyle(headerCellStyle);
+            ++i;
         }
     }
        
@@ -218,7 +232,7 @@ public class ReportingServicio {
                 // monto
                 sh.setColumnWidth(idxColumn, 5000);
                 row.createCell(idxColumn).setCellValue(monto);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);                
+                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
                 // driver
                 row.createCell(idxColumn++).setCellValue(codigoDriver);
                 sh.setColumnWidth(idxColumn, 6000);
@@ -584,6 +598,21 @@ public class ReportingServicio {
         }
     }
     
+    public String obtenerFechaFase(int periodo, int repartoTipo, int fase) {
+        String fechaFinStr = "";
+        try {
+            ResultSet rs;
+            //HOJA
+            rs = reportingDAO.dataFechaFase(periodo, repartoTipo, fase);
+            while(rs.next()) {
+                fechaFinStr = rs.getString("FECHA_FIN_STR");
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.INFO,ex.getMessage());
+        }
+        return fechaFinStr;
+    }
+    
     public void crearReporteGastosOperacionesDeCambio(int periodo, String ruta) {
         try {
             SXSSFWorkbook wb = new SXSSFWorkbook(-1);
@@ -675,5 +704,76 @@ public class ReportingServicio {
     
     public void generarReporteObjetos(int periodo, int repartoTipo, String nombreTabla) {
         reportingDAO.generarReporteObjetos(periodo, repartoTipo, nombreTabla);
+    }
+    
+    public void crearReporteLineaCanal(int periodo, String ruta, int repartoTipo) {
+        try {
+            SXSSFWorkbook wb = new SXSSFWorkbook(-1);
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
+            // Cabecera de la tabla
+            int rowNum = 0;
+            List<Cabecera> lstCabecera = new ArrayList(Arrays.asList(
+                    new Cabecera("PERIODO"),
+                    new Cabecera("CUENTA_CONTABLE_INICIAL_CODIGO", 4000),
+                    new Cabecera("CUENTA_CONTABLE_INICIAL_NOMBRE", 11000),
+                    new Cabecera("PARTIDA_INICIAL_CODIGO"),
+                    new Cabecera("PARTIDA_INICIAL_NOMBRE", 11000),
+                    new Cabecera("CENTRO_INICIAL_CODIGO"),
+                    new Cabecera("CENTRO_INICIAL_NOMBRE", 11000),
+                    new Cabecera("LINEA_CODIGO"),
+                    new Cabecera("LINEA_NOMBRE", 8000),
+                    new Cabecera("CANAL_CODIGO"),
+                    new Cabecera("CANAL_NOMBRE", 8000),
+                    new Cabecera("MONTO", 5000)
+            ));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera2(lstCabecera, sh, rowNum++, headerCellStyle);
+            // Contenido de la tabla en la fila rowNum+1
+            ResultSet rs = reportingDAO.dataReporteLineaCanal(periodo);
+            while(rs.next()) {
+                String cuentaContableInicialCodigo = rs.getString("CUENTA_CONTABLE_INICIAL_CODIGO");
+                String cuentaContableInicialNombre = rs.getString("CUENTA_CONTABLE_INICIAL_NOMBRE");
+                String partidaInicialCodigo = rs.getString("PARTIDA_INICIAL_CODIGO");
+                String partidaInicialNombre = rs.getString("PARTIDA_INICIAL_NOMBRE");
+                String centroInicialCodigo = rs.getString("CENTRO_INICIAL_CODIGO");
+                String centroInicialNombre = rs.getString("CENTRO_INICIAL_NOMBRE");
+                String codigoLinea = rs.getString("LINEA_CODIGO");
+                String nombreLinea = rs.getString("LINEA_NOMBRE");
+                String codigoCanal = rs.getString("CANAL_CODIGO");
+                String nombreCanal = rs.getString("CANAL_NOMBRE");
+                double saldo = rs.getDouble("MONTO");
+
+                Row row = sh.createRow(rowNum++);
+                int idxColumn = 0;
+                // PERIODO
+                row.createCell(idxColumn++).setCellValue(periodo);
+                // CUENTA CONTABLE
+                row.createCell(idxColumn++).setCellValue(cuentaContableInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(cuentaContableInicialNombre);
+                // PARTIDA
+                row.createCell(idxColumn++).setCellValue(partidaInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(partidaInicialNombre);
+                // CENTRO
+                row.createCell(idxColumn++).setCellValue(centroInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(centroInicialNombre);
+                // LINEA
+                row.createCell(idxColumn++).setCellValue(codigoLinea);
+                row.createCell(idxColumn++).setCellValue(nombreLinea);
+                // CANAL
+                row.createCell(idxColumn++).setCellValue(codigoCanal);
+                row.createCell(idxColumn++).setCellValue(nombreCanal);
+                // MONTO
+                row.createCell(idxColumn).setCellValue(saldo);
+                
+               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+            }
+            FileOutputStream out = new FileOutputStream(ruta);
+            wb.write(out);
+            out.close();
+            wb.dispose();
+        } catch (IOException | SQLException ex) {
+            LOGGER.log(Level.INFO,ex.getMessage());
+        }
     }
 }

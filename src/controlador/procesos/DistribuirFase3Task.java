@@ -58,7 +58,7 @@ public class DistribuirFase3Task extends Task {
         for (int i = 1; i <= max; ++i) {
             // inicio logica
             String centroObjetoCodigo = lista.get(i-1);
-            centroDAO.insertarDistribucionCentrosObjetosCosto(centroObjetoCodigo,periodo, principalControlador.menuControlador.repartoTipo, 0.0001);
+            centroDAO.insertarDistribucionCentrosObjetosCosto(centroObjetoCodigo,periodo, principalControlador.menuControlador.repartoTipo, 0.001);
             principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             // fin logica

@@ -195,6 +195,7 @@ public class CargarControlador implements Initializable {
             while (filas.hasNext()) {
                 Iterator<Cell> celdas = filas.next().cellIterator();
                 String codigo = celdas.next().getStringCellValue();
+                if (codigo.equals("")) break;
                 String nombre = celdas.next().getStringCellValue();
                 String tipo = celdas.next().getStringCellValue();
                 String cargar = celdas.next().getStringCellValue();
