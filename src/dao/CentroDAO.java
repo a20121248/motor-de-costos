@@ -915,27 +915,24 @@ public class CentroDAO {
     public int insertarDistribucionBolsas(int periodo, int repartoTipo) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(""+
-                "INSERT INTO ms_CASCADA\n" +
-                "(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
+                "INSERT INTO ms_CASCADA(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
                 "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, sum(monto)\n" +
-                "FROM (\n" +
-                "  SELECT  d.entidad_destino_codigo centro_codigo,\n" +
-                "          a.periodo periodo,\n" +
-                "          0 iteracion,\n" +
-                "          a.saldo * d.porcentaje/100.00 monto,\n" +
-                "          a.centro_codigo entidad_origen_codigo,\n" +
-                "          a.grupo_gasto grupo_gasto,\n" +
-                "          a.reparto_tipo reparto_tipo,\n" +
-                "          a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
-                "          a.partida_origen_codigo partida_origen_codigo,\n" +
-                "          a.centro_origen_codigo centro_origen_codigo\n" +
-                "    FROM MS_CASCADA A\n" +
-                "    JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
-                "    JOIN ms_bolsa_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.centro_codigo = a.centro_origen_codigo AND SUBSTR(c.cuenta_contable_codigo,1,3) = SUBSTR(a.cuenta_contable_origen_codigo,1,3) AND SUBSTR(c.cuenta_contable_codigo,5,11) = SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND c.partida_codigo = a.partida_origen_codigo\n" +
-                "    JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
-                "  WHERE A.ITERACION = -1 AND a.periodo = %d and a.reparto_tipo=%d\n" +
-                ")\n" +
-                "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
+                "  FROM (SELECT d.entidad_destino_codigo centro_codigo,\n" +
+                "               a.periodo periodo,\n" +
+                "               0 iteracion,\n" +
+                "               a.saldo*d.porcentaje/100.00 monto,\n" +
+                "               a.centro_codigo entidad_origen_codigo,\n" +
+                "               a.grupo_gasto grupo_gasto,\n" +
+                "               a.reparto_tipo reparto_tipo,\n" +
+                "               a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
+                "               a.partida_origen_codigo partida_origen_codigo,\n" +
+                "               a.centro_origen_codigo centro_origen_codigo\n" +
+                "          FROM MS_CASCADA A\n" +
+                "          JOIN MS_CENTROS B ON B.CODIGO=a.CENTRO_CODIGO\n" +
+                "          JOIN MS_BOLSA_DRIVER C ON c.periodo=%s AND C.reparto_tipo=a.reparto_tipo AND c.centro_codigo=a.centro_origen_codigo AND SUBSTR(c.cuenta_contable_codigo,1,3)=SUBSTR(a.cuenta_contable_origen_codigo,1,3) AND SUBSTR(c.cuenta_contable_codigo,5,11)=SUBSTR(a.cuenta_contable_origen_codigo,5,11) AND c.partida_codigo=a.partida_origen_codigo\n" +
+                "          JOIN MS_DRIVER_LINEAS D ON d.reparto_tipo=a.reparto_tipo AND d.periodo=%s AND d.driver_codigo=c.driver_codigo\n" +
+                "         WHERE A.ITERACION=-1 AND a.periodo=%d and a.reparto_tipo=%d)\n" +
+                "         GROUP BY centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
                 periodoStr,periodoStr,periodo,repartoTipo);
         return ConexionBD.ejecutar(queryStr);
     }
@@ -943,29 +940,35 @@ public class CentroDAO {
     public int insertarDistribucionCascadaPorNivel(int iteracion, int periodo, int repartoTipo, double precision) {
         String periodoStr = repartoTipo == 1 ? "a.PERIODO" : "TRUNC(a.PERIODO/100)*100";
         String queryStr = String.format(Locale.US, ""+
-                "INSERT INTO ms_CASCADA\n" +
-                "(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
-                "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo, sum(monto)\n" +
+                "INSERT INTO ms_CASCADA(centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,saldo)\n" +
+                "SELECT centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo,monto\n" +
                 "  FROM (\n" +
-                "    SELECT  d.entidad_destino_codigo centro_codigo,\n" +
-                "        a.periodo periodo,\n" +
-                "        b.nivel iteracion,\n" +
-                "        a.saldo * d.porcentaje/100.00 monto,\n" +
-                "        a.centro_codigo entidad_origen_codigo,\n" +
-                "        a.grupo_gasto grupo_gasto,\n" +
-                "        a.reparto_tipo reparto_tipo,\n" +
-                "        a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
-                "        a.partida_origen_codigo partida_origen_codigo,\n" +
-                "        a.centro_origen_codigo centro_origen_codigo\n" +
+                "SELECT d.entidad_destino_codigo centro_codigo,\n" +
+                "       a.periodo periodo,\n" +
+                "       b.nivel iteracion,\n" +
+                "       a.centro_codigo entidad_origen_codigo,\n" +
+                "       a.grupo_gasto grupo_gasto,\n" +
+                "       a.reparto_tipo reparto_tipo,\n" +
+                "       a.cuenta_contable_origen_codigo cuenta_contable_origen_codigo,\n" +
+                "       a.partida_origen_codigo partida_origen_codigo,\n" +
+                "       CASE WHEN (A.centro_origen_codigo LIKE '60.99%%') THEN A.CENTRO_CODIGO ELSE A.centro_origen_codigo END centro_origen_codigo,\n" +
+                "       SUM(a.saldo * d.porcentaje/100.00) monto\n" +
                 "  FROM MS_cascada A\n" +
-                "  JOIN MS_CENTROS B ON B.CODIGO = a.CENTRO_CODIGO\n" +
-                "  JOIN ms_entidad_origen_driver C ON c.periodo = %s AND C.reparto_tipo = a.reparto_tipo AND c.entidad_origen_codigo = a.centro_codigo\n" +
+                "  JOIN MS_CENTROS B ON B.CODIGO=a.CENTRO_CODIGO\n" +
+                "  JOIN ms_entidad_origen_driver C ON c.periodo=%s AND C.reparto_tipo=a.reparto_tipo AND c.entidad_origen_codigo=a.centro_codigo\n" +
                 "  JOIN ms_driver_lineas D ON d.reparto_tipo = a.reparto_tipo AND d.periodo = %s AND d.driver_codigo = c.driver_codigo\n" +
-                "WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo=%d AND B.NIVEL = %d\n" +
-                "  )\n" +
-                "  WHERE abs(MONTO)>= %f\n" +
-                "group by centro_codigo, periodo, iteracion, entidad_origen_codigo, grupo_gasto, reparto_tipo, cuenta_contable_origen_codigo, partida_origen_codigo, centro_origen_codigo",
-                periodoStr,periodoStr,periodo,repartoTipo,iteracion, precision);
+                " WHERE A.ITERACION > -2 AND a.periodo = %d and a.reparto_tipo=%d AND B.NIVEL = %d\n" +
+                " GROUP BY d.entidad_destino_codigo,\n" +
+                "          a.periodo,\n" +
+                "          b.nivel,\n" +
+                "          a.centro_codigo,\n" +
+                "          a.grupo_gasto,\n" +
+                "          a.reparto_tipo,\n" +
+                "          a.cuenta_contable_origen_codigo,\n" +
+                "          a.partida_origen_codigo,\n" +
+                "          CASE WHEN (A.centro_origen_codigo LIKE '60.99%%') THEN A.CENTRO_CODIGO ELSE A.centro_origen_codigo END\n" +
+                ") WHERE abs(monto)>=%f",
+                periodoStr,periodoStr,periodo,repartoTipo,iteracion,precision);
         return ConexionBD.ejecutar(queryStr);
     }
     

@@ -26,7 +26,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
-import modelo.Centro;
 import modelo.DriverCentro;
 import modelo.DriverLinea;
 import servicios.DescargaServicio;
