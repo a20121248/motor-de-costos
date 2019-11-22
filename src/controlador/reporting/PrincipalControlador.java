@@ -35,7 +35,7 @@ public class PrincipalControlador implements Initializable {
     @FXML private ComboBox<String> cmbMes;
     @FXML private Spinner<Integer> spAnho;
     
-    @FXML private CheckComboBox<Grupo> cmbReporte3, cmbReporte4, cmbReporte5;
+    @FXML private CheckComboBox<Grupo> cmbR5Dimensiones, cmbR5Lineas;
     
     // Variables de la aplicacion
     ObjetoGrupoDAO productoGrupoDAO, subcanalGrupoDAO;
@@ -53,65 +53,53 @@ public class PrincipalControlador implements Initializable {
         centroDAO = new CentroDAO();
         reportingServicio = new ReportingServicio();
         procesosDAO = new ProcesosDAO();
+        // Periodo seleccionado
+        if (menuControlador.periodoSeleccionado % 100 == 0)
+            ++menuControlador.periodoSeleccionado;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            if (menuControlador.periodoSeleccionado % 100 == 0)
-                ++menuControlador.periodoSeleccionado;
-        
-        // Meses
+        // Mes seleccionado
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
-        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
-        
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+        
+        // Anho seleccionado
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
+        spAnho.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                menuControlador.periodoSeleccionado = newValue*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         
         ObservableList<Grupo> obsLstLineas = FXCollections.observableList(productoGrupoDAO.listarObjetos(0));
-        cmbReporte3.getItems().addAll(obsLstLineas);
-        cmbReporte3.setConverter(new StringConverter<Grupo>() {
+        
+        cmbR5Dimensiones.getItems().addAll(obsLstLineas);
+        cmbR5Dimensiones.setConverter(new StringConverter<Grupo>() {
             @Override
             public String toString(Grupo cmb) {
                 return cmb.getNombre();
             }
             @Override
             public Grupo fromString(String string) {
-                return cmbReporte3.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
+                return cmbR5Dimensiones.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
         
-        cmbReporte4.getItems().addAll(obsLstLineas);
-        cmbReporte4.setConverter(new StringConverter<Grupo>() {
+        cmbR5Lineas.getItems().addAll(obsLstLineas);
+        cmbR5Lineas.setConverter(new StringConverter<Grupo>() {
             @Override
             public String toString(Grupo cmb) {
                 return cmb.getNombre();
             }
             @Override
             public Grupo fromString(String string) {
-                return cmbReporte3.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
-            }
-        });
-        
-        cmbReporte5.getItems().addAll(obsLstLineas);
-        cmbReporte5.setConverter(new StringConverter<Grupo>() {
-            @Override
-            public String toString(Grupo cmb) {
-                return cmb.getNombre();
-            }
-            @Override
-            public Grupo fromString(String string) {
-                return cmbReporte3.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
+                return cmbR5Lineas.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
     }
@@ -128,7 +116,7 @@ public class PrincipalControlador implements Initializable {
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_MODULO_REPORTING);
     }
     
-    @FXML void btnReporte1Action(ActionEvent event) throws IOException {
+    @FXML void btnGenerarR1Action(ActionEvent event) throws IOException {
         String nombreTabla = menuControlador.tablaReporteBolsasOficinas + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
 
         String nombre = "Reporte de distribución de bolsas y oficinas";
@@ -155,7 +143,35 @@ public class PrincipalControlador implements Initializable {
         //}
     }
     
-    @FXML void btnReporte2Action(ActionEvent event) throws IOException {
+    @FXML void btnExportarR1Action(ActionEvent event) throws IOException {
+        String fechaFase1Str = reportingServicio.obtenerFechaFase(menuControlador.periodoSeleccionado, menuControlador.repartoTipo, 1);
+        
+        if (fechaFase1Str.equals("")) {
+            menuControlador.navegador.mensajeError("Reporte 1", "No se ejecutó la fase 1.");
+            return;
+        }
+        
+        String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
+        String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + menuControlador.periodoSeleccionado;
+        Navegador.crearCarpeta(rutaOrigen);//TODO, quitar el static para rendimiento
+        String reporteNombre = fechaFase1Str + " - " + menuControlador.periodoSeleccionado + " - " + "Reporte de bolsas y oficinas";
+        rutaOrigen += File.separator + reporteNombre +".xlsx";
+        reportingServicio.crearReporteBolsasOficinas(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar " + reporteNombre);
+        fileChooser.setInitialFileName(reporteNombre);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
+        File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
+        if (archivoSeleccionado != null) {
+            Path origen = Paths.get(rutaOrigen);
+            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            menuControlador.navegador.mensajeInformativo(reporteNombre, "Descarga completa.");
+        }
+    }
+    
+    @FXML void btnGenerarR2Action(ActionEvent event) throws IOException {
         String nombreTabla = menuControlador.tablaReporteCascada + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
         
         String nombre = "Distribución de cascada de centros de costos";
@@ -182,7 +198,7 @@ public class PrincipalControlador implements Initializable {
         //}
     }
     
-    @FXML void btnReporte3Action(ActionEvent event) throws IOException {
+    @FXML void btnGenerarR3Action(ActionEvent event) throws IOException {
         String nombreTabla = menuControlador.tablaReporteObjetos + (menuControlador.repartoTipo == 1 ? "_R" : "_P");
         
         String nombre = "Distribución de objetos de costos";
@@ -208,12 +224,40 @@ public class PrincipalControlador implements Initializable {
             //}
         //}
     }
-    
-    @FXML void btnReporte4Action(ActionEvent event) throws IOException {
+        
+    @FXML void btnExportarR4Action(ActionEvent event) throws IOException {
         String fechaFase3Str = reportingServicio.obtenerFechaFase(menuControlador.periodoSeleccionado, menuControlador.repartoTipo, 1);
         
         if (fechaFase3Str.equals("")) {
-            menuControlador.navegador.mensajeError("Rerpote 4", "No se ejecutó la fase 3.");
+            menuControlador.navegador.mensajeError("Reporte 5", "No se ejecutó la fase 3.");
+            return;
+        }
+        
+        String tipoRepartoStr = menuControlador.repartoTipo == 1 ? "real" : "presupuesto";
+        String rutaOrigen = "." + File.separator + "reportes" + File.separator + tipoRepartoStr + File.separator + menuControlador.periodoSeleccionado;
+        Navegador.crearCarpeta(rutaOrigen);//TODO, quitar el static para rendimiento
+        String reporteNombre = fechaFase3Str + " - " + menuControlador.periodoSeleccionado + " - " + "Reporte de cascada de centros";
+        rutaOrigen += File.separator + reporteNombre +".xlsx";
+        reportingServicio.crearReporteCascadaCentros(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar " + reporteNombre);
+        fileChooser.setInitialFileName(reporteNombre);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
+        File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
+        if (archivoSeleccionado != null) {
+            Path origen = Paths.get(rutaOrigen);
+            Path destino = Paths.get(archivoSeleccionado.getAbsolutePath());
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            menuControlador.navegador.mensajeInformativo(reporteNombre, "Descarga completa.");
+        }
+    }
+    
+    @FXML void btnExportarR5Action(ActionEvent event) throws IOException {
+        String fechaFase3Str = reportingServicio.obtenerFechaFase(menuControlador.periodoSeleccionado, menuControlador.repartoTipo, 1);
+        
+        if (fechaFase3Str.equals("")) {
+            menuControlador.navegador.mensajeError("Reporte 4", "No se ejecutó la fase 3.");
             return;
         }
         

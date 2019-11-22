@@ -15,6 +15,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.HBox;
 
 public class PrincipalControlador implements Initializable {
     @FXML private Hyperlink lnkInicio;    
@@ -27,8 +28,10 @@ public class PrincipalControlador implements Initializable {
     @FXML private TextArea txtareaCentros;
     @FXML private TitledPane tpObjetos;
     // copiar parametrizacion
+    @FXML private HBox hbPeriodoOrigen;
     @FXML private ComboBox<String> cmbMesOrigen;
     @FXML private Spinner<Integer> spAnhoOrigen;
+    @FXML private HBox hbPeriodoDestino;
     @FXML private ComboBox<String> cmbMesDestino;
     @FXML private Spinner<Integer> spAnhoDestino;
     @FXML private JFXButton btnCopiar;
@@ -44,10 +47,9 @@ public class PrincipalControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         if (menuControlador.repartoTipo == 2) {
-            cmbMesDestino.setVisible(false);
-            cmbMesOrigen.setVisible(false);
+            hbPeriodoOrigen.getChildren().remove(cmbMesOrigen);
+            hbPeriodoDestino.getChildren().remove(cmbMesDestino);
             spAnhoOrigen.getValueFactory().setValue(menuControlador.anhoActual-1);
             spAnhoDestino.getValueFactory().setValue(menuControlador.anhoActual);
         } else {

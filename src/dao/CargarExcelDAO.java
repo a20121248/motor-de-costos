@@ -69,14 +69,13 @@ public class CargarExcelDAO {
         String queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 CECO_CODIGO,\n" +
-                "       CASE\n" +
-                "        WHEN C.nombre IS NULL THEN 'NO'\n" +
-                "        WHEN c.centro_tipo_codigo='BOLSA' AND c.centro_tipo_codigo != 'OFICINA' THEN 'NO, ES BOLSA'\n" +
-                "        WHEN C.nombre IS NOT  NULL THEN C.nombre\n" +
+                "       CASE WHEN C.nombre IS NULL THEN 'NO'\n" +
+                "            WHEN c.tipo='BOLSA' AND c.tipo!='OFICINA' THEN 'NO, ES BOLSA'\n" +
+                "            WHEN C.nombre IS NOT NULL THEN C.nombre\n" +
                 "       END CECO_EXISTE,\n" +
                 "       A.PORCENTAJE\n" +
                 "  FROM MS_CARGAR_HOJA_DRIVER A\n" +
-                "  LEFT JOIN MS_centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo = '%d' AND REPARTO_TIPO = '%d' AND B.ITERACION = '-2'\n" +
+                "  LEFT JOIN MS_centro_lineas B ON A.CODIGO_1=B.CENTRO_CODIGO and b.periodo=%d AND REPARTO_TIPO=%d AND B.ITERACION=-2\n" +
                 "  LEFT JOIN MS_centros C ON C.CODIGO = B.CENTRO_CODIGO\n" +
                 " WHERE A.DRIVER_CODIGO='%s'\n" +
                 " ORDER BY a.excel_fila", 

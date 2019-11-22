@@ -30,8 +30,8 @@ public class DistribuirFase3Task extends Task {
     public DistribuirFase3Task(int periodo, PrincipalControlador principalControlador) {
         this.periodo = periodo;
         this.principalControlador = principalControlador;
-            this.fase = 3;
-            this.progresoTotal=0.3333;
+        this.fase = 3;
+        this.progresoTotal=0.3333;
         
         planDeCuentaDAO = new PlanDeCuentaDAO();
         driverDAO = new DriverDAO();
@@ -64,8 +64,6 @@ public class DistribuirFase3Task extends Task {
             // fin logica
             updateProgress(i, max+1);
         }
-
-        
         
         principalControlador.lblMensajeFase3.setVisible(true);
         

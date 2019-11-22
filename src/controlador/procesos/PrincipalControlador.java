@@ -112,23 +112,13 @@ public class PrincipalControlador implements Initializable {
         executor = Executors.newSingleThreadExecutor();
         this.progreso = 0.3333;
         this.numFasesTotales = 3;
+        // Periodo seleccionado
+        if (menuControlador.periodoSeleccionado % 100 == 0)
+            ++menuControlador.periodoSeleccionado;
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            if (menuControlador.periodoSeleccionado % 100 == 0)
-                ++menuControlador.periodoSeleccionado;
-        
-        // Cambiar para Ingresos Operativos
-//        if (menuControlador.repartoTipo == 2) {
-//            tpEjecucionCostos.setVisible(false);
-//            tpEjecucionIngresos.setVisible(true);
-//            AnchorPane.setTopAnchor(tpEjecucionTotal, AnchorPane.getTopAnchor(tpEjecucionTotal)-75);
-//            lblEjecucionTotal.setText("Ejecutar las fases 1 y 2");
-//        }
-
         // Mes seleccionado
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
@@ -137,15 +127,12 @@ public class PrincipalControlador implements Initializable {
                 menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
-
-        // Anho seleccionado        
+        
+        // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
-        spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+        spAnho.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if (menuControlador.repartoTipo == 1)
-                    menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                else
-                    menuControlador.periodoSeleccionado = spAnho.getValue()*100;
+                menuControlador.periodoSeleccionado = newValue*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
         

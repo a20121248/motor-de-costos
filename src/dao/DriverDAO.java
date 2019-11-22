@@ -428,25 +428,27 @@ public class DriverDAO {
         String detail = "";
         String periodoStr = repartoTipo == 1 ? "b.PERIODO" : "TRUNC(b.PERIODO/100)*100";
         String queryStr = String.format("" +
-                "SELECT  entidad_origen_codigo CENTRO_ORIGEN_CODIGO,\n" +
-                "        driver_codigo driver_codigo,\n" +
-                "        periodo PERIODO\n" +
-                "  FROM (SELECT  a.entidad_origen_codigo,\n" +
-                "                a.driver_codigo,\n" +
-                "                a.periodo,\n" +
-                "                MAX( \n" +
-                "                  CASE\n" +
-                "                    WHEN E.CODIGO IS NULL THEN 1\n" +
-                "                    WHEN E.CODIGO IS NOT NULL THEN 0\n" +
-                "                  END) estado \n" +
+                "SELECT entidad_origen_codigo CENTRO_ORIGEN_CODIGO,\n" +
+                "       driver_codigo driver_codigo,\n" +
+                "       periodo PERIODO\n" +
+                "  FROM (SELECT a.entidad_origen_codigo,\n" +
+                "               a.driver_codigo,\n" +
+                "               a.periodo,\n" +
+                "               MAX(CASE WHEN E.CODIGO IS NULL THEN 1\n" +
+                "                        ELSE 0\n" +
+                "               END) estado\n" +
                 "          FROM ms_entidad_origen_driver A\n" +
-                "          JOIN ms_centro_lineas B on %s = a.periodo and b.reparto_tipo = a.reparto_tipo and a.entidad_origen_codigo = b.centro_codigo and b.iteracion = -2\n" +
-                "          JOIN ms_centros C ON a.entidad_origen_codigo = C.CODIGO\n" +
-                "        LEFT JOIN ms_driver_lineas D ON d.driver_codigo = a.driver_codigo and d.periodo = a.periodo and b.reparto_tipo = a.reparto_tipo\n" +
-                "        LEFT JOIN ms_centros E ON d.entidad_destino_codigo = E.CODIGO AND E.NIVEL > C.NIVEL\n" +
-                "        where a.periodo = %d and a.reparto_tipo = %d\n" +
-                "        GROUP BY a.entidad_origen_codigo,a.driver_codigo,a.periodo)\n" +
-                "WHERE ESTADO=1",
+                "          JOIN ms_centro_lineas B\n" +
+                "            ON %s=A.periodo" +
+                "           AND B.reparto_tipo=A.reparto_tipo\n" +
+                "           AND A.entidad_origen_codigo=b.centro_codigo\n" +
+                "           AND B.iteracion=-2\n" +
+                "          JOIN ms_centros C ON a.entidad_origen_codigo=C.CODIGO\n" +
+                "          LEFT JOIN ms_driver_lineas D ON d.driver_codigo = a.driver_codigo and d.periodo = a.periodo and b.reparto_tipo = a.reparto_tipo\n" +
+                "          LEFT JOIN ms_centros E ON d.entidad_destino_codigo = E.CODIGO AND E.NIVEL > C.NIVEL\n" +
+                "         WHERE a.periodo=%d and a.reparto_tipo=%d\n" +
+                "         GROUP BY a.entidad_origen_codigo,a.driver_codigo,a.periodo)\n" +
+                " WHERE ESTADO=1",
                 periodoStr,periodo,repartoTipo);
         List<CentroDriver> lista = new ArrayList();
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {

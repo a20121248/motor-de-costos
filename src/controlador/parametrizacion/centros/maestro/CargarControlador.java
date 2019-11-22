@@ -43,8 +43,7 @@ public class CargarControlador implements Initializable {
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
     @FXML private TableColumn<Centro, String> tabcolNombre;
-    @FXML private TableColumn<Centro, String> tabcolCodigoGrupo;
-    @FXML private TableColumn<Centro, String> tabcolNombreGrupo;
+    @FXML private TableColumn<Centro, String> tabcolTipo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCodigoCentroPadre;
     @FXML private TableColumn<Centro, String> tabcolTipoGasto;
@@ -81,8 +80,7 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolCodigoGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().codigoProperty());
-        tabcolNombreGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         //tabcolCentroPadre.setCellValueFactory(cellData -> cellData.getValue().);
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
@@ -163,8 +161,7 @@ public class CargarControlador implements Initializable {
                 // leemos una fila completa
                 celda = celdas.next();celda.setCellType(CellType.STRING);String codigo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String nombre = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String codigoGrupo = celda.getStringCellValue();
-                celda = celdas.next();celda.setCellType(CellType.STRING);String nombreGrupo = celda.getStringCellValue();
+                celda = celdas.next();celda.setCellType(CellType.STRING);String tipo = celda.getStringCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int nivel = (int)celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.NUMERIC);int tipoGasto = (int)celda.getNumericCellValue();
                 celda = celdas.next();celda.setCellType(CellType.STRING);String niif17Atribuible = celda.getStringCellValue();
@@ -177,48 +174,48 @@ public class CargarControlador implements Initializable {
                 String strTipoGasto;
                 if(tipoGasto == 1) strTipoGasto ="DIRECTO";
                 else strTipoGasto ="INDIRECTO";
-                Centro linea = new Centro(codigo, nombre, nivel, null, 0, new Tipo(codigoGrupo,nombreGrupo), strTipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, null, null, true);
+                Centro linea = new Centro(codigo, nombre, nivel, null, 0, tipo, strTipoGasto, niif17Atribuible, niif17Tipo, niif17Clase, null, null, true);
                 String cuenta = listaCodigos.stream().filter(item ->codigo.equals(item)).findAny().orElse(null);
-                Tipo tipoCentro = listaTipoCentro.stream().filter(item ->codigoGrupo.equals(item.getCodigo())).findAny().orElse(null);
+                Tipo tipoCentro = listaTipoCentro.stream().filter(item -> tipo.equals(item.getCodigo())).findAny().orElse(null);
                 boolean ptrCodigo = menuControlador.patronCodigoCentro(codigo);
                 String relacion = "";
                 boolean relacionGrupoNivel = false;
                 if (tipoCentro != null) {
-                    if (grupoTipoBolsa.contains(codigoGrupo)) {
+                    if (grupoTipoBolsa.contains(tipo)) {
                         if (nivel == 0) {
                             relacionGrupoNivel = true;
                         } else {
                             relacionGrupoNivel = false;
-                            relacion += String.format("- El tipo '%s' es NIVEL!=0.\r\n", codigoGrupo);
+                            relacion += String.format("- El tipo '%s' es NIVEL!=0.\r\n", tipo);
                         }
                     } else {
-                        if (grupoTipoFicticio.contains(codigoGrupo)) {
+                        if (grupoTipoFicticio.contains(tipo)) {
                             if (nivel == 99) {
                                 relacionGrupoNivel = true;
                             } else {
                                 relacionGrupoNivel = false;
-                                relacion += String.format("- El tipo '%s' es NIVEL=99.\r\n", codigoGrupo);
+                                relacion += String.format("- El tipo '%s' es NIVEL=99.\r\n", tipo);
                             }
                         } else {
                             if (nivel>0 && nivel < 99) {
                                 relacionGrupoNivel = true;
                             } else {
                                 relacionGrupoNivel = false;
-                                relacion += String.format("- El tipo '%s' es NIVEL>0 y NIVEL<99.\r\n", codigoGrupo);
+                                relacion += String.format("- El tipo '%s' es NIVEL>0 y NIVEL<99.\r\n", tipo);
                             }
                         }
                     }
                 } else {
-                    relacion += String.format("- El tipo '%s' asignado no está listado.\r\n",codigoGrupo);
+                    relacion += String.format("- El tipo '%s' asignado no está listado.\r\n", tipo);
                 }
                 
                 if (cuenta == null && ptrCodigo && tipoCentro!= null && relacionGrupoNivel) {
                     listaCargar.add(linea);                    
                     listaCodigos.removeIf(x->x.equals(linea.getCodigo()));
-                    logDetails +=String.format("Se agregó item %s a %s.\r\n",linea.getCodigo(),titulo);
+                    logDetails +=String.format("Se agregó item %s a %s.\r\n", linea.getCodigo(), titulo);
                 } else {
                     logDetails +=String.format("No se agregó item %s a %s. Debido a que existen los siguientes errores:\r\n", linea.getCodigo(),titulo);
-                    if(cuenta!= null) {
+                    if (cuenta!= null) {
                         logDetails +=String.format("- Ya existe en Catálogo.\r\n");
                     } else {
                         if(!ptrCodigo) logDetails +=String.format("- El código no cumple con el patrón establecido.\r\n");

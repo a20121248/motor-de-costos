@@ -56,15 +56,13 @@ public class ListarControlador implements Initializable {
         this.menuControlador = menuControlador;
         detalleGastoDAO = new DetalleGastoDAO();
         this.titulo = "Detalle de Gasto";
+        // Periodo seleccionado
+        if (menuControlador.periodoSeleccionado % 100 == 0)
+            ++menuControlador.periodoSeleccionado;
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            if (menuControlador.periodoSeleccionado % 100 == 0)
-                ++menuControlador.periodoSeleccionado;
-        
+    public void initialize(URL url, ResourceBundle rb) {        
         // Mes seleccionado
         cmbMes.getItems().addAll(menuControlador.lstMeses);
         cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
@@ -78,9 +76,7 @@ public class ListarControlador implements Initializable {
         // Anho seleccionado
         spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.valueProperty().addListener((obs, oldValue, newValue) -> {
-            LOGGER.log(Level.INFO,"M1");
             if (!oldValue.equals(newValue)) {
-                LOGGER.log(Level.INFO,"M2");
                 menuControlador.periodoSeleccionado = newValue*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
                 buscarPeriodo(menuControlador.periodoSeleccionado);
             }

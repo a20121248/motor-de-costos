@@ -97,8 +97,7 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="110.0" styleClass="center" text="CÓDIGO CENTRO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="350.0" styleClass="left" text="NOMBRE CENTRO" />
-            <TableColumn fx:id="tabcolCodigoGrupo" prefWidth="100.0" styleClass="center" text="CÓDIGO GRUPO" />
-            <TableColumn fx:id="tabcolNombreGrupo" prefWidth="100.0" styleClass="left" text="NOMBRE GRUPO" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="100.0" styleClass="center" text="TIPO" />
             <TableColumn fx:id="tabcolNivel" prefWidth="50.0" styleClass="center" text="NIVEL" />
             <TableColumn fx:id="tabcolCodigoCentroPadre" prefWidth="150.0" styleClass="center" text="CÓDIGO CENTRO PADRE" />
             <TableColumn fx:id="tabcolTipoGasto" prefWidth="115.0" styleClass="center" text="TIPO DE GASTO" />

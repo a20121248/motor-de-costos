@@ -103,7 +103,7 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="100.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="600.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolTipoCentro" prefWidth="130.0" styleClass="center" text="TIPO" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="130.0" styleClass="center" text="TIPO" />
             <TableColumn fx:id="tabcolSaldo" prefWidth="121.0" styleClass="right" text="SALDO" />
          </columns>
       </TableView>

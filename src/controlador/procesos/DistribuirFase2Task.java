@@ -52,6 +52,7 @@ public class DistribuirFase2Task extends Task {
 //        ConexionBD.tamanhoBatchMax = 1000;
         int centroI = 0;
         updateProgress(centroI, maxNivel+1);
+        centroDAO.iniciarFase2(periodo, principalControlador.menuControlador.repartoTipo);
         for (int iter=1; iter<=maxNivel; ++iter) {
 //            List<CentroDriver> lstNivelI = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, iter);
 //            int i = 0;
@@ -68,8 +69,8 @@ public class DistribuirFase2Task extends Task {
             principalControlador.pbTotal.setProgress(progresoTotal + centroI*progresoTotal/maxNivel);
             // fin logica
             updateProgress(++centroI, maxNivel+1);
-        }        
-
+        }
+        centroDAO.terminarFase2(periodo, principalControlador.menuControlador.repartoTipo);
 //        // los posibles registros que no se hayan ejecutado
 //        ConexionBD.ejecutarBatch();
 //        ConexionBD.cerrarStatement();

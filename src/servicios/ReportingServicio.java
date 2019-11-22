@@ -104,71 +104,6 @@ public class ReportingServicio {
             ++i;
         }
     }
-       
-    public void crearReporteBolsasOficinas(int periodo, String ruta, int repartoTipo) {
-        try {
-            SXSSFWorkbook wb = new SXSSFWorkbook(-1);
-            SXSSFSheet sh = wb.createSheet("REPORTE");
-            
-            // Cabecera de la tabla
-            int rowNum = 0;
-            List<String> listaCabecera;
-            listaCabecera = new ArrayList(Arrays.asList("PERIODO","CODIGO_CUENTA_ORIGEN","NOMBRE_CUENTA_ORIGEN","CODIGO_PARTIDA_ORIGEN","NOMBRE_PARTIDA_ORIGEN","CODIGO_CENTRO_ORIGEN","NOMBRE_CENTRO_ORIGEN","CODIGO_CENTRO_DESTINO","NOMBRE_CENTRO_DESTINO","MONTO","CODIGO_DRIVER","NOMBRE_DRIVER","ASIGNACION"));
-            
-            CellStyle headerCellStyle = cabeceraEstilo(wb);
-            crearCabecera(listaCabecera, sh, rowNum++, headerCellStyle);
-            
-            // Contenido de la tabla en la fila rowNum+1
-            CellStyle numberCellStyle = decimalEstilo(wb);
-            ResultSet rs = reportingDAO.dataReporteCuentaPartidaCentroBolsa(periodo, repartoTipo);
-            while(rs.next()) {
-                String periodoReporte = rs.getString("PERIODO");
-                String codigoCuentaOrigen = rs.getString("CODIGO_CUENTA_ORIGEN");
-                String nombreCuentaOrigen = rs.getString("NOMBRE_CUENTA_ORIGEN");
-                String codigoPartidaOrigen = rs.getString("CODIGO_PARTIDA_ORIGEN");
-                String nombrePartidaOrigen = rs.getString("NOMBRE_PARTIDA_ORIGEN");
-                String codigoCentroOrigen = rs.getString("CODIGO_CENTRO_ORIGEN");
-                String nombreCentroOrigen = rs.getString("NOMBRE_CENTRO_ORIGEN");
-                String codigoCentro = rs.getString("CODIGO_CENTRO_DESTINO");
-                String nombreCentro = rs.getString("NOMBRE_CENTRO_DESTINO");
-                double monto = rs.getDouble("MONTO");
-                String codigoDriver = rs.getString("CODIGO_DRIVER");
-                String nombreDriver = rs.getString("NOMBRE_DRIVER");
-                String tipoAsignacion = rs.getString("ASIGNACION");
-
-                Row row = sh.createRow(rowNum++);
-                int idxColumn = 0;
-                row.createCell(idxColumn++).setCellValue(periodoReporte);
-                row.createCell(idxColumn++).setCellValue(codigoCuentaOrigen);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(nombreCuentaOrigen);
-                row.createCell(idxColumn++).setCellValue(codigoPartidaOrigen);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(nombrePartidaOrigen);
-                row.createCell(idxColumn++).setCellValue(codigoCentroOrigen);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(nombreCentroOrigen);
-                row.createCell(idxColumn++).setCellValue(codigoCentro);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(nombreCentro);
-                sh.setColumnWidth(idxColumn, 5000);
-                row.createCell(idxColumn).setCellValue(monto);
-                row.getCell(idxColumn++).setCellStyle(numberCellStyle);
-                row.createCell(idxColumn++).setCellValue(codigoDriver);
-                sh.setColumnWidth(idxColumn, 6000);
-                row.createCell(idxColumn++).setCellValue(nombreDriver);
-                row.createCell(idxColumn++).setCellValue(tipoAsignacion);                
-                
-                if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
-            }
-            FileOutputStream out = new FileOutputStream(ruta);
-            wb.write(out);
-            out.close();
-            wb.dispose();
-        } catch (IOException | SQLException ex) {
-            LOGGER.log(Level.INFO,ex.getMessage());
-        }
-    }
 
     public void crearReporteCascada(int periodo, String ruta, int repartoTipo) {
         try {
@@ -765,6 +700,232 @@ public class ReportingServicio {
                 row.createCell(idxColumn++).setCellValue(nombreCanal);
                 // MONTO
                 row.createCell(idxColumn).setCellValue(saldo);
+                
+               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+            }
+            FileOutputStream out = new FileOutputStream(ruta);
+            wb.write(out);
+            out.close();
+            wb.dispose();
+        } catch (IOException | SQLException ex) {
+            LOGGER.log(Level.INFO,ex.getMessage());
+        }
+    }
+    
+    public void crearReporteLineaCanalCtaCentro(int periodo, String ruta, int repartoTipo) {
+        try {
+            SXSSFWorkbook wb = new SXSSFWorkbook(-1);
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
+            // Cabecera de la tabla
+            int rowNum = 0;
+            List<Cabecera> lstCabecera = new ArrayList(Arrays.asList(
+                    new Cabecera("PERIODO"),
+                    new Cabecera("CUENTA_CONTABLE_INICIAL_CODIGO", 4000),
+                    new Cabecera("CUENTA_CONTABLE_INICIAL_NOMBRE", 11000),
+                    new Cabecera("CENTRO_INICIAL_CODIGO"),
+                    new Cabecera("CENTRO_INICIAL_NOMBRE", 11000),
+                    new Cabecera("LINEA_CODIGO"),
+                    new Cabecera("LINEA_NOMBRE", 8000),
+                    new Cabecera("CANAL_CODIGO"),
+                    new Cabecera("CANAL_NOMBRE", 8000),
+                    new Cabecera("MONTO", 5000)
+            ));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera2(lstCabecera, sh, rowNum++, headerCellStyle);
+            // Contenido de la tabla en la fila rowNum+1
+            ResultSet rs = reportingDAO.dataReporteLineaCanal(periodo);
+            while(rs.next()) {
+                String cuentaContableInicialCodigo = rs.getString("CUENTA_CONTABLE_INICIAL_CODIGO");
+                String cuentaContableInicialNombre = rs.getString("CUENTA_CONTABLE_INICIAL_NOMBRE");
+                String partidaInicialCodigo = rs.getString("PARTIDA_INICIAL_CODIGO");
+                String partidaInicialNombre = rs.getString("PARTIDA_INICIAL_NOMBRE");
+                String centroInicialCodigo = rs.getString("CENTRO_INICIAL_CODIGO");
+                String centroInicialNombre = rs.getString("CENTRO_INICIAL_NOMBRE");
+                String codigoLinea = rs.getString("LINEA_CODIGO");
+                String nombreLinea = rs.getString("LINEA_NOMBRE");
+                String codigoCanal = rs.getString("CANAL_CODIGO");
+                String nombreCanal = rs.getString("CANAL_NOMBRE");
+                double saldo = rs.getDouble("MONTO");
+
+                Row row = sh.createRow(rowNum++);
+                int idxColumn = 0;
+                // PERIODO
+                row.createCell(idxColumn++).setCellValue(periodo);
+                // CUENTA CONTABLE
+                row.createCell(idxColumn++).setCellValue(cuentaContableInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(cuentaContableInicialNombre);
+                // PARTIDA
+                row.createCell(idxColumn++).setCellValue(partidaInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(partidaInicialNombre);
+                // CENTRO
+                row.createCell(idxColumn++).setCellValue(centroInicialCodigo);
+                row.createCell(idxColumn++).setCellValue(centroInicialNombre);
+                // LINEA
+                row.createCell(idxColumn++).setCellValue(codigoLinea);
+                row.createCell(idxColumn++).setCellValue(nombreLinea);
+                // CANAL
+                row.createCell(idxColumn++).setCellValue(codigoCanal);
+                row.createCell(idxColumn++).setCellValue(nombreCanal);
+                // MONTO
+                row.createCell(idxColumn).setCellValue(saldo);
+                
+               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+            }
+            FileOutputStream out = new FileOutputStream(ruta);
+            wb.write(out);
+            out.close();
+            wb.dispose();
+        } catch (IOException | SQLException ex) {
+            LOGGER.log(Level.INFO,ex.getMessage());
+        }
+    }
+    
+    public void crearReporteCascadaCentros(int periodo, String ruta, int repartoTipo) {
+        try {
+            SXSSFWorkbook wb = new SXSSFWorkbook(-1);
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
+            // Cabecera de la tabla
+            int rowNum = 0;
+            List<Cabecera> lstCabecera = new ArrayList(Arrays.asList(
+                    new Cabecera("PERIODO"),
+                    new Cabecera("ITERACION"),
+                    new Cabecera("CENTRO_DESTINO_CODIGO"),
+                    new Cabecera("CENTRO_DESTINO_NOMBRE", 11000),
+                    new Cabecera("CENTRO_DESTINO_NIVEL"),
+                    new Cabecera("CENTRO_DESTINO_TIPO", 4000),
+                    new Cabecera("CENTRO_ORIGEN_CODIGO"),
+                    new Cabecera("CENTRO_ORIGEN_NOMBRE", 11000),
+                    new Cabecera("CENTRO_ORIGEN_NIVEL"),
+                    new Cabecera("CENTRO_ORIGEN_TIPO", 4000),
+                    new Cabecera("TIPO", 3000),
+                    new Cabecera("MONTO", 5000)
+            ));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera2(lstCabecera, sh, rowNum++, headerCellStyle);
+            // Contenido de la tabla en la fila rowNum+1
+            ResultSet rs = reportingDAO.dataReporteCascadaCentros(periodo, repartoTipo);
+            while(rs.next()) {
+                int iteracion = rs.getInt("ITERACION");
+                String centroDestinoCodigo = rs.getString("CENTRO_DESTINO_CODIGO");
+                String centroDestinoNombre = rs.getString("CENTRO_DESTINO_NOMBRE");
+                int centroDestinoNivel = rs.getInt("CENTRO_DESTINO_NIVEL");
+                String centroDestinoTipo = rs.getString("CENTRO_DESTINO_TIPO");
+                String centroOrigenCodigo = rs.getString("CENTRO_ORIGEN_CODIGO");
+                String centroOrigenNombre = rs.getString("CENTRO_ORIGEN_NOMBRE");
+                int centroOrigenNivel = rs.getInt("CENTRO_ORIGEN_NIVEL");
+                String centroOrigenTipo = rs.getString("CENTRO_ORIGEN_TIPO");
+                String tipo = rs.getString("TIPO");
+                double monto = rs.getDouble("MONTO");
+
+                Row row = sh.createRow(rowNum++);
+                int idxColumn = 0;
+                // PERIODO
+                row.createCell(idxColumn++).setCellValue(periodo);
+                // ITERACION
+                row.createCell(idxColumn++).setCellValue(iteracion);
+                // CENTRO DESTINO
+                row.createCell(idxColumn++).setCellValue(centroDestinoCodigo);
+                row.createCell(idxColumn++).setCellValue(centroDestinoNombre);
+                row.createCell(idxColumn++).setCellValue(centroDestinoNivel);
+                row.createCell(idxColumn++).setCellValue(centroDestinoTipo);
+                // CENTRO ORIGEN
+                row.createCell(idxColumn++).setCellValue(centroOrigenCodigo);
+                row.createCell(idxColumn++).setCellValue(centroOrigenNombre);
+                row.createCell(idxColumn++).setCellValue(centroOrigenNivel);
+                row.createCell(idxColumn++).setCellValue(centroOrigenTipo);
+                // TIPO
+                row.createCell(idxColumn++).setCellValue(tipo);
+                // MONTO
+                row.createCell(idxColumn).setCellValue(monto);
+                
+               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+            }
+            FileOutputStream out = new FileOutputStream(ruta);
+            wb.write(out);
+            out.close();
+            wb.dispose();
+        } catch (IOException | SQLException ex) {
+            LOGGER.log(Level.INFO,ex.getMessage());
+        }
+    }
+    
+    public void crearReporteBolsasOficinas(int periodo, String ruta, int repartoTipo) {
+        try {
+            SXSSFWorkbook wb = new SXSSFWorkbook(-1);
+            SXSSFSheet sh = wb.createSheet("REPORTE");
+            
+            // Cabecera de la tabla
+            int rowNum = 0;
+            List<Cabecera> lstCabecera = new ArrayList(Arrays.asList(
+                    new Cabecera("PERIODO"),
+                    new Cabecera("CUENTA_CONTABLE_ORIGEN_CODIGO", 4000),
+                    new Cabecera("CUENTA_CONTABLE_ORIGEN_NOMBRE", 11000),
+                    new Cabecera("PARTIDA_ORIGEN_CODIGO"),
+                    new Cabecera("PARTIDA_ORIGEN_NOMBRE", 11000),
+                    new Cabecera("CENTRO_ORIGEN_CODIGO"),
+                    new Cabecera("CENTRO_ORIGEN_NOMBRE", 11000),
+                    new Cabecera("CENTRO_ORIGEN_NIVEL"),
+                    new Cabecera("CENTRO_ORIGEN_TIPO", 4000),
+                    new Cabecera("CENTRO_DESTINO_CODIGO"),
+                    new Cabecera("CENTRO_DESTINO_NOMBRE", 11000),
+                    new Cabecera("CENTRO_DESTINO_NIVEL"),
+                    new Cabecera("CENTRO_DESTINO_TIPO", 4000),
+                    new Cabecera("MONTO", 5000),
+                    new Cabecera("DRIVER_CODIGO"),
+                    new Cabecera("DRIVER_NOMBRE", 11000),
+                    new Cabecera("ASIGNACION", 3000)
+            ));
+            CellStyle headerCellStyle = cabeceraEstilo(wb);
+            crearCabecera2(lstCabecera, sh, rowNum++, headerCellStyle);
+            // Contenido de la tabla en la fila rowNum+1
+            ResultSet rs = reportingDAO.dataReporteBolsasOficinas(periodo, repartoTipo);
+            while(rs.next()) {
+                String cuentaContableOrigenCodigo = rs.getString("CUENTA_CONTABLE_ORIGEN_CODIGO");
+                String cuentaContableOrigenNombre = rs.getString("CUENTA_CONTABLE_ORIGEN_NOMBRE");
+                String partidaOrigenCodigo = rs.getString("PARTIDA_ORIGEN_CODIGO");
+                String partidaOrigenNombre = rs.getString("PARTIDA_ORIGEN_NOMBRE");
+                String centroOrigenCodigo = rs.getString("CENTRO_ORIGEN_CODIGO");
+                String centroOrigenNombre = rs.getString("CENTRO_ORIGEN_NOMBRE");
+                String centroOrigenNivel = rs.getString("CENTRO_ORIGEN_NIVEL");
+                String centroOrigenTipo = rs.getString("CENTRO_ORIGEN_TIPO");
+                String centroDestinoCodigo = rs.getString("CENTRO_DESTINO_CODIGO");
+                String centroDestinoNombre = rs.getString("CENTRO_DESTINO_NOMBRE");
+                String centroDestinoNivel = rs.getString("CENTRO_DESTINO_NIVEL");
+                String centroDestinoTipo = rs.getString("CENTRO_DESTINO_TIPO");
+                double monto = rs.getDouble("MONTO");
+                String driverCodigo = rs.getString("DRIVER_CODIGO");
+                String driverNombre = rs.getString("DRIVER_NOMBRE");
+                String asignacion = rs.getString("ASIGNACION");
+
+                Row row = sh.createRow(rowNum++);
+                int idxColumn = 0;
+                // PERIODO
+                row.createCell(idxColumn++).setCellValue(periodo);
+                // CUENTA CONTABLE ORIGEN
+                row.createCell(idxColumn++).setCellValue(cuentaContableOrigenCodigo);
+                row.createCell(idxColumn++).setCellValue(cuentaContableOrigenNombre);
+                // PARTIDA ORIGEN
+                row.createCell(idxColumn++).setCellValue(partidaOrigenCodigo);
+                row.createCell(idxColumn++).setCellValue(partidaOrigenNombre);
+                // CENTRO ORIGEN
+                row.createCell(idxColumn++).setCellValue(centroOrigenCodigo);
+                row.createCell(idxColumn++).setCellValue(centroOrigenNombre);
+                row.createCell(idxColumn++).setCellValue(centroOrigenNivel);
+                row.createCell(idxColumn++).setCellValue(centroOrigenTipo);
+                // CENTRO DESTINO
+                row.createCell(idxColumn++).setCellValue(centroDestinoCodigo);
+                row.createCell(idxColumn++).setCellValue(centroDestinoNombre);
+                row.createCell(idxColumn++).setCellValue(centroDestinoNivel);
+                row.createCell(idxColumn++).setCellValue(centroDestinoTipo);
+                // MONTO
+                row.createCell(idxColumn++).setCellValue(monto);
+                // DRIVER
+                row.createCell(idxColumn++).setCellValue(driverCodigo);
+                row.createCell(idxColumn++).setCellValue(driverNombre);
+                // ASIGNACION
+                row.createCell(idxColumn).setCellValue(asignacion);
                 
                if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
             }

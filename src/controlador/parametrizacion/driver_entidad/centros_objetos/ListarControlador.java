@@ -98,14 +98,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         centroDriverDAO = new CentroDriverDAO();
         this.menuControlador = menuControlador;
         this.titulo = "Driver";
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            if (menuControlador.periodoSeleccionado % 100 == 0)
+                ++menuControlador.periodoSeleccionado;
+        } else {
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        }
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
-        
+    public void initialize(URL url, ResourceBundle rb) {        
         // Mensaje de ayuda sobre botón de asignar
         ttAsignarDriverObjeto.setText("Asignar un driver que distribuye a " + titulo1);
         

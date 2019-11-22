@@ -97,14 +97,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         titulo = "Asignar Centros";
         titulo1 = "Centros de Costos";
         titulo2 = "Centro de Costos";
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            if (menuControlador.periodoSeleccionado % 100 == 0)
+                ++menuControlador.periodoSeleccionado;
+        } else {
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        }
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
-        
         // Mensaje de ayuda sobre botón de asignar
         ttAsignarDriverCentro.setText("Asignar un driver que distribuye a " + titulo1);
         

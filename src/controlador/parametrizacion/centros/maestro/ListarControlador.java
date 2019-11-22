@@ -39,7 +39,7 @@ public class ListarControlador implements Initializable {
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
     @FXML private TableColumn<Centro, String> tabcolNombre;
-    @FXML private TableColumn<Centro, String> tabcolGrupo;
+    @FXML private TableColumn<Centro, String> tabcolTipo;
     @FXML private TableColumn<Centro, Integer> tabcolNivel;
     @FXML private TableColumn<Centro, String> tabcolCentroPadre;
     @FXML private TableColumn<Centro, String> tabcolTipoGasto;
@@ -120,7 +120,7 @@ public class ListarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolGrupo.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoProperty());
         tabcolNivel.setCellValueFactory(cellData -> cellData.getValue().nivelProperty().asObject());
         tabcolTipoGasto.setCellValueFactory(cellData -> cellData.getValue().tipoGastoProperty());
         tabcolNIIF17Atribuible.setCellValueFactory(cellData -> cellData.getValue().NIIF17atribuibleProperty());
@@ -144,7 +144,7 @@ public class ListarControlador implements Initializable {
 
     private boolean validarTipo(Centro item, String tipo) {
         if (tipo.equals("-")) return true;
-        else if (item.getTipo().getCodigo().equals(tipoCodigo)) return true;
+        else if (item.getTipo().equals(tipoCodigo)) return true;
         return false;
     }
 
@@ -159,7 +159,7 @@ public class ListarControlador implements Initializable {
         String buscarMinuscula = buscar.toLowerCase();
         if (item.getCodigo().toLowerCase().contains(buscarMinuscula)) return true;
         else if (item.getNombre().toLowerCase().contains(buscarMinuscula)) return true;
-        else if (item.getTipo().getNombre().toLowerCase().contains(buscarMinuscula)) return true;
+        else if (item.getTipo().toLowerCase().contains(buscarMinuscula)) return true;
         return false;
     }
     

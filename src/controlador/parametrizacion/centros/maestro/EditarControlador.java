@@ -62,7 +62,8 @@ public class EditarControlador implements Initializable {
                 return cmbTipo.getItems().stream().filter(ap -> ap.getNombre().equals(string)).findFirst().orElse(null);
             }
         });
-        cmbTipo.setValue(centro.getTipo());
+        //TODO
+        //cmbTipo.setValue(centro.getTipo());
         
         obsListaTipos = FXCollections.observableList(menuControlador.lstCentroNiveles.subList(1, menuControlador.lstCentroNiveles.size()));
         cmbNivel.setItems(obsListaTipos);

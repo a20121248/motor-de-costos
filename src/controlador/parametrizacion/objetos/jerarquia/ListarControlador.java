@@ -81,14 +81,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public ListarControlador(MenuControlador menuControlador) {    
         this.menuControlador = menuControlador;
         objetoGrupoDAO = new ObjetoGrupoDAO(menuControlador.objetoTipo);
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            if (menuControlador.periodoSeleccionado % 100 == 0)
+                ++menuControlador.periodoSeleccionado;
+        } else {
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        }
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
-        
+    public void initialize(URL url, ResourceBundle rb) {        
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);

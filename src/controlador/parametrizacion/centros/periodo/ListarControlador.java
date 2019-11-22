@@ -53,7 +53,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     @FXML private TableView<Centro> tabListar;
     @FXML private TableColumn<Centro, String> tabcolCodigo;
     @FXML private TableColumn<Centro, String> tabcolNombre;
-    @FXML private TableColumn<Centro, String> tabcolTipoCentro;
+    @FXML private TableColumn<Centro, String> tabcolTipo;
     @FXML private TableColumn<Centro, Double> tabcolSaldo;
     
     @FXML private Label lblNumeroRegistros;
@@ -75,14 +75,17 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         driverLineaDAO = new DriverLineaDAO();
         titulo = "Centros de Costos";
         titulo2 = "Centro de Costos";
+        // Periodo seleccionado
+        if (menuControlador.repartoTipo == 1) {
+            if (menuControlador.periodoSeleccionado % 100 == 0)
+                ++menuControlador.periodoSeleccionado;
+        } else {
+            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
+        }
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Periodo seleccionado
-        if (menuControlador.repartoTipo != 1)
-            menuControlador.periodoSeleccionado = menuControlador.periodoSeleccionado / 100 * 100;
-        
+    public void initialize(URL url, ResourceBundle rb) {        
         // Mes seleccionado
         if (menuControlador.repartoTipo == 1) {
             cmbMes.getItems().addAll(menuControlador.lstMeses);
@@ -112,7 +115,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        tabcolTipoCentro.setCellValueFactory(cellData -> cellData.getValue().getTipo().nombreProperty());
+        tabcolTipo.setCellValueFactory(cellData -> cellData.getValue().tipoProperty());
         tabcolSaldo.setCellValueFactory(cellData -> cellData.getValue().saldoAcumuladoProperty().asObject());
         tabcolSaldo.setCellFactory(column -> {
                 return new TableCell<Centro, Double>() {
@@ -137,7 +140,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (item.getCodigo().toLowerCase().contains(lowerCaseFilter)) return true;
                 else if (item.getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (item.getTipo().getNombre().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (item.getTipo().toLowerCase().contains(lowerCaseFilter)) return true;
                 return false;
             });
             lblNumeroRegistros.setText("Número de registros: " + filteredData.size());

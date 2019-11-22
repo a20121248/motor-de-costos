@@ -314,9 +314,7 @@ public class ObjetoDAO {
     }
     
     public void borrarDistribucionesObjeto() {
-        String queryStr = String.format("" +
-                "TRUNCATE TABLE MS_objeto_lineas");
-        ConexionBD.ejecutar(queryStr);
+        ConexionBD.ejecutar("TRUNCATE TABLE MS_FASE_3");
     }
     
     public void insertarDistribucion(String oficinaCodigo, String bancaCodigo, String productoCodigo, int periodo, String entidadOrigenCodigo, double saldo, int repartoTipo) {

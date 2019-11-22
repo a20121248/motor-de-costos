@@ -13,7 +13,7 @@ import javafx.beans.property.StringProperty;
 public class Centro extends EntidadDistribucion {
     private IntegerProperty nivel;
     private ObjectProperty<Centro> centroPadre;
-    private ObjectProperty<Tipo> tipo;
+    private StringProperty tipo;
     private BooleanProperty flagCargar;
     private StringProperty niif17_atribuible;
     private StringProperty niif17_tipo;
@@ -25,31 +25,31 @@ public class Centro extends EntidadDistribucion {
     }
     
     //Objetos Centros para Listar en Periodo 
-    public Centro(String codigo, String nombre, double saldo, Tipo tipo) {
+    public Centro(String codigo, String nombre, double saldo, String tipo) {
         super(codigo, nombre, null, saldo, null, null, true);
-        this.tipo = new SimpleObjectProperty(tipo);
+        this.tipo = new SimpleStringProperty(tipo);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, Date fechaCreacion, Date fechaActualizacion) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, String tipo, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
-        this.tipo = new SimpleObjectProperty(tipo);
+        this.tipo = new SimpleStringProperty(tipo);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, String tipo, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
-        this.tipo = new SimpleObjectProperty(tipo);
+        this.tipo = new SimpleStringProperty(tipo);
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String tipoGasto, String niif17_atribuible, String niif17_tipo, String niif17_clase, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, String tipo, String tipoGasto, String niif17_atribuible, String niif17_tipo, String niif17_clase, Date fechaCreacion, Date fechaActualizacion, Boolean flagCargar) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
-        this.tipo = new SimpleObjectProperty(tipo);
+        this.tipo = new SimpleStringProperty(tipo);
         this.tipoGasto = new SimpleStringProperty(tipoGasto);
         this.niif17_atribuible = new SimpleStringProperty(niif17_atribuible);
         this.niif17_tipo = new SimpleStringProperty(niif17_tipo);
@@ -57,11 +57,11 @@ public class Centro extends EntidadDistribucion {
         this.flagCargar = new SimpleBooleanProperty(flagCargar);
     }
     
-    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, Tipo tipo, String niif17_atribuible, String niif17_tipo, String niif17_clase, String tipoGasto, Date fechaCreacion, Date fechaActualizacion) {
+    public Centro(String codigo, String nombre, int nivel, Centro centroPadre, double saldo, String tipo, String niif17_atribuible, String niif17_tipo, String niif17_clase, String tipoGasto, Date fechaCreacion, Date fechaActualizacion) {
         super(codigo, nombre, null, saldo, fechaCreacion, fechaActualizacion, true);
         this.nivel = new SimpleIntegerProperty(nivel);
         this.centroPadre = new SimpleObjectProperty(centroPadre);
-        this.tipo = new SimpleObjectProperty(tipo);
+        this.tipo = new SimpleStringProperty(tipo);
         this.niif17_atribuible = new SimpleStringProperty(niif17_atribuible);
         this.niif17_tipo = new SimpleStringProperty(niif17_tipo);
         this.niif17_clase = new SimpleStringProperty(niif17_clase);
@@ -91,18 +91,18 @@ public class Centro extends EntidadDistribucion {
     public void setCentroPadre(Centro centroPadre) {
         this.centroPadre.set(centroPadre);
     }
-
-    public ObjectProperty<Tipo> tipoProperty() {
-        return tipo;
-    }
     
-    public Tipo getTipo() {
+    public StringProperty tipoProperty() {
+        return this.tipo;
+    }
+
+    public String getTipo() {
         return tipo.get();
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(String tipo) {
         this.tipo.set(tipo);
-    }
+    }    
     
     public StringProperty NIIF17atribuibleProperty() {
         return this.niif17_atribuible;

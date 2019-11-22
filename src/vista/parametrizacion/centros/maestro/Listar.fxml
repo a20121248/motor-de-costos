@@ -124,7 +124,7 @@
          <columns>
             <TableColumn fx:id="tabcolCodigo" prefWidth="90.0" styleClass="center" text="CÓDIGO" />
             <TableColumn fx:id="tabcolNombre" prefWidth="350.0" styleClass="left" text="NOMBRE" />
-            <TableColumn fx:id="tabcolGrupo" prefWidth="100.0" styleClass="center" text="GRUPO" />
+            <TableColumn fx:id="tabcolTipo" prefWidth="100.0" styleClass="center" text="TIPO" />
             <TableColumn fx:id="tabcolNivel" prefWidth="50.0" styleClass="center" text="NIVEL" />
             <TableColumn fx:id="tabcolCentroPadre" prefWidth="100.0" styleClass="center" text="CENTRO PADRE" />
             <TableColumn fx:id="tabcolTipoGasto" prefWidth="115.0" styleClass="center" text="TIPO DE GASTO" />
