@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    // El log para ESTA clase en particular
     final static Logger LOGGER = Logger.getLogger("App");
     
     @Override
