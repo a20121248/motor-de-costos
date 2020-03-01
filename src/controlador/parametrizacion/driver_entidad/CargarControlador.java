@@ -65,9 +65,6 @@ public class CargarControlador implements Initializable {
     CentroDAO centroDAO;
     DriverDAO driverDAO;
     AsignacionEntidadDriverDAO asignacionEntidadDriverDAO;
-    int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVER_ENTIDAD_CARGAR.getControlador());
     
     public CargarControlador(MenuControlador menuControlador) {
@@ -76,9 +73,6 @@ public class CargarControlador implements Initializable {
         centroDAO = new CentroDAO();
         driverDAO = new DriverDAO();
         asignacionEntidadDriverDAO = new AsignacionEntidadDriverDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
     }
     
     @Override
@@ -94,17 +88,17 @@ public class CargarControlador implements Initializable {
         tabcolNombreEntidad.setCellValueFactory(cellData -> cellData.getValue().nombreEntidadProperty());
         tabcolCodigoDriver.setCellValueFactory(cellData -> cellData.getValue().codigoDriverProperty());
         tabcolNombreDriver.setCellValueFactory(cellData -> cellData.getValue().nombreDriverProperty());
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue))
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
     }
     
@@ -133,7 +127,7 @@ public class CargarControlador implements Initializable {
             txtRuta.setText(archivoSeleccionado.getAbsolutePath());
             cmbMes.setDisable(true);
             spAnho.setDisable(true);
-            List<CargarEntidadDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), periodoSeleccionado);
+            List<CargarEntidadDriver> lista = leerArchivo(archivoSeleccionado.getAbsolutePath(), menuControlador.periodoSeleccionado);
             if (lista != null) {
                 tabAsignaciones.getItems().setAll(lista);
                 lblNumeroRegistros.setText("Número de registros leídos: " + lista.size());
@@ -148,11 +142,11 @@ public class CargarControlador implements Initializable {
     private List<CargarEntidadDriver> leerArchivo(String rutaArchivo, int periodo) {
         List<CargarEntidadDriver> lista = new ArrayList();
         List<EntidadDistribucion> lstEntidades = new ArrayList();
-        lstEntidades.addAll(grupoDAO.listar(periodoSeleccionado,"",menuControlador.repartoTipo));
-        lstEntidades.addAll(centroDAO.listar(periodoSeleccionado,menuControlador.repartoTipo));
+        lstEntidades.addAll(grupoDAO.listar(menuControlador.periodoSeleccionado,"",menuControlador.repartoTipo));
+        lstEntidades.addAll(centroDAO.listar(menuControlador.periodoSeleccionado,menuControlador.repartoTipo));
         List<Driver> lstDrivers = new ArrayList();
-        lstDrivers.addAll(driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo));
-        lstDrivers.addAll(driverDAO.listarDriversObjetoSinDetalle(periodoSeleccionado,menuControlador.repartoTipo));
+        lstDrivers.addAll(driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo));
+        lstDrivers.addAll(driverDAO.listarDriversObjetoSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo));
         try {
             FileInputStream f = new FileInputStream(rutaArchivo);
             XSSFWorkbook libro = new XSSFWorkbook(f);
@@ -237,7 +231,7 @@ public class CargarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
         else{
-            asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, periodoSeleccionado, menuControlador.repartoTipo);
+            asignacionEntidadDriverDAO.insertarListaAsignaciones(lista, menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
             menuControlador.navegador.mensajeInformativo("Cargar asignaciones de driver a entidades", "Las asignaciones se guardaron correctamente.");
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVER_ENTIDAD_LISTAR);
         }

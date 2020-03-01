@@ -70,7 +70,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     Grupo grupoSeleccionado;
     FilteredList<Grupo> filteredData;
     SortedList<Grupo> sortedData;
-    int periodoSeleccionado;
     boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_JERARQUIA.getControlador());
@@ -101,24 +100,18 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             default:
                 break;
         }
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -134,7 +127,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolNombrePadre.setMaxWidth(1f * Integer.MAX_VALUE * 25);
         tabcolNivelPadre.setMaxWidth(1f * Integer.MAX_VALUE * 13);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarJerarquia(periodoSeleccionado)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(objetoGrupoDAO.listarJerarquia(menuControlador.periodoSeleccionado)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -230,17 +223,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar asignación", "¿Está seguro de quitar el Grupo " + grupoSeleccionado.getGrupoPadre().getNombre() + "?"))
             return;
         
-        objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        objetoGrupoDAO.borrarGrupoPadre(grupoSeleccionado.getCodigo(), menuControlador.objetoTipo, menuControlador.periodoSeleccionado);
+        buscarPeriodo(menuControlador.periodoSeleccionado, false);
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_JERARQUIA_CARGAR);
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
+        buscarPeriodo(menuControlador.periodoSeleccionado, true);
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
@@ -266,8 +258,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
             menuControlador.navegador.mensajeInformativo("Asignar Grupo de " + objetoNombre + "s", "Por favor seleccione un Grupo de " + objetoNombre + "s.");
             return;
         }
-        objetoGrupoDAO.insertarGrupoPadre(periodoSeleccionado,grupoSeleccionado.getCodigo(),menuControlador.objetoTipo,grupoSeleccionado.getNivel(),entidad.getCodigo());
-        buscarPeriodo(periodoSeleccionado, false);
+        objetoGrupoDAO.insertarGrupoPadre(menuControlador.periodoSeleccionado,grupoSeleccionado.getCodigo(),menuControlador.objetoTipo,grupoSeleccionado.getNivel(),entidad.getCodigo());
+        buscarPeriodo(menuControlador.periodoSeleccionado, false);
     }
 
     @Override

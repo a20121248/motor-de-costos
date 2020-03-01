@@ -28,6 +28,7 @@ public class App extends Application {
     
     public static void main(String[] args) {
         try {
+            Navegador.crearCarpeta("./logs/");
             Navegador.crearCarpeta("./reportes/");
             Navegador.crearCarpeta("./reportes/gastos/");
             Navegador.crearCarpeta("./reportes/ingresos/");

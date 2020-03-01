@@ -156,32 +156,9 @@ public class LoginControlador implements Initializable {
         LOGGER.log(Level.INFO,String.format("El usuario %s inició sesión correctamente.\n",txtUsuario.getText()));
         
         try {
-            String rutaEstilo, rutaImagen, rutaIcono;
-            switch (estiloSeleccionado) {
-                case "Banco Ganadero":
-                    rutaEstilo = "/recursos/estilos/menuGANADERO.css";
-                    rutaImagen = "/recursos/imagenes/logoGANADERO.png";
-                    rutaIcono = "/recursos/imagenes/iconoGANADERO.png";
-                    break;
-                case "BCP":
-                    rutaEstilo = "/recursos/estilos/menuBCP.css";
-                    rutaImagen = "/recursos/imagenes/logoBCP.jpg";
-                    rutaIcono = "/recursos/imagenes/iconoBCP.jpg";
-                    break;
-                case "PACIFICO":
-                    rutaEstilo = "/recursos/estilos/menuPACIFICO.css";
-                    rutaImagen = "/recursos/imagenes/logoPACIFICO.png";
-                    rutaIcono = "/recursos/imagenes/iconoPACIFICO.png";
-                    break;
-                default:
-                    rutaEstilo = "/recursos/estilos/menuDEFAULT.css";
-                    rutaImagen = "/recursos/imagenes/logoDEFAULT.png";
-                    rutaIcono = "/recursos/imagenes/iconoDEFAULT.jpg";
-                    /*rutaEstilo = "/recursos/estilos/menuGANADERO.css";
-                    rutaImagen = "/recursos/imagenes/logoGANADERO.png";
-                    rutaIcono = "/recursos/imagenes/iconoGANADERO.png";*/
-                    break;
-            }
+            String rutaEstilo = "/recursos/estilos/menuGANADERO.css";
+            String rutaImagen = "/recursos/imagenes/logoGANADERO.png";
+            String rutaIcono = "/recursos/imagenes/iconoGANADERO.png";
             
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(RUTAS_MENU.getVista()));
             MenuControlador menuControlador = new MenuControlador(rutaImagen,usuario,nombreBD,rutaLog);

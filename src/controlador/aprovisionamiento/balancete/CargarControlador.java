@@ -71,9 +71,6 @@ public class CargarControlador implements Initializable {
 
     public MenuControlador menuControlador;
     public PlanDeCuentaDAO planDeCuentaDAO;
-    int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_CARGAR.getControlador());
     String titulo;
     String logName;
@@ -81,9 +78,6 @@ public class CargarControlador implements Initializable {
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         planDeCuentaDAO = new PlanDeCuentaDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
         this.titulo = "Balancete";
     }
     
@@ -135,19 +129,17 @@ public class CargarControlador implements Initializable {
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 40);
         tabcolSaldo.setMaxWidth(1f * Integer.MAX_VALUE * 25);
         tabcolEstado.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         btnDescargarLog.setVisible(false);
     }
@@ -206,7 +198,7 @@ public class CargarControlador implements Initializable {
     private List<CargarBalanceteLinea> leerArchivo(String rutaArchivo) {
         List<CargarBalanceteLinea> lista = new ArrayList();
         List<CargarBalanceteLinea> listaError = new ArrayList();
-        List<CuentaContable> listaCuentas = planDeCuentaDAO.listar(periodoSeleccionado,"Todos",menuControlador.repartoTipo);
+        List<CuentaContable> listaCuentas = planDeCuentaDAO.listar(menuControlador.periodoSeleccionado,"Todos",menuControlador.repartoTipo);
         try (XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(rutaArchivo));){
             XSSFSheet hoja = wb.getSheetAt(0);
 //            if (hoja == null) {
@@ -234,7 +226,7 @@ public class CargarControlador implements Initializable {
                 
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
+                if(periodo != menuControlador.periodoSeleccionado){
                     menuControlador.navegador.mensajeError(menuControlador.MENSAJE_UPLOAD_ERROR_PERIODO);
                     lista.clear();
                     listaError.clear();
@@ -278,7 +270,7 @@ public class CargarControlador implements Initializable {
         if(listaCargar.isEmpty()){
             menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_UPLOAD_EMPTY);
         }else {
-            planDeCuentaDAO.insertarBalancete(periodoSeleccionado,listaCargar);
+            planDeCuentaDAO.insertarBalancete(menuControlador.periodoSeleccionado,listaCargar);
             creandoReporteLOG();
             if(findError == true){
                 menuControlador.navegador.mensajeInformativo(titulo,menuControlador.MENSAJE_UPLOAD_SUCCESS_ERROR);

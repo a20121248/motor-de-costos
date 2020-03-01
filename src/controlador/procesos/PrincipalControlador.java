@@ -81,7 +81,6 @@ public class PrincipalControlador implements Initializable {
     public boolean ejecutoFase1, ejecutoFase2, ejecutoFase3, ejecutoFaseTotal;
     public boolean ejecutandoFase1, ejecutandoFase2, ejecutandoFase3, ejecutandoFaseTotal;
     DistribucionServicio distribucionServicio;
-    int periodoSeleccionado;
     final ExecutorService executor;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_MODULO_PROCESOS.getControlador());
     double progreso;
@@ -117,25 +116,24 @@ public class PrincipalControlador implements Initializable {
             tpEjecucionIngresos.setVisible(true);
             AnchorPane.setTopAnchor(tpEjecucionTotal, AnchorPane.getTopAnchor(tpEjecucionTotal)-75);
             lblEjecucionTotal.setText("Ejecutar las fases 1 y 2");
-        }
-        // meses
+        }        
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 actualizarEstados(spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1);
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
             }
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
                 actualizarEstados(spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1);
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            } 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
+            }
         });
-        periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-        actualizarEstados(periodoSeleccionado);
+        actualizarEstados(menuControlador.periodoSeleccionado);
     }
     
     void actualizarEstados(int periodo) {
@@ -231,7 +229,7 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 1", "La fase se está ejecutando actualmente.");
             return;
         }
-        int cantSinDriver = grupoDAO.cantObjetosSinDriver(menuControlador.repartoTipo, periodoSeleccionado);
+        int cantSinDriver = grupoDAO.cantObjetosSinDriver(menuControlador.repartoTipo, menuControlador.periodoSeleccionado);
         if (cantSinDriver!=0) {
             if (cantSinDriver==1) 
                 menuControlador.navegador.mensajeError("Fase 1", "Existe 1 Grupo de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
@@ -240,7 +238,7 @@ public class PrincipalControlador implements Initializable {
             return;
         }
         
-        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 1, menuControlador.repartoTipo);
+        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, 1, menuControlador.repartoTipo);
         if (fechaEjecucion != null) {
             String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
                     "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
@@ -249,7 +247,7 @@ public class PrincipalControlador implements Initializable {
                     1);
             if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 1", mensaje)) return;
         }
-        ejecutarFase1(periodoSeleccionado);
+        ejecutarFase1(menuControlador.periodoSeleccionado);
     }
 
     @FXML void btnFase2Action(ActionEvent event) {
@@ -257,7 +255,7 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 2", "La fase se está ejecutando actualmente.");
             return;
         }
-        ejecutarFase2(periodoSeleccionado);
+        ejecutarFase2(menuControlador.periodoSeleccionado);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
@@ -269,7 +267,7 @@ public class PrincipalControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "Necesita ejecutar las fases previas a la FASE 3.");
             return;
         }
-        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 3, menuControlador.repartoTipo);
+        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, 3, menuControlador.repartoTipo);
         if (fechaEjecucion != null) {
             String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
                     "¿Está seguro que desea reprocesar la fase %d?",
@@ -280,7 +278,7 @@ public class PrincipalControlador implements Initializable {
             //pbFase3.setProgress(0);
             //piFase3.setProgress(0);
         }
-        ejecutarFase3(periodoSeleccionado);
+        ejecutarFase3(menuControlador.periodoSeleccionado);
     }
     
     @FXML void btnTotalAction(ActionEvent event) throws InterruptedException {
@@ -289,22 +287,22 @@ public class PrincipalControlador implements Initializable {
             return;
         }        
         if (menuControlador.repartoTipo == 1) {
-            ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2Costos(periodoSeleccionado);
-            ejecutarFase3(periodoSeleccionado);
+            ejecutarFase1(menuControlador.periodoSeleccionado);
+            ejecutarFase2Costos(menuControlador.periodoSeleccionado);
+            ejecutarFase3(menuControlador.periodoSeleccionado);
         } else {
-            ejecutarFase1(periodoSeleccionado);
-            ejecutarFase2Ingresos(periodoSeleccionado);
+            ejecutarFase1(menuControlador.periodoSeleccionado);
+            ejecutarFase2Ingresos(menuControlador.periodoSeleccionado);
         }
     }
     
     public void ejecutarFase1(int periodo) {       
         try {
             if (menuControlador.repartoTipo == 1) {
-                String carpetaReportesYYYY = String.format("./reportes/gastos/%d/",periodoSeleccionado);
+                String carpetaReportesYYYY = String.format("./reportes/gastos/%d/",menuControlador.periodoSeleccionado);
                 Navegador.crearCarpeta(carpetaReportesYYYY);
             } else {
-                String carpetaReportesYYYY = String.format("./reportes/ingresos/%d/",periodoSeleccionado);
+                String carpetaReportesYYYY = String.format("./reportes/ingresos/%d/",menuControlador.periodoSeleccionado);
                 Navegador.crearCarpeta(carpetaReportesYYYY);
             }
         } catch (SecurityException ex) {
@@ -362,12 +360,12 @@ public class PrincipalControlador implements Initializable {
                 menuControlador.navegador.mensajeError("Fase 2", "Por favor, primero ejecute la Fase 1.");
                 return;
             }
-            int cantSinDriver = centroDAO.cantObjetosSinDriver(menuControlador.repartoTipo, "!=", 0, periodoSeleccionado);
+            int cantSinDriver = centroDAO.cantObjetosSinDriver(menuControlador.repartoTipo, "!=", 0, menuControlador.periodoSeleccionado);
             if (cantSinDriver!=0) {
                 menuControlador.navegador.mensajeError("Fase 2", "Existen " + cantSinDriver + " Centros sin driver asignado.\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Centros tengan un Driver.");
                 return;
             }
-            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(periodoSeleccionado, 2, menuControlador.repartoTipo);
+            Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, 2, menuControlador.repartoTipo);
             if (fechaEjecucion != null) {
                 String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
                         "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",

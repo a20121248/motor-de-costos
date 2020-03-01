@@ -60,9 +60,6 @@ public class CargarControlador implements Initializable {
     // Variables de la aplicacion
     GrupoDAO grupoDAO;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
-    final int anhoSeleccionado;
-    final int mesSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_GRUPOS_ASOCIAR_PERIODO_CARGAR.getControlador());
     String titulo;
     List<CargarObjetoPeriodoLinea> listaCargar = new ArrayList() ;
@@ -72,9 +69,6 @@ public class CargarControlador implements Initializable {
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
         grupoDAO = new GrupoDAO();
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
         this.titulo = "Grupos de Cuentas Contables";
     }
     
@@ -87,19 +81,17 @@ public class CargarControlador implements Initializable {
         // tabla formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
         btnDescargarLog.setVisible(false);
     }
@@ -162,7 +154,7 @@ public class CargarControlador implements Initializable {
                 
                 // Valida que los items del archivo tengan el periodo correcto
                 // De no cumplirlo, cancela la previsualización.
-                if(periodo != periodoSeleccionado){
+                if(periodo != menuControlador.periodoSeleccionado){
                     menuControlador.navegador.mensajeError("Carga de Información", "Presenta inconsistencia con el Periodo a cargar. Por favor, revise el documento a cargar.");
                     lista.clear();
                     txtRuta.setText("");

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
 <?import javafx.scene.control.ComboBox?>
@@ -15,10 +17,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="750.0" style="-fx-background-color: #f3f3f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="700.0" style="-fx-background-color: #ffffff; -fx-border-color: #e7eaec; -fx-border-width: 1 0 1 0;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
+            <JFXProgressBar fx:id="pbCargando" progress="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Label fx:id="lblTitulo" layoutX="21.0" layoutY="11.0" text="Cargar Drivers - Objetos de Costos" textFill="#676a6c">
                <font>
                   <Font size="24.0" />
@@ -63,6 +66,7 @@
                   </Hyperlink>
                </children>
             </HBox>
+            <JFXSpinner fx:id="spCargando" layoutX="686.0" layoutY="11.0" radius="15.0" style="-fx-fill: transparent;" visible="false" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
          </children>
       </AnchorPane>
       <ComboBox fx:id="cmbMes" layoutX="102.0" layoutY="130.0" prefHeight="25.0" prefWidth="113.0" AnchorPane.leftAnchor="102.0" AnchorPane.topAnchor="120.0" />

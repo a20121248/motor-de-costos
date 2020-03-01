@@ -23,8 +23,28 @@ public class CargarExcelDAO {
     }
 
     public List<DriverLinea> obtenerListaCentroLinea(String driverCodigo, StringBuilder msj) {
+        String queryStr = "" +
+                "SELECT DRIVER_CODIGO,\n" +
+                "       CODIGO_1 CENTRO_CODIGO,\n" +
+                "       COUNT(*) CNT\n" +
+                "  FROM CARGAR_HOJA_DRIVER\n" +
+                " GROUP BY DRIVER_CODIGO,CODIGO_1\n" +
+                "HAVING COUNT(*)>1\n" +
+                " ORDER BY DRIVER_CODIGO";
+        boolean tieneErrores = false;
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while (rs.next()) {
+                String centroCodigo = rs.getString("CENTRO_CODIGO");
+                int cantidadRepetida = rs.getInt("CNT");            
+                msj.append(String.format("- El centro con código '%s' está repetido %d veces.\n",centroCodigo,cantidadRepetida));
+                tieneErrores = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CargarExcelDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
 //        TO DO: Validar que centro este asignado al periodo
-        String queryStr = String.format("" +
+        queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 CECO_CODIGO,\n" +
                 "       NVL((B.nombre),'NO') CECO_EXISTE,\n" +
@@ -33,7 +53,6 @@ public class CargarExcelDAO {
                 "  LEFT JOIN centros B ON A.CODIGO_1=B.CODIGO\n" +
                 " WHERE DRIVER_CODIGO='%s'", driverCodigo);
         List<DriverLinea> lista = new ArrayList();
-        boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             double porcentajeAcc = 0;
             while(rs.next()) {
@@ -47,12 +66,6 @@ public class CargarExcelDAO {
                 }
                                
                 double porcentaje = rs.getDouble("PORCENTAJE");
-                /*try {
-                    porcentaje = Double.parseDouble(rs.getString("PORCENTAJE"));
-                } catch (NumberFormatException | SQLException ex) {
-                    msj.append(String.format("- Fila %d: El porcentaje es incorrecto. (%s).\n",fila,ex.getMessage()));
-                    tieneErrores = true;
-                }*/
                 porcentajeAcc += porcentaje;
                 
                 Centro centro = new Centro(centroCodigo, centroExiste, null, 0, null, null);
@@ -72,6 +85,31 @@ public class CargarExcelDAO {
     
     public List<DriverObjetoLinea> obtenerListaObjetoLinea(String driverCodigo, StringBuilder msj) {
         String queryStr = String.format("" +
+                "SELECT DRIVER_CODIGO,\n" +
+                "       CODIGO_1 OFICINA_CODIGO,\n" +
+                "       CODIGO_2 BANCA_CODIGO,\n" +
+                "       CODIGO_3 PRODUCTO_CODIGO,\n" +
+                "       COUNT(*) CNT\n" +
+                "  FROM CARGAR_HOJA_DRIVER\n" +
+                " WHERE DRIVER_CODIGO='%s'\n" +
+                " GROUP BY DRIVER_CODIGO,CODIGO_1,CODIGO_2,CODIGO_3\n" +
+                "HAVING COUNT(*)>1\n" +
+                " ORDER BY DRIVER_CODIGO", driverCodigo);
+        boolean tieneErrores = false;
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while (rs.next()) {
+                String oficinaCodigo = rs.getString("OFICINA_CODIGO");
+                String bancaCodigo = rs.getString("BANCA_CODIGO");
+                String productoCodigo = rs.getString("PRODUCTO_CODIGO");
+                int cantidadRepetida = rs.getInt("CNT");            
+                msj.append(String.format("- La Oficina con código '%s', Banca con código '%s' y Producto con código '%s' están repetidos %d veces.\n",oficinaCodigo,bancaCodigo,productoCodigo,cantidadRepetida));
+                //tieneErrores = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CargarExcelDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        queryStr = String.format("" +
                 "SELECT A.EXCEL_FILA,\n" +
                 "       A.CODIGO_1 OFICINA_CODIGO,\n" +
                 "       NVL((B.nombre),'NO') OFICINA_EXISTE,\n" +
@@ -86,7 +124,6 @@ public class CargarExcelDAO {
                 "  LEFT JOIN productos D ON A.CODIGO_3=D.CODIGO\n" +
                 " WHERE DRIVER_CODIGO='%s'", driverCodigo);
         List<DriverObjetoLinea> lista = new ArrayList();
-        boolean tieneErrores = false;
         try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
             double porcentajeAcc = 0;
             while(rs.next()) {
@@ -102,24 +139,18 @@ public class CargarExcelDAO {
                 String bancaCodigo = rs.getString("BANCA_CODIGO");
                 String bancaExiste = rs.getString("BANCA_EXISTE");
                 if (bancaExiste.equals("NO")) {
-                    msj.append(String.format("- Fila %d: La Banca con código %s no existe.\n",fila,bancaCodigo));
+                    msj.append(String.format("- Fila %d: La Banca con código '%s' no existe.\n",fila,bancaCodigo));
                     tieneErrores = true;
                 }
                 
                 String productoCodigo = rs.getString("PRODUCTO_CODIGO");
                 String productoExiste = rs.getString("PRODUCTO_EXISTE");
                 if (productoExiste.equals("NO")) {
-                    msj.append(String.format("- Fila %d: La Producto con código %s no existe.\n",fila,productoCodigo));
+                    msj.append(String.format("- Fila %d: El Producto con código '%s' no existe.\n",fila,productoCodigo));
                     tieneErrores = true;
                 }
                 
                 double porcentaje = rs.getDouble("PORCENTAJE");
-                /*try {
-                    porcentaje = Double.parseDouble(rs.getString("PORCENTAJE"));
-                } catch (NumberFormatException | SQLException ex) {
-                    msj.append(String.format("- Fila %d: El porcentaje es incorrecto. (%s).\n",fila,ex.getMessage()));
-                    tieneErrores = true;
-                }*/
                 porcentajeAcc += porcentaje;
                 
                 Banca banca = new Banca(bancaCodigo, bancaExiste, null, 0, null, null);

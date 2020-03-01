@@ -53,7 +53,6 @@ public class ListarControlador implements Initializable {
     MenuControlador menuControlador;
     FilteredList<CuentaContable> filteredData;
     SortedList<CuentaContable> sortedData;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_BALANCETE_LISTAR.getControlador());
     String titulo;
     
@@ -76,20 +75,16 @@ public class ListarControlador implements Initializable {
         cmbTipoGasto.getSelectionModel().select(0);
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabListar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
@@ -113,7 +108,7 @@ public class ListarControlador implements Initializable {
             };
         });
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(planDeCuentaDAO.listar(menuControlador.periodoSeleccionado,cmbTipoGasto.getValue(),menuControlador.repartoTipo)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -152,14 +147,13 @@ public class ListarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Seguridad", "El usuario no tiene permiso para cargar el Balancete");
             return;
         }
-        // Cambiar a la pantalla de cargar mostrando el periodo seleccionado
-        menuControlador.objeto = periodoSeleccionado;
+        // Cambiar a la pantalla de cargar
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_BALANCETE_CARGAR);
     }
     
     // Acción del botón con ícono de lupa
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
+        buscarPeriodo(menuControlador.periodoSeleccionado, true);
     }
 
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {

@@ -59,18 +59,12 @@ public class CargarControlador implements Initializable {
     // Variables de la aplicacion
     ObjetoDAO objetoDAO;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
-    int anhoSeleccionado;
-    int mesSeleccionado;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO.getControlador());
     
     public CargarControlador(MenuControlador menuControlador) {
         this.menuControlador = menuControlador;
-        objetoDAO = new ObjetoDAO(menuControlador.objetoTipo);
-        periodoSeleccionado = (int) menuControlador.objeto;
-        anhoSeleccionado = periodoSeleccionado / 100;
-        mesSeleccionado = periodoSeleccionado % 100;
+        objetoDAO = new ObjetoDAO(menuControlador.objetoTipo);;
     }
     
     @Override
@@ -102,19 +96,17 @@ public class CargarControlador implements Initializable {
         tabcolPeriodo.setCellValueFactory(cellData -> cellData.getValue().periodoProperty().asObject());
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        // Meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(mesSeleccionado-1);
-        spAnho.getValueFactory().setValue(anhoSeleccionado);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
     }
     
@@ -214,11 +206,11 @@ public class CargarControlador implements Initializable {
             menuControlador.navegador.mensajeInformativo("Subir Información", "No hay información.");
         }
         else{
-            objetoDAO.insertarListaObjetoPeriodo(periodoSeleccionado,lista);
+            objetoDAO.insertarListaObjetoPeriodo(menuControlador.periodoSeleccionado,lista);
             menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre + "s asignados correctamente.");
             menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
         }
-        objetoDAO.insertarListaObjetoPeriodo(periodoSeleccionado,lista);
+        objetoDAO.insertarListaObjetoPeriodo(menuControlador.periodoSeleccionado,lista);
         menuControlador.navegador.mensajeInformativo("Subida de archivo Excel", objetoNombre + "s asignados correctamente.");
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO);
     }

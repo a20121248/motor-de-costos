@@ -62,7 +62,6 @@ public class ListarControlador implements Initializable {
     DriverDAO driverDAO;
     FXMLLoader fxmlLoader;
     public MenuControlador menuControlador;
-    int periodoSeleccionado;
     double porcentajeTotal;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getControlador());
     String titulo;
@@ -83,22 +82,18 @@ public class ListarControlador implements Initializable {
             lnkDriversCentro.setText("Drivers - " + titulo);
             lblEntidades.setText(titulo + " a distribuir");
         }
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // tabla 1
         tabListaDrivers.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY);
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 15);
@@ -133,7 +128,7 @@ public class ListarControlador implements Initializable {
         tabListaDrivers.getSelectionModel().selectedItemProperty().addListener((observableValue, oldSelection, newSelection) -> {
             DriverCentro driver = tabListaDrivers.getSelectionModel().getSelectedItem();
             if (driver != null) {
-                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodoSeleccionado, driver.getCodigo(), menuControlador.repartoTipo);
+                List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(menuControlador.periodoSeleccionado, driver.getCodigo(), menuControlador.repartoTipo);
                 tabDetalleDriver.getItems().setAll(lstDriverLinea);
                 porcentajeTotal = lstDriverLinea.stream().mapToDouble(o -> o.getPorcentaje()).sum();
                 lblNumeroCentros.setText("Número de registos: " + lstDriverLinea.size());
@@ -141,8 +136,9 @@ public class ListarControlador implements Initializable {
             }
         });
         
-               List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
+        lblNumeroRegistros.setText("Número de registros : " + lista.size());
     }
     
     @FXML void lnkInicioAction(ActionEvent event) {
@@ -158,7 +154,6 @@ public class ListarControlador implements Initializable {
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_CARGAR);
     }
     
@@ -173,7 +168,6 @@ public class ListarControlador implements Initializable {
             return;
         }
         menuControlador.objeto = driver;
-        menuControlador.periodoSeleccionado = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_DRIVERS_CENTRO_EDITAR);
     }
     
@@ -191,13 +185,13 @@ public class ListarControlador implements Initializable {
             return;
         }
         menuControlador.Log.deleteItem(LOGGER,menuControlador.usuario.getUsername(),item.getCodigo(), Navegador.RUTAS_DRIVERS_CENTRO_LISTAR.getDireccion());
-        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         tabListaDrivers.getItems().setAll(lista);
         tabDetalleDriver.getItems().clear();
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(periodoSeleccionado,menuControlador.repartoTipo);
+        List<DriverCentro> lista = driverDAO.listarDriversCentroSinDetalle(menuControlador.periodoSeleccionado,menuControlador.repartoTipo);
         if (lista.isEmpty()) {
             menuControlador.navegador.mensajeInformativo("drivers", menuControlador.MENSAJE_TABLE_EMPTY);
             tabListaDrivers.getItems().clear();
@@ -216,7 +210,7 @@ public class ListarControlador implements Initializable {
             File directorioSeleccionado = directory_chooser.showDialog(btnDescargar.getScene().getWindow());
             if(directorioSeleccionado != null){
                 descargaFile = new DescargaServicio(tabListaDrivers, "DriverCentrosDeCostos");
-                descargaFile.descargarTablaDriverCECO(Integer.toString(periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
+                descargaFile.descargarTablaDriverCECO(Integer.toString(menuControlador.periodoSeleccionado),menuControlador.repartoTipo,directorioSeleccionado.getAbsolutePath());
                 menuControlador.Log.descargarTabla(LOGGER, menuControlador.usuario.getUsername(), titulo, Navegador.RUTAS_CENTROS_MAESTRO_LISTAR.getDireccion());
             }else{
                 menuControlador.navegador.mensajeInformativo(menuControlador.MENSAJE_DOWNLOAD_CANCELED);

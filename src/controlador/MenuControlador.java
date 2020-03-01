@@ -136,6 +136,7 @@ public class MenuControlador implements Initializable {
         periodo = Integer.parseInt(new SimpleDateFormat("yyyyMM").format(fecha));
         anhoActual = periodo / 100;
         mesActual = periodo % 100;
+        periodoSeleccionado = periodo;
         
         periodoAnterior = Integer.parseInt(new SimpleDateFormat("yyyyMM").format(fechaAnt));
         anhoAnterior = periodoAnterior / 100;

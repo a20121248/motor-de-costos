@@ -42,7 +42,6 @@ public class PrincipalControlador implements Initializable {
     
     public MenuControlador menuControlador;
     ReportingServicio reportingServicio;
-    int periodoSeleccionado;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_MODULO_REPORTING.getControlador());
     
     public PrincipalControlador(MenuControlador menuControlador) {
@@ -52,23 +51,18 @@ public class PrincipalControlador implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // meses
+        // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
-        
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         if (menuControlador.repartoTipo == 2) {
             hbxReporte4.setVisible(false);
             hbxReporte5.setVisible(false);
@@ -92,21 +86,21 @@ public class PrincipalControlador implements Initializable {
         String reporteNombre,rutaOrigen;
         if (menuControlador.repartoTipo == 1) {
             reporteNombre = "Reporte 01 - Cuentas Contables a Centros de Costos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre + ".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre + ".xlsx";
         } else {
             reporteNombre = "Reporte 01 - Cuentas Contables a Centros de Beneficio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodoSeleccionado + File.separator + reporteNombre + ".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre + ".xlsx";
         }
         if (!archivoExiste(rutaOrigen)) {
             if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                reportingServicio.crearReporteCuentaCentro(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                reportingServicio.crearReporteCuentaCentro(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
             } else {
                 return;
             }
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
-        fileChooser.setInitialFileName(periodoSeleccionado + " - " + reporteNombre);
+        fileChooser.setInitialFileName(menuControlador.periodoSeleccionado + " - " + reporteNombre);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
         if (archivoSeleccionado != null) {
@@ -122,20 +116,20 @@ public class PrincipalControlador implements Initializable {
         String rutaOrigen;
         if (menuControlador.repartoTipo==1) {
             reporteNombre = "Reporte 02 - Gasto Propio y Asignado de Centros de Costos";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
             if (!archivoExiste(rutaOrigen)) {
                 if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                    reportingServicio.crearReporteGastoPropioAsignado(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                    reportingServicio.crearReporteGastoPropioAsignado(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
                 } else {
                     return;
                 }
             }
         } else {
             reporteNombre = "Reporte 02 - Objetos de Beneficio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
             if (!archivoExiste(rutaOrigen)) {
                 if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                    reportingServicio.crearReporteObjetos(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                    reportingServicio.crearReporteObjetos(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
                 } else {
                     return;
                 }
@@ -143,7 +137,7 @@ public class PrincipalControlador implements Initializable {
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
-        fileChooser.setInitialFileName(periodoSeleccionado + " - " + reporteNombre);
+        fileChooser.setInitialFileName(menuControlador.periodoSeleccionado + " - " + reporteNombre);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
         if (archivoSeleccionado != null) {
@@ -159,20 +153,20 @@ public class PrincipalControlador implements Initializable {
         String rutaOrigen;
         if (menuControlador.repartoTipo==1) {
             reporteNombre = "Reporte 03 - Cascada de Staff";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
             if (!archivoExiste(rutaOrigen)) {
                 if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                    reportingServicio.crearReporteCascada(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                    reportingServicio.crearReporteCascada(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
                 } else {
                     return;
                 }
             }
         } else {
             reporteNombre = "Reporte 03 - Gastos de Operaciones de Cambio";
-            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+            rutaOrigen = "." + File.separator + "reportes" + File.separator + "ingresos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
             if (!archivoExiste(rutaOrigen)) {
                 if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                    reportingServicio.crearReporteGastosOperacionesDeCambio(periodoSeleccionado, rutaOrigen);
+                    reportingServicio.crearReporteGastosOperacionesDeCambio(menuControlador.periodoSeleccionado, rutaOrigen);
                 } else {
                     return;
                 }
@@ -180,7 +174,7 @@ public class PrincipalControlador implements Initializable {
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
-        fileChooser.setInitialFileName(periodoSeleccionado + " - " + reporteNombre);
+        fileChooser.setInitialFileName(menuControlador.periodoSeleccionado + " - " + reporteNombre);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
         if (archivoSeleccionado != null) {
@@ -193,17 +187,17 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void btnReporte4Action(ActionEvent event) throws IOException {
         String reporteNombre = "Reporte 04 - Objetos de Costos";
-        String rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+        String rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
         if (!archivoExiste(rutaOrigen)) {
             if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                reportingServicio.crearReporteObjetos(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                reportingServicio.crearReporteObjetos(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
             } else {
                 return;
             }
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
-        fileChooser.setInitialFileName(periodoSeleccionado + " - " + reporteNombre);
+        fileChooser.setInitialFileName(menuControlador.periodoSeleccionado + " - " + reporteNombre);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
         if (archivoSeleccionado != null) {
@@ -216,17 +210,17 @@ public class PrincipalControlador implements Initializable {
     
     @FXML void btnReporte5Action(ActionEvent event) throws IOException {
         String reporteNombre = "Reporte 05 - Gastos Administrativos y Operativos";
-        String rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + periodoSeleccionado + File.separator + reporteNombre +".xlsx";
+        String rutaOrigen = "." + File.separator + "reportes" + File.separator + "gastos" + File.separator + menuControlador.periodoSeleccionado + File.separator + reporteNombre +".xlsx";
         if (!archivoExiste(rutaOrigen)) {
             if (menuControlador.navegador.mensajeConfirmar(reporteNombre, "No se puede descargar el reporte pues aún no se ha generado.\n¿Desea generarlo ahora?")) {
-                reportingServicio.crearReporteObjetosGastoAdmOpe(periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
+                reportingServicio.crearReporteObjetosGastoAdmOpe(menuControlador.periodoSeleccionado, rutaOrigen, menuControlador.repartoTipo);
             } else {
                 return;
             }
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar " + reporteNombre);
-        fileChooser.setInitialFileName(periodoSeleccionado + " - " + reporteNombre);
+        fileChooser.setInitialFileName(menuControlador.periodoSeleccionado + " - " + reporteNombre);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos de Excel", "*.xlsx"));
         File archivoSeleccionado = fileChooser.showSaveDialog(cmbMes.getScene().getWindow());
         if (archivoSeleccionado != null) {

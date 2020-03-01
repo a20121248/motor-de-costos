@@ -129,6 +129,11 @@ public class Navegador {
             "controlador.modals.VerDriverObjetoControlador",
             "Ver Driver - Objeto"
     );
+    public static final RutaArchivos RUTAS_MODALS_PROGRESO = new RutaArchivos(
+            "/vista/modals/Progreso.fxml",
+            "controlador.modals.ProgresoControlador",
+            "Progreso"
+    );
     // ---------------------------------------------------------
     public static final RutaArchivos RUTAS_MODALS_BUSCAR_DRIVER_CENTRO = new RutaArchivos(
             "/vista/modals/BuscarDriverCentro.fxml",

@@ -66,7 +66,6 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
     public MenuControlador menuControlador;    
     FilteredList<EntidadDistribucion> filteredData;
     SortedList<EntidadDistribucion> sortedData;
-    int periodoSeleccionado;
     boolean tablaEstaActualizada;
     String objetoNombre;
     final static Logger LOGGER = Logger.getLogger(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR.getControlador());
@@ -99,22 +98,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         }
         // Botones para periodo
         cmbMes.getItems().addAll(menuControlador.lstMeses);
-        cmbMes.getSelectionModel().select(menuControlador.mesActual-1);
-        spAnho.getValueFactory().setValue(menuControlador.anhoActual);
+        cmbMes.getSelectionModel().select(menuControlador.periodoSeleccionado % 100 - 1);
         cmbMes.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
+            if (!oldValue.equals(newValue)) 
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
+        spAnho.getValueFactory().setValue(menuControlador.periodoSeleccionado / 100);
         spAnho.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
-                tablaEstaActualizada = false;
-            }
+            if (!oldValue.equals(newValue))
+                menuControlador.periodoSeleccionado = spAnho.getValue()*100 + cmbMes.getSelectionModel().getSelectedIndex() + 1;
         });
-        // Periodo seleccionado
-        periodoSeleccionado = menuControlador.periodo;
         // Tabla: Formato
         tabcolCodigo.setCellValueFactory(cellData -> cellData.getValue().codigoProperty());
         tabcolNombre.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
@@ -122,7 +115,7 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         tabcolCodigo.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         tabcolNombre.setMaxWidth(1f * Integer.MAX_VALUE * 80);
         // Tabla: Buscar
-        filteredData = new FilteredList(FXCollections.observableArrayList(objetoDAO.listar(periodoSeleccionado)), p -> true);
+        filteredData = new FilteredList(FXCollections.observableArrayList(objetoDAO.listar(menuControlador.periodoSeleccionado)), p -> true);
         txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(item -> {
                 if (newValue == null || newValue.isEmpty()) return true;
@@ -195,17 +188,16 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         if (!menuControlador.navegador.mensajeConfirmar("Quitar " + objetoNombre, "¿Está seguro de quitar el " + objetoNombre + " " + item.getNombre() + "?"))
             return;
                 
-        objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        objetoDAO.eliminarObjetoPeriodo(item.getCodigo(), menuControlador.periodoSeleccionado);
+        buscarPeriodo(menuControlador.periodoSeleccionado, false);
     }
     
     @FXML void btnCargarAction(ActionEvent event) {
-        menuControlador.objeto = periodoSeleccionado;
         menuControlador.navegador.cambiarVista(Navegador.RUTAS_OBJETOS_ASIGNAR_PERIODO_CARGAR);
     }
     
     @FXML void btnBuscarPeriodoAction(ActionEvent event) {
-        buscarPeriodo(periodoSeleccionado, true);
+        buscarPeriodo(menuControlador.periodoSeleccionado, true);
     }
     
     private void buscarPeriodo(int periodo, boolean mostrarMensaje) {
@@ -226,8 +218,8 @@ public class ListarControlador implements Initializable,ObjetoControladorInterfa
         
     @Override
     public void seleccionarEntidad(EntidadDistribucion entidad) {
-        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), periodoSeleccionado);
-        buscarPeriodo(periodoSeleccionado, false);
+        objetoDAO.insertarObjetoPeriodo(entidad.getCodigo(), menuControlador.periodoSeleccionado);
+        buscarPeriodo(menuControlador.periodoSeleccionado, false);
     }
 
     @Override
