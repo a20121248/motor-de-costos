@@ -31,6 +31,51 @@ public class CentroDAO {
         this.tipoDAO = new TipoDAO();
     }
     
+    public int insertarDistribucionGrupo(String grupoCodigo, int repartoTipo, int periodo, int iteracion) {
+        String queryStr = String.format("" +
+                "INSERT INTO CENTRO_LINEAS(CENTRO_CODIGO,PERIODO,ITERACION,SALDO,ENTIDAD_ORIGEN_CODIGO)" +
+                "SELECT F.ENTIDAD_DESTINO_CODIGO CENTRO_CODIGO,\n" +
+                "       %d PERIODO,\n" +
+                "       0 ITERACION,\n" +
+                "       SUM(E.SALDO*F.PORCENTAJE/100) SALDO,\n" +
+                "       B.GRUPO_CODIGO ENTIDAD_ORIGEN_CODIGO\n" +
+                "  FROM GRUPOS A\n" +
+                "  JOIN GRUPO_LINEAS B ON B.PERIODO=%d AND B.GRUPO_CODIGO=A.CODIGO\n" +
+                "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER C ON C.PERIODO=%d AND C.ENTIDAD_ORIGEN_CODIGO=A.CODIGO\n" +
+                "  LEFT JOIN GRUPO_PLAN_DE_CUENTA D ON D.PERIODO=%d AND D.GRUPO_CODIGO=A.CODIGO\n" +
+                "  LEFT JOIN PLAN_DE_CUENTA_LINEAS E ON E.PERIODO=%d AND E.PLAN_DE_CUENTA_CODIGO=D.PLAN_DE_CUENTA_CODIGO\n" +
+                "  LEFT JOIN DRIVER_LINEAS F ON F.PERIODO=%d AND F.DRIVER_CODIGO=C.DRIVER_CODIGO\n" +
+                " WHERE A.CODIGO='%s' AND A.ESTA_ACTIVO=1 AND A.REPARTO_TIPO=%d\n" +
+                " GROUP BY F.ENTIDAD_DESTINO_CODIGO,\n" +
+                "       C.DRIVER_CODIGO,\n" +
+                "       B.GRUPO_CODIGO\n" +
+                "HAVING SUM(E.SALDO*F.PORCENTAJE)!=0",
+                periodo,periodo,periodo,periodo,periodo,periodo,grupoCodigo,repartoTipo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+    
+    public int insertarDistribucionCentroObjeto(String centroCodigo, int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "INSERT INTO OBCO_LINEAS(OFICINA_CODIGO,BANCA_CODIGO,PRODUCTO_CODIGO,PERIODO,ENTIDAD_ORIGEN_CODIGO,SALDO,REPARTO_TIPO)\n" +
+                "SELECT C.OFICINA_CODIGO,\n" +
+                "       C.BANCA_CODIGO,\n" +
+                "       C.PRODUCTO_CODIGO,\n" +
+                "       %d PERIODO,\n" +
+                "       '%s' ENTIDAD_ORIGEN_CODIGO,\n" +
+                "       SUM(A.SALDO*C.PORCENTAJE/100) SALDO,\n" +
+                "       %d REPARTO_TIPO\n" +
+                "  FROM CENTRO_LINEAS A\n" +
+                "  JOIN ENTIDAD_ORIGEN_DRIVER B ON B.PERIODO=%d AND B.ENTIDAD_ORIGEN_CODIGO=A.CENTRO_CODIGO\n" +
+                "  JOIN DRIVER_OBCO_LINEAS C ON C.PERIODO=%d AND C.DRIVER_CODIGO=B.DRIVER_CODIGO\n" +
+                " WHERE A.PERIODO=%d AND A.CENTRO_CODIGO='%s'\n" +
+                " GROUP BY C.OFICINA_CODIGO,\n" +
+                "       C.BANCA_CODIGO,\n" +
+                "       C.PRODUCTO_CODIGO\n" +
+                "HAVING SUM(A.SALDO*C.PORCENTAJE/100)!=0",
+                periodo,centroCodigo,repartoTipo,periodo,periodo,periodo,centroCodigo);
+        return ConexionBD.ejecutar(queryStr);
+    }
+        
     public int cantObjetosSinDriver(int repartoTipo, String operador, int nivel, int periodo) {
         String queryStr = String.format("" +
             "SELECT COUNT(1) cnt\n" +
@@ -438,6 +483,29 @@ public class CentroDAO {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+    
+    public List<Centro> listarCentrosNombresObjeto(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+            "SELECT A.CODIGO,\n" +
+            "       A.NOMBRE\n" +
+            "  FROM CENTROS A\n" +
+            "  JOIN CENTRO_LINEAS B ON B.PERIODO=%d AND B.ITERACION=-1 AND A.CODIGO=B.CENTRO_CODIGO\n" +
+            " WHERE A.ESTA_ACTIVO=1 AND A.REPARTO_TIPO=%d AND A.CENTRO_TIPO_CODIGO!='A'\n" +
+            " ORDER BY A.CODIGO",
+            periodo,repartoTipo);
+        List<Centro> lista = new ArrayList();
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                Centro centro = new Centro(codigo,nombre,0,null,0,null,null,null);
+                lista.add(centro);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CentroDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lista;
     }
     
     public List<Centro> listarCentrosNombresConDriver(int periodo, String tipo, int repartoTipo, int nivel) {

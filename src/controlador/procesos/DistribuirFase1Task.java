@@ -10,7 +10,6 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
-import modelo.DriverLinea;
 import modelo.EntidadDistribucion;
 import modelo.Grupo;
 import servicios.DistribucionServicio;
@@ -67,8 +66,7 @@ public class DistribuirFase1Task extends Task {
         for (int i = 1; i <= max; ++i) {
             // inicio logica
             EntidadDistribucion entidadOrigen = lista.get(i-1);
-            List<DriverLinea> lstDriverLinea = driverDAO.obtenerLstDriverLinea(periodo, entidadOrigen.getDriver().getCodigo(), principalControlador.menuControlador.repartoTipo);
-            distribucionServicio.distribuirEntidad(entidadOrigen, lstDriverLinea, periodo, iteracion);
+            centroDAO.insertarDistribucionGrupo(entidadOrigen.getCodigo(), principalControlador.menuControlador.repartoTipo, periodo, iteracion);
             principalControlador.piTotal.setProgress(i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(i*progresoTotal/(max+1));
             // fin logica

@@ -27,13 +27,12 @@ import modelo.Driver;
 import modelo.Tipo;
 
 public class PlanDeCuentaDAO {
-
     ConnectionDB connection;
 
     public PlanDeCuentaDAO() {
         connection = new ConnectionDB();
     }
-
+    
     public List<CuentaContable> listarMaestro(String codigos, int repartoTipo) {
         String queryStr;
         if (codigos.isEmpty()) {

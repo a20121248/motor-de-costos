@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import modelo.Mensaje;
 import modelo.Tipo;
 import modelo.Usuario;
 import servicios.LoggingServicio;
@@ -60,12 +61,10 @@ public class MenuControlador implements Initializable {
     public boolean verCostos;
     final static Logger LOGGER = Logger.getLogger("controlador.MenuControlador");
     public LoggingServicio Log;
-    
+    public Mensaje mensaje = new Mensaje();
     // =========================================================
     // *************************** MENSAJES*********************
-    // =========================================================
-   
-    
+    // =========================================================    
     public final String MENSAJE_UPLOAD_HEADER = "UPLOAD_HEADER";
     public final String MENSAJE_DOWNLOAD = "DOWNLOAD";
     public final String MENSAJE_DOWNLOAD_LOG = "DOWNLOAD_LOG";
@@ -76,6 +75,8 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_DELETE_REFRESH = "DELETE_REFRESH";
     public final String MENSAJE_DELETE_ITEM = "DELETE_ITEM";
     public final String MENSAJE_DELETE_SUCCESS = "DELETE_SUCCESS";
+    public final String MENSAJE_UPDATE_EMPTY = "UPDATE_EMPTY";
+    public final String MENSAJE_UPDATE_REFRESH = "UPDATE_REFRESH";
     public final String MENSAJE_UPLOAD = "UPLOAD";
     public final String MENSAJE_UPLOAD_SUCCESS = "UPLOAD_SUCCESS";
     public final String MENSAJE_UPLOAD_SUCCESS_ERROR = "UPLOAD_SUCCESS_ERROR";
@@ -85,6 +86,7 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_UPLOAD_ITEM_DONTEXIST = "UPLOAD_ITEM_DONTEXIST";
     public final String MENSAJE_TABLE_EMPTY = "TABLE_EMPTY";
     public final String MENSAJE_ADD_REFRESH = "ADD_REFRESH";
+    public final String MENSAJE_ADD_EMPTY = "ADD_EMPTY";
     public final String MENSAJE_SELECT_ENTITY = "SELECT_ENTITY";
     public final String MENSAJE_EDIT_EMPTY = "EDIT_EMPTY";
     public final String MENSAJE_EDIT_SUCCESS = "EDIT_SUCCESS";
@@ -92,6 +94,8 @@ public class MenuControlador implements Initializable {
     public final String MENSAJE_CREATE_ITEM_EXIST = "CREATE_ITEM_EXIST";
     public final String MENSAJE_CREATE_SUCCESS = "CREATE_SUCCESS";
     public final String MENSAJE_CREATE_ERROR = "CREATE_ERROR";
+    public final String MENSAJE_CREATE_ITEM_PATTERN = "CREATE_ITEM_PATTERN";
+    public final String MENSAJE_EDIT_ITEM_WITHOUT_ALLOCATE = "EDIT_ITEM_WITHOUT_ALLOCATE";
     
     public MenuControlador(String rutaImagen, Usuario usuario, String nombreBD, String rutaLog) throws IOException {
         // Administrador de pantallas

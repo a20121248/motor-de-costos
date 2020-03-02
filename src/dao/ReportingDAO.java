@@ -121,53 +121,54 @@ public class ReportingDAO {
     public ResultSet dataReporteObjetos(int periodo, int repartoTipo, int oficinaNiveles, int bancaNiveles, int productoNiveles) {
         String queryStr = "SELECT ";
         
-        for (int i = 1; i <= oficinaNiveles; ++i) {
+        for (int i = 1; i < oficinaNiveles; ++i) {
             queryStr += String.format("COALESCE(C%d.CODIGO,'SIN ASIGNAR') OFICINA_CODIGO_N%d,",i,i);
             queryStr += String.format("COALESCE(C%d.NOMBRE,'SIN ASIGNAR') OFICINA_NOMBRE_N%d,\n",i,i);
         }
         queryStr += "       A0.OFICINA_CODIGO,C.NOMBRE OFICINA_NOMBRE,\n";
         
-        for (int i = 1; i <= bancaNiveles; ++i) {
+        for (int i = 1; i < bancaNiveles; ++i) {
             queryStr += String.format("       COALESCE(D%d.CODIGO,'SIN ASIGNAR') BANCA_CODIGO_N%d,",i,i);
             queryStr += String.format("COALESCE(D%d.NOMBRE,'SIN ASIGNAR') BANCA_NOMBRE_N%d,\n",i,i);
         }
         queryStr += "       A0.BANCA_CODIGO,D.NOMBRE BANCA_NOMBRE,\n";
         
-        for (int i = 1; i <= productoNiveles; ++i) {
+        for (int i = 1; i < productoNiveles; ++i) {
             queryStr += String.format("       COALESCE(E%d.CODIGO,'SIN ASIGNAR') PRODUCTO_CODIGO_N%d,",i,i);
             queryStr += String.format("COALESCE(E%d.NOMBRE,'SIN ASIGNAR') PRODUCTO_NOMBRE_N%d,\n",i,i);
         }
         queryStr += "       A0.PRODUCTO_CODIGO,E.NOMBRE PRODUCTO_NOMBRE,\n";
         
-        queryStr += "" +
+        queryStr += String.format("" +
                     "       A0.ENTIDAD_ORIGEN_CODIGO CENTRO_ORIGEN_CODIGO,\n" +
                     "       F.NOMBRE CENTRO_ORIGEN_NOMBRE,\n" +
                     "       A0.SALDO,\n" +
                     "       B.DRIVER_CODIGO,\n" +
                     "       G.NOMBRE DRIVER_NOMBRE\n" +
                     "  FROM OBCO_LINEAS A0\n" +
-                    "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER B ON A0.ENTIDAD_ORIGEN_CODIGO=B.ENTIDAD_ORIGEN_CODIGO AND A0.PERIODO=B.PERIODO\n" +
+                    "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER B ON B.PERIODO=%d AND A0.ENTIDAD_ORIGEN_CODIGO=B.ENTIDAD_ORIGEN_CODIGO\n" +
                     "  JOIN OFICINAS C ON A0.OFICINA_CODIGO=C.CODIGO\n" +
                     "  JOIN BANCAS D ON A0.BANCA_CODIGO=D.CODIGO\n" +
                     "  JOIN PRODUCTOS E ON A0.PRODUCTO_CODIGO=E.CODIGO\n" +
                     "  JOIN CENTROS F ON A0.ENTIDAD_ORIGEN_CODIGO=F.CODIGO\n" +
-                    "  JOIN DRIVERS G ON B.DRIVER_CODIGO=G.CODIGO\n";
+                    "  JOIN DRIVERS G ON B.DRIVER_CODIGO=G.CODIGO\n",
+                periodo);
         
-        for (int i = 1; i <= oficinaNiveles; ++i) {
+        for (int i = 1; i < oficinaNiveles; ++i) {
             if (i == 1)
                 queryStr += String.format("  LEFT JOIN JERARQUIA HC%d ON A0.OFICINA_CODIGO=HC%d.ENTIDAD_CODIGO AND A0.PERIODO=HC%d.PERIODO AND HC%d.ENTIDAD_TIPO='OFI' AND HC%d.NIVEL=%d\n",i,i,i,i,i,i-1);
             else
                 queryStr += String.format("  LEFT JOIN JERARQUIA HC%d ON HC%d.ENTIDAD_PADRE_CODIGO=HC%d.ENTIDAD_CODIGO AND A0.PERIODO=HC%d.PERIODO AND HC%d.ENTIDAD_TIPO='OFI' AND HC%d.NIVEL=%d\n",i,i-1,i,i,i,i,i-1);
             queryStr += String.format("  LEFT JOIN OFICINA_GRUPOS C%d ON HC%d.ENTIDAD_PADRE_CODIGO=C%d.CODIGO\n",i,i,i);
         }
-        for (int i = 1; i <= bancaNiveles; ++i) {
+        for (int i = 1; i < bancaNiveles; ++i) {
             if (i == 1)
                 queryStr += String.format("  LEFT JOIN JERARQUIA HD%d ON A0.BANCA_CODIGO=HD%d.ENTIDAD_CODIGO AND A0.PERIODO=HD%d.PERIODO AND HD%d.ENTIDAD_TIPO='BAN' AND HD%d.NIVEL=%d\n",i,i,i,i,i,i-1);
             else
                 queryStr += String.format("  LEFT JOIN JERARQUIA HD%d ON HD%d.ENTIDAD_PADRE_CODIGO=HD%d.ENTIDAD_CODIGO AND A0.PERIODO=HD%d.PERIODO AND HD%d.ENTIDAD_TIPO='BAN' AND HD%d.NIVEL=%d\n",i,i-1,i,i,i,i,i-1);
             queryStr += String.format("  LEFT JOIN BANCA_GRUPOS D%d ON HD%d.ENTIDAD_PADRE_CODIGO=D%d.CODIGO\n",i,i,i);
         }
-        for (int i = 1; i <= productoNiveles; ++i) {
+        for (int i = 1; i < productoNiveles; ++i) {
             if (i == 1)
                 queryStr += String.format("  LEFT JOIN JERARQUIA HE%d ON A0.PRODUCTO_CODIGO=HE%d.ENTIDAD_CODIGO AND A0.PERIODO=HE%d.PERIODO AND HE%d.ENTIDAD_TIPO='PRO' AND HE%d.NIVEL=%d\n",i,i,i,i,i,i-1);
             else

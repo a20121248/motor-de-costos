@@ -302,21 +302,21 @@ public class ReportingServicio {
             // Cabecera de la tabla
             List<String> listaCabecera = new ArrayList();
             listaCabecera.add("PERIODO");
-            for (int i=oficinaNiveles; i>=1; --i) {
+            for (int i=oficinaNiveles; i>1; --i) {
                 listaCabecera.add(String.format("OFICINA_CODIGO_N%d",i));
                 listaCabecera.add(String.format("OFICINA_NOMBRE_N%d",i));
             }
             listaCabecera.add("OFICINA_CODIGO");
             listaCabecera.add("OFICINA_NOMBRE");
 
-            for (int i=bancaNiveles; i>=1; --i) {
+            for (int i=bancaNiveles; i>1; --i) {
                 listaCabecera.add(String.format("BANCA_CODIGO_N%d",i));
                 listaCabecera.add(String.format("BANCA_NOMBRE_N%d",i));
             }
             listaCabecera.add("BANCA_CODIGO");
             listaCabecera.add("BANCA_NOMBRE");
 
-            for (int i=productoNiveles; i>=1; --i) {
+            for (int i=productoNiveles; i>1; --i) {
                 listaCabecera.add(String.format("PRODUCTO_CODIGO_N%d",i));
                 listaCabecera.add(String.format("PRODUCTO_NOMBRE_N%d",i));
             }
@@ -339,7 +339,7 @@ public class ReportingServicio {
                 
                 int idxColumn = 0;
                 row.createCell(idxColumn++).setCellValue(periodo);
-                for (int i=oficinaNiveles; i>=1; --i) {
+                for (int i=oficinaNiveles; i>1; --i) {
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("OFICINA_CODIGO_N%d",i)));
                     sh.setColumnWidth(idxColumn, 6000);
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("OFICINA_NOMBRE_N%d",i)));
@@ -348,7 +348,7 @@ public class ReportingServicio {
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(rs.getString("OFICINA_NOMBRE"));
                 
-                for (int i=bancaNiveles; i>=1; --i) {
+                for (int i=bancaNiveles; i>1; --i) {
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("BANCA_CODIGO_N%d",i)));
                     sh.setColumnWidth(idxColumn, 6000);
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("BANCA_NOMBRE_N%d",i)));
@@ -357,7 +357,7 @@ public class ReportingServicio {
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(rs.getString("BANCA_NOMBRE"));
                 
-                for (int i=productoNiveles; i>=1; --i) {
+                for (int i=productoNiveles; i>1; --i) {
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("PRODUCTO_CODIGO_N%d",i)));
                     sh.setColumnWidth(idxColumn, 6000);
                     row.createCell(idxColumn++).setCellValue(rs.getString(String.format("PRODUCTO_NOMBRE_N%d",i)));
@@ -376,7 +376,11 @@ public class ReportingServicio {
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(rs.getString("DRIVER_NOMBRE"));                
                 
-                if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+                int sizeBatch = 5000;
+                if(rowNum % sizeBatch == 0) {
+                    ((SXSSFSheet)sh).flushRows(sizeBatch);
+                    LOGGER.log(Level.INFO,String.format("Reporte Objetos: Escribió %d registros", sizeBatch));
+                }
             }
             FileOutputStream out = new FileOutputStream(ruta);
             wb.write(out);
@@ -451,7 +455,11 @@ public class ReportingServicio {
                 sh.setColumnWidth(idxColumn, 6000);
                 row.createCell(idxColumn++).setCellValue(driverNombre);
                 
-               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+                int sizeBatch = 5000;
+                if(rowNum % sizeBatch == 0) {
+                   ((SXSSFSheet)sh).flushRows(sizeBatch);
+                   LOGGER.log(Level.INFO,String.format("Reporte Objetos Gastos Administrativos Operativos: Escribió %d registros", sizeBatch));
+               }
             }
             FileOutputStream out = new FileOutputStream(ruta);
             wb.write(out);
@@ -516,7 +524,11 @@ public class ReportingServicio {
                 row.createCell(idxColumn).setCellValue(gastosOperacionesDeCambio-gastosOperacionesDeCambioAjustados);
                 row.getCell(idxColumn++).setCellStyle(numberCellStyle);
                 
-               if(rowNum % 100 == 0) ((SXSSFSheet)sh).flushRows(100);
+                int sizeBatch = 5000;
+                if(rowNum % sizeBatch == 0) {
+                   ((SXSSFSheet)sh).flushRows(sizeBatch);
+                   LOGGER.log(Level.INFO,String.format("Reporte Gastos Operaciones de cambio: Escribió %d registros", sizeBatch));
+                }
             }
             FileOutputStream out = new FileOutputStream(ruta);
             wb.write(out);

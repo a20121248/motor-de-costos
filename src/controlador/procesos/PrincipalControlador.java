@@ -225,58 +225,104 @@ public class PrincipalControlador implements Initializable {
     }
     
     @FXML void btnFase1Action(ActionEvent event) {
-        if (ejecutandoFase1) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 1", "La fase se está ejecutando actualmente.");
-            return;
-        }
-        int cantSinDriver = grupoDAO.cantObjetosSinDriver(menuControlador.repartoTipo, menuControlador.periodoSeleccionado);
-        if (cantSinDriver!=0) {
-            if (cantSinDriver==1) 
-                menuControlador.navegador.mensajeError("Fase 1", "Existe 1 Grupo de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
-            else
-                menuControlador.navegador.mensajeError("Fase 1", "Existen " + cantSinDriver + " Grupos de Cuentas Contables sin Driver asignado.\n\nPor favor, revise el módulo de Asignaciones y asegúrese que todos los Grupos de Cuentas Contables tengan un Driver.");
+        int fase = 1;
+        
+        // Validar que no se esté ejecutando ninguna fase en un hilo aparte
+        if (ejecutandoFase1 || ejecutandoFase2 || ejecutandoFase3) {
+            menuControlador.mensaje.execute_phase_currently_error();
             return;
         }
         
-        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, 1, menuControlador.repartoTipo);
+        // Obtener las combinaciones cuenta-partida-centro que no tengan driver y los muestra
+        String detail = driverDAO.obtenerDriverFase1ConError(menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
+        if (!detail.equals("")) {
+            menuControlador.mensaje.execute_asign_bad_driver_error(fase, detail);
+            return;
+        }
+        
+        // Validar que no se haya ejecutado la fase 1 previamente, de lo contrario confirmar antes de ejecutar.
+        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, fase, menuControlador.repartoTipo);
         if (fechaEjecucion != null) {
             String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
                     "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
                     (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
                     (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
-                    1);
-            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 1", mensaje)) return;
+                    fase);
+            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE " + fase, mensaje)) return;
         }
+        
+        // Ejecutar la fase 1 luego de todas las validaciones previas
         ejecutarFase1(menuControlador.periodoSeleccionado);
     }
 
     @FXML void btnFase2Action(ActionEvent event) {
-        if (ejecutandoFase2) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 2", "La fase se está ejecutando actualmente.");
+        int fase = 2;
+        
+        // Validar que no se esté ejecutando ninguna fase en un hilo aparte
+        if (ejecutandoFase1 || ejecutandoFase2 || ejecutandoFase3) {
+            menuControlador.mensaje.execute_phase_currently_error();
             return;
         }
+        
+        // Validar que las fases anteriores se hayan ejecutado
+        if (!procesosDAO.verificarProcesosEjecutadosPreviamente(menuControlador.repartoTipo, menuControlador.periodoSeleccionado, fase)) {
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(fase);
+            return;
+        }
+        
+        // Mostrar los centros que tengan driver erróneo
+        String detail = driverDAO.obtenerDriverFase2ConError(menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
+        if (!detail.equals("")) {
+            menuControlador.mensaje.execute_asign_bad_driver_error(fase, detail);
+            return;
+        }
+        
+        // Validar que no se haya ejecutado la fase 2 previamente, de lo contrario confirmar antes de ejecutar.
+        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, fase, menuControlador.repartoTipo);
+        if (fechaEjecucion != null) {
+            String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
+                    "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
+                    (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
+                    (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
+                    fase);
+            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE " + fase, mensaje)) return;
+        }
+        
+        // Ejecutar la fase 2 luego de todas las validaciones previas
         ejecutarFase2(menuControlador.periodoSeleccionado);
     }
     
     @FXML void btnFase3Action(ActionEvent event) {
-        if (ejecutandoFase3) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "La fase se está ejecutando actualmente.");
+        int fase = 2;
+        
+        // Validar que no se esté ejecutando ninguna fase en un hilo aparte
+        if (ejecutandoFase1 || ejecutandoFase2 || ejecutandoFase3) {
+            menuControlador.mensaje.execute_phase_currently_error();
             return;
         }
-        if (!ejecutoFase2) {
-            menuControlador.navegador.mensajeInformativo("Ejecutar FASE 3", "Necesita ejecutar las fases previas a la FASE 3.");
+        
+        // Validar que las fases anteriores se hayan ejecutado
+        if (!procesosDAO.verificarProcesosEjecutadosPreviamente(menuControlador.repartoTipo, menuControlador.periodoSeleccionado, fase)) {
+            menuControlador.mensaje.execute_phase_currently_dontexist_dist_previus_error(fase);
             return;
         }
-        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, 3, menuControlador.repartoTipo);
+        
+        // Mostrar los centros que tengan driver erróneo
+        String detail = driverDAO.obtenerDriverFase3ConError(menuControlador.periodoSeleccionado, menuControlador.repartoTipo);
+        if (!detail.equals("")) {
+            menuControlador.mensaje.execute_asign_bad_driver_error(fase, detail);
+            return;
+        }
+        
+        // Validar que no se haya ejecutado la fase 3 previamente, de lo contrario confirmar antes de ejecutar.
+        Date fechaEjecucion = procesosDAO.obtenerFechaEjecucion(menuControlador.periodoSeleccionado, fase, menuControlador.repartoTipo);
         if (fechaEjecucion != null) {
             String mensaje = String.format("Existe una ejecución el %s a las %s.\n" +
-                    "¿Está seguro que desea reprocesar la fase %d?",
+                    "¿Está seguro que desea reprocesar la fase %d?\n\nNota: Esta acción borrará las fases posteriores.",
                     (new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))).format(fechaEjecucion),
                     (new SimpleDateFormat("HH:mm:ss")).format(fechaEjecucion),
-                    3);
-            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE 3", mensaje)) return;            
-            //pbFase3.setProgress(0);
-            //piFase3.setProgress(0);
+                    fase);
+            if (!menuControlador.navegador.mensajeConfirmar("Ejecutar FASE " + fase, mensaje)) return;
         }
         ejecutarFase3(menuControlador.periodoSeleccionado);
     }

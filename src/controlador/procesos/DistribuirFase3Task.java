@@ -62,7 +62,7 @@ public class DistribuirFase3Task extends Task {
         principalControlador.pbTotal.setProgress(progresoTotal*(fase-1));
         
         //List<Centro> lista = centroDAO.listarCentros(periodo, 0);
-        List<Centro> lista = centroDAO.listarCentrosNombresConDriver(periodo, "-", principalControlador.menuControlador.repartoTipo, 0);
+        List<Centro> lista = centroDAO.listarCentrosNombresObjeto(periodo, principalControlador.menuControlador.repartoTipo);
         //driverServicio.agregarDrivers(lista, periodo);
         
         procesosDAO.insertarEjecucionIni(periodo, fase, principalControlador.menuControlador.repartoTipo);
@@ -75,6 +75,9 @@ public class DistribuirFase3Task extends Task {
             EntidadDistribucion entidadOrigen = lista.get(i-1);
             //String driverCodigo = driverDAO.obtenerCodigoDriver(entidadOrigen.getCodigo(), periodo);
             //DriverObjeto driver = new DriverObjeto(driverCodigo, "", "", null, null, null, null);
+            
+            centroDAO.insertarDistribucionCentroObjeto(entidadOrigen.getCodigo(), periodo, principalControlador.menuControlador.repartoTipo);
+            /*
             List<DriverObjetoLinea> listaDriverObjetoLinea = driverDAO.obtenerDriverObjetoLinea(periodo, entidadOrigen.getDriver().getCodigo());
             //driver.setListaDriverObjetoLinea(listaDriverObjetoLinea);
             //entidadOrigen.setDriver(driver);
@@ -86,6 +89,7 @@ public class DistribuirFase3Task extends Task {
                     distribucionServicio.distribuirEntidadObjetosOficina(entidadOrigen, listaDriverObjetoLinea, periodo, oficinaCodigo, principalControlador.menuControlador.repartoTipo);
                 }
             }
+            */
             principalControlador.piTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             principalControlador.pbTotal.setProgress(progresoTotal*(fase-1) + i*progresoTotal/(max+1));
             // fin logica

@@ -9,8 +9,23 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ProcesosDAO {    
-   public void insertarEjecucionIni(int periodo, int fase, int repartoTipo) {
+public class ProcesosDAO {
+    public boolean verificarProcesosEjecutadosPreviamente(int repartoTipo, int periodo, int fase) {
+        String queryStr = String.format("" +
+            "SELECT COUNT(1) CNT\n" +
+            "  FROM EJECUCIONES\n" +
+            " WHERE REPARTO_TIPO=%d AND PERIODO=%d AND FASE<%d",
+            repartoTipo, periodo, fase);
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next())
+                return rs.getInt("CNT") == (fase - 1);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProcesosDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public void insertarEjecucionIni(int periodo, int fase, int repartoTipo) {
         String fechaStr = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date());        
         String queryStr = String.format("" +
                 "INSERT INTO ejecuciones(periodo,fase,reparto_tipo,fecha_ini)\n" +

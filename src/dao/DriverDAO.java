@@ -16,7 +16,6 @@ import modelo.DriverCentro;
 import modelo.DriverLinea;
 import modelo.DriverObjeto;
 import modelo.DriverObjetoLinea;
-import modelo.EntidadDistribucion;
 import modelo.Oficina;
 import modelo.Producto;
 
@@ -25,6 +24,75 @@ public class DriverDAO {
     
     public DriverDAO() {
         driverLineaDAO = new DriverLineaDAO();
+    }
+    
+    public String obtenerDriverFase1ConError(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.CODIGO,A.NOMBRE\n" +
+                "  FROM GRUPOS A\n" +
+                "  JOIN GRUPO_LINEAS B ON B.PERIODO=%d AND A.CODIGO=B.GRUPO_CODIGO\n" +
+                "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER C ON C.PERIODO=%d AND A.CODIGO=C.ENTIDAD_ORIGEN_CODIGO\n" +
+                " WHERE A.REPARTO_TIPO=%d\n" +
+                "   AND C.ENTIDAD_ORIGEN_CODIGO IS NULL\n" +
+                " ORDER BY A.CODIGO",
+                periodo, periodo, repartoTipo);
+        String detail = "";
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                detail += String.format("- GRUPO: %s - %s.\n", codigo, nombre);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return detail;
+    }
+
+    public String obtenerDriverFase2ConError(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.CODIGO,A.NOMBRE\n" +
+                "  FROM CENTROS A\n" +
+                "  JOIN CENTRO_LINEAS B ON B.PERIODO=%d AND B.ITERACION=-1 AND A.CODIGO=B.CENTRO_CODIGO\n" +
+                "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER C ON C.PERIODO=%d AND A.CODIGO=C.ENTIDAD_ORIGEN_CODIGO\n" +
+                " WHERE A.REPARTO_TIPO=%d\n" +
+                "   AND C.ENTIDAD_ORIGEN_CODIGO IS NULL\n" +
+                " ORDER BY A.CODIGO",
+                periodo, periodo, repartoTipo);
+        String detail = "";
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                detail += String.format("- CENTRO: %s - %s.\n", codigo, nombre);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return detail;
+    }
+
+    public String obtenerDriverFase3ConError(int periodo, int repartoTipo) {
+        String queryStr = String.format("" +
+                "SELECT A.CODIGO,A.NOMBRE\n" +
+                "  FROM CENTROS A\n" +
+                "  JOIN CENTRO_LINEAS B ON B.PERIODO=%d AND B.ITERACION=-1 AND A.CODIGO=B.CENTRO_CODIGO\n" +
+                "  LEFT JOIN ENTIDAD_ORIGEN_DRIVER C ON C.PERIODO=%d AND A.CODIGO=C.ENTIDAD_ORIGEN_CODIGO\n" +
+                " WHERE A.REPARTO_TIPO=%d\n" +
+                "   AND C.ENTIDAD_ORIGEN_CODIGO IS NULL\n" +
+                " ORDER BY A.CODIGO",
+                periodo, periodo, repartoTipo);
+        String detail = "";
+        try (ResultSet rs = ConexionBD.ejecutarQuery(queryStr)) {
+            while(rs.next()) {
+                String codigo = rs.getString("CODIGO");
+                String nombre = rs.getString("NOMBRE");
+                detail += String.format("- CENTRO: %s - %s.\n", codigo, nombre);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DriverDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return detail;
     }
     
     public int eliminarDriverObjeto(String codigo) {
